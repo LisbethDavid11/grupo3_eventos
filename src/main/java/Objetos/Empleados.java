@@ -1,5 +1,8 @@
 package Objetos;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class Empleados {
     public int id;
     public String Identidad;
@@ -11,20 +14,25 @@ public class Empleados {
     public String apellidos;
     public int edad;
     public String direccion;
+    public String TipoDeEmpleado;
+    public String nombreContactoDeEmergencia;
     public static String nombreDeTabla = "Empleados";
     public static String[] ColumnasDeTabla={
-            "Id",
             "Identidad",
             "Nombres",
             "Apellidos",
             "Edad",
-            "Direccion"
-
+            "Correo electrónico",
+            "Teléfono",
+            "Nombre contacto de emergencia",
+            "Contacto de emergencia",
+            "Dirección"
     };
 
 
     public static String[] Columnas={
             "N",
+            "Identidad",
             "Nombres",
             "Apellidos",
             "Teléfono"
@@ -34,7 +42,7 @@ public class Empleados {
     public Empleados() {
     }
 
-    public Empleados(int id, String identidad, String genero, String correo, String telefono, String contacto, String nombres, String apellidos, int edad, String direccion) {
+    public Empleados(int id, String identidad, String genero, String correo, String telefono, String contacto, String nombres, String apellidos, int edad, String direccion, String tipoDeEmpleado, String nombreContactoDeEmergencia) {
         this.id = id;
         Identidad = identidad;
         Genero = genero;
@@ -45,6 +53,8 @@ public class Empleados {
         this.apellidos = apellidos;
         this.edad = edad;
         this.direccion = direccion;
+        TipoDeEmpleado = tipoDeEmpleado;
+        this.nombreContactoDeEmergencia = nombreContactoDeEmergencia;
     }
 
     public String getNombres() {
@@ -126,6 +136,23 @@ public class Empleados {
     public void setContacto(String contacto) {
         this.contacto = contacto;
     }
+
+    public String getTipoDeEmpleado() {
+        return TipoDeEmpleado;
+    }
+
+    public void setTipoDeEmpleado(String tipoDeEmpleado) {
+        TipoDeEmpleado = tipoDeEmpleado;
+    }
+
+    public String getNombreContactoDeEmergencia() {
+        return nombreContactoDeEmergencia;
+    }
+
+    public void setNombreContactoDeEmergencia(String nombreContactoDeEmergencia) {
+        this.nombreContactoDeEmergencia = nombreContactoDeEmergencia;
+    }
+
     public static boolean ComprobarIdentidad(String identidad){
         String digitoRegional = identidad.substring(0,2);
         String digitoMunicipal = identidad.substring(2,4);
@@ -235,5 +262,20 @@ public class Empleados {
 
 
         return true;
+    }
+    public static boolean ValidarCorreo(String correo){
+        // Patrón para validar el email
+        Pattern pattern = Pattern
+                .compile("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+                        + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
+
+
+        Matcher mather = pattern.matcher(correo);
+
+        if (mather.find()) {
+           return false;
+        } else {
+            return true;
+        }
     }
 }

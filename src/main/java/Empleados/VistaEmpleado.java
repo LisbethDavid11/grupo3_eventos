@@ -114,10 +114,11 @@ public class VistaEmpleado extends JFrame {
   public ModeloDeEmpleado CargarDatos() throws SQLException {
       sql = new Conexion();
       mysql = sql.conectamysql();
-      PreparedStatement preparedStatement = mysql.prepareStatement("select * from " + Empleados.nombreDeTabla + " where idEmpleados like concat('%',?,'%') or Nombres like concat('%',?,'%') limit ?, 10");
+      PreparedStatement preparedStatement = mysql.prepareStatement("select * from " + Empleados.nombreDeTabla + " where Identidad like concat('%',?,'%') or Nombres like concat('%',?,'%') or Apellidos like concat('%',?,'%') limit ?, 10");
       preparedStatement.setString(1,barrabusqueda.getText());
       preparedStatement.setString(2,barrabusqueda.getText());
-      preparedStatement.setInt(3,intervalo);
+      preparedStatement.setString(3,barrabusqueda.getText());
+      preparedStatement.setInt(4,intervalo);
       ResultSet resultado = preparedStatement.executeQuery();
 
       while (resultado.next()){
@@ -132,6 +133,7 @@ public class VistaEmpleado extends JFrame {
           empleados.setTelefono(resultado.getString(8));
           empleados.setContacto(resultado.getString(9));
           empleados.setDireccion(resultado.getString(10));
+          empleados.setTipoDeEmpleado(resultado.getString(11));
 
           ListaEmpleados.add(empleados);
       }

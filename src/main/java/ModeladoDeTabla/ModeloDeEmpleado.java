@@ -33,9 +33,10 @@ public class ModeloDeEmpleado extends AbstractTableModel {
     public Object getValueAt(int rowIndex, int columnIndex) {
         return switch (columnIndex){
             case 0 -> this.empleados.get(rowIndex).getId();
-            case 1 -> this.empleados.get(rowIndex).getNombres();
-            case 2 -> this.empleados.get(rowIndex).getApellidos();
-            case 3 -> this.empleados.get(rowIndex).getTelefono();
+            case 1 -> this.empleados.get(rowIndex).getIdentidad();
+            case 2 -> this.empleados.get(rowIndex).getNombres();
+            case 3-> this.empleados.get(rowIndex).getApellidos();
+            case 4 -> this.empleados.get(rowIndex).getTelefono();
             default -> null;
         };
     }

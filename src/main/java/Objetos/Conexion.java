@@ -1,6 +1,7 @@
 package Objetos;
 
 import javax.swing.*;
+import java.awt.event.KeyEvent;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -29,6 +30,62 @@ public class Conexion {
        }
         return c;
     }
+    public static void  soloLetra(KeyEvent e, int tamano, int limite, int pos) {
+
+        if (pos == 0 && e.getKeyChar() == KeyEvent.VK_SPACE) {
+            e.consume();
+        }
+
+        if (tamano <= limite) {
+            if (tamano == 0 && e.getKeyChar() == KeyEvent.VK_SPACE) {
+                e.consume();
+            } else {
+
+                Character letra = e.getKeyChar();
+
+                if (!Character.isLetter(letra) && letra != KeyEvent.VK_SPACE) {
+                    e.consume();
+                }
+            }
+        } else {
+            e.consume();
+        }
+
+    }
+    public static void soloNumeros(KeyEvent e, int i, int tamano) {
+
+        if (e.getKeyChar() == KeyEvent.VK_BACK_SPACE) {
+
+        } else {
+            if (tamano <= i) {
+                if (!Character.isDigit(e.getKeyChar()) && e.getKeyChar() != '-') {
+                    e.consume();
+                }
+            } else {
+                e.consume();
+            }
+        }
+    }
+    public static void soloNumeroIdentidad(KeyEvent e, int i, int tamano) {
+
+        if (e.getKeyChar() == KeyEvent.VK_BACK_SPACE) {
+
+        } else {
+            if (tamano <= i) {
+                if (!Character.isDigit(e.getKeyChar()) && e.getKeyChar() != '-') {
+                    e.consume();
+                }
+            } else {
+                e.consume();
+            }
+        }
+        if (tamano == 4){
+
+        }
+    }
+
+
+
 
 
 
