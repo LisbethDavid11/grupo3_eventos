@@ -6,7 +6,7 @@
       <xy x="7" y="16" width="571" height="603"/>
     </constraints>
     <properties>
-      <background color="-1119247"/>
+      <background color="-16250872"/>
     </properties>
     <border type="none"/>
     <children>
@@ -14,7 +14,10 @@
         <constraints>
           <grid row="1" column="0" row-span="1" col-span="4" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
-        <properties/>
+        <properties>
+          <background color="-16250872"/>
+          <foreground color="-16250872"/>
+        </properties>
         <border type="none"/>
         <children>
           <component id="8c702" class="javax.swing.JTable" binding="table1" default-binding="true">
@@ -28,7 +31,7 @@
           <grid row="0" column="2" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <background color="-4964685"/>
+          <background color="-6083660"/>
           <label value="Nuevo Empleado"/>
           <text value="Nuevo Empleado"/>
         </properties>
@@ -46,6 +49,8 @@
           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
+          <background color="-1641991"/>
+          <foreground color="-460552"/>
           <text value="Búsqueda"/>
         </properties>
       </component>
@@ -54,7 +59,7 @@
           <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <background color="-4964685"/>
+          <background color="-6083660"/>
           <text value="&lt;"/>
         </properties>
       </component>
@@ -63,7 +68,7 @@
           <grid row="2" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <background color="-4964685"/>
+          <background color="-6083660"/>
           <text value="&gt;"/>
         </properties>
       </component>

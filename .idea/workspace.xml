@@ -7,11 +7,7 @@
     <list default="true" id="18fd5814-fc96-4447-888d-4dd9792a3bfd" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Empleados/CrearEmpleado.form" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Empleados/CrearEmpleado.form" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Empleados/CrearEmpleado.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Empleados/CrearEmpleado.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Empleados/VistaEmpleado.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Empleados/VistaEmpleado.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ModeladoDeTabla/ModeloDeEmpleado.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ModeladoDeTabla/ModeloDeEmpleado.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Objetos/Conexion.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Objetos/Conexion.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Objetos/Empleados.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Objetos/Empleados.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Empleados/VistaEmpleado.form" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Empleados/VistaEmpleado.form" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
