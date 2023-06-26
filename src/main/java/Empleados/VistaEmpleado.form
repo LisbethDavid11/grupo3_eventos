@@ -1,21 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="Empleados.VistaEmpleado">
-  <grid id="27dc6" binding="panel1" default-binding="true" layout-manager="GridLayoutManager" row-count="3" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+  <grid id="27dc6" binding="panel1" default-binding="true" layout-manager="GridLayoutManager" row-count="3" column-count="6" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="10" left="10" bottom="10" right="10"/>
     <constraints>
       <xy x="7" y="16" width="571" height="603"/>
     </constraints>
     <properties>
-      <background color="-16250872"/>
+      <background color="-6380379"/>
     </properties>
     <border type="none"/>
     <children>
       <scrollpane id="b04f1" binding="scrollPane1">
         <constraints>
-          <grid row="1" column="0" row-span="1" col-span="4" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="1" column="0" row-span="1" col-span="6" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <background color="-16250872"/>
+          <font name="Consolas" size="12" style="0"/>
           <foreground color="-16250872"/>
         </properties>
         <border type="none"/>
@@ -28,10 +29,12 @@
       </scrollpane>
       <component id="3cf58" class="javax.swing.JButton" binding="nuevoEmpleadoButton" default-binding="true">
         <constraints>
-          <grid row="0" column="2" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="0" column="4" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <background color="-6083660"/>
+          <background color="-6124379"/>
+          <font name="JetBrains Mono" size="11" style="1"/>
+          <foreground color="-16119289"/>
           <label value="Nuevo Empleado"/>
           <text value="Nuevo Empleado"/>
         </properties>
@@ -42,34 +45,51 @@
             <preferred-size width="150" height="-1"/>
           </grid>
         </constraints>
-        <properties/>
+        <properties>
+          <font name="JetBrains Mono" size="11" style="0"/>
+          <foreground color="-16119289"/>
+          <text value=""/>
+        </properties>
       </component>
       <component id="d9454" class="javax.swing.JLabel">
         <constraints>
           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <background color="-1641991"/>
-          <foreground color="-460552"/>
+          <background color="-16119289"/>
+          <font name="JetBrains Mono" size="12" style="1"/>
+          <foreground color="-16119289"/>
           <text value="Búsqueda"/>
         </properties>
       </component>
       <component id="9877" class="javax.swing.JButton" binding="botonatras">
         <constraints>
-          <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="2" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <background color="-6083660"/>
+          <background color="-6124379"/>
           <text value="&lt;"/>
         </properties>
       </component>
       <component id="54b5c" class="javax.swing.JButton" binding="botonadelante">
         <constraints>
-          <grid row="2" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="2" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <background color="-6083660"/>
+          <background color="-6124379"/>
           <text value="&gt;"/>
+        </properties>
+      </component>
+      <component id="5fd97" class="javax.swing.JButton" binding="editarEmpleadoButton" default-binding="true">
+        <constraints>
+          <grid row="0" column="2" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <background color="-6124379"/>
+          <font name="JetBrains Mono" size="11" style="1"/>
+          <foreground color="-16119289"/>
+          <label value="Editar empleado"/>
+          <text value="Editar empleado"/>
         </properties>
       </component>
     </children>
