@@ -4,18 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="18fd5814-fc96-4447-888d-4dd9792a3bfd" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Clientes/CrearCliente.form" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Clientes/CrearCliente.form" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Clientes/EditarFormularioCliente.form" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Clientes/EditarFormularioCliente.form" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Clientes/ListaCliente.form" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Clientes/ListaCliente.form" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Clientes/VerFormularioCliente.form" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Clientes/VerFormularioCliente.form" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Empleados/CrearEmpleado.form" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Empleados/CrearEmpleado.form" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Empleados/VistaEmpleado.form" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Empleados/VistaEmpleado.form" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Proveedores/CrearFormularioProveedores.form" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Proveedores/CrearFormularioProveedores.form" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Proveedores/IndexProveedores.form" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Proveedores/IndexProveedores.form" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/SubMenu.form" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/SubMenu.form" afterDir="false" />
-    </list>
+    <list default="true" id="18fd5814-fc96-4447-888d-4dd9792a3bfd" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
