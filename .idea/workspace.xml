@@ -6,11 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="18fd5814-fc96-4447-888d-4dd9792a3bfd" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Empleados/CrearEmpleado.form" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Empleados/CrearEmpleado.form" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Empleados/CrearEmpleado.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Empleados/CrearEmpleado.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Empleados/VistaEmpleado.form" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Empleados/VistaEmpleado.form" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Empleados/VistaEmpleado.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Empleados/VistaEmpleado.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Objetos/Conexion.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Objetos/Conexion.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,7 +43,7 @@
     "UI_DESIGNER_EDITOR_MODE.PaletteManager.WIDTH": "152",
     "UI_DESIGNER_EDITOR_MODE.UIDesignerToolWindowManager.WIDTH": "304",
     "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "C:/ConectorMySQL/mysql-connector-j-8.0.32/mysql-connector-j-8.0.32.jar",
+    "last_opened_file_path": "C:/Users/PCVISION/Downloads/mysql-connector-j-8.0.33/mysql-connector-j-8.0.33/mysql-connector-j-8.0.33.jar",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
