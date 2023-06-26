@@ -1,6 +1,6 @@
 package Modelos;
 
-import Objeto.Cliente;
+import Objetos.Cliente;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.List;

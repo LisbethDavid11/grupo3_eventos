@@ -1,6 +1,6 @@
 package Clientes;
 
-import Modelos.ModeloTablaClientes;
+import Modelos.ModeloClientes;
 import Objetos.Cliente;
 import Objetos.Conexion;
 
@@ -15,17 +15,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.LinkedTransferQueue;
 
 public class ListaCliente extends JFrame {
     private JPanel panelPrincipal;
-    private JButton botonCrear;
+    private JButton botonVer;
     private JTable listaClientes;
     private JButton botonAtras;
     private JButton botonAdelante;
     private JTextField campoBusqueda;
-    private JButton botonVer;
     private JButton botonEditar;
+    private JButton botoCrear;
     private List<Cliente> listaCliente;
     private int pagina=0;
     private Connection mysql;
@@ -77,7 +76,7 @@ public class ListaCliente extends JFrame {
             }
         });
 
-        botonCrear.addActionListener(new ActionListener() {
+        botoCrear.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 CrearCliente cliente = new CrearCliente();
@@ -85,12 +84,42 @@ public class ListaCliente extends JFrame {
                 actual.dispose();
             }
         });
+
+        botonVer.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (listaClientes.getSelectedRow() == -1){
+                    JOptionPane.showMessageDialog(null,"Seleccione una fila continuar");
+                    return;
+                }
+
+
+                VerFormularioCliente cliente = new VerFormularioCliente(listaCliente.get(listaClientes.getSelectedRow()).getId());
+               cliente.setVisible(true);
+                actual.dispose();
+            }
+        });
+        botonEditar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (listaClientes.getSelectedRow() == -1){
+                    JOptionPane.showMessageDialog(null,"Seleccione una fila continuar");
+                    return;
+                }
+
+                EditarFormularioCliente cliente = new EditarFormularioCliente(listaCliente.get(listaClientes.getSelectedRow()).getId());
+               cliente.setVisible(true);
+               actual.dispose();
+            }
+        });
+
+
     }
 
 
-    private ModeloTablaClientes cargarDatos(){
+    private ModeloClientes cargarDatos(){
         sql = new Conexion();
-        mysql = sql.sql();
+        mysql = sql.conectamysql();
         try {
             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT * FROM "+Cliente.nombreTabla+" WHERE nombre LIKE CONCAT('%',?,'%') OR apellido LIKE CONCAT('%',?,'%') OR identidad LIKE CONCAT('%',?,'%') LIMIT ?,10");
             preparedStatement.setString(1,campoBusqueda.getText());
@@ -116,6 +145,6 @@ public class ListaCliente extends JFrame {
             JOptionPane.showMessageDialog(null,"No hay conexion");
             listaCliente = new ArrayList<>();
         }
-        return new ModeloTablaClientes(listaCliente);
+        return new ModeloClientes(Cliente.columnasCampos, listaCliente);
     }
 }

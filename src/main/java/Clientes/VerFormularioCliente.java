@@ -1,7 +1,8 @@
-package Cliente;
+package Clientes;
 
-import Objeto.Cliente;
-import Objeto.Conexion;
+
+import Objetos.Cliente;
+import Objetos.Conexion;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -48,7 +49,7 @@ public class VerFormularioCliente extends  JFrame{
         volverButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-            IndexCliente indexCliente = new IndexCliente();
+            ListaCliente indexCliente = new ListaCliente();
             indexCliente.setVisible(true);
             actual.dispose();
             }
@@ -56,10 +57,10 @@ public class VerFormularioCliente extends  JFrame{
     }
     private void   mostrar(){
         sql = new Conexion();
-        mysql = sql.iniciar();
+        mysql = sql.conectamysql();
 
         try{
-            PreparedStatement statement = mysql.prepareStatement("SELECT * FROM "+Cliente.nombreTabla+" where id = ?;");
+            PreparedStatement statement = mysql.prepareStatement("SELECT * FROM "+ Cliente.nombreTabla+" where id = ?;");
             statement.setInt(1, this.id);
             ResultSet resulset = statement.executeQuery();
 

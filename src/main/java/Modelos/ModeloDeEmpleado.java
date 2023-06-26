@@ -1,4 +1,4 @@
-package ModeladoDeTabla;
+package Modelos;
 
 import Objetos.Empleados;
 

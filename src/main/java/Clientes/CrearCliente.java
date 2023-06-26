@@ -1,6 +1,5 @@
 package Clientes;
 
-import Modelos.ModeloTablaClientes;
 import Objetos.Cliente;
 import Objetos.Conexion;
 
@@ -13,10 +12,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.ArrayList;
 
 public class CrearCliente extends JFrame{
     private JTextField campoNombre;
@@ -120,16 +117,14 @@ public class CrearCliente extends JFrame{
 
                 guardar();
 
-                ListaCliente cliente = new ListaCliente();
-                cliente.setVisible(true);
-                actual.dispose();
+
             }
         });
     }
 
     public void guardar(){
         sql = new Conexion();
-        mysql = sql.sql();
+        mysql = sql.conectamysql();
         try {
             PreparedStatement preparedStatement = mysql.prepareStatement("INSERT INTO "+ Cliente.nombreTabla+"(`nombre`, `apellido`, `identidad`, `telefono`, `domicilio`, `tipo_cliente`) VALUES(?,?,?,?,?,?)");
             preparedStatement.setString(1,campoNombre.getText());
@@ -142,6 +137,12 @@ public class CrearCliente extends JFrame{
             preparedStatement.executeUpdate();
 
             mysql.close();
+
+
+            ListaCliente cliente = new ListaCliente();
+            cliente.setVisible(true);
+            actual.dispose();
+
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             JOptionPane.showMessageDialog(null,"No hay conexion");

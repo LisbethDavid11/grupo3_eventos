@@ -1,6 +1,6 @@
 package Empleados;
 
-import ModeladoDeTabla.ModeloDeEmpleado;
+import Modelos.ModeloDeEmpleado;
 import Objetos.Conexion;
 import Objetos.Empleados;
 

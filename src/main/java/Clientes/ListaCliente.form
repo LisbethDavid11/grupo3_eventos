@@ -62,12 +62,12 @@
         </constraints>
         <properties/>
       </component>
-      <component id="13d73" class="javax.swing.JButton" binding="botonCrear">
+      <component id="13d73" class="javax.swing.JButton" binding="botonVer">
         <constraints>
           <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="Crear"/>
+          <text value="Ver"/>
         </properties>
       </component>
       <component id="80133" class="javax.swing.JLabel">
@@ -78,7 +78,7 @@
           <text value="Busqueda"/>
         </properties>
       </component>
-      <component id="ddf54" class="javax.swing.JButton" binding="botonVer">
+      <component id="ddf54" class="javax.swing.JButton" binding="botonEditar">
         <constraints>
           <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
@@ -86,12 +86,12 @@
           <text value="Editar"/>
         </properties>
       </component>
-      <component id="1a3db" class="javax.swing.JButton" binding="botonEditar">
+      <component id="1a3db" class="javax.swing.JButton" binding="botoCrear">
         <constraints>
           <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="Eliminar"/>
+          <text value="Crear"/>
         </properties>
       </component>
     </children>

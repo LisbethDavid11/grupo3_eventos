@@ -1,11 +1,10 @@
-package Cliente;
+package Clientes;
 
-import Objeto.Cliente;
-import Objeto.Conexion;
+
+import Objetos.Cliente;
+import Objetos.Conexion;
 
 import javax.swing.*;
-import javax.swing.text.DefaultFormatterFactory;
-import javax.swing.text.MaskFormatter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -14,7 +13,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.Objects;
 
 public class EditarFormularioCliente extends  JFrame{
@@ -84,7 +82,7 @@ public class EditarFormularioCliente extends  JFrame{
         cancelarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                IndexCliente indexCliente = new IndexCliente();
+                ListaCliente indexCliente = new ListaCliente();
                 indexCliente.setVisible(true);
                 actual.dispose();
 
@@ -102,7 +100,7 @@ public class EditarFormularioCliente extends  JFrame{
 
                         if (!Objects.equals(campo.getText().replaceAll("\\s+", ""), "")) {
                         } else {
-                            mensaje += Cliente.columnasdeTable[contador] + "\n";
+                            mensaje += Cliente.columnasCampos[contador] + "\n";
                             validacion += 1;
 
                         }
@@ -134,7 +132,7 @@ public class EditarFormularioCliente extends  JFrame{
 
                     throw new RuntimeException(ex);
                 }
-                IndexCliente indexCliente = new IndexCliente();
+                ListaCliente indexCliente = new ListaCliente();
                 indexCliente.setVisible(true);
                 actual.dispose();
 
@@ -143,7 +141,7 @@ public class EditarFormularioCliente extends  JFrame{
     }
     private void   mostrar(){
         sql = new Conexion();
-        mysql = sql.iniciar();
+        mysql = sql.conectamysql();
 
         try{
             PreparedStatement statement = mysql.prepareStatement("SELECT * FROM "+Cliente.nombreTabla+" where id = ?;");
@@ -166,7 +164,7 @@ public class EditarFormularioCliente extends  JFrame{
 }
     private void  guardar() throws SQLException {
         sql = new Conexion();
-        mysql = sql.iniciar();
+        mysql = sql.conectamysql();
 
             PreparedStatement statement = mysql.prepareStatement("UPDATE "+Cliente.nombreTabla+" SET `nombre` = ? , `apellido` = ?, `identidad` = ? , `telefono` = ? , `domicilio` = ? , `tipo` = ? WHERE id = ?");
             statement.setString(1,campoNombre.getText());

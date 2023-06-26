@@ -10,10 +10,10 @@ public class Conexion {
     private String drivers = "com.mysql.cj.jdbc.Driver";
     private String database = "eventos";
     private String user = "root";
-    private String password = "mendoza11.";
+    private String password = "Dios9820";
     private String hostname = "localhost";
     private String port = "3306";
-    private String url = "jdbc:mysql://" + hostname + ":" + port + "/" + database;
+    private String url = "jdbc:mysql://" + hostname + ":" + port + "/" + database+"?serverTimezone=UTC";
 
     public Connection conectamysql(){
        Connection c = null;
@@ -23,6 +23,7 @@ public class Conexion {
            c = DriverManager.getConnection(url,user,password);
 
        }catch (SQLException error){
+           System.out.println(error);
            JOptionPane.showMessageDialog(null, "Servidor fuera de linea!!!");
        } catch (ClassNotFoundException e) {
            throw new RuntimeException(e);

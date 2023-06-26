@@ -4,8 +4,7 @@ import java.sql.SQLException;
 
 public class Main {
     public static void main(String[] args) throws SQLException {
-        VistaEmpleado empleado = new VistaEmpleado();
-        empleado.setVisible(true);
-
+        SubMenu menu = new SubMenu();
+        menu.setVisible(true);
     }
 }
