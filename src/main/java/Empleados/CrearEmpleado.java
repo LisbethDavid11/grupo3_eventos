@@ -126,6 +126,7 @@ public class CrearEmpleado extends JFrame{
         guardarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
                 try {
                     int validacion = 0;
                     int contador = 0;

@@ -10,7 +10,7 @@ public class Conexion {
     private String drivers = "com.mysql.cj.jdbc.Driver";
     private String database = "eventos";
     private String user = "root";
-    private String password = "Dios9820";
+    private String password = "mendoza11.";
     private String hostname = "localhost";
     private String port = "3306";
     private String url = "jdbc:mysql://" + hostname + ":" + port + "/" + database+"?serverTimezone=UTC";
