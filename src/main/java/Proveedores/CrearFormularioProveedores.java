@@ -55,6 +55,7 @@ public class CrearFormularioProveedores extends JFrame {
             throw new RuntimeException(e);
         }
 
+
         cancelarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -96,6 +97,10 @@ public class CrearFormularioProveedores extends JFrame {
 
                 if (!Proveedores.validarFormatoNombre(jtVendedorAsignado.getText())){
                     JOptionPane.showMessageDialog(null,"El nombre del vendedor solo debe contener letras","Validación",JOptionPane.INFORMATION_MESSAGE);
+                    return;
+                }
+                if (!Proveedores.validarFormatoNombre(jtNombre.getText())){
+                    JOptionPane.showMessageDialog(null,"El nombre de la empresa solo debe contener letras","Validación",JOptionPane.INFORMATION_MESSAGE);
                     return;
                 }
 
