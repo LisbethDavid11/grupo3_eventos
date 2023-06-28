@@ -19,7 +19,7 @@ public class CrearFormularioProveedores extends JFrame {
     private JFormattedTextField jtTelefono;
     private JTextField jtNombre;
     private JFormattedTextField jtVendedorTelefono;
-    private JTextField jtRTN;
+    private JFormattedTextField jtRTN;
     private JTextField jtCorreo;
     private JTextArea jtDireccion;
     private JTextField jtVendedorAsignado;
@@ -51,6 +51,15 @@ public class CrearFormularioProveedores extends JFrame {
 
             jtTelefono.setFormatterFactory(new DefaultFormatterFactory(formatter));
             jtVendedorTelefono.setFormatterFactory(new DefaultFormatterFactory(formatter));
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+
+        try {
+            MaskFormatter formatter = new MaskFormatter("##############");
+
+
+            jtRTN.setFormatterFactory(new DefaultFormatterFactory(formatter));
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
