@@ -60,6 +60,21 @@ public class CrearCliente extends JFrame{
             }
         });
 
+        campoDomicilio.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                Conexion.soloLetra(e, campoDomicilio.getText().length(),200, campoDomicilio.getCaretPosition());
+            }
+        });
+
+        campoTelefono.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                Conexion.soloNumeros(e,7, campoTelefono.getText().length());
+
+            }
+        });
+
         ButtonGroup buttonGroup = new ButtonGroup();
         buttonGroup.add(radioAldetalle);
         buttonGroup.add(radioMayorista);
@@ -114,11 +129,16 @@ public class CrearCliente extends JFrame{
 
                 String telefono = campoTelefono.getText();
                 if (telefono.charAt(0) == '0' || telefono.charAt(0) == '1' || telefono.charAt(0) == '4' || telefono.charAt(0) == '5' || telefono.charAt(0) == '6' || telefono.charAt(0) == '7'){
-                    JOptionPane.showMessageDialog(null,"Formato de teléfono invalido");
+                    JOptionPane.showMessageDialog(null,"Formato de teléfono no invalido");
                     return;
                 }
                 if (telefono.length() > 8 || telefono.length() < 8){
                     JOptionPane.showMessageDialog(null,"Formato de teléfono solo admite 8 digitos");
+                    return;
+                }
+
+                if (!Cliente.ComprobarIdentidad(campoIdentidad.getText())){
+                    JOptionPane.showMessageDialog(null,"Identidad no válida" );
                     return;
                 }
 

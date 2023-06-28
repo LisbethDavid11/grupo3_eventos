@@ -1,83 +1,85 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-    <component name="AutoImportSettings">
-        <option name="autoReloadType" value="SELECTIVE" />
-    </component>
-    <component name="ChangeListManager">
-        <list default="true" id="18fd5814-fc96-4447-888d-4dd9792a3bfd" name="Changes" comment="">
-            <change beforePath="$PROJECT_DIR$/src/main/java/Empleados/VistaEmpleado.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Empleados/VistaEmpleado.java" afterDir="false" />
-        </list>
-        <option name="SHOW_DIALOG" value="false" />
-        <option name="HIGHLIGHT_CONFLICTS" value="true" />
-        <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
-        <option name="LAST_RESOLUTION" value="IGNORE" />
-    </component>
-    <component name="FileTemplateManagerImpl">
-        <option name="RECENT_TEMPLATES">
-            <list>
-                <option value="Class" />
-            </list>
-        </option>
-    </component>
-    <component name="Git.Settings">
-        <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-    </component>
-    <component name="MavenImportPreferences">
-        <option name="generalSettings">
-            <MavenGeneralSettings>
-                <option name="useMavenConfig" value="true" />
-            </MavenGeneralSettings>
-        </option>
-    </component>
-    <component name="ProjectId" id="2RD7lWR6qXrPcQWFXPN3bD8qyNh" />
-    <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
-    <component name="ProjectViewState">
-        <option name="hideEmptyMiddlePackages" value="true" />
-        <option name="showLibraryContents" value="true" />
-    </component>
-    <component name="PropertiesComponent">{
-        &quot;keyToString&quot;: {
-        &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-        &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-        &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-        &quot;UI_DESIGNER_EDITOR_MODE.PaletteManager.WIDTH&quot;: &quot;152&quot;,
-        &quot;UI_DESIGNER_EDITOR_MODE.UIDesignerToolWindowManager.WIDTH&quot;: &quot;219&quot;,
-        &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-        &quot;last_opened_file_path&quot;: &quot;C:/ConectorMySQL/mysql-connector-j-8.0.32/mysql-connector-j-8.0.32.jar&quot;,
-        &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-        &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-        &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-        &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-        &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
-        &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-        &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-        &quot;settings.editor.selected.configurable&quot;: &quot;reference.projectsettings.compiler.javacompiler&quot;,
-        &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
-        }
-        }</component>
-    <component name="RecentsManager">
-        <key name="MoveFile.RECENT_KEYS">
-            <recent name="C:\Users\Skarleth Alvarado\Desktop\Nueva carpeta\grupo3_eventos\src\main\java\Clientes" />
-            <recent name="C:\grupo3_eventos\src\main\java\Iconos" />
-            <recent name="C:\grupo3_eventos\src\main\java\Empleados" />
-        </key>
-    </component>
-    <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
-    <component name="TaskManager">
-        <task active="true" id="Default" summary="Default task">
-            <changelist id="18fd5814-fc96-4447-888d-4dd9792a3bfd" name="Changes" comment="" />
-            <created>1686772952699</created>
-            <option name="number" value="Default" />
-            <option name="presentableId" value="Default" />
-            <updated>1686772952699</updated>
-            <workItem from="1686772953928" duration="2039000" />
-            <workItem from="1687735585809" duration="6010000" />
-            <workItem from="1687808801719" duration="2193000" />
-            <workItem from="1687811059365" duration="515000" />
-        </task>
-        <servers />
-    </component>
-    <component name="TypeScriptGeneratedFilesManager">
-        <option name="version" value="3" />
-    </component>
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="18fd5814-fc96-4447-888d-4dd9792a3bfd" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Clientes/CrearCliente.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Clientes/CrearCliente.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Objetos/Conexion.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Objetos/Conexion.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="useMavenConfig" value="true" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectId" id="2RD7lWR6qXrPcQWFXPN3bD8qyNh" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;UI_DESIGNER_EDITOR_MODE.PaletteManager.WIDTH&quot;: &quot;152&quot;,
+    &quot;UI_DESIGNER_EDITOR_MODE.UIDesignerToolWindowManager.WIDTH&quot;: &quot;219&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/PCVISION/Desktop/Grupo3/grupo3_eventos&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.projectsettings.compiler.javacompiler&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Skarleth Alvarado\Desktop\Nueva carpeta\grupo3_eventos\src\main\java\Clientes" />
+      <recent name="C:\grupo3_eventos\src\main\java\Iconos" />
+      <recent name="C:\grupo3_eventos\src\main\java\Empleados" />
+    </key>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="18fd5814-fc96-4447-888d-4dd9792a3bfd" name="Changes" comment="" />
+      <created>1686772952699</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1686772952699</updated>
+      <workItem from="1686772953928" duration="2039000" />
+      <workItem from="1687735585809" duration="6010000" />
+      <workItem from="1687808801719" duration="2193000" />
+      <workItem from="1687811059365" duration="515000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
 </project>
