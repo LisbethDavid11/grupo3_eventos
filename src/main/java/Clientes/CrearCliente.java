@@ -20,13 +20,12 @@ public class CrearCliente extends JFrame{
     private JTextField campoApellido;
     private JFormattedTextField campoIdentidad;
     private JTextField campoTelefono;
-    private JTextField campoDomicilio;
+    private JTextArea campoDomicilio;
     private JTextField[] campos = {
             campoNombre,
             campoApellido,
             campoIdentidad,
             campoTelefono,
-            campoDomicilio
     };
     private JRadioButton radioMayorista;
     private JRadioButton radioAldetalle;
@@ -68,7 +67,7 @@ public class CrearCliente extends JFrame{
         radioAldetalle.setSelected(true);
 
         try {
-            MaskFormatter dni = new MaskFormatter("####-####-######");
+            MaskFormatter dni = new MaskFormatter("####-####-#####");
             campoIdentidad.setFormatterFactory(new DefaultFormatterFactory(dni));
         } catch (ParseException e) {
             throw new RuntimeException(e);
@@ -101,6 +100,15 @@ public class CrearCliente extends JFrame{
 
                 if (validar > 0){
                     JOptionPane.showMessageDialog(null,mensaje);
+                    return;
+                }
+                if (campoDomicilio.getText().replaceAll("\\s+","").replaceAll("[^\\dA-Za-z]","").equals("")){
+                    JOptionPane.showMessageDialog(null,"El Domicilio no pude estar vacio");
+                    return;
+                }
+
+                if (campoDomicilio.getText().length() > 200){
+                    JOptionPane.showMessageDialog(null,"El Domicilio no puede excer un maximo de 200 caracteres");
                     return;
                 }
 

@@ -25,7 +25,6 @@ public class Proveedores {
             "rtn",
             "telefono",
             "correo",
-            "direccion",
             "descripcion",
             "nombreVendedor",
             "telefonoVendedor"

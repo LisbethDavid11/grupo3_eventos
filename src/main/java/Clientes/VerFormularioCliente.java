@@ -19,7 +19,7 @@ public class VerFormularioCliente extends  JFrame{
     private JTextField campoApellido;
     private JTextField campoTelefono;
     private JFormattedTextField campoIdentidad;
-    private JTextField campoDomicilio;
+    private JTextArea campoDomicilio;
     public ButtonGroup grupoTipo_cliente;
     private JRadioButton mayoristaRadioButton;
     private JRadioButton alDetalleRadioButton;
@@ -31,7 +31,7 @@ public class VerFormularioCliente extends  JFrame{
     private Connection mysql;
 
     private int id;
-    private JTextField[] campos = {campoNombre, campoApellido, campoIdentidad, campoTelefono, campoDomicilio};
+    private JTextField[] campos = {campoNombre, campoApellido, campoIdentidad, campoTelefono};
 
     public VerFormularioCliente(int id) {
         super("Ver Registro de los Clientes");

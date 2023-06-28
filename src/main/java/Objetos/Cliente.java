@@ -16,7 +16,6 @@ public class Cliente {
             "Apellido",
             "Identidad",
             "Teléfono",
-            "Domicilio",
     };
 
     public static String[] columnasLista = {

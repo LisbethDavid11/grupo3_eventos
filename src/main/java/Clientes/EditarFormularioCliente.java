@@ -22,7 +22,7 @@ public class EditarFormularioCliente extends  JFrame{
     private JTextField campoApellido;
     private JTextField campoTelefono;
     private JFormattedTextField campoIdentidad;
-    private JTextField campoDomicilio;
+    private JTextArea campoDomicilio;
     public ButtonGroup grupoTipo_cliente;
     private JRadioButton mayoristaRadioButton;
     private JRadioButton alDetalleRadioButton;
@@ -33,7 +33,7 @@ public class EditarFormularioCliente extends  JFrame{
     private Conexion sql;
     private Connection mysql;
     private int id;
-    private JTextField[] campos = {campoNombre, campoApellido, campoIdentidad, campoTelefono, campoDomicilio};
+    private JTextField[] campos = {campoNombre, campoApellido, campoIdentidad, campoTelefono};
 
 
 
@@ -111,6 +111,16 @@ public class EditarFormularioCliente extends  JFrame{
                         JOptionPane.showMessageDialog(null,mensaje);
                         return;
                     }
+                    if (campoDomicilio.getText().replaceAll("\\s+","").replaceAll("[^\\dA-Za-z]","").equals("")){
+                        JOptionPane.showMessageDialog(null,"El Domicilio no pude estar vacio");
+                        return;
+                    }
+
+                    if (campoDomicilio.getText().length() > 200){
+                        JOptionPane.showMessageDialog(null,"El Domicilio no puede excer un maximo de 200 caracteres");
+                        return;
+                    }
+
                     if (campoTelefono.getText().charAt(0) == '1' || campoTelefono.getText().charAt(0) == '4' || campoTelefono.getText().charAt(0) == '5' || campoTelefono.getText().charAt(0) == '6' || campoTelefono.getText().charAt(0) == '7' || campoTelefono.getText().charAt(0) == '0'){
                         JOptionPane.showMessageDialog(null,"Su número de teléfono no es válido");
                         return;

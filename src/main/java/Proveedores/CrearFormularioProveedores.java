@@ -4,21 +4,24 @@ import Objetos.Conexion;
 import Objetos.Proveedores;
 
 import javax.swing.*;
+import javax.swing.text.DefaultFormatterFactory;
+import javax.swing.text.MaskFormatter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.text.ParseException;
 
 public class CrearFormularioProveedores extends JFrame {
     private JPanel panel1;
     private JTextField jtDescripcion;
-    private JTextField jtTelefono;
+    private JFormattedTextField jtTelefono;
     private JTextField jtNombre;
-    private JTextField jtVendedorTelefono;
+    private JFormattedTextField jtVendedorTelefono;
     private JTextField jtRTN;
     private JTextField jtCorreo;
-    private JTextField jtDireccion;
+    private JTextArea jtDireccion;
     private JTextField jtVendedorAsignado;
     private JButton guardarButton;
     private JButton cancelarButton;
@@ -31,7 +34,6 @@ public class CrearFormularioProveedores extends JFrame {
             jtRTN,
             jtCorreo,
             jtTelefono,
-            jtDireccion,
             jtDescripcion,
             jtVendedorAsignado,
             jtVendedorTelefono
@@ -42,6 +44,16 @@ public class CrearFormularioProveedores extends JFrame {
         setSize(600, 400);
         setLocationRelativeTo(null);
         setContentPane(panel1);
+
+        try {
+            MaskFormatter formatter = new MaskFormatter("########");
+
+
+            jtTelefono.setFormatterFactory(new DefaultFormatterFactory(formatter));
+            jtVendedorTelefono.setFormatterFactory(new DefaultFormatterFactory(formatter));
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
 
         cancelarButton.addActionListener(new ActionListener() {
             @Override
@@ -69,7 +81,7 @@ public class CrearFormularioProveedores extends JFrame {
                 }
 
                 if (validar > 0){
-                    JOptionPane.showMessageDialog(null,mensaje);
+                    JOptionPane.showMessageDialog(null,mensaje,"Validación",JOptionPane.INFORMATION_MESSAGE);
 
                     if(validar == 1){
                         campos[posicion].requestFocus();
@@ -77,23 +89,28 @@ public class CrearFormularioProveedores extends JFrame {
                     return;
                 }
 
+                if(jtDireccion.getText().replaceAll("\\s+","").equals("")){
+                    JOptionPane.showMessageDialog(null,"La direccion no puede estar vacia","Validación",JOptionPane.INFORMATION_MESSAGE);
+                    return;
+                }
+
                 if (!Proveedores.validarFormatoNombre(jtVendedorAsignado.getText())){
-                    JOptionPane.showMessageDialog(null,"El nombre del vendedor solo debe contener letras");
+                    JOptionPane.showMessageDialog(null,"El nombre del vendedor solo debe contener letras","Validación",JOptionPane.INFORMATION_MESSAGE);
                     return;
                 }
 
                 if (!Proveedores.validarFormatoTelefono(jtTelefono.getText())){
-                    JOptionPane.showMessageDialog(null,"Solo se permiten numeros telefonicos con inicación 2,3,8,9\nEn el Telefono de Proveedor");
+                    JOptionPane.showMessageDialog(null,"Solo se permiten numeros telefonicos con inicación 2,3,8,9\nEn el Telefono de Proveedor","Validación",JOptionPane.INFORMATION_MESSAGE);
                     return;
                 }
 
                 if (!Proveedores.validarFormatoTelefono(jtVendedorTelefono.getText())){
-                    JOptionPane.showMessageDialog(null,"Solo se permiten numeros telefonicos con inicación 2,3,8,9\nEn el Telefono del Vendedor");
+                    JOptionPane.showMessageDialog(null,"Solo se permiten numeros telefonicos con inicación 2,3,8,9\nEn el Telefono del Vendedor","Validación",JOptionPane.INFORMATION_MESSAGE);
                     return;
                 }
 
                 if (!Proveedores.validarFormatoCorreo(jtCorreo.getText())){
-                    JOptionPane.showMessageDialog(null,"Formato invalido. Ej: email@xxx.xxx");
+                    JOptionPane.showMessageDialog(null,"Formato invalido. Ej: email@xxx.xxx","Validación",JOptionPane.INFORMATION_MESSAGE);
                     return;
                 }
 
