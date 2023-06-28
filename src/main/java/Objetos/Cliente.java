@@ -12,6 +12,7 @@ public class Cliente {
     public static String nombreTabla = "clientes";
 
     public static String[] columnasCampos = {
+            "#",
             "Nombre",
             "Apellido",
             "Identidad",

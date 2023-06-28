@@ -65,19 +65,7 @@ public class EditarFormularioCliente extends  JFrame{
                 Conexion.soloLetra(e, campoApellido.getText().length(),49, campoApellido.getCaretPosition());
             }
         });
-        campoDomicilio.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                Conexion.soloLetra(e, campoDomicilio.getText().length(),49, campoDomicilio.getCaretPosition());
-            }
-        });
-        campoTelefono.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                Conexion.soloNumeros(e,7, campoTelefono.getText().length());
 
-            }
-        });
 
         cancelarButton.addActionListener(new ActionListener() {
             @Override
@@ -133,10 +121,7 @@ public class EditarFormularioCliente extends  JFrame{
                         JOptionPane.showMessageDialog(null,"Su número de teléfono debe contener 8 digitos");
                         return;
                     }
-                    if (!Cliente.ComprobarIdentidad(campoIdentidad.getText())){
-                        JOptionPane.showMessageDialog(null,"Identidad no válida" );
-                        return;
-                    }
+
                     guardar();
                 } catch (SQLException ex) {
 
@@ -176,7 +161,7 @@ public class EditarFormularioCliente extends  JFrame{
         sql = new Conexion();
         mysql = sql.conectamysql();
 
-            PreparedStatement statement = mysql.prepareStatement("UPDATE "+Cliente.nombreTabla+" SET `nombre` = ? , `apellido` = ?, `identidad` = ? , `telefono` = ? , `domicilio` = ? , `tipo` = ? WHERE id = ?");
+            PreparedStatement statement = mysql.prepareStatement("UPDATE "+Cliente.nombreTabla+" SET `nombre` = ? , `apellido` = ?, `identidad` = ? , `telefono` = ? , `domicilio` = ? , `tipo_cliente` = ? WHERE id = ?");
             statement.setString(1,campoNombre.getText());
             statement.setString(2, campoApellido.getText());
             statement.setString(3, campoIdentidad.getText());
