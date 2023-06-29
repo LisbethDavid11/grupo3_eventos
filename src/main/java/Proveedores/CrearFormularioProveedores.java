@@ -8,6 +8,8 @@ import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.MaskFormatter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -45,6 +47,20 @@ public class CrearFormularioProveedores extends JFrame {
         setLocationRelativeTo(null);
         setContentPane(panel1);
 
+        jtNombre.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                Conexion.soloLetra(e,jtNombre.getText().length(),40,jtNombre.getCaretPosition());
+            }
+        });
+
+        jtVendedorAsignado.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                Conexion.soloLetra(e,jtVendedorAsignado.getText().length(),50,jtVendedorAsignado.getCaretPosition());
+            }
+        });
+
         try {
             MaskFormatter formatter = new MaskFormatter("########");
 
@@ -56,7 +72,7 @@ public class CrearFormularioProveedores extends JFrame {
         }
 
         try {
-            MaskFormatter formatter = new MaskFormatter("##############");
+            MaskFormatter formatter = new MaskFormatter("####-####-######");
 
 
             jtRTN.setFormatterFactory(new DefaultFormatterFactory(formatter));
@@ -100,7 +116,7 @@ public class CrearFormularioProveedores extends JFrame {
                 }
 
                 if(jtDireccion.getText().replaceAll("\\s+","").equals("")){
-                    JOptionPane.showMessageDialog(null,"La direccion no puede estar vacia","Validación",JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(null,"La dirección no puede estar vacía","Validación",JOptionPane.INFORMATION_MESSAGE);
                     return;
                 }
 
@@ -114,12 +130,12 @@ public class CrearFormularioProveedores extends JFrame {
                 }
 
                 if (!Proveedores.validarFormatoTelefono(jtTelefono.getText())){
-                    JOptionPane.showMessageDialog(null,"Solo se permiten numeros telefonicos con inicación 2,3,8,9\nEn el Telefono de Proveedor","Validación",JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(null,"Solo se permiten números telefónicos con inicación 2,3,8,9\nEn el Teléfono de Proveedor","Validación",JOptionPane.INFORMATION_MESSAGE);
                     return;
                 }
 
                 if (!Proveedores.validarFormatoTelefono(jtVendedorTelefono.getText())){
-                    JOptionPane.showMessageDialog(null,"Solo se permiten numeros telefonicos con inicación 2,3,8,9\nEn el Telefono del Vendedor","Validación",JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(null,"Solo se permiten números telefónicos con inicación 2,3,8,9\nEn el Teléfono del Vendedor","Validación",JOptionPane.INFORMATION_MESSAGE);
                     return;
                 }
 

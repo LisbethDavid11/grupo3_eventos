@@ -56,8 +56,8 @@ public class IndexProveedores extends JFrame{
         Adelante.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(lista.size() == 10){
-                    paginacion +=10;
+                if(lista.size() == 20){
+                    paginacion +=20;
                     table1.setModel(cargarDatos());
                     Atras.setEnabled(true);
                 }else {
@@ -69,7 +69,7 @@ public class IndexProveedores extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(paginacion > 0){
-                    paginacion -=10;
+                    paginacion -=20;
                     table1.setModel(cargarDatos());
                     Adelante.setEnabled(true);
                 }else {
@@ -94,7 +94,7 @@ public class IndexProveedores extends JFrame{
         mysql = sql.conectamysql();
 
         try {
-            PreparedStatement statement = mysql.prepareStatement("Select * from "+ Proveedores.nombreTabla+" where id like concat('%',?,'%') or empresaProveedora like concat('%',?,'%') limit ?,10 ");
+            PreparedStatement statement = mysql.prepareStatement("Select * from "+ Proveedores.nombreTabla+" where id like concat('%',?,'%') or empresaProveedora like concat('%',?,'%') limit ?,20 ");
             statement.setString(1,jtBuscar.getText());
             statement.setString(2,jtBuscar.getText());
             statement.setInt(3,paginacion);

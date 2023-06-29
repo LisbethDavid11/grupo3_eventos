@@ -33,7 +33,7 @@ public class Proveedores {
     //Estos datos de las columnas es lo que vera el ususario
 
     public static String[] columnas = {
-            "#",
+            "N",
             "Nombre Empresa",
             "RTN",
             "Teléfono",
