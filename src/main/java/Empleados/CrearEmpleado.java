@@ -21,7 +21,7 @@ public class CrearEmpleado extends JFrame{
     public JTextField campoNombres;
     public JTextField campoApellidos;
     public JTextField campoEdad;
-    public JTextField campoDireccion;
+    public JTextArea campoDireccion;
     public JButton cancelarButton;
     public JButton guardarButton;
     private JPanel panel1;
@@ -42,14 +42,19 @@ public class CrearEmpleado extends JFrame{
     public ButtonGroup grupogenero;
     public ButtonGroup grupoTipo;
 
+    // Declarar la variable para el título de validación
+    String tituloValidacion = "Validación";
 
-    private JTextField[] campos = {campoIdentidad, campoNombres, campoApellidos, campoEdad, campoCorreo, campoTelefono, campoContacto, campoDireccion};
+    private JTextField[] campos = {campoIdentidad, campoNombres, campoApellidos, campoEdad, campoCorreo, campoTelefono, campoContacto};
 
     public CrearEmpleado() {
         super("Crear Empleados");
         setSize(600, 600);
         setLocationRelativeTo(null);
         setContentPane(panel1);
+
+        campoDireccion.setLineWrap(true);
+        campoDireccion.setWrapStyleWord(true);
 
         grupogenero = new ButtonGroup();
         grupogenero.add(femeninoRadioButton);
@@ -66,7 +71,6 @@ public class CrearEmpleado extends JFrame{
             campoIdentidad.setFormatterFactory(new DefaultFormatterFactory(formatoIdentidad));
         } catch (ParseException e) {
             throw new RuntimeException(e);
-
         }
 
         campoNombres.addKeyListener(new KeyAdapter() {
@@ -75,12 +79,14 @@ public class CrearEmpleado extends JFrame{
                 Conexion.soloLetra(e,campoNombres.getText().length(),49,campoNombres.getCaretPosition());
             }
         });
+
         campoApellidos.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
                 Conexion.soloLetra(e, campoApellidos.getText().length(),49,campoApellidos.getCaretPosition());
             }
         });
+
         campoNombreContacto.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -104,8 +110,12 @@ public class CrearEmpleado extends JFrame{
 
         });
 
-
-
+        campoDireccion.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                Conexion.soloLetra(e, campoDireccion.getText().length(),200,campoDireccion.getCaretPosition());
+            }
+        });
 
         //boton cancelar
         cancelarButton.addActionListener(new ActionListener() {
@@ -115,7 +125,6 @@ public class CrearEmpleado extends JFrame{
                     VistaEmpleado vistaEmpleado = new VistaEmpleado();
                     vistaEmpleado.setVisible(true);
                     crearEmpleado.dispose();
-
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -141,49 +150,63 @@ public class CrearEmpleado extends JFrame{
                         contador += 1;
 
                     }
+
                     if (validacion > 0){
-                        JOptionPane.showMessageDialog(null,mensaje);
+                        JOptionPane.showMessageDialog(null, mensaje, tituloValidacion, JOptionPane.ERROR_MESSAGE);
                         return;
                     }
+
                     if (Integer.parseInt(campoEdad.getText()) <18 || Integer.parseInt(campoEdad.getText()) >60){
-                        JOptionPane.showMessageDialog(null,"Su edad no es válida");
+                        JOptionPane.showMessageDialog(null,"Su edad no es válida", tituloValidacion, JOptionPane.ERROR_MESSAGE);
                         return;
                     }
+
+                    if (Integer.parseInt(campoEdad.getText()) < 18 || Integer.parseInt(campoEdad.getText()) > 60) {
+                        JOptionPane.showMessageDialog(null, "Su edad no es válida.", tituloValidacion, JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
                     if (campoTelefono.getText().charAt(0) == '1' || campoTelefono.getText().charAt(0) == '4' || campoTelefono.getText().charAt(0) == '5' || campoTelefono.getText().charAt(0) == '6' || campoTelefono.getText().charAt(0) == '7' || campoTelefono.getText().charAt(0) == '0'){
-                        JOptionPane.showMessageDialog(null,"Su número de teléfono no es válido");
+                        JOptionPane.showMessageDialog(null,"Su número de teléfono no es válido", tituloValidacion, JOptionPane.ERROR_MESSAGE);
                         return;
                     }
                     if (campoIdentidad.getText().length() <15){
-                        JOptionPane.showMessageDialog(null,"Su número de identidad debe contener 15 digitos incluyendo guiones");
+                        JOptionPane.showMessageDialog(null,"Su número de identidad debe contener 15 digitos incluyendo guiones", tituloValidacion, JOptionPane.ERROR_MESSAGE);
                         return;
                     }
                     if (campoEdad.getText().length() <2){
-                        JOptionPane.showMessageDialog(null,"Su edad debe contener 2 digitos");
+                        JOptionPane.showMessageDialog(null,"Su edad debe contener 2 digitos", tituloValidacion, JOptionPane.ERROR_MESSAGE);
                         return;
                     }
 
                     if (campoTelefono.getText().length() <8){
-                        JOptionPane.showMessageDialog(null,"Su número de teléfono debe contener 8 digitos");
+                        JOptionPane.showMessageDialog(null,"El de teléfono debe contener 8 digitos", tituloValidacion, JOptionPane.ERROR_MESSAGE);
                         return;
                     }
                     if (campoContacto.getText().charAt(0) == '1' || campoContacto.getText().charAt(0) == '4' || campoContacto.getText().charAt(0) == '5' || campoContacto.getText().charAt(0) == '6' || campoContacto.getText().charAt(0) == '7' || campoContacto.getText().charAt(0) == '0'){
-                        JOptionPane.showMessageDialog(null,"Su número de teléfono no es válido");
+                        JOptionPane.showMessageDialog(null,"Su número de teléfono no es válido", tituloValidacion, JOptionPane.ERROR_MESSAGE);
                         return;
                     }
                     if (campoContacto.getText().length() <8){
-                        JOptionPane.showMessageDialog(null,"Su número de teléfono debe contener 8 digitos");
+                        JOptionPane.showMessageDialog(null,"El teléfono debe contener 8 digitos", tituloValidacion, JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    if (campoDireccion.getText().replaceAll("\\s+","").replaceAll("[^\\dA-Za-z]","").equals("")){
+                        JOptionPane.showMessageDialog(null,"La dirección no puede estar vacío", tituloValidacion, JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    if (campoDireccion.getText().length() < 7 || campoDireccion.getText().length() > 200) {
+                        JOptionPane.showMessageDialog(null, "El domicilio debe tener entre 7 y 200 caracteres.", tituloValidacion, JOptionPane.ERROR_MESSAGE);
                         return;
                     }
                     if (!Empleados.ComprobarIdentidad(campoIdentidad.getText())){
-                        JOptionPane.showMessageDialog(null,"Identidad no válida" );
+                        JOptionPane.showMessageDialog(null,"Identidad no válida", tituloValidacion, JOptionPane.ERROR_MESSAGE);
                         return;
                     }
                     if (Empleados.ValidarCorreo(campoCorreo.getText())){
-                        JOptionPane.showMessageDialog(null,"Formato de correo inválido.\n ejemplo:luis@xxx.xxx");
+                        JOptionPane.showMessageDialog(null,"Formato de correo inválido.\n ejemplo:luis@xxx.xxx", tituloValidacion, JOptionPane.ERROR_MESSAGE);
                         return;
                     }
-
-
 
                     GuardarDatos();
                 } catch (SQLException ex) {
@@ -301,8 +324,11 @@ public class CrearEmpleado extends JFrame{
         preparedStatement.setString(9,campoContacto.getText());
         preparedStatement.setString(10,campoDireccion.getText());
         preparedStatement.setString(11,temporalRadioButton.isSelected()?"Temporal":"Permanente");
-       preparedStatement.execute();
+        preparedStatement.execute();
 
+        // Mostrar mensaje de éxito
+        String nombreCompleto = campoNombres.getText() + " " + campoApellidos.getText();
+        JOptionPane.showMessageDialog(null, "Empleado " + nombreCompleto + " ha sido registrado exitosamente.");
     }
 
         //metodo Actualizar datos
@@ -323,6 +349,10 @@ public class CrearEmpleado extends JFrame{
             preparedStatement.setString(11,temporalRadioButton.isSelected()?"Temporal":"Permanente");
             preparedStatement.setString(12,lblID.getText());
             preparedStatement.execute();
+
+            // Mostrar mensaje de éxito
+            String nombreCompleto = campoNombres.getText() + " " + campoApellidos.getText();
+            JOptionPane.showMessageDialog(null, "Empleado " + nombreCompleto + " ha sido registrado exitosamente.");
         }
     private void createUIComponents() {
         // TODO: place custom component creation code here

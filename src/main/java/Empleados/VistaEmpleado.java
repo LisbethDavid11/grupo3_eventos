@@ -22,7 +22,10 @@ public class VistaEmpleado extends JFrame {
     public JTable table1;
     private JButton nuevoEmpleadoButton;
     private JScrollPane scrollPane1;
+    // Declaración del campo de texto de búsqueda
     private JTextField barrabusqueda;
+    // Creación de un marcador de posición en el campo de texto
+    TextPrompt placeholder = new TextPrompt("Busca por identidad, nombres y apellidos", barrabusqueda);
     private JButton botonatras;
     private JButton botonadelante;
     private JButton editarEmpleadoButton;
@@ -34,32 +37,39 @@ public class VistaEmpleado extends JFrame {
     private List<Empleados> ListaEmpleados = new ArrayList<>();
     public String dato0,dato1,dato2,dato3,dato4,dato5,dato6,dato7,dato8,dato9,dato10,dato11;
 
-
-
     public VistaEmpleado() throws SQLException {
       super("Lista De Empleados");
       setSize(600,600);
       setLocationRelativeTo(null);
       setContentPane(panel1);
-      barrabusqueda.setText("");
-      table1.setModel(CargarDatos());
 
-      //barra busqueda
-      barrabusqueda.addKeyListener(new KeyAdapter() {
-          @Override
-          public void keyReleased(KeyEvent e) {
-              try {
-                  ListaEmpleados = new ArrayList<>();
-                  table1.setModel(CargarDatos());
-              } catch (SQLException ex) {
-                  throw new RuntimeException(ex);
-              }
+        // Establecer el campo de texto como vacío
+        barrabusqueda.setText("");
 
-          }
-      });
+        // Cambiar el estilo del marcador de posición
+        placeholder.changeStyle(Font.ITALIC);
+        placeholder.setForeground(Color.GRAY);
 
-      //boton nuevo empleado
+        table1.setModel(CargarDatos());
 
+        // Agregar un KeyListener al campo de búsqueda
+        barrabusqueda.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                try {
+                    // Crear una lista de empleados vacía
+                    ListaEmpleados = new ArrayList<>();
+
+                    // Cargar los datos de empleados en el modelo de la tabla
+                    table1.setModel(CargarDatos());
+                } catch (SQLException ex) {
+                    // Si ocurre una excepción SQL, lanzar una excepción RuntimeException
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+
+      //Boton nuevo empleado
       nuevoEmpleadoButton.addActionListener(new ActionListener() {
           @Override
           public void actionPerformed(ActionEvent e) {
@@ -67,8 +77,6 @@ public class VistaEmpleado extends JFrame {
               crearEmpleado.setVisible(true);
               vistaEmpleado.dispose();
               crearEmpleado.actualizarButton.setVisible(false);
-
-
           }
       });
 
@@ -76,8 +84,8 @@ public class VistaEmpleado extends JFrame {
       botonadelante.addActionListener(new ActionListener() {
           @Override
           public void actionPerformed(ActionEvent e) {
-              if (ListaEmpleados.size() == 10){
-                  intervalo += 10;
+              if (ListaEmpleados.size() == 20){
+                  intervalo += 20;
                   botonatras.setEnabled(true);
                   try {
                       ListaEmpleados = new ArrayList<>();
@@ -100,7 +108,7 @@ public class VistaEmpleado extends JFrame {
                   botonatras.setEnabled(false);
 
               }else{
-                  intervalo -= 10;
+                  intervalo -= 20;
                   botonadelante.setEnabled(true);
                   try {
                       ListaEmpleados = new ArrayList<>();
@@ -343,7 +351,7 @@ public class VistaEmpleado extends JFrame {
       public ModeloDeEmpleado CargarDatos() throws SQLException {
           sql = new Conexion();
           mysql = sql.conectamysql();
-          PreparedStatement preparedStatement = mysql.prepareStatement("select * from " + Empleados.nombreDeTabla + " where Identidad like concat('%',?,'%') or Nombres like concat('%',?,'%') or Apellidos like concat('%',?,'%') limit ?, 10");
+          PreparedStatement preparedStatement = mysql.prepareStatement("select * from " + Empleados.nombreDeTabla + " where Identidad like concat('%',?,'%') or Nombres like concat('%',?,'%') or Apellidos like concat('%',?,'%') limit ?, 20");
           preparedStatement.setString(1,barrabusqueda.getText());
           preparedStatement.setString(2,barrabusqueda.getText());
           preparedStatement.setString(3,barrabusqueda.getText());
