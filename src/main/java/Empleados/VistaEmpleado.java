@@ -19,7 +19,7 @@ import java.util.List;
 
 public class VistaEmpleado extends JFrame {
     private JPanel panel1;
-    private JTable table1;
+    public JTable table1;
     private JButton nuevoEmpleadoButton;
     private JScrollPane scrollPane1;
     private JTextField barrabusqueda;
@@ -195,17 +195,16 @@ public class VistaEmpleado extends JFrame {
         verEmpleadoButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
                 try {
                     int filaseleccionada;
                     filaseleccionada = table1.getSelectedRow();
                     if (filaseleccionada == -1) {
                         JOptionPane.showMessageDialog(null, "No se ha seleccionado ninguna fila");
                     } else {
-                        CrearEmpleado verEmpleado = new CrearEmpleado();
-                        verEmpleado.setVisible(true);
+                        VerEmpleado ver = new VerEmpleado();
+                        ver.setVisible(true);
                         vistaEmpleado.dispose();
-                        verEmpleado.guardarButton.setVisible(false);
-                        verEmpleado.actualizarButton.setVisible(false);
 
                         String id = table1.getValueAt(filaseleccionada, 0).toString();
                         Conexion objCon = new Conexion();
@@ -236,38 +235,106 @@ public class VistaEmpleado extends JFrame {
                             eu.printStackTrace();
                         }
 
-                        verEmpleado.lblID.setText(dato0);
-                        verEmpleado.campoIdentidad.setText(dato1);
-                        verEmpleado.campoNombres.setText(dato2);
-                        verEmpleado.campoApellidos.setText(dato3);
+                        ver.lblID.setText(dato0);
+                        ver.campoIdentidad.setText(dato1);
+                        ver.campoNombres.setText(dato2);
+                        ver.campoApellidos.setText(dato3);
                         if (dato4 == "Femenino") {
-                            verEmpleado.femeninoRadioButton.setSelected(true);
-                            verEmpleado.masculinoRadioButton.setSelected(false);
+                            ver.campoGenero.setText("Femenino");
                         } else {
-                            verEmpleado.femeninoRadioButton.setSelected(false);
-                            verEmpleado.masculinoRadioButton.setSelected(true);
+                            ver.campoGenero.setText("Masculino");
                         }
-                        verEmpleado.campoEdad.setText(dato5);
-                        verEmpleado.campoCorreo.setText(dato6);
-                        verEmpleado.campoTelefono.setText(dato7);
-                        verEmpleado.campoNombreContacto.setText(dato8);
-                        verEmpleado.campoContacto.setText(dato9);
-                        verEmpleado.campoDireccion.setText(dato10);
+                        ver.campoEdad.setText(dato5);
+                        ver.campoCorreo.setText(dato6);
+                        ver.campoTelefono.setText(dato7);
+                        ver.campoNombreContacto.setText(dato8);
+                        ver.campoContacto.setText(dato9);
+                        ver.campoDireccion.setText(dato10);
                         if (dato11 == "Temporal") {
-                            verEmpleado.temporalRadioButton.setSelected(true);
-                            verEmpleado.permanenteRadioButton.setSelected(false);
+                            ver.campoTipo.setText("Temporal");
                         } else {
-                            verEmpleado.permanenteRadioButton.setSelected(false);
-                            verEmpleado.temporalRadioButton.setSelected(true);
+                            ver.campoTipo.setText("Permanente");
+
                         }
+                        ver.lblnomConcat.setText(dato2);
+                        ver.lblapeConcat.setText(dato3);
                     }
                 } catch (HeadlessException ex) {
                     JOptionPane.showMessageDialog(null, "Error: " + ex + "\nInténtelo nuevamente",
                             " .::Error En la Operacion::.", JOptionPane.ERROR_MESSAGE);
                 }
-
             }
+
+
+
         });
+    }
+
+    public void verMetodo(){
+        try {
+            int filaseleccionada;
+            filaseleccionada = table1.getSelectedRow();
+            if (filaseleccionada == -1) {
+                JOptionPane.showMessageDialog(null, "No se ha seleccionado ninguna fila");
+            } else {
+                VerEmpleado ver = new VerEmpleado();
+                vistaEmpleado.dispose();
+
+                String id = table1.getValueAt(filaseleccionada, 0).toString();
+                Conexion objCon = new Conexion();
+                Connection conn = objCon.conectamysql();
+                try {
+                    PreparedStatement stmtr = conn.prepareStatement("select * from Empleados where eventos.empleados.idEmpleados=" + id);
+                    ResultSet rsr = stmtr.executeQuery();
+
+                    if (rsr.next()) {
+                        dato0 = rsr.getString("idEmpleados");
+                        dato1 = rsr.getString("Identidad");
+                        dato2 = rsr.getString("Nombres");
+                        dato3 = rsr.getString("Apellidos");
+                        dato4 = rsr.getString("Genero");
+                        dato5 = rsr.getString("Edad");
+                        dato6 = rsr.getString("Correo");
+                        dato7 = rsr.getString("Telefono");
+                        dato8 = rsr.getString("NombreContactoDeEmergencia");
+                        dato9 = rsr.getString("ContactoDeEmergencia");
+                        dato10 = rsr.getString("Direccion");
+                        dato11 = rsr.getString("TipoDeEmpleado");
+                    }
+
+                    stmtr.close();
+                    rsr.close();
+                    conn.close();
+                } catch (Exception eu) {
+                    eu.printStackTrace();
+                }
+
+                ver.lblID.setText(dato0);
+                ver.campoIdentidad.setText(dato1);
+                ver.campoNombres.setText(dato2);
+                ver.campoApellidos.setText(dato3);
+                if (dato4 == "Femenino") {
+                    ver.campoGenero.setText("Femenino");
+                } else {
+                    ver.campoGenero.setText("Masculino");
+                }
+                ver.campoEdad.setText(dato5);
+                ver.campoCorreo.setText(dato6);
+                ver.campoTelefono.setText(dato7);
+                ver.campoNombreContacto.setText(dato8);
+                ver.campoContacto.setText(dato9);
+                ver.campoDireccion.setText(dato10);
+                if (dato11 == "Temporal") {
+                    ver.campoTipo.setText("Temporal");
+                } else {
+                    ver.campoTipo.setText("Permanente");
+
+                }
+            }
+        } catch (HeadlessException ex) {
+            JOptionPane.showMessageDialog(null, "Error: " + ex + "\nInténtelo nuevamente",
+                    " .::Error En la Operacion::.", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
 
