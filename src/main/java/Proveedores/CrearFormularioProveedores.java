@@ -61,6 +61,30 @@ public class CrearFormularioProveedores extends JFrame {
             }
         });
 
+        jtCorreo.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                Conexion.soloLetra(e,jtCorreo.getText().length(),20,jtCorreo.getCaretPosition());
+            }
+        });
+
+        jtDescripcion.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                Conexion.soloLetra(e,jtDescripcion.getText().length(),20,jtDescripcion.getCaretPosition());
+            }
+        });
+
+        jtDireccion.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                Conexion.soloLetra(e,jtDireccion.getText().length(),200,jtDireccion.getCaretPosition());
+            }
+        });
+
+
+
+
         try {
             MaskFormatter formatter = new MaskFormatter("########");
 
@@ -96,7 +120,7 @@ public class CrearFormularioProveedores extends JFrame {
                 int validar = 0;
                 int contador = 0;
                 int posicion = 0;
-                String mensaje = "Faltan datos requeridos para registrar el proveedor:\n";
+                String mensaje = "Faltó Ingresar:\n";
                 for (JTextField campo: campos) {
                     if(campo.getText().replaceAll("\\s+","").equals("")){
                         validar+=1;
