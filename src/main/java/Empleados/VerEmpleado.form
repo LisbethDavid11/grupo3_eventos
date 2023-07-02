@@ -5,7 +5,9 @@
     <constraints>
       <xy x="20" y="20" width="482" height="400"/>
     </constraints>
-    <properties/>
+    <properties>
+      <background color="-8545088"/>
+    </properties>
     <border type="none"/>
     <children>
       <component id="594f8" class="javax.swing.JLabel">
@@ -14,6 +16,7 @@
         </constraints>
         <properties>
           <font name="Arial" size="12" style="1"/>
+          <foreground color="-16315129"/>
           <text value="Nombres"/>
         </properties>
       </component>
@@ -23,6 +26,7 @@
         </constraints>
         <properties>
           <font name="Arial" size="12" style="1"/>
+          <foreground color="-16315129"/>
           <text value="Apellidos"/>
         </properties>
       </component>
@@ -32,6 +36,7 @@
         </constraints>
         <properties>
           <font name="Arial" size="12" style="1"/>
+          <foreground color="-16315129"/>
           <text value="Género"/>
         </properties>
       </component>
@@ -41,6 +46,7 @@
         </constraints>
         <properties>
           <font name="Arial" size="12" style="1"/>
+          <foreground color="-16315129"/>
           <text value="Edad"/>
         </properties>
       </component>
@@ -50,6 +56,7 @@
         </constraints>
         <properties>
           <font name="Arial" size="12" style="1"/>
+          <foreground color="-16315129"/>
           <text value="Correo electrónico"/>
         </properties>
       </component>
@@ -59,6 +66,7 @@
         </constraints>
         <properties>
           <font name="Arial" size="12" style="1"/>
+          <foreground color="-16315129"/>
           <text value="Nombre contacto de emergencia"/>
         </properties>
       </component>
@@ -68,6 +76,7 @@
         </constraints>
         <properties>
           <font name="Arial" size="12" style="1"/>
+          <foreground color="-16315129"/>
           <text value="Contacto de emergencia"/>
         </properties>
       </component>
@@ -77,6 +86,7 @@
         </constraints>
         <properties>
           <font name="Arial" size="12" style="1"/>
+          <foreground color="-16315129"/>
           <text value="Dirección "/>
         </properties>
       </component>
@@ -86,6 +96,7 @@
         </constraints>
         <properties>
           <font name="Arial" size="12" style="1"/>
+          <foreground color="-16315129"/>
           <text value="Tipo de empleado"/>
         </properties>
       </component>
@@ -95,6 +106,7 @@
         </constraints>
         <properties>
           <font name="Arial" size="14" style="1"/>
+          <foreground color="-16315129"/>
           <text value="Datos del empleado:"/>
         </properties>
       </component>
@@ -164,6 +176,7 @@
         </constraints>
         <properties>
           <font name="Arial" size="12" style="1"/>
+          <foreground color="-16315129"/>
           <text value="Teléfono"/>
         </properties>
       </component>
@@ -217,6 +230,8 @@
           <grid row="12" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
+          <background color="-532740"/>
+          <foreground color="-16315129"/>
           <text value="Cancelar"/>
         </properties>
       </component>
@@ -241,6 +256,7 @@
         </constraints>
         <properties>
           <font name="Arial" size="12" style="1"/>
+          <foreground color="-16315129"/>
           <text value="Identidad"/>
         </properties>
       </component>
