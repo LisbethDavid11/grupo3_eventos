@@ -1,5 +1,6 @@
 package Proveedores;
 
+
 import Modelos.ModeloProveedores;
 import Objetos.Conexion;
 import Objetos.Proveedores;
@@ -30,7 +31,7 @@ public class IndexProveedores extends JFrame{
     List<Proveedores> lista = new ArrayList<>();
     private final IndexProveedores actual = this;
     public IndexProveedores() {
-        super("lista de proveedores");
+        super("Datos de proveedores");
         setSize(700, 500);
         setLocationRelativeTo(null);
         setContentPane(panel1);
