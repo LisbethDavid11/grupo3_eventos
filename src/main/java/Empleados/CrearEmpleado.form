@@ -58,6 +58,7 @@
           <background color="-532740"/>
           <font name="JetBrains Mono" size="11" style="1"/>
           <foreground color="-16119289"/>
+          <icon value="IconosBotones/disco.png"/>
           <text value="Guardar"/>
         </properties>
       </component>
@@ -214,6 +215,7 @@
           <background color="-532740"/>
           <font name="JetBrains Mono" size="11" style="1"/>
           <foreground color="-16119289"/>
+          <icon value="IconosBotones/actualizar.png"/>
           <text value="Actualizar"/>
         </properties>
       </component>
@@ -315,6 +317,7 @@
           <background color="-532740"/>
           <font name="JetBrains Mono" size="11" style="1"/>
           <foreground color="-16119289"/>
+          <icon value="IconosBotones/cancelar.png"/>
           <text value="Cancelar"/>
         </properties>
       </component>

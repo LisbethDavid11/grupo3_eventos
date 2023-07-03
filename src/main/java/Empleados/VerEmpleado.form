@@ -227,19 +227,15 @@
       </hspacer>
       <component id="bd073" class="javax.swing.JButton" binding="cancelarButton" default-binding="true">
         <constraints>
-          <grid row="12" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="12" column="5" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <background color="-532740"/>
           <foreground color="-16315129"/>
+          <icon value="IconosBotones/cancelar.png"/>
           <text value="Cancelar"/>
         </properties>
       </component>
-      <hspacer id="77569">
-        <constraints>
-          <grid row="12" column="3" row-span="1" col-span="2" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-        </constraints>
-      </hspacer>
       <component id="ef14a" class="javax.swing.JLabel" binding="campoIdentidad">
         <constraints>
           <grid row="1" column="3" row-span="1" col-span="5" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
@@ -270,11 +266,6 @@
           <text value=""/>
         </properties>
       </component>
-      <hspacer id="62b2c">
-        <constraints>
-          <grid row="12" column="6" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-        </constraints>
-      </hspacer>
       <component id="9c3f7" class="javax.swing.JLabel" binding="lblapeConcat">
         <constraints>
           <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>

@@ -30,10 +30,6 @@ public class VerEmpleado extends JFrame{
     public JLabel lblapeConcat;
     public VerEmpleado mostrarEmpleado = this;
 
-    //private int id;
-
-    //public String dato0,dato1,dato2,dato3,dato4,dato5,dato6,dato7,dato8,dato9,dato10,dato11;
-
     public VerEmpleado()  {
         super("Ver empleado");
         setSize(600, 600);

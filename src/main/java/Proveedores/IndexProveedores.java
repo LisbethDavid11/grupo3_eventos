@@ -34,7 +34,7 @@ public class IndexProveedores extends JFrame{
     private final IndexProveedores actual = this;
     public IndexProveedores() {
         super("Lista de proveedores");
-        setSize(800, 483);
+        setSize(800, 490);
         setLocationRelativeTo(null);
         setContentPane(panel1);
         jtBuscar.setText("");

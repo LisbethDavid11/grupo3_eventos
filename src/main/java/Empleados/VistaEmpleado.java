@@ -39,7 +39,7 @@ public class VistaEmpleado extends JFrame {
 
     public VistaEmpleado() throws SQLException {
       super("Lista De Empleados");
-      setSize(600,600);
+        setSize(800, 490);
       setLocationRelativeTo(null);
       setContentPane(panel1);
 

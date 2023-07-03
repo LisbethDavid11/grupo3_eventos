@@ -33,7 +33,8 @@
           <background color="-532740"/>
           <font name="Arial" size="12" style="1"/>
           <hideActionText value="false"/>
-          <text value="Nuevo Proveedor"/>
+          <icon value="IconosBotones/crear.png"/>
+          <text value="Nuevo"/>
         </properties>
       </component>
       <component id="b5651" class="javax.swing.JTextField" binding="jtBuscar">

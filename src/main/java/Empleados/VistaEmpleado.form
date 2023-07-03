@@ -58,6 +58,7 @@
           <background color="-532740"/>
           <font name="Arial" size="12" style="1"/>
           <foreground color="-16119289"/>
+          <icon value="IconosBotones/editar.png"/>
           <label value="Editar "/>
           <text value="Editar "/>
         </properties>
@@ -70,6 +71,7 @@
           <background color="-532740"/>
           <font name="Arial" size="12" style="1"/>
           <foreground color="-16119289"/>
+          <icon value="IconosBotones/ver.png"/>
           <label value="Ver "/>
           <text value="Ver "/>
         </properties>
@@ -102,6 +104,7 @@
           <background color="-532740"/>
           <font name="Arial" size="12" style="1"/>
           <foreground color="-16119289"/>
+          <icon value="IconosBotones/crear.png"/>
           <label value="Nuevo "/>
           <text value="Nuevo "/>
         </properties>
