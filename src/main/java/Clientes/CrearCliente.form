@@ -77,6 +77,7 @@
         </constraints>
         <properties>
           <font name="Arial" size="12" style="1"/>
+          <icon value="IconosBotones/disco.png"/>
           <text value="Guardar"/>
         </properties>
       </component>
@@ -86,6 +87,7 @@
         </constraints>
         <properties>
           <font name="Arial" size="12" style="1"/>
+          <icon value="IconosBotones/cancelar.png"/>
           <text value="Cancelar"/>
         </properties>
       </component>
