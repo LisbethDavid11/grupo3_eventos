@@ -23,11 +23,11 @@ public class Proveedores {
     public static String[] columnasTabla = {
             "Nombre",
             "rtn",
-            "telefono",
+            "teléfono",
             "correo",
-            "descripcion",
+            "descripción",
             "nombreVendedor",
-            "telefonoVendedor"
+            "teléfonoVendedor"
     };
 
     //Estos datos de las columnas es lo que vera el ususario

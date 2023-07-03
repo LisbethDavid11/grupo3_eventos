@@ -33,8 +33,8 @@ public class IndexProveedores extends JFrame{
     List<Proveedores> lista = new ArrayList<>();
     private final IndexProveedores actual = this;
     public IndexProveedores() {
-        super("Datos de proveedores");
-        setSize(800, 500);
+        super("Lista de proveedores");
+        setSize(800, 483);
         setLocationRelativeTo(null);
         setContentPane(panel1);
         jtBuscar.setText("");

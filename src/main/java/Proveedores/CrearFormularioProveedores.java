@@ -19,9 +19,9 @@ import java.text.ParseException;
 public class CrearFormularioProveedores extends JFrame {
     private JPanel panel1;
     private JTextField jtDescripcion;
-    private JFormattedTextField jtTelefono;
+    private JTextField jtTelefono;
     private JTextField jtNombre;
-    private JFormattedTextField jtVendedorTelefono;
+    private JTextField jtVendedorTelefono;
     private JFormattedTextField jtRTN;
     private JTextField jtCorreo;
     private JTextArea jtDireccion;
@@ -43,10 +43,13 @@ public class CrearFormularioProveedores extends JFrame {
     };
 
     public CrearFormularioProveedores() {
-        super("Registro de proveedores");
-        setSize(600, 400);
+        super("Crear proveedores");
+        setSize(600, 350);
         setLocationRelativeTo(null);
         setContentPane(panel1);
+
+        jtDireccion.setLineWrap(true);
+        jtDireccion.setWrapStyleWord(true);
 
         jtNombre.addKeyListener(new KeyAdapter() {
             @Override
@@ -151,13 +154,13 @@ public class CrearFormularioProveedores extends JFrame {
                         }
 
                         if (jtVendedorTelefono.getText().charAt(0) == '1' || jtVendedorTelefono.getText().charAt(0) == '4' || jtVendedorTelefono.getText().charAt(0) == '5' || jtVendedorTelefono.getText().charAt(0) == '6' || jtVendedorTelefono.getText().charAt(0) == '7' ||jtVendedorTelefono.getText().charAt(0) == '0') {
-                            JOptionPane.showMessageDialog(null, "Su número de teléfono no es válido", "Validación", JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.showMessageDialog(null, "El número de teléfono del vendedor no es válido", "Validación", JOptionPane.ERROR_MESSAGE);
                             return;
                         }
 
 
-                        if (!Proveedores.validarFormatoCorreo(jtCorreo.getText())){
-                            JOptionPane.showMessageDialog(null,"Formato invalido. Ej: email@xxx.xxx");
+                        if (Proveedores.validarFormatoCorreo(jtCorreo.getText())){
+                            JOptionPane.showMessageDialog(null,"Formato de correo inválido.\n ejemplo: email@xxx.xxx");
                             return;
                         }
 
