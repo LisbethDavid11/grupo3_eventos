@@ -12,7 +12,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class VerFormularioCliente extends  JFrame{
+public class VerCliente extends  JFrame{
 
     private JPanel panel1;
     private JTextField campoNombre;
@@ -25,7 +25,7 @@ public class VerFormularioCliente extends  JFrame{
     private JRadioButton alDetalleRadioButton;
     private JButton volverButton;
 
-    private final VerFormularioCliente actual = this;
+    private final VerCliente actual = this;
     private Conexion sql;
 
     private Connection mysql;
@@ -33,9 +33,9 @@ public class VerFormularioCliente extends  JFrame{
     private int id;
     private JTextField[] campos = {campoNombre, campoApellido, campoIdentidad, campoTelefono};
 
-    public VerFormularioCliente(int id) {
+    public VerCliente(int id) {
         super("Ver Registro de los Clientes");
-        setSize(500,500);
+        setSize(600,600);
         setLocationRelativeTo(null);
         setContentPane(panel1);
 

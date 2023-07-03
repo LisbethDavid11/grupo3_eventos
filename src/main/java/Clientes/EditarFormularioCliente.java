@@ -35,11 +35,9 @@ public class EditarFormularioCliente extends  JFrame{
     private int id;
     private JTextField[] campos = {campoNombre, campoApellido, campoIdentidad, campoTelefono};
 
-
-
     public EditarFormularioCliente(int id) {
         super("Editar Registro de los Clientes");
-        setSize(500,500);
+        setSize(600,600);
         setLocationRelativeTo(null);
         setContentPane(panel1);
 
@@ -52,19 +50,46 @@ public class EditarFormularioCliente extends  JFrame{
         grupoTipo_cliente.add(alDetalleRadioButton);
         mayoristaRadioButton.setSelected(true);
 
-
         campoNombre.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                Conexion.soloLetra(e, campoNombre.getText().length(),49, campoNombre.getCaretPosition());
+                Conexion.soloLetra(e, campoNombre.getText().length(), 50, campoNombre.getCaretPosition());
             }
         });
         campoApellido.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                Conexion.soloLetra(e, campoApellido.getText().length(),49, campoApellido.getCaretPosition());
+                Conexion.soloLetra(e, campoApellido.getText().length(), 50, campoApellido.getCaretPosition());
             }
         });
+
+        campoDomicilio.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                Conexion.soloLetra(e, campoDomicilio.getText().length(), 200, campoDomicilio.getCaretPosition());
+            }
+        });
+
+        campoTelefono.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                String telefono = campoTelefono.getText();
+                if (!Character.isDigit(e.getKeyChar()) || telefono.length() >= 8) {
+                    e.consume(); // Evita que se escriban caracteres no numéricos o se exceda la longitud
+                }
+            }
+        });
+
+        campoIdentidad.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                String identidad = campoIdentidad.getText();
+                if (!Character.isDigit(e.getKeyChar()) || identidad.length() >= 15) {
+                    e.consume(); // Evita que se escriban caracteres no numéricos o se exceda la longitud
+                }
+            }
+        });
+
 
 
         cancelarButton.addActionListener(new ActionListener() {
@@ -100,25 +125,25 @@ public class EditarFormularioCliente extends  JFrame{
                         return;
                     }
                     if (campoDomicilio.getText().replaceAll("\\s+","").replaceAll("[^\\dA-Za-z]","").equals("")){
-                        JOptionPane.showMessageDialog(null,"El Domicilio no pude estar vacio");
+                        JOptionPane.showMessageDialog(null,"El Domicilio no pude estar vacio", "Validación", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
 
                     if (campoDomicilio.getText().length() > 200){
-                        JOptionPane.showMessageDialog(null,"El Domicilio no puede excer un maximo de 200 caracteres");
+                        JOptionPane.showMessageDialog(null,"El Domicilio no puede excer un maximo de 200 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
 
                     if (campoTelefono.getText().charAt(0) == '1' || campoTelefono.getText().charAt(0) == '4' || campoTelefono.getText().charAt(0) == '5' || campoTelefono.getText().charAt(0) == '6' || campoTelefono.getText().charAt(0) == '7' || campoTelefono.getText().charAt(0) == '0'){
-                        JOptionPane.showMessageDialog(null,"Su número de teléfono no es válido");
+                        JOptionPane.showMessageDialog(null,"Su número de teléfono no es válido", "Validación", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
                     if (campoIdentidad.getText().length() <15){
-                        JOptionPane.showMessageDialog(null,"Su número de identidad debe contener 15 digitos incluyendo guiones");
+                        JOptionPane.showMessageDialog(null,"Su número de identidad debe contener 15 digitos incluyendo guiones", "Validación", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
                     if (campoTelefono.getText().length() <8){
-                        JOptionPane.showMessageDialog(null,"Su número de teléfono debe contener 8 digitos");
+                        JOptionPane.showMessageDialog(null,"Su número de teléfono debe contener 8 digitos", "Validación", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
 
