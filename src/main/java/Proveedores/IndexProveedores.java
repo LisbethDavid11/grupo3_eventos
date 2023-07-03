@@ -6,6 +6,7 @@ import Objetos.Conexion;
 import Objetos.Proveedores;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -21,6 +22,7 @@ public class IndexProveedores extends JFrame{
     private JTable table1;
     private JButton nuevoButton;
     private JTextField jtBuscar;
+    TextPrompt placeholder = new TextPrompt("Busca por empresa, rtn y dirección", jtBuscar);
     private JPanel panel1;
     private JButton Atras;
     private JButton Adelante;
@@ -32,10 +34,14 @@ public class IndexProveedores extends JFrame{
     private final IndexProveedores actual = this;
     public IndexProveedores() {
         super("Datos de proveedores");
-        setSize(700, 500);
+        setSize(800, 500);
         setLocationRelativeTo(null);
         setContentPane(panel1);
         jtBuscar.setText("");
+
+        placeholder.changeStyle(Font.ITALIC);
+        placeholder.setForeground(Color.blue);
+
 
         table1.setModel(cargarDatos());
 
@@ -95,10 +101,12 @@ public class IndexProveedores extends JFrame{
         mysql = sql.conectamysql();
 
         try {
-            PreparedStatement statement = mysql.prepareStatement("Select * from "+ Proveedores.nombreTabla+" where id like concat('%',?,'%') or empresaProveedora like concat('%',?,'%') limit ?,20 ");
+            PreparedStatement statement = mysql.prepareStatement("Select * from "+ Proveedores.nombreTabla+" where rtn like concat('%',?,'%')or direccion like concat('%',?,'%')or id like concat('%',?,'%')or empresaProveedora like concat('%',?,'%') limit ?,20 ");
             statement.setString(1,jtBuscar.getText());
             statement.setString(2,jtBuscar.getText());
-            statement.setInt(3,paginacion);
+            statement.setString(3,jtBuscar.getText());
+            statement.setString(4,jtBuscar.getText());
+            statement.setInt(5,paginacion);
 
 
             ResultSet resultSet = statement.executeQuery();

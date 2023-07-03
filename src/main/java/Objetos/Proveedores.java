@@ -34,7 +34,7 @@ public class Proveedores {
 
     public static String[] columnas = {
             "N",
-            "Nombre Empresa",
+            "Nombre de la Empresa",
             "RTN",
             "Teléfono",
             "Correo",

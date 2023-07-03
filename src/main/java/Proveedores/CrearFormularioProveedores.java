@@ -1,6 +1,7 @@
 package Proveedores;
 
 import Objetos.Conexion;
+import Objetos.Empleados;
 import Objetos.Proveedores;
 
 import javax.swing.*;
@@ -57,156 +58,148 @@ public class CrearFormularioProveedores extends JFrame {
         jtVendedorAsignado.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                Conexion.soloLetra(e,jtVendedorAsignado.getText().length(),50,jtVendedorAsignado.getCaretPosition());
+                Conexion.soloLetra(e,jtVendedorAsignado.getText().length(),40,jtVendedorAsignado.getCaretPosition());
             }
         });
 
-        jtCorreo.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                Conexion.soloLetra(e,jtCorreo.getText().length(),20,jtCorreo.getCaretPosition());
-            }
-        });
 
         jtDescripcion.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                Conexion.soloLetra(e,jtDescripcion.getText().length(),20,jtDescripcion.getCaretPosition());
+                Conexion.soloLetra(e,jtDescripcion.getText().length(),40,jtDescripcion.getCaretPosition());
             }
         });
 
-        jtDireccion.addKeyListener(new KeyAdapter() {
+        jtTelefono.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                Conexion.soloLetra(e,jtDireccion.getText().length(),200,jtDireccion.getCaretPosition());
+                Conexion.soloNumeros(e,7, jtTelefono.getText().length());
+
             }
         });
 
-
-
-
-        try {
-            MaskFormatter formatter = new MaskFormatter("########");
-
-
-            jtTelefono.setFormatterFactory(new DefaultFormatterFactory(formatter));
-            jtVendedorTelefono.setFormatterFactory(new DefaultFormatterFactory(formatter));
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-
-        try {
-            MaskFormatter formatter = new MaskFormatter("####-####-######");
-
-
-            jtRTN.setFormatterFactory(new DefaultFormatterFactory(formatter));
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-
-
-        cancelarButton.addActionListener(new ActionListener() {
+        jtVendedorTelefono.addKeyListener(new KeyAdapter() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                IndexProveedores indexProveedores = new IndexProveedores();
-                    indexProveedores.setVisible(true);
-                    actual.dispose();
+            public void keyTyped(KeyEvent e) {
+                Conexion.soloNumeros(e,7, jtVendedorTelefono.getText().length());
+
             }
         });
-        guardarButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                //Validaciones
-                int validar = 0;
-                int contador = 0;
-                int posicion = 0;
-                String mensaje = "Faltó Ingresar:\n";
-                for (JTextField campo: campos) {
-                    if(campo.getText().replaceAll("\\s+","").equals("")){
-                        validar+=1;
-                        mensaje+= Proveedores.columnasTabla[contador]+"\n";
-                        posicion = contador;
-                    }
-                    contador+=1;
-                }
 
-                if (validar > 0){
-                    JOptionPane.showMessageDialog(null,mensaje,"Validación",JOptionPane.INFORMATION_MESSAGE);
-
-                    if(validar == 1){
-                        campos[posicion].requestFocus();
-                    }
-                    return;
-                }
-
-                if(jtDireccion.getText().replaceAll("\\s+","").equals("")){
-                    JOptionPane.showMessageDialog(null,"La dirección no puede estar vacía","Validación",JOptionPane.INFORMATION_MESSAGE);
-                    return;
-                }
-
-                if (!Proveedores.validarFormatoNombre(jtVendedorAsignado.getText())){
-                    JOptionPane.showMessageDialog(null,"El nombre del vendedor solo debe contener letras","Validación",JOptionPane.INFORMATION_MESSAGE);
-                    return;
-                }
-                if (!Proveedores.validarFormatoNombre(jtNombre.getText())){
-                    JOptionPane.showMessageDialog(null,"El nombre de la empresa solo debe contener letras","Validación",JOptionPane.INFORMATION_MESSAGE);
-                    return;
-                }
-
-                if (!Proveedores.validarFormatoTelefono(jtTelefono.getText())){
-                    JOptionPane.showMessageDialog(null,"Solo se permiten números telefónicos con inicación 2,3,8,9\nEn el Teléfono de Proveedor","Validación",JOptionPane.INFORMATION_MESSAGE);
-                    return;
-                }
-
-                if (!Proveedores.validarFormatoTelefono(jtVendedorTelefono.getText())){
-                    JOptionPane.showMessageDialog(null,"Solo se permiten números telefónicos con inicación 2,3,8,9\nEn el Teléfono del Vendedor","Validación",JOptionPane.INFORMATION_MESSAGE);
-                    return;
-                }
-
-                if (!Proveedores.validarFormatoCorreo(jtCorreo.getText())){
-                    JOptionPane.showMessageDialog(null,"Formato invalido. Ej: email@xxx.xxx","Validación",JOptionPane.INFORMATION_MESSAGE);
-                    return;
-                }
-
-                boolean des = guardar();
-
-                if(des);
-                    IndexProveedores indexProveedores = new IndexProveedores();
-                    indexProveedores.setVisible(true);
-                    actual.dispose();
-                }
-        });
-            }
-
-
-
-
-    private boolean guardar() {
-        sql = new Conexion();
-        mysql = sql.conectamysql();
 
         try {
-            PreparedStatement statement = mysql.prepareStatement("INSERT INTO "+Proveedores.nombreTabla+" (`empresaProveedora`,`rtn`, `telefono`, `correo`, `direccion`,`descripcion`,`nombreVendedor`,`telefonoVendedor`) VALUES (?, ?, ?, ?, ?, ?, ?, ?);");
-            statement.setString(1,jtNombre.getText());
-            statement.setString(2,jtRTN.getText());
-            statement.setString(3,jtTelefono.getText());
-            statement.setString(4,jtCorreo.getText());
-            statement.setString(5,jtDireccion.getText());
-            statement.setString(6,jtDescripcion.getText());
-            statement.setString(7,jtVendedorAsignado.getText());
-            statement.setString(8,jtVendedorTelefono.getText());
-            System.out.println(statement.executeLargeUpdate());
-            return true;
+                    MaskFormatter formatter = new MaskFormatter("####-####-######");
 
-        } catch (SQLException erro) {
-            //Mensaje de error para mostrar
-            System.out.println(erro.getMessage());
-            return false;
+
+                    jtRTN.setFormatterFactory(new DefaultFormatterFactory(formatter));
+                } catch (ParseException e) {
+                    throw new RuntimeException(e);
+                }
+
+
+                cancelarButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        IndexProveedores indexProveedores = new IndexProveedores();
+                        indexProveedores.setVisible(true);
+                        actual.dispose();
+                    }
+                });
+                guardarButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        //Validaciones
+                        int validar = 0;
+                        int contador = 0;
+                        int posicion = 0;
+                        String mensaje = "Faltó Ingresar:\n";
+                        for (JTextField campo : campos) {
+                            if (campo.getText().replaceAll("\\s+", "").equals("")) {
+                                validar += 1;
+                                mensaje += Proveedores.columnasTabla[contador] + "\n";
+                                posicion = contador;
+                            }
+                            contador += 1;
+                        }
+
+                        if (validar > 0) {
+                            JOptionPane.showMessageDialog(null, mensaje, "Validación", JOptionPane.INFORMATION_MESSAGE);
+
+                            if (validar == 1) {
+                                campos[posicion].requestFocus();
+                            }
+                            return;
+                        }
+
+                        if (jtDireccion.getText().replaceAll("\\s+", "").equals("")) {
+                            JOptionPane.showMessageDialog(null, "La dirección no puede estar vacía", "Validación", JOptionPane.INFORMATION_MESSAGE);
+                            return;
+                        }
+
+                        if (!Proveedores.validarFormatoNombre(jtVendedorAsignado.getText())) {
+                            JOptionPane.showMessageDialog(null, "El nombre del vendedor solo debe contener letras", "Validación", JOptionPane.INFORMATION_MESSAGE);
+                            return;
+                        }
+                        if (!Proveedores.validarFormatoNombre(jtNombre.getText())) {
+                            JOptionPane.showMessageDialog(null, "El nombre de la empresa solo debe contener letras", "Validación", JOptionPane.INFORMATION_MESSAGE);
+                            return;
+                        }
+
+                        if (jtTelefono.getText().charAt(0) == '1' || jtTelefono.getText().charAt(0) == '4' || jtTelefono.getText().charAt(0) == '5' || jtTelefono.getText().charAt(0) == '6' || jtTelefono.getText().charAt(0) == '7' || jtTelefono.getText().charAt(0) == '0') {
+                            JOptionPane.showMessageDialog(null, "Su número de teléfono no es válido", "Validación", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+
+                        if (jtVendedorTelefono.getText().charAt(0) == '1' || jtVendedorTelefono.getText().charAt(0) == '4' || jtVendedorTelefono.getText().charAt(0) == '5' || jtVendedorTelefono.getText().charAt(0) == '6' || jtVendedorTelefono.getText().charAt(0) == '7' ||jtVendedorTelefono.getText().charAt(0) == '0') {
+                            JOptionPane.showMessageDialog(null, "Su número de teléfono no es válido", "Validación", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+
+
+                        if (!Proveedores.validarFormatoCorreo(jtCorreo.getText())){
+                            JOptionPane.showMessageDialog(null,"Formato invalido. Ej: email@xxx.xxx");
+                            return;
+                        }
+
+
+
+                    boolean des = guardar();
+
+                        if (des) ;
+                        IndexProveedores indexProveedores = new IndexProveedores();
+                        indexProveedores.setVisible(true);
+                        actual.dispose();
+                    }
+                });
+            }
+
+
+            private boolean guardar() {
+                sql = new Conexion();
+                mysql = sql.conectamysql();
+
+                try {
+                    PreparedStatement statement = mysql.prepareStatement("INSERT INTO " + Proveedores.nombreTabla + " (`empresaProveedora`,`rtn`, `telefono`, `correo`, `direccion`,`descripcion`,`nombreVendedor`,`telefonoVendedor`) VALUES (?, ?, ?, ?, ?, ?, ?, ?);");
+                    statement.setString(1, jtNombre.getText());
+                    statement.setString(2, jtRTN.getText());
+                    statement.setString(3, jtTelefono.getText());
+                    statement.setString(4, jtCorreo.getText());
+                    statement.setString(5, jtDireccion.getText());
+                    statement.setString(6, jtDescripcion.getText());
+                    statement.setString(7, jtVendedorAsignado.getText());
+                    statement.setString(8, jtVendedorTelefono.getText());
+                    System.out.println(statement.executeLargeUpdate());
+                    return true;
+
+                } catch (SQLException erro) {
+                    //Mensaje de error para mostrar
+                    System.out.println(erro.getMessage());
+                    return false;
+                }
+            }
+
+
+            private void createUIComponents() {
+                // TODO: place custom component creation code here
+            }
         }
-    }
-
-
-    private void createUIComponents() {
-        // TODO: place custom component creation code here
-    }
-}
