@@ -23,6 +23,7 @@ public class ListaCliente extends JFrame {
     private JButton botonAtras;
     private JButton botonAdelante;
     private JTextField campoBusqueda;
+    Clientes.TextPrompt placeholder = new TextPrompt("Busca por identidad, nombres y apellidos", campoBusqueda);
     private JButton botonEditar;
     private JButton botoCrear;
     private List<Cliente> listaCliente;
@@ -31,21 +32,26 @@ public class ListaCliente extends JFrame {
     private Conexion sql;
     private ListaCliente actual = this;
 
-
-
     public ListaCliente(){
-        super("Lista de Clientes");
-        setSize(500,500);
+        super("LISTA DE CLIENTES");
+        setSize(950,500);
         setLocationRelativeTo(null);
         setContentPane(panelPrincipal);
         campoBusqueda.setText("");
+        // Establecer el texto del campo de búsqueda como vacío
+        campoBusqueda.setText("");
 
+        // Cargar los datos en el modelo de la lista de clientes
         listaClientes.setModel(cargarDatos());
 
+        // Agregar un KeyListener al campo de búsqueda
         campoBusqueda.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
+                // Cargar los datos en el modelo de la lista de clientes nuevamente
                 listaClientes.setModel(cargarDatos());
+
+                // Habilitar los botones "Atrás" y "Adelante"
                 botonAtras.setEnabled(true);
                 botonAdelante.setEnabled(true);
             }
@@ -54,8 +60,8 @@ public class ListaCliente extends JFrame {
         botonAdelante.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (listaCliente.size() == 10){
-                    pagina+=10;
+                if (listaCliente.size() == 20){
+                    pagina+=20;
                     botonAtras.setEnabled(true);
                 }else {
                     botonAdelante.setEnabled(false);
@@ -63,11 +69,12 @@ public class ListaCliente extends JFrame {
                 listaClientes.setModel(cargarDatos());
             }
         });
+
         botonAtras.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (pagina > 0){
-                    pagina-=10;
+                    pagina-=20;
                     botonAdelante.setEnabled(true);
                 }else {
                     botonAtras.setEnabled(false);
@@ -92,13 +99,12 @@ public class ListaCliente extends JFrame {
                     JOptionPane.showMessageDialog(null,"Seleccione una fila continuar");
                     return;
                 }
-
-
-                VerFormularioCliente cliente = new VerFormularioCliente(listaCliente.get(listaClientes.getSelectedRow()).getId());
-               cliente.setVisible(true);
+                VerCliente cliente = new VerCliente(listaCliente.get(listaClientes.getSelectedRow()).getId());
+                cliente.setVisible(true);
                 actual.dispose();
             }
         });
+
         botonEditar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -106,22 +112,18 @@ public class ListaCliente extends JFrame {
                     JOptionPane.showMessageDialog(null,"Seleccione una fila continuar");
                     return;
                 }
-
                 EditarFormularioCliente cliente = new EditarFormularioCliente(listaCliente.get(listaClientes.getSelectedRow()).getId());
                cliente.setVisible(true);
                actual.dispose();
             }
         });
-
-
     }
-
 
     private ModeloClientes cargarDatos(){
         sql = new Conexion();
         mysql = sql.conectamysql();
         try {
-            PreparedStatement preparedStatement = mysql.prepareStatement("SELECT * FROM "+Cliente.nombreTabla+" WHERE nombre LIKE CONCAT('%',?,'%') OR apellido LIKE CONCAT('%',?,'%') OR identidad LIKE CONCAT('%',?,'%') LIMIT ?,10");
+            PreparedStatement preparedStatement = mysql.prepareStatement("SELECT * FROM "+Cliente.nombreTabla+" WHERE nombre LIKE CONCAT('%',?,'%') OR apellido LIKE CONCAT('%',?,'%') OR identidad LIKE CONCAT('%',?,'%') LIMIT ?,20");
             preparedStatement.setString(1,campoBusqueda.getText());
             preparedStatement.setString(2,campoBusqueda.getText());
             preparedStatement.setString(3,campoBusqueda.getText());
@@ -136,13 +138,14 @@ public class ListaCliente extends JFrame {
                 cliente.setApellido(resultSet.getString(3));
                 cliente.setIdentidad(resultSet.getString(4));
                 cliente.setTelefono(resultSet.getString(5));
-
+                cliente.setDomicilio(resultSet.getString(6));
+                cliente.setTipo_cliente(resultSet.getString(7));
                 listaCliente.add(cliente);
             }
             mysql.close();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null,"No hay conexion");
+            JOptionPane.showMessageDialog(null,"No hay conexión con la base de datos");
             listaCliente = new ArrayList<>();
         }
         return new ModeloClientes(Cliente.columnasCampos, listaCliente);
