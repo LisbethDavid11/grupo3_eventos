@@ -70,7 +70,6 @@ public class CrearCliente extends JFrame{
             @Override
             public void keyTyped(KeyEvent e) {
                 Conexion.soloNumeros(e,7, campoTelefono.getText().length());
-
             }
         });
 
@@ -112,13 +111,12 @@ public class CrearCliente extends JFrame{
                     }
                 }
 
-
                 if (validar > 0) {
                     JOptionPane.showMessageDialog(null, mensaje, "Validación", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
-                if (campoDomicilio.getText().replaceAll("\\s+","").replaceAll("[^\\dA-Za-z]","").equals("")) {
+                if (campoDomicilio.getText().replaceAll("\\s+", "").replaceAll("[^\\dA-Za-z]", "").equals("")) {
                     JOptionPane.showMessageDialog(null, "El Domicilio no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
@@ -139,7 +137,7 @@ public class CrearCliente extends JFrame{
                     return;
                 }
 
-                if (!Cliente.ComprobarIdentidad(campoIdentidad.getText())) {
+                if (!Cliente.comprobarIdentidad(campoIdentidad.getText())) {
                     JOptionPane.showMessageDialog(null, "Identidad no válida", "Validación", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
@@ -147,6 +145,8 @@ public class CrearCliente extends JFrame{
                 guardar();
             }
         });
+
+
     }
 
     public void guardar(){

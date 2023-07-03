@@ -34,7 +34,7 @@ public class ListaCliente extends JFrame {
 
     public ListaCliente(){
         super("LISTA DE CLIENTES");
-        setSize(950,500);
+        setSize(950,600);
         setLocationRelativeTo(null);
         setContentPane(panelPrincipal);
         campoBusqueda.setText("");
