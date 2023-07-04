@@ -1,5 +1,6 @@
 package Clientes;
 
+import Empleados.TextPrompt;
 import Modelos.ModeloClientes;
 import Objetos.Cliente;
 import Objetos.Conexion;
@@ -25,6 +26,7 @@ public class ListaCliente extends JFrame {
     private JButton botonAtras;
     private JButton botonAdelante;
     private JTextField campoBusqueda;
+    Empleados.TextPrompt placeholder = new TextPrompt("Busca por identidad, nombres y apellidos", campoBusqueda);
     private JButton botonEditar;
     private JButton botoCrear;
     private List<Cliente> listaCliente;
@@ -133,8 +135,6 @@ public class ListaCliente extends JFrame {
             listaClientes.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
     }
-
-
 
     private ModeloClientes cargarDatos() {
         sql = new Conexion();
