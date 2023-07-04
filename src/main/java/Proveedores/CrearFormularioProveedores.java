@@ -159,50 +159,47 @@ public class CrearFormularioProveedores extends JFrame {
                         }
 
 
-                        if (Proveedores.validarFormatoCorreo(jtCorreo.getText())){
-                            JOptionPane.showMessageDialog(null,"Formato de correo inválido.\n ejemplo: email@xxx.xxx");
+                        if (!Proveedores.validarFormatoCorreo(jtCorreo.getText())){
+                            JOptionPane.showMessageDialog(null,"Formato de correo inválido.\n ejemplo: email@xxx.xxx", "Validación", JOptionPane.ERROR_MESSAGE);
                             return;
                         }
 
+                        guardar();
+                        JOptionPane.showMessageDialog(null, "ha sido registrado correctamente", "Validación", JOptionPane.INFORMATION_MESSAGE);
 
 
-                    boolean des = guardar();
 
-                        if (des) ;
-                        IndexProveedores indexProveedores = new IndexProveedores();
-                        indexProveedores.setVisible(true);
-                        actual.dispose();
                     }
                 });
             }
 
 
-            private boolean guardar() {
+            public void guardar() {
                 sql = new Conexion();
                 mysql = sql.conectamysql();
 
                 try {
-                    PreparedStatement statement = mysql.prepareStatement("INSERT INTO " + Proveedores.nombreTabla + " (`empresaProveedora`,`rtn`, `telefono`, `correo`, `direccion`,`descripcion`,`nombreVendedor`,`telefonoVendedor`) VALUES (?, ?, ?, ?, ?, ?, ?, ?);");
-                    statement.setString(1, jtNombre.getText());
-                    statement.setString(2, jtRTN.getText());
-                    statement.setString(3, jtTelefono.getText());
-                    statement.setString(4, jtCorreo.getText());
-                    statement.setString(5, jtDireccion.getText());
-                    statement.setString(6, jtDescripcion.getText());
-                    statement.setString(7, jtVendedorAsignado.getText());
-                    statement.setString(8, jtVendedorTelefono.getText());
-                    System.out.println(statement.executeLargeUpdate());
-                    return true;
+                    PreparedStatement preparedStatement = mysql.prepareStatement("INSERT INTO " + Proveedores.nombreTabla + " (`empresaProveedora`,`rtn`, `telefono`, `correo`, `direccion`,`descripcion`,`nombreVendedor`,`telefonoVendedor`) VALUES (?, ?, ?, ?, ?, ?, ?, ?);");
+                    preparedStatement.setString(1, jtNombre.getText());
+                    preparedStatement.setString(2, jtRTN.getText());
+                    preparedStatement.setString(3, jtTelefono.getText());
+                    preparedStatement.setString(4, jtCorreo.getText());
+                    preparedStatement.setString(5, jtDireccion.getText());
+                    preparedStatement.setString(6, jtDescripcion.getText());
+                    preparedStatement.setString(7, jtVendedorAsignado.getText());
+                    preparedStatement.setString(8, jtVendedorTelefono.getText());
+                    preparedStatement.executeUpdate();
+
+
+                    IndexProveedores indexProveedores = new IndexProveedores();
+                    indexProveedores.setVisible(true);
+                    actual.dispose();
 
                 } catch (SQLException erro) {
                     //Mensaje de error para mostrar
                     System.out.println(erro.getMessage());
-                    return false;
+                    JOptionPane.showMessageDialog(null, "No hay conexión a la base de datos", "Validación", JOptionPane.ERROR_MESSAGE);
                 }
-            }
 
-
-            private void createUIComponents() {
-                // TODO: place custom component creation code here
             }
         }
