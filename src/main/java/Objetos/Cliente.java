@@ -1,5 +1,9 @@
 package Objetos;
 
+import Objetos.Conexion;
+
+import javax.swing.*;
+import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,6 +51,9 @@ public class Cliente {
         this.domicilio = domicilio;
         this.tipo_cliente = tipo_cliente;
     }
+
+
+
 
     public int getId() {
         return id;

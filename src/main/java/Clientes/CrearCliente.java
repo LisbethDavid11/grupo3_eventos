@@ -12,6 +12,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 
@@ -21,7 +22,7 @@ public class CrearCliente extends JFrame{
     private JFormattedTextField campoIdentidad;
     private JTextField campoTelefono;
     private JTextArea campoDomicilio;
-    private JTextField[] campos = {
+    private JTextField[] campos = new JTextField[]{
             campoNombre,
             campoApellido,
             campoIdentidad,
@@ -45,31 +46,130 @@ public class CrearCliente extends JFrame{
         campoDomicilio.setLineWrap(true);
         campoDomicilio.setWrapStyleWord(true);
 
+        // Asignar nombres a los campos de texto
+        campoNombre.setName("Nombre");
+        campoApellido.setName("Apellido");
+        campoIdentidad.setName("Identidad");
+        campoTelefono.setName("Teléfono");
+
         campoNombre.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                Conexion.soloLetra(e,campoNombre.getText().length(),50,campoNombre.getCaretPosition());
+                String text = campoNombre.getText();
+                int length = text.length();
+                int caretPosition = campoNombre.getCaretPosition();
+
+                // Verificar si se está ingresando un espacio en blanco
+                if (e.getKeyChar() == ' ') {
+                    // Verificar si es el primer espacio en blanco
+                    if (length == 0 || caretPosition == 0) {
+                        e.consume(); // Ignorar el espacio en blanco
+                    } else {
+                        // Verificar si ya hay un espacio en blanco en el texto
+                        boolean hasSpace = text.contains(" ");
+                        if (hasSpace) {
+                            e.consume(); // Ignorar el espacio en blanco adicional
+                        }
+                    }
+                } else {
+                    // Verificar la longitud del texto después de eliminar espacios en blanco
+                    String trimmedText = text.replaceAll(" ", "");
+                    int trimmedLength = trimmedText.length();
+
+                    // Verificar si se está ingresando una letra
+                    if (Character.isLetter(e.getKeyChar())) {
+                        // Verificar si se excede el límite de caracteres
+                        if (trimmedLength >= 50) {
+                            e.consume(); // Ignorar la letra
+                        } else {
+                            // Verificar si es el primer carácter o el carácter después de un espacio en blanco
+                            if (length == 0 || (caretPosition > 0 && text.charAt(caretPosition - 1) == ' ')) {
+                                // Convertir la letra a mayúscula
+                                e.setKeyChar(Character.toUpperCase(e.getKeyChar()));
+                            }
+                        }
+                    } else {
+                        e.consume(); // Ignorar cualquier otro tipo de carácter
+                    }
+                }
             }
         });
 
         campoApellido.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                Conexion.soloLetra(e,campoApellido.getText().length(),50,campoApellido.getCaretPosition());
+                String text = campoApellido.getText();
+                int length = text.length();
+                int caretPosition = campoApellido.getCaretPosition();
+
+                // Verificar si se está ingresando un espacio en blanco
+                if (e.getKeyChar() == ' ') {
+                    // Verificar si es el primer espacio en blanco
+                    if (length == 0 || caretPosition == 0) {
+                        e.consume(); // Ignorar el espacio en blanco
+                    } else {
+                        // Verificar si ya hay un espacio en blanco en el texto
+                        boolean hasSpace = text.contains(" ");
+                        if (hasSpace) {
+                            e.consume(); // Ignorar el espacio en blanco adicional
+                        }
+                    }
+                } else {
+                    // Verificar la longitud del texto después de eliminar espacios en blanco
+                    String trimmedText = text.replaceAll(" ", "");
+                    int trimmedLength = trimmedText.length();
+
+                    // Verificar si se está ingresando una letra
+                    if (Character.isLetter(e.getKeyChar())) {
+                        // Verificar si se excede el límite de caracteres
+                        if (trimmedLength >= 50) {
+                            e.consume(); // Ignorar la letra
+                        } else {
+                            // Verificar si es el primer carácter o el carácter después de un espacio en blanco
+                            if (length == 0 || (caretPosition > 0 && text.charAt(caretPosition - 1) == ' ')) {
+                                // Convertir la letra a mayúscula
+                                e.setKeyChar(Character.toUpperCase(e.getKeyChar()));
+                            }
+                        }
+                    } else {
+                        e.consume(); // Ignorar cualquier otro tipo de carácter
+                    }
+                }
             }
         });
 
         campoDomicilio.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                Conexion.soloLetra(e, campoDomicilio.getText().length(),200, campoDomicilio.getCaretPosition());
+                String texto = campoDomicilio.getText();
+                int caretPosition = campoDomicilio.getCaretPosition();
+
+                // Verificar si se están ingresando más de dos espacios en blanco seguidos
+                if (e.getKeyChar() == ' ' && texto.endsWith(" ")) {
+                    e.consume(); // Ignorar el evento y no agregar el espacio en blanco adicional
+                    return;
+                }
+
+                // Convertir la primera letra en mayúscula
+                if (texto.length() > 0) {
+                    String primeraLetra = texto.substring(0, 1).toUpperCase();
+                    String restoTexto = texto.substring(1);
+                    texto = primeraLetra + restoTexto;
+                    campoDomicilio.setText(texto);
+                }
+
+                Conexion.soloLetra(e, texto.length(), 200, caretPosition);
             }
         });
+
 
         campoTelefono.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                Conexion.soloNumeros(e,7, campoTelefono.getText().length());
+                String telefono = campoTelefono.getText();
+                if (!Character.isDigit(e.getKeyChar()) || telefono.length() >= 8) {
+                    e.consume(); // Evita que se escriban caracteres no numéricos o se exceda la longitud
+                }
             }
         });
 
@@ -77,7 +177,8 @@ public class CrearCliente extends JFrame{
         buttonGroup.add(radioAldetalle);
         buttonGroup.add(radioMayorista);
 
-        radioAldetalle.setSelected(true);
+        // No seleccionar ningún botón de radio por defecto
+        buttonGroup.clearSelection();
 
         try {
             MaskFormatter dni = new MaskFormatter("####-####-#####");
@@ -98,55 +199,119 @@ public class CrearCliente extends JFrame{
         botonGuardar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int validar = 0;
-                String mensaje = "Hay campos vacíos: \n";
+                StringBuilder mensaje = new StringBuilder("Hay campos vacíos:\n");
+                boolean camposVacios = false;
 
-                for (int contador = 0; contador < campos.length; contador++) {
-                    JTextField campo = campos[contador];
-                    String textoCampo = campo.getText().replaceAll("\\s+", "").replaceAll("[^\\dA-Za-z]", "");
-
-                    if (textoCampo.equals("") && !Cliente.columnasCampos[contador].equalsIgnoreCase("#") && !Cliente.columnasCampos[contador].equalsIgnoreCase("id")) {
-                        validar++;
-                        mensaje += Cliente.columnasCampos[contador] + "\n";
+                // Verificar los campos de nombre, apellido, identidad, telefono, tipo de cliente y domicilio
+                for (JTextField campo : campos) {
+                    if (campo.getText().trim().isEmpty()) {
+                        camposVacios = true;
+                        mensaje.append(campo.getName()).append("\n");
                     }
                 }
 
-                if (validar > 0) {
-                    JOptionPane.showMessageDialog(null, mensaje, "Validación", JOptionPane.ERROR_MESSAGE);
+                // Verificar que el campo identidad no esté vacio
+                String identidad = campoIdentidad.getText().trim();
+                if (identidad.length() != 15) {
+                    camposVacios = true;
+                    mensaje.append("Identidad").append("\n");
+                }
+
+                // Verificar que el campo tipo de cliente no esté vacio
+                if (!radioAldetalle.isSelected() && !radioMayorista.isSelected()) {
+                    camposVacios = true;
+                    mensaje.append("Tipo de Cliente").append("\n");
+                }
+
+                // Verificar que el campo domicilio no esté vacio
+                String domicilio = campoDomicilio.getText().trim();
+                if (!domicilio.isEmpty()) {
+                    if (domicilio.length() < 2 || domicilio.length() > 200) {
+                        JOptionPane.showMessageDialog(null, "El domicilio debe tener entre 2 y 200 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                } else {
+                    camposVacios = true;
+                    mensaje.append("Domicilio").append("\n");
+                }
+
+                // Mostrar mensaje de campos vacíos si es necesario
+                if (camposVacios) {
+                    JOptionPane.showMessageDialog(null, mensaje.toString(), "Validación", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
-                if (campoDomicilio.getText().replaceAll("\\s+", "").replaceAll("[^\\dA-Za-z]", "").equals("")) {
-                    JOptionPane.showMessageDialog(null, "El Domicilio no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
-                    return;
+                // Verificar el campo de nombre, otras validaciones extras
+                String nombre = campoNombre.getText().trim();
+                if (!nombre.isEmpty()) {
+                    if (nombre.length() > 50) {
+                        JOptionPane.showMessageDialog(null, "El nombre debe tener como máximo 50 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    if (!nombre.matches("[a-zA-Z]{2,}(\\s[a-zA-Z]+)?")) {
+                        JOptionPane.showMessageDialog(null, "El nombre debe tener mínimo 2 letras; y máximo 1 espacio entre palabras. ", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
                 }
 
-                if (campoDomicilio.getText().length() > 200) {
-                    JOptionPane.showMessageDialog(null, "El Domicilio no puede exceder un máximo de 200 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
-                    return;
+                // Verificar el campo de apellido, otras validaciones extras
+                String apellido = campoApellido.getText().trim();
+                if (!apellido.isEmpty()) {
+                    if (apellido.length() > 50) {
+                        JOptionPane.showMessageDialog(null, "El apellido debe tener como máximo 50 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    if (!apellido.matches("[a-zA-Z]{2,}(\\s[a-zA-Z]+)?")) {
+                        JOptionPane.showMessageDialog(null, "El apellido debe tener mínimo 2 letras; y máximo 1 espacio entre palabras. ", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
                 }
 
-                String telefono = campoTelefono.getText();
-                if (telefono.charAt(0) == '0' || telefono.charAt(0) == '1' || telefono.charAt(0) == '4' || telefono.charAt(0) == '5' || telefono.charAt(0) == '6' || telefono.charAt(0) == '7') {
-                    JOptionPane.showMessageDialog(null, "Formato de teléfono inválido", "Validación", JOptionPane.ERROR_MESSAGE);
-                    return;
+                // Validar el formato de identidad solo si no está vacío, otras validaciones extras
+                if (!identidad.isEmpty()) {
+                    // Verificar la longitud de la identidad
+                    if (identidad.length() != 15) {
+                        JOptionPane.showMessageDialog(null, "La identidad debe tener 15 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    // Verificar que la identidad tenga el formato correcto
+                    if (!identidad.matches("\\d{4}-\\d{4}-\\d{5}")) {
+                        JOptionPane.showMessageDialog(null, "La identidad debe tener el formato ####-####-#####", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    // Quitar los guiones de la identidad para obtener solo los números
+                    String numerosIdentidad = identidad.replace("-", "");
+
+                    // Utilizar el método comprobarIdentidad de la clase Cliente
+                    Cliente cliente = new Cliente();
+                    boolean esIdentidadValida = cliente.comprobarIdentidad(numerosIdentidad);
+                    if (!esIdentidadValida) {
+                        JOptionPane.showMessageDialog(null, "La identidad ingresada no es válida", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
                 }
 
-                if (telefono.length() != 8) {
-                    JOptionPane.showMessageDialog(null, "El formato de teléfono solo admite 8 dígitos", "Validación", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
+                // Verificar el campo de telefono, otras validaciones extras
+                String telefono = campoTelefono.getText().trim();
+                if (!telefono.isEmpty()) {
+                    if (telefono.length() != 8) {
+                        JOptionPane.showMessageDialog(null, "El teléfono debe tener 8 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
 
-                if (!Cliente.comprobarIdentidad(campoIdentidad.getText())) {
-                    JOptionPane.showMessageDialog(null, "Identidad no válida", "Validación", JOptionPane.ERROR_MESSAGE);
-                    return;
+                    if (!telefono.matches("[389]\\d+")) {
+                        JOptionPane.showMessageDialog(null, "El teléfono debe comenzar con 3, 8 o 9", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
                 }
 
                 guardar();
             }
         });
-
-
     }
 
     public void guardar(){
@@ -155,6 +320,23 @@ public class CrearCliente extends JFrame{
 
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO " + Cliente.nombreTabla + "(`nombre`, `apellido`, `identidad`, `telefono`, `domicilio`, `tipo_cliente`) VALUES(?,?,?,?,?,?)")) {
+
+            // Verificar si ya existe un cliente con la misma identidad
+            String identidad = campoIdentidad.getText().trim();
+            String selectQuery = "SELECT * FROM " + Cliente.nombreTabla + " WHERE identidad = ?";
+            PreparedStatement selectStatement = connection.prepareStatement(selectQuery);
+            selectStatement.setString(1, identidad);
+            ResultSet resultSet = selectStatement.executeQuery();
+
+            if (resultSet.next()) {
+                // Mostrar mensaje de error indicando que la identidad ya está registrada
+                String mensajeError = "La identidad " + identidad + " ya está registrada para el siguiente cliente:\n" +
+                        "- Nombre: " + resultSet.getString("nombre") + "\n" +
+                        "- Apellido: " + resultSet.getString("apellido") + "\n" +
+                        "- Teléfono: " + resultSet.getString("telefono");
+                JOptionPane.showMessageDialog(null, mensajeError, "Error", JOptionPane.ERROR_MESSAGE);
+                return; // Detener el proceso de guardado
+            }
 
             preparedStatement.setString(1, campoNombre.getText());
             preparedStatement.setString(2, campoApellido.getText());
@@ -170,15 +352,16 @@ public class CrearCliente extends JFrame{
             cliente.setVisible(true);
             actual.dispose();
 
-            // Mensaje personalizado
-            System.out.println("Cliente " + campoNombre.getText() + " " + campoApellido.getText() + " agregado exitosamente.");
-
             // Mostrar mensaje de éxito
             String nombreCompleto = campoNombre.getText() + " " + campoApellido.getText();
+
+            // Mensaje personalizado
+            System.out.println("Cliente " + nombreCompleto + " ha sido registrado exitosamente.");
             JOptionPane.showMessageDialog(null, "Cliente " + nombreCompleto + " ha sido registrado exitosamente.");
+
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            String mensajeError = "Error al guardar el cliente: " + e.getMessage();
+            JOptionPane.showMessageDialog(null, mensajeError, "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 }
