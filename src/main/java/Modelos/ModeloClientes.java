@@ -6,19 +6,15 @@ import javax.swing.table.AbstractTableModel;
 import java.util.List;
 
 public class ModeloClientes extends AbstractTableModel {
-
-    private final String[] columnas;
-
-    private final List<Cliente>  clients;
-
-    public ModeloClientes(String[] columnas, List<Cliente> clients) {
-        this.columnas = columnas;
-        this.clients = clients;
+    private final String[] columnas = {"N°", "Identidad", "Nombre Completo", "Teléfono", "Tipo", "Domicilio"};
+    private final List<Cliente> clientes;
+    public ModeloClientes(List<Cliente> clientes) {
+        this.clientes = clientes;
     }
 
     @Override
     public int getRowCount() {
-        return clients.size();
+        return clientes.size();
     }
 
     @Override
@@ -26,12 +22,12 @@ public class ModeloClientes extends AbstractTableModel {
         return columnas.length;
     }
 
-    public List<Cliente> getClients() {
-        return clients;
+    public List<Cliente> getClientes() {
+        return clientes;
     }
 
     public Cliente getCliente(int index) {
-        return clients.get(index);
+        return clientes.get(index);
     }
 
     @Override
@@ -41,16 +37,23 @@ public class ModeloClientes extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
+        Cliente cliente = clientes.get(rowIndex);
 
-        return switch (columnIndex) {
-            case 0 -> clients.get(rowIndex).getId();
-            case 1 -> clients.get(rowIndex).getNombre();
-            case 2 -> clients.get(rowIndex).getApellido();
-            case 3 -> clients.get(rowIndex).getIdentidad();
-            case 4 -> clients.get(rowIndex).getTelefono();
-            case 5 -> clients.get(rowIndex).getDomicilio();
-            case 6 -> clients.get(rowIndex).getTipo_cliente();
-            default -> null;
-        };
+        switch (columnIndex) {
+            case 0:
+                return rowIndex + 1;
+            case 1:
+                return cliente.getIdentidad();
+            case 2:
+                return cliente.getNombre() + " " + cliente.getApellido();
+            case 3:
+                return cliente.getTelefono();
+            case 4:
+                return cliente.getTipo_cliente();
+            case 5:
+                return cliente.getDomicilio();
+            default:
+                return null;
+        }
     }
 }

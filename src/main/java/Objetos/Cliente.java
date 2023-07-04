@@ -1,17 +1,7 @@
 package Objetos;
 
-import Objetos.Conexion;
-
-import javax.swing.*;
-import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 public class Cliente {
     private int id;
@@ -21,29 +11,8 @@ public class Cliente {
     private String telefono;
     private String domicilio;
     private String tipo_cliente;
-
     public static String nombreTabla = "clientes";
-
-    public static String[] columnasCampos = {
-            "N°",
-            "Nombre",
-            "Apellido",
-            "Identidad",
-            "Teléfono",
-            "Domicilio",
-            "Tipo de cliente"
-    };
-
-    public static String[] columnasLista = {
-            "N°",
-            "Nombre",
-            "Apellido",
-            "Identidad",
-            "Teléfono",
-            "Domicilio",
-            "Tipo de cliente"
-    };
-
+    public static final String[] columnas = {"N°", "Identidad", "Nombre Completo", "Teléfono", "Tipo", "Domicilio"};
 
     public Cliente() {
     }
@@ -58,29 +27,21 @@ public class Cliente {
         this.tipo_cliente = tipo_cliente;
     }
 
-
-
-
     public int getId() {
         return id;
     }
-
     public void setId(int id) {
         this.id = id;
     }
-
     public String getNombre() {
         return nombre;
     }
-
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
-
     public String getApellido() {
         return apellido;
     }
-
     public void setApellido(String apellido) {
         this.apellido = apellido;
     }
@@ -88,15 +49,12 @@ public class Cliente {
     public String getIdentidad() {
         return identidad;
     }
-
     public void setIdentidad(String identidad) {
         this.identidad = identidad;
     }
-
     public String getTelefono() {
         return telefono;
     }
-
     public void setTelefono(String telefono) {
         this.telefono = telefono;
     }
@@ -104,19 +62,15 @@ public class Cliente {
     public String getDomicilio() {
         return domicilio;
     }
-
     public void setDomicilio(String domicilio) {
         this.domicilio = domicilio;
     }
-
     public String getTipo_cliente() {
         return tipo_cliente;
     }
-
     public void setTipo_cliente(String tipo_cliente) {
         this.tipo_cliente = tipo_cliente;
     }
-
     private static final Map<String, Integer> RANGOS_DIGITOS_MUNICIPALES = new HashMap<>();
 
     static {
@@ -160,6 +114,4 @@ public class Cliente {
 
         return true;
     }
-
 }
-
