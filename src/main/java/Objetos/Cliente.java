@@ -7,6 +7,12 @@ import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 public class Cliente {
     private int id;
     private String nombre;
@@ -154,5 +160,6 @@ public class Cliente {
 
         return true;
     }
+
 }
 
