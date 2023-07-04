@@ -38,7 +38,7 @@
         <properties>
           <font name="Arial" size="12" style="1"/>
           <foreground color="-16315129"/>
-          <text value="Apellido"/>
+          <text value="Apellidos"/>
         </properties>
       </component>
       <component id="37ac0" class="javax.swing.JLabel">
@@ -141,16 +141,6 @@
           <text value="Tipo de Cliente"/>
         </properties>
       </component>
-      <component id="33b0e" class="javax.swing.JRadioButton" binding="radioMayorista">
-        <constraints>
-          <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <font name="Arial" size="12" style="1"/>
-          <label value="Mayorista"/>
-          <text value="Mayorista"/>
-        </properties>
-      </component>
       <component id="1dfa9" class="javax.swing.JRadioButton" binding="radioAldetalle">
         <constraints>
           <grid row="5" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
@@ -159,6 +149,16 @@
           <font name="Arial" size="12" style="1"/>
           <label value="Al detalle"/>
           <text value="Al detalle"/>
+        </properties>
+      </component>
+      <component id="33b0e" class="javax.swing.JRadioButton" binding="radioMayorista">
+        <constraints>
+          <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font name="Arial" size="12" style="1"/>
+          <label value="Mayorista"/>
+          <text value="Mayorista"/>
         </properties>
       </component>
     </children>
