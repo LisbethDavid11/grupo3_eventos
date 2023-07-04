@@ -2,7 +2,7 @@ package Clientes;
 
 import Objetos.Cliente;
 import Objetos.Conexion;
-
+import java.awt.Color;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -52,6 +52,38 @@ public class VerCliente extends JFrame {
         etiquetaTipoCliente.setEditable(false);
         etiquetaTipoCliente.setFocusable(false);
 
+
+
+        // Color de fondo del panel
+        panel1.setBackground(Color.decode("#F5F5F5"));
+
+        // Color de texto para los JTextField
+        Color textColor = Color.decode("#212121");
+        etiquetaNombre.setForeground(textColor);
+        etiquetaApellido.setForeground(textColor);
+        etiquetaTelefono.setForeground(textColor);
+        etiquetaIdentidad.setForeground(textColor);
+        etiquetaTipoCliente.setForeground(textColor);
+
+        // Color de fondo para los JTextField
+        Color textFieldColor = Color.decode("#FFFFFF");
+        etiquetaNombre.setBackground(textFieldColor);
+        etiquetaApellido.setBackground(textFieldColor);
+        etiquetaTelefono.setBackground(textFieldColor);
+        etiquetaIdentidad.setBackground(textFieldColor);
+        etiquetaTipoCliente.setBackground(textFieldColor);
+
+        // Color de texto para el JTextArea
+        etiquetaDomicilio.setForeground(textColor);
+
+        // Color de fondo para el JTextArea
+        etiquetaDomicilio.setBackground(textFieldColor);
+
+        // Color de fondo y texto para el botón
+        Color buttonColor = Color.decode("#E91E63");
+        volverButton.setBackground(buttonColor);
+        volverButton.setForeground(textColor);
+
         volverButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -84,6 +116,8 @@ public class VerCliente extends JFrame {
             System.out.println(error.getMessage());
         }
     }
+
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
