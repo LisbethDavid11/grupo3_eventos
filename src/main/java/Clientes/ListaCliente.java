@@ -96,7 +96,7 @@ public class ListaCliente extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (listaClientes.getSelectedRow() == -1) {
-                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar");
+                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.ERROR_MESSAGE);
                     return;
                 }
                 VerCliente cliente = new VerCliente(listaCliente.get(listaClientes.getSelectedRow()).getId());
@@ -109,7 +109,7 @@ public class ListaCliente extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (listaClientes.getSelectedRow() == -1) {
-                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar");
+                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.ERROR_MESSAGE);
                     return;
                 }
                 EditarCliente cliente = new EditarCliente(listaCliente.get(listaClientes.getSelectedRow()).getId());

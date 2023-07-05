@@ -253,36 +253,36 @@ public class CrearEmpleado extends JFrame{
                         return;
                     }
                     if (campoTelefono.getText().charAt(0) == '1' || campoTelefono.getText().charAt(0) == '4' || campoTelefono.getText().charAt(0) == '5' || campoTelefono.getText().charAt(0) == '6' || campoTelefono.getText().charAt(0) == '7' || campoTelefono.getText().charAt(0) == '0'){
-                        JOptionPane.showMessageDialog(null,"Su número de teléfono no es válido");
+                        JOptionPane.showMessageDialog(null,"Su número de teléfono no es válido",tituloValidacion, JOptionPane.ERROR_MESSAGE);
                         return;
                     }
                     if (campoIdentidad.getText().length() <15){
-                        JOptionPane.showMessageDialog(null,"Su número de identidad debe contener 15 digitos incluyendo guiones");
+                        JOptionPane.showMessageDialog(null,"Su número de identidad debe contener 15 digitos incluyendo guiones",tituloValidacion, JOptionPane.ERROR_MESSAGE);
                         return;
                     }
                     if (campoEdad.getText().length() <2){
-                        JOptionPane.showMessageDialog(null,"Su edad debe contener 2 digitos");
+                        JOptionPane.showMessageDialog(null,"Su edad debe contener 2 digitos",tituloValidacion, JOptionPane.ERROR_MESSAGE);
                         return;
                     }
 
                     if (campoTelefono.getText().length() <8){
-                        JOptionPane.showMessageDialog(null,"Su número de teléfono debe contener 8 digitos");
+                        JOptionPane.showMessageDialog(null,"Su número de teléfono debe contener 8 digitos",tituloValidacion, JOptionPane.ERROR_MESSAGE);
                         return;
                     }
                     if (campoContacto.getText().charAt(0) == '1' || campoContacto.getText().charAt(0) == '4' || campoContacto.getText().charAt(0) == '5' || campoContacto.getText().charAt(0) == '6' || campoContacto.getText().charAt(0) == '7' || campoContacto.getText().charAt(0) == '0'){
-                        JOptionPane.showMessageDialog(null,"Su número de teléfono no es válido");
+                        JOptionPane.showMessageDialog(null,"Su número de teléfono no es válido",tituloValidacion, JOptionPane.ERROR_MESSAGE);
                         return;
                     }
                     if (campoContacto.getText().length() <8){
-                        JOptionPane.showMessageDialog(null,"Su número de teléfono debe contener 8 digitos");
+                        JOptionPane.showMessageDialog(null,"Su número de teléfono debe contener 8 digitos",tituloValidacion, JOptionPane.ERROR_MESSAGE);
                         return;
                     }
                     if (!Empleados.ComprobarIdentidad(campoIdentidad.getText())){
-                        JOptionPane.showMessageDialog(null,"Identidad no válida" );
+                        JOptionPane.showMessageDialog(null,"Identidad no válida",tituloValidacion, JOptionPane.ERROR_MESSAGE );
                         return;
                     }
                     if (Empleados.ValidarCorreo(campoCorreo.getText())){
-                        JOptionPane.showMessageDialog(null,"Formato de correo inválido.\n ejemplo:luis@xxx.xxx");
+                        JOptionPane.showMessageDialog(null,"Formato de correo inválido.\n ejemplo:luis@xxx.xxx",tituloValidacion, JOptionPane.ERROR_MESSAGE);
                         return;
                     }
 
@@ -328,7 +328,7 @@ public class CrearEmpleado extends JFrame{
 
         // Mostrar mensaje de éxito
         String nombreCompleto = campoNombres.getText() + " " + campoApellidos.getText();
-        JOptionPane.showMessageDialog(null, "Empleado " + nombreCompleto + " ha sido registrado exitosamente.");
+        JOptionPane.showMessageDialog(null, "Empleado " + nombreCompleto + " ha sido registrado exitosamente.",tituloValidacion, JOptionPane.INFORMATION_MESSAGE);
     }
 
         //metodo Actualizar datos
