@@ -196,7 +196,6 @@ public class CrearCliente extends JFrame{
             }
         });
 
-
         botonCancelar.setBackground(darkColor);
         botonCancelar.setForeground(textColor);
         botonGuardar.setBackground(darkColor);
@@ -214,7 +213,6 @@ public class CrearCliente extends JFrame{
         label5.setForeground(textColor);
         label6.setForeground(textColor);
         label7.setForeground(textColor);
-
 
         ButtonGroup buttonGroup = new ButtonGroup();
         buttonGroup.add(radioAldetalle);
