@@ -11,6 +11,7 @@ public class Cliente {
     private String telefono;
     private String domicilio;
     private String tipo_cliente;
+
     public static String nombreTabla = "clientes";
     public static final String[] columnas = {"N°", "Identidad", "Nombre Completo", "Teléfono", "Tipo", "Domicilio"};
 

@@ -52,8 +52,6 @@ public class VerCliente extends JFrame {
         etiquetaTipoCliente.setEditable(false);
         etiquetaTipoCliente.setFocusable(false);
 
-
-
         // Color de fondo del panel
         panel1.setBackground(Color.decode("#F5F5F5"));
 
@@ -103,21 +101,20 @@ public class VerCliente extends JFrame {
             statement.setInt(1, this.id);
             ResultSet resultSet = statement.executeQuery();
 
-            resultSet.next();
-            etiquetaNombre.setText(resultSet.getString(2));
-            etiquetaApellido.setText(resultSet.getString(3));
-            etiquetaIdentidad.setText(resultSet.getString(4));
-            etiquetaTelefono.setText(resultSet.getString(5));
-            etiquetaDomicilio.setText(resultSet.getString(6));
-            etiquetaTipoCliente.setText(resultSet.getString(7));
+            if (resultSet.next()) { // Verificar si hay un resultado antes de obtener los valores
+                etiquetaNombre.setText(resultSet.getString(2));
+                etiquetaApellido.setText(resultSet.getString(3));
+                etiquetaIdentidad.setText(resultSet.getString(4));
+                etiquetaTelefono.setText(resultSet.getString(5));
+                etiquetaDomicilio.setText(resultSet.getString(6));
+                etiquetaTipoCliente.setText(resultSet.getString(7));
+            }
 
         } catch (SQLException error) {
             // Mensaje de error
             System.out.println(error.getMessage());
         }
     }
-
-
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {

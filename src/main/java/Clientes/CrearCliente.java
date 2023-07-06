@@ -356,7 +356,7 @@ public class CrearCliente extends JFrame{
 
             // Mensaje personalizado
             System.out.println("Cliente " + nombreCompleto + " ha sido registrado exitosamente.");
-            JOptionPane.showMessageDialog(null, "Cliente " + nombreCompleto + " ha sido registrado exitosamente.", "Exito", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Cliente " + nombreCompleto + " ha sido registrado exitosamente.", "Éxito", JOptionPane.ERROR_MESSAGE);
 
         } catch (SQLException e) {
             String mensajeError = "Error al guardar el cliente: " + e.getMessage();

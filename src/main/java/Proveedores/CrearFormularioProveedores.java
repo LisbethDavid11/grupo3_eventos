@@ -1,7 +1,6 @@
 package Proveedores;
 
 import Objetos.Conexion;
-import Objetos.Empleados;
 import Objetos.Proveedores;
 
 import javax.swing.*;

@@ -1,17 +1,10 @@
 package Empleados;
 
-import Objetos.Conexion;
-
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
-public class VerEmpleado extends JFrame{
+public class VerEmpleado extends JFrame {
     public JLabel campoIdentidad;
     public JLabel campoNombres;
     public JLabel campoApellidos;
@@ -29,9 +22,11 @@ public class VerEmpleado extends JFrame{
     public JLabel lblnomConcat;
     public JLabel lblapeConcat;
     public VerEmpleado mostrarEmpleado = this;
+    private int empleadoId; // Variable de instancia para almacenar el ID del empleado
 
-    public VerEmpleado()  {
-        super("Ver empleado");
+    public VerEmpleado(int empleadoId) {
+        super("");
+        this.empleadoId = empleadoId; // Asignar el ID del empleado a la variable de instancia
         setSize(600, 600);
         setLocationRelativeTo(null);
         setContentPane(panel1);
@@ -39,16 +34,19 @@ public class VerEmpleado extends JFrame{
         cancelarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    VistaEmpleado vistaEmpleado = new VistaEmpleado();
-                    vistaEmpleado.setVisible(true);
-                    mostrarEmpleado.dispose();
-
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
-                }
+                ListaEmpleados listaEmpleados = new ListaEmpleados();
+                listaEmpleados.setVisible(true);
+                mostrarEmpleado.dispose();
             }
         });
     }
 
-}//class
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                VerEmpleado verEmpleado = new VerEmpleado(1); // Pasa el ID del cliente que deseas ver
+                verEmpleado.setVisible(true);
+            }
+        });
+    }
+}

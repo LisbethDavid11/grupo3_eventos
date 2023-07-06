@@ -1,23 +1,23 @@
 package Empleados;
 
 import Objetos.Conexion;
-import Objetos.Empleados;
+import Objetos.Empleado;
 
 import javax.swing.*;
 import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.MaskFormatter;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.Objects;
 
-public class CrearEmpleado extends JFrame{
-
+public class CrearEmpleado extends JFrame {
     public JTextField campoNombres;
     public JTextField campoApellidos;
     public JTextField campoEdad;
@@ -30,41 +30,55 @@ public class CrearEmpleado extends JFrame{
     public JRadioButton masculinoRadioButton;
     public JTextField campoCorreo;
     public JTextField campoTelefono;
-    public JTextField campoContacto;
+    public JTextField campoContactoEmergencia;
     public JRadioButton temporalRadioButton;
     public JRadioButton permanenteRadioButton;
     public JTextField campoNombreContacto;
-    public JLabel lblID;
-    public JButton actualizarButton;
+
     private Conexion sql;
     private Connection mysql;
     public CrearEmpleado crearEmpleado = this;
-    public ButtonGroup grupogenero;
+    public ButtonGroup grupoGenero;
     public ButtonGroup grupoTipo;
 
-    // Declarar la variable para el título de validación
-    String tituloValidacion = "Validación";
+    // Colores personalizados
+    Color primaryColor = Color.decode("#263238"); // Gris azul oscuro
+    Color lightColor = Color.decode("#37474f"); // Gris azul claro
+    Color darkColor = Color.decode("#000a12"); // Gris azul más oscuro
+    Color textColor = Color.WHITE; // Texto blanco
 
-    private JTextField[] campos = {campoIdentidad, campoNombres, campoApellidos, campoEdad, campoCorreo, campoTelefono, campoContacto};
+    private JTextField[] campos = {
+            campoIdentidad,
+            campoNombres,
+            campoApellidos,
+            campoEdad,
+            campoCorreo,
+            campoTelefono,
+            campoContactoEmergencia
+    };
 
     public CrearEmpleado() {
         super("Crear Empleados");
-        setSize(600, 600);
+        setSize(800, 550);
         setLocationRelativeTo(null);
         setContentPane(panel1);
+        sql = new Conexion();
+
+        // Color de fondo
+        panel1.setBackground(lightColor);
 
         campoDireccion.setLineWrap(true);
         campoDireccion.setWrapStyleWord(true);
 
-        grupogenero = new ButtonGroup();
-        grupogenero.add(femeninoRadioButton);
-        grupogenero.add(masculinoRadioButton);
-        femeninoRadioButton.setSelected(true);
+        grupoGenero = new ButtonGroup();
+        grupoGenero.add(femeninoRadioButton);
+        grupoGenero.add(masculinoRadioButton);
+        grupoGenero.clearSelection();
 
         grupoTipo = new ButtonGroup();
         grupoTipo.add(temporalRadioButton);
         grupoTipo.add(permanenteRadioButton);
-        temporalRadioButton.setSelected(true);
+        grupoTipo.clearSelection();
 
         try {
             MaskFormatter formatoIdentidad = new MaskFormatter("####-####-#####");
@@ -73,246 +87,528 @@ public class CrearEmpleado extends JFrame{
             throw new RuntimeException(e);
         }
 
+
+        // Asignar nombres a los campos de texto
+        campoNombres.setName("Nombre");
+        campoApellidos.setName("Apellido");
+        campoIdentidad.setName("Identidad");
+        campoTelefono.setName("Teléfono");
+
         campoNombres.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                Conexion.soloLetra(e,campoNombres.getText().length(),49,campoNombres.getCaretPosition());
+                String text = campoNombres.getText();
+                int length = text.length();
+                int caretPosition = campoNombres.getCaretPosition();
+
+                // Verificar si se está ingresando un espacio en blanco
+                if (e.getKeyChar() == ' ') {
+                    // Verificar si es el primer espacio en blanco
+                    if (length == 0 || caretPosition == 0) {
+                        e.consume(); // Ignorar el espacio en blanco
+                    } else {
+                        // Verificar si ya hay un espacio en blanco en el texto
+                        boolean hasSpace = text.contains(" ");
+                        if (hasSpace) {
+                            e.consume(); // Ignorar el espacio en blanco adicional
+                        }
+                    }
+                } else {
+                    // Verificar la longitud del texto después de eliminar espacios en blanco
+                    String trimmedText = text.replaceAll(" ", "");
+                    int trimmedLength = trimmedText.length();
+
+                    // Verificar si se está ingresando una letra
+                    if (Character.isLetter(e.getKeyChar())) {
+                        // Verificar si se excede el límite de caracteres
+                        if (trimmedLength >= 50) {
+                            e.consume(); // Ignorar la letra
+                        } else {
+                            // Verificar si es el primer carácter o el carácter después de un espacio en blanco
+                            if (length == 0 || (caretPosition > 0 && text.charAt(caretPosition - 1) == ' ')) {
+                                // Convertir la letra a mayúscula
+                                e.setKeyChar(Character.toUpperCase(e.getKeyChar()));
+                            }
+                        }
+                    } else {
+                        e.consume(); // Ignorar cualquier otro tipo de carácter
+                    }
+                }
             }
         });
 
         campoApellidos.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                Conexion.soloLetra(e, campoApellidos.getText().length(),49,campoApellidos.getCaretPosition());
+                String text = campoApellidos.getText();
+                int length = text.length();
+                int caretPosition = campoApellidos.getCaretPosition();
+
+                // Verificar si se está ingresando un espacio en blanco
+                if (e.getKeyChar() == ' ') {
+                    // Verificar si es el primer espacio en blanco
+                    if (length == 0 || caretPosition == 0) {
+                        e.consume(); // Ignorar el espacio en blanco
+                    } else {
+                        // Verificar si ya hay un espacio en blanco en el texto
+                        boolean hasSpace = text.contains(" ");
+                        if (hasSpace) {
+                            e.consume(); // Ignorar el espacio en blanco adicional
+                        }
+                    }
+                } else {
+                    // Verificar la longitud del texto después de eliminar espacios en blanco
+                    String trimmedText = text.replaceAll(" ", "");
+                    int trimmedLength = trimmedText.length();
+
+                    // Verificar si se está ingresando una letra
+                    if (Character.isLetter(e.getKeyChar())) {
+                        // Verificar si se excede el límite de caracteres
+                        if (trimmedLength >= 50) {
+                            e.consume(); // Ignorar la letra
+                        } else {
+                            // Verificar si es el primer carácter o el carácter después de un espacio en blanco
+                            if (length == 0 || (caretPosition > 0 && text.charAt(caretPosition - 1) == ' ')) {
+                                // Convertir la letra a mayúscula
+                                e.setKeyChar(Character.toUpperCase(e.getKeyChar()));
+                            }
+                        }
+                    } else {
+                        e.consume(); // Ignorar cualquier otro tipo de carácter
+                    }
+                }
             }
         });
 
-        campoNombreContacto.addKeyListener(new KeyAdapter() {
+        campoEdad.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                Conexion.soloLetra(e, campoNombreContacto.getText().length(),49,campoNombreContacto.getCaretPosition());
+                String edad = campoEdad.getText();
+                if (!Character.isDigit(e.getKeyChar()) || edad.length() >= 2) {
+                    e.consume(); // Evita que se escriban caracteres no numéricos o se exceda la longitud
+                }
+
+                // Verificar restricciones adicionales para el primer y segundo dígito
+                if (edad.length() == 0 && (e.getKeyChar() < '1' || e.getKeyChar() > '6')) {
+                    e.consume(); // Evita que se ingrese un dígito inválido como primer dígito
+                } else if (edad.length() == 1) {
+                    if (edad.charAt(0) == '1' && (e.getKeyChar() != '8' && e.getKeyChar() != '9')) {
+                        e.consume(); // Evita que se ingrese un dígito inválido como segundo dígito si el primer dígito es 1
+                    } else if (edad.charAt(0) == '6' && (e.getKeyChar() != '0')) {
+                        e.consume(); // Evita que se ingrese un dígito inválido como segundo dígito si el primer dígito es 6
+                    }
+                }
+            }
+        });
+
+        campoDireccion.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                String texto = campoDireccion.getText();
+                int caretPosition = campoDireccion.getCaretPosition();
+
+                // Verificar si se están ingresando más de dos espacios en blanco seguidos
+                if (e.getKeyChar() == ' ' && texto.endsWith(" ")) {
+                    e.consume(); // Ignorar el evento y no agregar el espacio en blanco adicional
+                    return;
+                }
+
+                // Convertir la primera letra en mayúscula
+                if (texto.length() > 0) {
+                    String primeraLetra = texto.substring(0, 1).toUpperCase();
+                    String restoTexto = texto.substring(1);
+                    texto = primeraLetra + restoTexto;
+                    campoDireccion.setText(texto);
+                }
+
+                Conexion.soloLetra(e, texto.length(), 200, caretPosition);
             }
         });
 
         campoTelefono.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                Conexion.soloNumeros(e,7, campoTelefono.getText().length());
-
-            }
-        });
-
-        campoContacto.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                Conexion.soloNumeros(e,7,campoContacto.getText().length());
+                String telefono = campoTelefono.getText();
+                if (!Character.isDigit(e.getKeyChar()) || telefono.length() >= 8) {
+                    e.consume(); // Evita que se escriban caracteres no numéricos o se exceda la longitud
                 }
 
-        });
-
-        campoDireccion.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                Conexion.soloLetra(e, campoDireccion.getText().length(),200,campoDireccion.getCaretPosition());
+                if (telefono.length() == 0 && (e.getKeyChar() < '2' || e.getKeyChar() > '9')) {
+                    e.consume(); // Evita que se ingrese un dígito inválido como primer dígito
+                }
             }
         });
 
-        //boton cancelar
+        campoNombreContacto.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                String text = campoNombreContacto.getText();
+                int length = text.length();
+                int caretPosition = campoNombreContacto.getCaretPosition();
+
+                // Verificar si se está ingresando un espacio en blanco
+                if (e.getKeyChar() == ' ') {
+                    // Verificar si es el primer espacio en blanco
+                    if (length == 0 || caretPosition == 0) {
+                        e.consume(); // Ignorar el espacio en blanco
+                    } else {
+                        // Verificar si ya hay un espacio en blanco en el texto
+                        boolean hasSpace = text.contains(" ");
+                        if (hasSpace) {
+                            e.consume(); // Ignorar el espacio en blanco adicional
+                        }
+                    }
+                } else {
+                    // Verificar la longitud del texto después de eliminar espacios en blanco
+                    String trimmedText = text.replaceAll(" ", "");
+                    int trimmedLength = trimmedText.length();
+
+                    // Verificar si se está ingresando una letra
+                    if (Character.isLetter(e.getKeyChar())) {
+                        // Verificar si se excede el límite de caracteres
+                        if (trimmedLength >= 50) {
+                            e.consume(); // Ignorar la letra
+                        } else {
+                            // Verificar si es el primer carácter o el carácter después de un espacio en blanco
+                            if (length == 0 || (caretPosition > 0 && text.charAt(caretPosition - 1) == ' ')) {
+                                // Convertir la letra a mayúscula
+                                e.setKeyChar(Character.toUpperCase(e.getKeyChar()));
+                            }
+                        }
+                    } else {
+                        e.consume(); // Ignorar cualquier otro tipo de carácter
+                    }
+                }
+            }
+        });
+
+        campoContactoEmergencia.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                String contactoEmergencia = campoContactoEmergencia.getText();
+                if (!Character.isDigit(e.getKeyChar()) || contactoEmergencia.length() >= 8) {
+                    e.consume(); // Evita que se escriban caracteres no numéricos o se exceda la longitud
+                }
+
+                if (contactoEmergencia.length() == 0 && (e.getKeyChar() < '2' || e.getKeyChar() > '9')) {
+                    e.consume(); // Evita que se ingrese un dígito inválido como primer dígito
+                }
+            }
+        });
+
+        cancelarButton.setBackground(darkColor);
+        cancelarButton.setForeground(textColor);
+        guardarButton.setBackground(darkColor);
+        guardarButton.setForeground(textColor);
+
+        temporalRadioButton.setBackground(lightColor);
+        temporalRadioButton.setForeground(textColor);
+        permanenteRadioButton.setBackground(lightColor);
+        permanenteRadioButton.setForeground(textColor);
+        femeninoRadioButton.setBackground(lightColor);
+        femeninoRadioButton.setForeground(textColor);
+        masculinoRadioButton.setBackground(lightColor);
+        masculinoRadioButton.setForeground(textColor);
+
+
+        // Cargar los iconos en blanco
+        ImageIcon cancelIcon = new ImageIcon("cancel_icon_white.png");
+        ImageIcon saveIcon = new ImageIcon("save_icon_white.png");
+        ImageIcon updateIcon = new ImageIcon("update_icon_white.png");
+
+        // Establecer los iconos en los botones
+        cancelarButton.setIcon(cancelIcon);
+        guardarButton.setIcon(saveIcon);
+
+        // Establecer el color de texto en blanco para los botones
+        cancelarButton.setForeground(textColor);
+        guardarButton.setForeground(textColor);
+
+        // Establecer el fondo oscuro para los botones
+        cancelarButton.setBackground(darkColor);
+        guardarButton.setBackground(darkColor);
+
+        // Boton cancelar
         cancelarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    VistaEmpleado vistaEmpleado = new VistaEmpleado();
-                    vistaEmpleado.setVisible(true);
-                    crearEmpleado.dispose();
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
-                }
+                ListaEmpleados listaEmpleados = new ListaEmpleados();
+                listaEmpleados.setVisible(true);
+                crearEmpleado.dispose();
             }
         });
 
-        //boton guardar
+        // Boton guardar
         guardarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
                 try {
                     int validacion = 0;
-                    int contador = 0;
                     String mensaje = "Faltó ingresar: \n";
-                    for (JTextField campo : campos) {
 
-                        if (Objects.equals( campo.getText().replaceAll("\\s+",""), "")){
-                         mensaje += Empleados.ColumnasDeTabla[contador] + "\n";
-                         validacion += 1;
+                    // Verificar si ya existe un empleado con la misma identidad
+                    if (validarIdentidadExistente(campoIdentidad.getText().trim())) {
+                        JOptionPane.showMessageDialog(null, "La identidad ingresada ya está asociada a otro empleado", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return; // Detener la ejecución del método
+                    }
 
+                    // Verificar si ya existe un empleado con el mismo teléfono
+                    if (validarTelefonoExistente(campoTelefono.getText().trim())) {
+                        JOptionPane.showMessageDialog(null, "El teléfono ingresado ya está asociado a otro empleado", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return; // Detener la ejecución del método
+                    }
+
+                    // Verificar que el DNI no se encuentre vacio
+                    String dni = campoIdentidad.getText().trim();
+                    if (dni.length() != 15) {
+                        validacion++;
+                        mensaje += "Identidad\n";
+                    }
+
+                    // Verificar el nombre
+                    if (campoNombres.getText().trim().isEmpty()) {
+                        validacion++;
+                        mensaje += "Nombres\n";
+                    }
+
+                    if (campoApellidos.getText().trim().isEmpty()) {
+                        validacion++;
+                        mensaje += "Apellidos\n";
+                    }
+
+                    // Verificar si se seleccionó un género
+                    if (!femeninoRadioButton.isSelected() && !masculinoRadioButton.isSelected()) {
+                        validacion++;
+                        mensaje += "Género\n";
+                    }
+
+                    if (campoEdad.getText().trim().isEmpty()) {
+                        validacion++;
+                        mensaje += "Edad\n";
+                    } else {
+                        int edad = Integer.parseInt(campoEdad.getText());
+                        if (edad < 18 || edad > 60) {
+                            JOptionPane.showMessageDialog(null, "La edad debe estar entre 18 y 60 años", "Validación", JOptionPane.ERROR_MESSAGE);
+                            return;
                         }
-                        contador += 1;
-
                     }
 
-                    if (validacion > 0){
-                        JOptionPane.showMessageDialog(null, mensaje, tituloValidacion, JOptionPane.ERROR_MESSAGE);
-                        return;
+                    if (campoCorreo.getText().trim().isEmpty()) {
+                        validacion++;
+                        mensaje += "Correo\n";
                     }
 
-                    if (Integer.parseInt(campoEdad.getText()) <18 || Integer.parseInt(campoEdad.getText()) >60){
-                        JOptionPane.showMessageDialog(null,"Su edad no es válida", tituloValidacion, JOptionPane.ERROR_MESSAGE);
-                        return;
+                    if (campoTelefono.getText().trim().isEmpty()) {
+                        validacion++;
+                        mensaje += "Teléfono\n";
                     }
 
-                    if (Integer.parseInt(campoEdad.getText()) < 18 || Integer.parseInt(campoEdad.getText()) > 60) {
-                        JOptionPane.showMessageDialog(null, "Su edad no es válida.", tituloValidacion, JOptionPane.ERROR_MESSAGE);
-                        return;
+                    if (campoNombreContacto.getText().trim().isEmpty()) {
+                        validacion++;
+                        mensaje += "Nombre del contacto de emergencia\n";
                     }
 
-                    if (campoTelefono.getText().charAt(0) == '1' || campoTelefono.getText().charAt(0) == '4' || campoTelefono.getText().charAt(0) == '5' || campoTelefono.getText().charAt(0) == '6' || campoTelefono.getText().charAt(0) == '7' || campoTelefono.getText().charAt(0) == '0'){
-                        JOptionPane.showMessageDialog(null,"Su número de teléfono no es válido", tituloValidacion, JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                    if (campoIdentidad.getText().length() <15){
-                        JOptionPane.showMessageDialog(null,"Su número de identidad debe contener 15 digitos incluyendo guiones", tituloValidacion, JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                    if (campoEdad.getText().length() <2){
-                        JOptionPane.showMessageDialog(null,"Su edad debe contener 2 digitos", tituloValidacion, JOptionPane.ERROR_MESSAGE);
-                        return;
+                    if (campoContactoEmergencia.getText().trim().isEmpty()) {
+                        validacion++;
+                        mensaje += "Teléfono del contacto de emergencia\n";
                     }
 
-                    if (campoTelefono.getText().length() <8){
-                        JOptionPane.showMessageDialog(null,"El de teléfono debe contener 8 digitos", tituloValidacion, JOptionPane.ERROR_MESSAGE);
-                        return;
+                    if (campoDireccion.getText().trim().isEmpty()) {
+                        validacion++;
+                        mensaje += "Dirección\n";
                     }
-                    if (campoContacto.getText().charAt(0) == '1' || campoContacto.getText().charAt(0) == '4' || campoContacto.getText().charAt(0) == '5' || campoContacto.getText().charAt(0) == '6' || campoContacto.getText().charAt(0) == '7' || campoContacto.getText().charAt(0) == '0'){
-                        JOptionPane.showMessageDialog(null,"Su número de teléfono no es válido", tituloValidacion, JOptionPane.ERROR_MESSAGE);
-                        return;
+
+                    // Verificar si se seleccionó un tipo de empleado
+                    if (!temporalRadioButton.isSelected() && !permanenteRadioButton.isSelected()) {
+                        validacion++;
+                        mensaje += "Tipo de empleado\n";
                     }
-                    if (campoContacto.getText().length() <8){
-                        JOptionPane.showMessageDialog(null,"El teléfono debe contener 8 digitos", tituloValidacion, JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                    if (campoDireccion.getText().replaceAll("\\s+","").replaceAll("[^\\dA-Za-z]","").equals("")){
-                        JOptionPane.showMessageDialog(null,"La dirección no puede estar vacío", tituloValidacion, JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                    if (campoDireccion.getText().length() < 7 || campoDireccion.getText().length() > 200) {
-                        JOptionPane.showMessageDialog(null, "El domicilio debe tener entre 7 y 200 caracteres.", tituloValidacion, JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                    if (!Empleados.ComprobarIdentidad(campoIdentidad.getText())){
-                        JOptionPane.showMessageDialog(null,"Identidad no válida", tituloValidacion, JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                    if (Empleados.ValidarCorreo(campoCorreo.getText())){
-                        JOptionPane.showMessageDialog(null,"Formato de correo inválido.\n ejemplo:luis@xxx.xxx", tituloValidacion, JOptionPane.ERROR_MESSAGE);
+
+
+                    // Mostrar mensaje de campos vacíos si es necesario
+                    if (validacion > 0) {
+                        JOptionPane.showMessageDialog(null, mensaje.toString(), "Validación", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
 
+                    String nombre = campoNombres.getText().trim();
+                    if (!nombre.isEmpty()) {
+                        if (nombre.length() > 50) {
+                            JOptionPane.showMessageDialog(null, "El nombre debe tener como máximo 50 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+
+                        if (!nombre.matches("[a-zA-Z]{2,}(\\s[a-zA-Z]+)?")) {
+                            JOptionPane.showMessageDialog(null, "El nombre debe tener mínimo 2 letras; y máximo 1 espacio entre palabras.", "Validación", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(null, "El campo de nombre no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    String apellidos = campoApellidos.getText().trim();
+                    if (!apellidos.isEmpty()) {
+                        if (apellidos.length() > 50) {
+                            JOptionPane.showMessageDialog(null, "Los apellidos deben tener como máximo 50 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+
+                        if (!apellidos.matches("[a-zA-Z]{2,}(\\s[a-zA-Z]+)?")) {
+                            JOptionPane.showMessageDialog(null, "Los apellidos deben tener mínimo 2 letras; y máximo 1 espacio entre palabras.", "Validación", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(null, "El campo de apellidos no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    String correoElectronico = campoCorreo.getText().trim();
+
+                    if (!correoElectronico.isEmpty()) {
+                        // Verificar el formato del correo electrónico utilizando una expresión regular
+                        if (!correoElectronico.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+                            JOptionPane.showMessageDialog(null, "El correo electrónico ingresado no tiene un formato válido", "Validación", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(null, "El campo de correo electrónico no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    String nombreContacto = campoNombreContacto.getText().trim();
+                    if (!nombreContacto.isEmpty()) {
+                        if (nombreContacto.length() > 50) {
+                            JOptionPane.showMessageDialog(null, "El nombre de contacto debe tener como máximo 50 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+
+                        if (!nombreContacto.matches("[a-zA-Z]{2,}(\\s[a-zA-Z]+)?")) {
+                            JOptionPane.showMessageDialog(null, "El nombre de contacto debe tener mínimo 2 letras; y máximo 1 espacio entre palabras.", "Validación", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(null, "El campo de nombre de contacto no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    String domicilio = campoDireccion.getText().trim();
+
+                    if (!domicilio.isEmpty()) {
+                        if (domicilio.length() < 2 || domicilio.length() > 200) {
+                            JOptionPane.showMessageDialog(null, "El domicilio debe tener entre 2 y 200 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+
+                        if (!domicilio.matches("[a-zA-Z0-9]+([;,]?\\s[a-zA-Z0-9]+)*")) {
+                            JOptionPane.showMessageDialog(null, "El domicilio solo puede contener letras, números, punto, coma y máximo 1 espacio entre palabras.", "Validación", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(null, "El campo de domicilio no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    String telefono = campoTelefono.getText().trim();
+
+                    if (!telefono.isEmpty()) {
+                        if (telefono.length() != 8) {
+                            JOptionPane.showMessageDialog(null, "El número de teléfono debe tener exactamente 8 dígitos", "Validación", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+
+                        if (!telefono.matches("[2389]\\d{7}")) {
+                            JOptionPane.showMessageDialog(null, "El número de teléfono debe empezar con 2, 3, 8 o 9", "Validación", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(null, "El campo de teléfono no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    String contactoEmergencia = campoContactoEmergencia.getText().trim();
+
+                    if (!contactoEmergencia.isEmpty()) {
+                        if (contactoEmergencia.length() != 8) {
+                            JOptionPane.showMessageDialog(null, "El número de contacto de emergencia debe tener exactamente 8 dígitos", "Validación", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+
+                        if (!contactoEmergencia.matches("[2389]\\d{7}")) {
+                            JOptionPane.showMessageDialog(null, "El número de contacto de emergencia debe empezar con 2, 3, 8 o 9", "Validación", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(null, "El campo de contacto de emergencia no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    String identidad = campoIdentidad.getText().trim();
+
+                    if (!identidad.isEmpty()) {
+                        if (identidad.length() != 15) {
+                            JOptionPane.showMessageDialog(null, "La identidad debe tener 15 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+
+                        if (!identidad.matches("\\d{4}-\\d{4}-\\d{5}")) {
+                            JOptionPane.showMessageDialog(null, "La identidad debe tener el formato ####-####-#####", "Validación", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+
+                        String numerosIdentidad = identidad.replace("-", "");
+
+                        Empleado empleado = new Empleado();
+                        boolean esIdentidadValida = empleado.comprobarIdentidad(numerosIdentidad);
+                        if (!esIdentidadValida) {
+                            JOptionPane.showMessageDialog(null, "La identidad ingresada no es válida", "Validación", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(null, "El campo de identidad no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    // Resto del código para guardar los datos
                     GuardarDatos();
                 } catch (SQLException ex) {
-
-                    throw new RuntimeException(ex);
-                }
-                try {
-                    VistaEmpleado vistaEmpleado = new VistaEmpleado();
-                    vistaEmpleado.setVisible(true);
-                    crearEmpleado.dispose();
-
-                } catch (SQLException ex) {
                     throw new RuntimeException(ex);
                 }
 
+                ListaEmpleados listaEmpleados = new ListaEmpleados();
+                listaEmpleados.setVisible(true);
+                crearEmpleado.dispose();
             }
-
-        });
-
-        //Accion del boton actualizar
-        actualizarButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    int validacion = 0;
-                    int contador = 0;
-                    String mensaje = "Faltó ingresar: \n";
-                    for (JTextField campo : campos) {
-
-                        if (Objects.equals( campo.getText().replaceAll("\\s+",""), "")){
-                            mensaje += Empleados.ColumnasDeTabla[contador] + "\n";
-                            validacion += 1;
-
-                        }
-                        contador += 1;
-
-                    }
-                    if (validacion > 0){
-                        JOptionPane.showMessageDialog(null,mensaje);
-                        return;
-                    }
-                    if (Integer.parseInt(campoEdad.getText()) <18 || Integer.parseInt(campoEdad.getText()) >60){
-                        JOptionPane.showMessageDialog(null,"Su edad no es válida");
-                        return;
-                    }
-                    if (campoTelefono.getText().charAt(0) == '1' || campoTelefono.getText().charAt(0) == '4' || campoTelefono.getText().charAt(0) == '5' || campoTelefono.getText().charAt(0) == '6' || campoTelefono.getText().charAt(0) == '7' || campoTelefono.getText().charAt(0) == '0'){
-                        JOptionPane.showMessageDialog(null,"Su número de teléfono no es válido",tituloValidacion, JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                    if (campoIdentidad.getText().length() <15){
-                        JOptionPane.showMessageDialog(null,"Su número de identidad debe contener 15 digitos incluyendo guiones",tituloValidacion, JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                    if (campoEdad.getText().length() <2){
-                        JOptionPane.showMessageDialog(null,"Su edad debe contener 2 digitos",tituloValidacion, JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-
-                    if (campoTelefono.getText().length() <8){
-                        JOptionPane.showMessageDialog(null,"Su número de teléfono debe contener 8 digitos",tituloValidacion, JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                    if (campoContacto.getText().charAt(0) == '1' || campoContacto.getText().charAt(0) == '4' || campoContacto.getText().charAt(0) == '5' || campoContacto.getText().charAt(0) == '6' || campoContacto.getText().charAt(0) == '7' || campoContacto.getText().charAt(0) == '0'){
-                        JOptionPane.showMessageDialog(null,"Su número de teléfono no es válido",tituloValidacion, JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                    if (campoContacto.getText().length() <8){
-                        JOptionPane.showMessageDialog(null,"Su número de teléfono debe contener 8 digitos",tituloValidacion, JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                    if (!Empleados.ComprobarIdentidad(campoIdentidad.getText())){
-                        JOptionPane.showMessageDialog(null,"Identidad no válida",tituloValidacion, JOptionPane.ERROR_MESSAGE );
-                        return;
-                    }
-                    if (Empleados.ValidarCorreo(campoCorreo.getText())){
-                        JOptionPane.showMessageDialog(null,"Formato de correo inválido.\n ejemplo:luis@xxx.xxx",tituloValidacion, JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-
-
-
-                    ActualizarDatos();
-                } catch (SQLException ex) {
-
-                    throw new RuntimeException(ex);
-                }
-                try {
-                    VistaEmpleado vistaEmpleado = new VistaEmpleado();
-                    vistaEmpleado.setVisible(true);
-                    crearEmpleado.dispose();
-
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
-                }
-
-            }
-
         });
     }
 
     //Consulta insertar
-
     public void GuardarDatos() throws SQLException {
         sql = new Conexion();
         mysql = sql.conectamysql();
-        PreparedStatement preparedStatement = mysql.prepareStatement("insert into " + Empleados.nombreDeTabla  + " (Identidad, Nombres, Apellidos, Genero, Edad, Correo, Telefono, NombreContactoDeEmergencia, ContactoDeEmergencia, Direccion, TipoDeEmpleado) values (?,?,?,?,?,?,?,?,?,?,?)");
+        PreparedStatement preparedStatement = mysql.prepareStatement("insert into " + Empleado.nombreTabla  + " (Identidad, Nombres, Apellidos, Genero, Edad, Correo, Telefono, NombreContactoDeEmergencia, ContactoDeEmergencia, Direccion, TipoDeEmpleado) values (?,?,?,?,?,?,?,?,?,?,?)");
         preparedStatement.setString(1,campoIdentidad.getText());
         preparedStatement.setString(2,campoNombres.getText());
         preparedStatement.setString(3,campoApellidos.getText());
@@ -321,39 +617,87 @@ public class CrearEmpleado extends JFrame{
         preparedStatement.setString(6,campoCorreo.getText());
         preparedStatement.setString(7,campoTelefono.getText());
         preparedStatement.setString(8,campoNombreContacto.getText());
-        preparedStatement.setString(9,campoContacto.getText());
+        preparedStatement.setString(9, campoContactoEmergencia.getText());
         preparedStatement.setString(10,campoDireccion.getText());
         preparedStatement.setString(11,temporalRadioButton.isSelected()?"Temporal":"Permanente");
         preparedStatement.execute();
 
         // Mostrar mensaje de éxito
         String nombreCompleto = campoNombres.getText() + " " + campoApellidos.getText();
-        JOptionPane.showMessageDialog(null, "Empleado " + nombreCompleto + " ha sido registrado exitosamente.",tituloValidacion, JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(null, "Empleado " + nombreCompleto + " ha sido registrado exitosamente.", "Éxito", JOptionPane.ERROR_MESSAGE);
     }
 
-        //metodo Actualizar datos
-        public void ActualizarDatos() throws SQLException {
-            sql = new Conexion();
-            mysql = sql.conectamysql();
-            PreparedStatement preparedStatement = mysql.prepareStatement("UPDATE Empleados SET Identidad=?, Nombres=?, Apellidos=?, Genero=?, Edad=?, Correo=?, Telefono=?, nombreContactoDeEmergencia=?, ContactoDeEmergencia=?, Direccion=?, TipoDeEmpleado=? WHERE idEmpleados=?");
-            preparedStatement.setString(1,campoIdentidad.getText());
-            preparedStatement.setString(2,campoNombres.getText());
-            preparedStatement.setString(3,campoApellidos.getText());
-            preparedStatement.setString(4,femeninoRadioButton.isSelected()?"Femenino":"Masculino");
-            preparedStatement.setString(5,campoEdad.getText());
-            preparedStatement.setString(6,campoCorreo.getText());
-            preparedStatement.setString(7,campoTelefono.getText());
-            preparedStatement.setString(8,campoNombreContacto.getText());
-            preparedStatement.setString(9,campoContacto.getText());
-            preparedStatement.setString(10,campoDireccion.getText());
-            preparedStatement.setString(11,temporalRadioButton.isSelected()?"Temporal":"Permanente");
-            preparedStatement.setString(12,lblID.getText());
-            preparedStatement.execute();
 
-            // Mostrar mensaje de éxito
-            String nombreCompleto = campoNombres.getText() + " " + campoApellidos.getText();
-            JOptionPane.showMessageDialog(null, "Empleado " + nombreCompleto + " ha sido registrado exitosamente.");
+
+    // Método para validar si el teléfono ya está asociado a un empleado en la base de datos
+    private boolean validarTelefonoExistente(String telefono) {
+        try {
+            // Crear la conexión a la base de datos (usando el objeto 'mysql' y 'sql' definidos en la clase)
+            mysql = sql.conectamysql();
+
+            // Preparar la consulta SQL
+            String query = "SELECT COUNT(*) FROM empleados WHERE Telefono = ?";
+            PreparedStatement statement = mysql.prepareStatement(query);
+            statement.setString(1, telefono);
+
+            // Ejecutar la consulta
+            ResultSet resultSet = statement.executeQuery();
+
+            // Obtener el resultado
+            if (resultSet.next()) {
+                int count = resultSet.getInt(1);
+                return count > 0; // Retorna true si el conteo es mayor que cero (existe al menos un empleado con ese teléfono)
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // Cerrar la conexión a la base de datos
+            if (mysql != null) {
+                try {
+                    mysql.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
+        return false; // En caso de error, se asume que no existe un empleado con ese teléfono
+    }
+
+    // Método para validar si la identidad ya está asociada a un empleado en la base de datos
+    private boolean validarIdentidadExistente(String identidad) {
+        try {
+            // Crear la conexión a la base de datos (usando el objeto 'mysql' y 'sql' definidos en la clase)
+            mysql = sql.conectamysql();
+
+            // Preparar la consulta SQL
+            String query = "SELECT COUNT(*) FROM empleados WHERE Identidad = ?";
+            PreparedStatement statement = mysql.prepareStatement(query);
+            statement.setString(1, identidad);
+
+            // Ejecutar la consulta
+            ResultSet resultSet = statement.executeQuery();
+
+            // Obtener el resultado
+            if (resultSet.next()) {
+                int count = resultSet.getInt(1);
+                return count > 0; // Retorna true si el conteo es mayor que cero (existe al menos un empleado con esa identidad)
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // Cerrar la conexión a la base de datos
+            if (mysql != null) {
+                try {
+                    mysql.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return false; // En caso de error, se asume que no existe un empleado con esa identidad
+    }
+
     private void createUIComponents() {
         // TODO: place custom component creation code here
     }
