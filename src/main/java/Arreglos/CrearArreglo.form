@@ -18,7 +18,7 @@
           <font name="Arial" size="14" style="1"/>
           <foreground color="-16315129"/>
           <horizontalTextPosition value="0"/>
-          <text value="INGRESAR LOS DATOS DEL ARREGLO FLORAL"/>
+          <text value="INGRESAR LOS DATOS DEL ARREGLO"/>
         </properties>
       </component>
       <component id="87c17" class="javax.swing.JLabel" binding="label3">
