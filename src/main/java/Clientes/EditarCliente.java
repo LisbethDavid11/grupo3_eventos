@@ -210,7 +210,7 @@ public class EditarCliente extends  JFrame{
         guardarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                StringBuilder mensaje = new StringBuilder("Hay campos vacíos:\n");
+                StringBuilder mensaje = new StringBuilder("Faltó ingresar:\n");
                 boolean camposVacios = false;
 
                 // Verificar los campos de nombre, apellido, identidad, telefono, tipo de cliente y domicilio
