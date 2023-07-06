@@ -432,9 +432,9 @@ public class CrearCliente extends JFrame{
             preparedStatement.setString(6, radioAldetalle.isSelected() ? "Al Detalle" : "Mayorista");
             preparedStatement.executeUpdate();
 
-// No es necesario cerrar explícitamente la conexión, ya que se cerrará automáticamente al finalizar el bloque try-with-resources
+            // No es necesario cerrar explícitamente la conexión, ya que se cerrará automáticamente al finalizar el bloque try-with-resources
 
-// Verificar si la ventana ListaCliente ya está abierta
+            // Verificar si la ventana ListaCliente ya está abierta
             boolean listaClienteAbierta = false;
             Window[] windows = Window.getWindows();
             for (Window window : windows) {

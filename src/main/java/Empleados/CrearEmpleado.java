@@ -34,6 +34,20 @@ public class CrearEmpleado extends JFrame {
     public JRadioButton temporalRadioButton;
     public JRadioButton permanenteRadioButton;
     public JTextField campoNombreContacto;
+    private JLabel lbl3;
+    private JLabel lbl1;
+    private JLabel lbl2;
+    private JLabel lbl0;
+    private JLabel lbl4;
+    private JLabel lbl5;
+    private JLabel lbl6;
+    private JLabel lbl7;
+    private JLabel lbl8;
+    private JLabel lbl9;
+    private JLabel lbl10;
+    private JLabel lbl11;
+    private JLabel lbl12;
+    private JLabel lbl13;
 
     private Conexion sql;
     private Connection mysql;
@@ -207,21 +221,27 @@ public class CrearEmpleado extends JFrame {
                 String texto = campoDireccion.getText();
                 int caretPosition = campoDireccion.getCaretPosition();
 
-                // Verificar si se están ingresando más de dos espacios en blanco seguidos
+                // Verificar la longitud del texto
+                if (texto.length() >= 200) {
+                    e.consume(); // Ignorar el evento si se alcanza el límite máximo de caracteres (200)
+                    return;
+                }
+
+                // Verificar si se están ingresando más de un espacio en blanco seguido
                 if (e.getKeyChar() == ' ' && texto.endsWith(" ")) {
                     e.consume(); // Ignorar el evento y no agregar el espacio en blanco adicional
                     return;
                 }
 
                 // Convertir la primera letra en mayúscula
-                if (texto.length() > 0) {
-                    String primeraLetra = texto.substring(0, 1).toUpperCase();
-                    String restoTexto = texto.substring(1);
-                    texto = primeraLetra + restoTexto;
-                    campoDireccion.setText(texto);
+                if (texto.length() == 0 || texto.substring(caretPosition - 1, caretPosition).equals(" ")) {
+                    e.setKeyChar(Character.toUpperCase(e.getKeyChar()));
                 }
 
-                Conexion.soloLetra(e, texto.length(), 200, caretPosition);
+                // Permitir números, letras, espacios, punto, coma y tildes
+                if (!Character.isLetterOrDigit(e.getKeyChar()) && !Character.isSpaceChar(e.getKeyChar()) && e.getKeyChar() != '.' && e.getKeyChar() != ',' && !Character.isWhitespace(e.getKeyChar()) && !Character.isIdeographic(e.getKeyChar())) {
+                    e.consume(); // Ignorar el evento si no es una letra, número, espacio, punto, coma o tilde
+                }
             }
         });
 
@@ -233,7 +253,7 @@ public class CrearEmpleado extends JFrame {
                     e.consume(); // Evita que se escriban caracteres no numéricos o se exceda la longitud
                 }
 
-                if (telefono.length() == 0 && (e.getKeyChar() < '2' || e.getKeyChar() > '9')) {
+                if (telefono.length() == 0 && (e.getKeyChar() != '2' && e.getKeyChar() != '3' && e.getKeyChar() != '8' && e.getKeyChar() != '9')) {
                     e.consume(); // Evita que se ingrese un dígito inválido como primer dígito
                 }
             }
@@ -285,12 +305,12 @@ public class CrearEmpleado extends JFrame {
         campoContactoEmergencia.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                String contactoEmergencia = campoContactoEmergencia.getText();
-                if (!Character.isDigit(e.getKeyChar()) || contactoEmergencia.length() >= 8) {
+                String telefono = campoContactoEmergencia.getText();
+                if (!Character.isDigit(e.getKeyChar()) || telefono.length() >= 8) {
                     e.consume(); // Evita que se escriban caracteres no numéricos o se exceda la longitud
                 }
 
-                if (contactoEmergencia.length() == 0 && (e.getKeyChar() < '2' || e.getKeyChar() > '9')) {
+                if (telefono.length() == 0 && (e.getKeyChar() != '2' && e.getKeyChar() != '3' && e.getKeyChar() != '8' && e.getKeyChar() != '9')) {
                     e.consume(); // Evita que se ingrese un dígito inválido como primer dígito
                 }
             }
@@ -310,6 +330,20 @@ public class CrearEmpleado extends JFrame {
         masculinoRadioButton.setBackground(lightColor);
         masculinoRadioButton.setForeground(textColor);
 
+        lbl0.setForeground(textColor);
+        lbl1.setForeground(textColor);
+        lbl2.setForeground(textColor);
+        lbl3.setForeground(textColor);
+        lbl4.setForeground(textColor);
+        lbl5.setForeground(textColor);
+        lbl6.setForeground(textColor);
+        lbl7.setForeground(textColor);
+        lbl8.setForeground(textColor);
+        lbl9.setForeground(textColor);
+        lbl10.setForeground(textColor);
+        lbl11.setForeground(textColor);
+        lbl12.setForeground(textColor);
+        lbl13.setForeground(textColor);
 
         // Cargar los iconos en blanco
         ImageIcon cancelIcon = new ImageIcon("cancel_icon_white.png");
@@ -499,11 +533,6 @@ public class CrearEmpleado extends JFrame {
                             JOptionPane.showMessageDialog(null, "El domicilio debe tener entre 2 y 200 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
                             return;
                         }
-
-                        if (!domicilio.matches("[a-zA-Z0-9]+([;,]?\\s[a-zA-Z0-9]+)*")) {
-                            JOptionPane.showMessageDialog(null, "El domicilio solo puede contener letras, números, punto, coma y máximo 1 espacio entre palabras.", "Validación", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
                     } else {
                         JOptionPane.showMessageDialog(null, "El campo de domicilio no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
                         return;
@@ -569,29 +598,6 @@ public class CrearEmpleado extends JFrame {
                         return;
                     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    // Resto del código para guardar los datos
                     GuardarDatos();
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
@@ -620,11 +626,39 @@ public class CrearEmpleado extends JFrame {
         preparedStatement.setString(9, campoContactoEmergencia.getText());
         preparedStatement.setString(10,campoDireccion.getText());
         preparedStatement.setString(11,temporalRadioButton.isSelected()?"Temporal":"Permanente");
-        preparedStatement.execute();
+
+//        preparedStatement.execute();
+
+        preparedStatement.executeUpdate();
+
+        // No es necesario cerrar explícitamente la conexión, ya que se cerrará automáticamente al finalizar el bloque try-with-resources
+
+        // Verificar si la ventana ListaCliente ya está abierta
+        boolean listaEmpleadoAbierta = false;
+        Window[] windows = Window.getWindows();
+        for (Window window : windows) {
+            if (window instanceof ListaEmpleados) {
+                listaEmpleadoAbierta = true;
+                break;
+            }
+        }
+
+        // Abrir la ventana ListaCliente solo si no está abierta
+        if (!listaEmpleadoAbierta) {
+            ListaEmpleados empleados = new ListaEmpleados();
+            empleados.setVisible(true);
+        }
+
+        crearEmpleado.dispose();
 
         // Mostrar mensaje de éxito
         String nombreCompleto = campoNombres.getText() + " " + campoApellidos.getText();
-        JOptionPane.showMessageDialog(null, "Empleado " + nombreCompleto + " ha sido registrado exitosamente.", "Éxito", JOptionPane.ERROR_MESSAGE);
+
+        // Mensaje personalizado
+        System.out.println("Empleado " + nombreCompleto + " ha sido registrado exitosamente.");
+        JOptionPane.showMessageDialog(null, "Cliente " + nombreCompleto + " ha sido registrado exitosamente.", "Éxito", JOptionPane.ERROR_MESSAGE);
+
+
     }
 
 
