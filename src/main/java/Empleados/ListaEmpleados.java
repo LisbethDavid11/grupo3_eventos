@@ -25,7 +25,7 @@ public class ListaEmpleados extends JFrame {
     private JButton botonAtras;
     private JButton botonAdelante;
     private JTextField campoBusqueda;
-    private TextPrompt placeholder = new TextPrompt("Busca por nombre", campoBusqueda);
+    private TextPrompt placeholder = new TextPrompt("Buscar por nombre", campoBusqueda);
     private JButton botonEditar;
     private JButton botonCrear;
     private ImageIcon imagen;
@@ -206,6 +206,19 @@ public class ListaEmpleados extends JFrame {
 
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 botonEditar.setBackground(darkColor);
+            }
+        });
+
+        botonEditar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (listaEmpleados.getSelectedRow() == -1) {
+                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                EditarEmpleado empleado = new EditarEmpleado(listaEmpleado.get(listaEmpleados.getSelectedRow()).getId());
+                empleado.setVisible(true);
+                actual.dispose();
             }
         });
     }

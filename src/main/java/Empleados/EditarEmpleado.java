@@ -1,5 +1,6 @@
 package Empleados;
 
+import Objetos.Cliente;
 import Objetos.Conexion;
 import Objetos.Empleado;
 
@@ -17,7 +18,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 
-public class CrearEmpleado extends JFrame {
+public class EditarEmpleado extends JFrame {
     public JTextField campoNombres;
     public JTextField campoApellidos;
     public JTextField campoEdad;
@@ -51,7 +52,7 @@ public class CrearEmpleado extends JFrame {
 
     private Conexion sql;
     private Connection mysql;
-    public CrearEmpleado crearEmpleado = this;
+    public EditarEmpleado actual = this;
     public ButtonGroup grupoGenero;
     public ButtonGroup grupoTipo;
 
@@ -71,12 +72,16 @@ public class CrearEmpleado extends JFrame {
             campoContactoEmergencia
     };
 
-    public CrearEmpleado() {
-        super("Crear Empleados");
+    private int id;
+
+    public EditarEmpleado(int id) {
+        super("");
         setSize(800, 550);
         setLocationRelativeTo(null);
         setContentPane(panel1);
         sql = new Conexion();
+        this.id = id;
+        mostrar();
 
         // Color de fondo
         panel1.setBackground(lightColor);
@@ -87,12 +92,10 @@ public class CrearEmpleado extends JFrame {
         grupoGenero = new ButtonGroup();
         grupoGenero.add(femeninoRadioButton);
         grupoGenero.add(masculinoRadioButton);
-        grupoGenero.clearSelection();
 
         grupoTipo = new ButtonGroup();
         grupoTipo.add(temporalRadioButton);
         grupoTipo.add(permanenteRadioButton);
-        grupoTipo.clearSelection();
 
         try {
             MaskFormatter formatoIdentidad = new MaskFormatter("####-####-#####");
@@ -368,7 +371,7 @@ public class CrearEmpleado extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 ListaEmpleados listaEmpleados = new ListaEmpleados();
                 listaEmpleados.setVisible(true);
-                crearEmpleado.dispose();
+                actual.dispose();
             }
         });
 
@@ -605,62 +608,10 @@ public class CrearEmpleado extends JFrame {
 
                 ListaEmpleados listaEmpleados = new ListaEmpleados();
                 listaEmpleados.setVisible(true);
-                crearEmpleado.dispose();
+                actual.dispose();
             }
         });
     }
-
-    //Consulta insertar
-    public void GuardarDatos() throws SQLException {
-        sql = new Conexion();
-        mysql = sql.conectamysql();
-        PreparedStatement preparedStatement = mysql.prepareStatement("insert into " + Empleado.nombreTabla  + " (Identidad, Nombres, Apellidos, Genero, Edad, Correo, Telefono, NombreContactoDeEmergencia, ContactoDeEmergencia, Direccion, TipoDeEmpleado) values (?,?,?,?,?,?,?,?,?,?,?)");
-        preparedStatement.setString(1,campoIdentidad.getText());
-        preparedStatement.setString(2,campoNombres.getText());
-        preparedStatement.setString(3,campoApellidos.getText());
-        preparedStatement.setString(4,femeninoRadioButton.isSelected()?"Femenino":"Masculino");
-        preparedStatement.setString(5,campoEdad.getText());
-        preparedStatement.setString(6,campoCorreo.getText());
-        preparedStatement.setString(7,campoTelefono.getText());
-        preparedStatement.setString(8,campoNombreContacto.getText());
-        preparedStatement.setString(9, campoContactoEmergencia.getText());
-        preparedStatement.setString(10,campoDireccion.getText());
-        preparedStatement.setString(11,temporalRadioButton.isSelected()?"Temporal":"Permanente");
-
-//        preparedStatement.execute();
-
-        preparedStatement.executeUpdate();
-
-        // No es necesario cerrar explícitamente la conexión, ya que se cerrará automáticamente al finalizar el bloque try-with-resources
-
-        // Verificar si la ventana ListaCliente ya está abierta
-        boolean listaEmpleadoAbierta = false;
-        Window[] windows = Window.getWindows();
-        for (Window window : windows) {
-            if (window instanceof ListaEmpleados) {
-                listaEmpleadoAbierta = true;
-                break;
-            }
-        }
-
-        // Abrir la ventana ListaCliente solo si no está abierta
-        if (!listaEmpleadoAbierta) {
-            ListaEmpleados empleados = new ListaEmpleados();
-            empleados.setVisible(true);
-        }
-
-        crearEmpleado.dispose();
-
-        // Mostrar mensaje de éxito
-        String nombreCompleto = campoNombres.getText() + " " + campoApellidos.getText();
-
-        // Mensaje personalizado
-        System.out.println("Empleado " + nombreCompleto + " ha sido registrado exitosamente.");
-        JOptionPane.showMessageDialog(null, "Cliente " + nombreCompleto + " ha sido registrado exitosamente.", "Éxito", JOptionPane.ERROR_MESSAGE);
-
-
-    }
-
 
 
     // Método para validar si el teléfono ya está asociado a un empleado en la base de datos
@@ -730,6 +681,145 @@ public class CrearEmpleado extends JFrame {
         }
 
         return false; // En caso de error, se asume que no existe un empleado con esa identidad
+    }
+
+    private void mostrar() {
+        sql = new Conexion();
+        mysql = sql.conectamysql();
+
+        femeninoRadioButton.setText("Femenino");
+        masculinoRadioButton.setText("Masculino");
+
+        permanenteRadioButton.setText("Permanente");
+        temporalRadioButton.setText("Temporal");
+
+        try {
+            PreparedStatement statement = mysql.prepareStatement("SELECT * FROM " + Empleado.nombreTabla + " WHERE id = ?;");
+            statement.setInt(1, this.id); // Se corrige el índice del parámetro
+            ResultSet resultSet = statement.executeQuery();
+
+            resultSet.next();
+
+            String identidad = resultSet.getString("identidad");
+            campoIdentidad.setValue(identidad);
+
+            campoIdentidad.setText(resultSet.getString(2));
+            campoNombres.setText(resultSet.getString(3));
+            campoApellidos.setText(resultSet.getString(4));
+            String genero = resultSet.getString(5);
+
+            if (genero.equals("Femenino")) {
+
+                femeninoRadioButton.setText("Femenino");
+                femeninoRadioButton.setSelected(true);
+
+                masculinoRadioButton.setText("Masculino");
+                masculinoRadioButton.setSelected(false);
+
+            } else if (genero.equals("Masculino")) {
+
+                femeninoRadioButton.setText("Femenino");
+                femeninoRadioButton.setSelected(false);
+
+                masculinoRadioButton.setText("Masculino");
+                masculinoRadioButton.setSelected(true);
+            }
+
+            campoEdad.setText(resultSet.getString(6));
+            campoCorreo.setText(resultSet.getString(7));
+            campoTelefono.setText(resultSet.getString(8));
+            campoNombreContacto.setText(resultSet.getString(9));
+            campoContactoEmergencia.setText(resultSet.getString(10));
+            campoDireccion.setText(resultSet.getString(11));
+
+            String tipo = resultSet.getString(12);
+
+            if (tipo.equals("Permanente")) {
+
+                permanenteRadioButton.setText("Permanente");
+                permanenteRadioButton.setSelected(true);
+
+                temporalRadioButton.setText("Temporal");
+                temporalRadioButton.setSelected(false);
+
+            } else if (tipo.equals("Temporal")) {
+
+                permanenteRadioButton.setText("Permanente");
+                permanenteRadioButton.setSelected(false);
+
+                temporalRadioButton.setText("Temporal");
+                temporalRadioButton.setSelected(true);
+            }
+
+
+            System.out.println(statement.execute());
+
+        } catch (SQLException error) {
+            //mensaje de error
+            System.out.println(error.getMessage());
+        }
+    }
+
+    //Consulta insertar
+    public void GuardarDatos() throws SQLException {
+        sql = new Conexion();
+        mysql = sql.conectamysql();
+
+        String genero;
+        if (femeninoRadioButton.isSelected()) {
+            genero = "Femenino";
+        } else {
+            genero = "Masculino";
+        }
+
+        String tipo;
+        if (temporalRadioButton.isSelected()) {
+            tipo = "Temporal";
+        } else {
+            tipo = "Permanente";
+        }
+        PreparedStatement statement = mysql.prepareStatement("UPDATE " + Empleado.nombreTabla + " SET `Identidad` = ?, `Nombres` = ?, `Apellidos` = ?, `Genero` = ?, `Edad` = ?, `Correo` = ?, `Telefono` = ?, `nombreContactoDeEmergencia` = ?, `ContactoDeEmergencia` = ?, `Direccion` = ?, `TipoDeEmpleado` = ? WHERE id = ?");
+
+        statement.setString(1, campoIdentidad.getText());
+        statement.setString(2, campoNombres.getText());
+        statement.setString(3, campoApellidos.getText());
+        statement.setString(4, genero);
+        statement.setString(5, campoEdad.getText());
+        statement.setString(6, campoCorreo.getText());
+        statement.setString(7, campoTelefono.getText());
+        statement.setString(8, campoNombreContacto.getText());
+        statement.setString(9, campoContactoEmergencia.getText());
+        statement.setString(10, campoDireccion.getText());
+        statement.setString(11, tipo);
+        statement.setInt(12, this.id);
+
+        System.out.println(statement.execute());
+
+        boolean listaEmpleadoAbierta = false;
+        Window[] windows = Window.getWindows();
+        for (Window window : windows) {
+            if (window instanceof ListaEmpleados) {
+                listaEmpleadoAbierta = true;
+                break;
+            }
+        }
+
+        // Abrir la ventana ListaCliente solo si no está abierta
+        if (!listaEmpleadoAbierta) {
+            ListaEmpleados empleados = new ListaEmpleados();
+            empleados.setVisible(true);
+        }
+
+        actual.dispose();
+
+        // Mostrar mensaje de éxito
+        String nombreCompleto = campoNombres.getText() + " " + campoApellidos.getText();
+
+        // Mensaje personalizado
+        System.out.println("Empleado " + nombreCompleto + " ha sido actualizado exitosamente.");
+        JOptionPane.showMessageDialog(null, "Empleado " + nombreCompleto + " ha sido actualizado exitosamente.", "Éxito", JOptionPane.ERROR_MESSAGE);
+
+
     }
 
     private void createUIComponents() {

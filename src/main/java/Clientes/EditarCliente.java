@@ -62,9 +62,6 @@ public class EditarCliente extends  JFrame{
         campoIdentidad.setName("Identidad");
         campoTelefono.setName("Teléfono");
 
-
-
-
         campoNombre.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
