@@ -1,9 +1,9 @@
 package Arreglos;
 
 import Modelos.ModeloArreglo;
-import Modelos.ModeloFloristeria;
 import Objetos.Arreglo;
 import Objetos.Conexion;
+import Objetos.Floristeria;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -13,7 +13,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -31,17 +30,18 @@ public class ListaArreglo extends JFrame {
     private TextPrompt placeholder = new TextPrompt("Buscar por nombre", campoBusqueda);
     private JButton botonEditar;
     private JButton botonCrear;
-    private ImageIcon imagen;
-
+    private JLabel lblPagina; // Label para mostrar la página actual y el total de páginas
     private List<Arreglo> listaArreglo;
+
     private int pagina = 0;
     private Connection mysql;
     private Conexion sql;
     private ListaArreglo actual = this;
+    private String busqueda = "";
 
     public ListaArreglo() {
         super("");
-        setSize(850, 500);
+        setSize(850, 490);
         setLocationRelativeTo(null);
         setContentPane(panelPrincipal);
         campoBusqueda.setText("");
@@ -49,53 +49,22 @@ public class ListaArreglo extends JFrame {
         listaArreglos.setModel(cargarDatos());
         centrarDatosTabla();
 
-        // Establecer el renderizador personalizado para la columna de imágenes
-        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer() {
-            @Override
-            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-                JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                if (value instanceof ImageIcon) {
-                    ImageIcon icon = (ImageIcon) value;
-                    label.setIcon(icon);
-                    label.setText(null);
-                } else {
-                    label.setIcon(null);
-                    label.setText(value != null ? value.toString() : "");
-                }
-                return label;
-            }
-        };
-        TableColumn imageColumn = listaArreglos.getColumnModel().getColumn(1);
-        imageColumn.setCellRenderer(renderer);
-
-        campoBusqueda.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyReleased(KeyEvent e) {
-                listaArreglos.setModel(cargarDatos());
-                botonAtras.setEnabled(true);
-                botonAdelante.setEnabled(true);
-                centrarDatosTabla();
-            }
-        });
+        // Calcular el número total de páginas al inicio
+        lblPagina.setText("Página " + (pagina / 20 + 1) + " de " + ((getTotalCount() - 1) / 20 + 1));
 
         botonAdelante.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int totalElementos = listaArreglos.getRowCount();
-                int paginasTotales = totalElementos / 20 + (totalElementos % 20 > 0 ? 1 : 0);
-                int elementosRestantes = totalElementos % 20;
-
-                if (pagina < paginasTotales - 1) {
-                    pagina++;
-                } else if (pagina == paginasTotales - 1 && elementosRestantes > 0) {
-                    pagina++;
+                if (listaArreglos.getRowCount() == 20) {
+                    pagina += 20;
+                    botonAtras.setEnabled(true);
+                } else {
+                    botonAdelante.setEnabled(false);
                 }
-
-                botonAtras.setEnabled(true);
-                botonAdelante.setEnabled(pagina < paginasTotales - 1 || (pagina == paginasTotales - 1 && elementosRestantes > 0));
-
                 listaArreglos.setModel(cargarDatos());
+                configuraColumnas();
                 centrarDatosTabla();
+                lblPagina.setText("Página " + (pagina / 20 + 1) + " de " + ((getTotalCount() - 1) / 20 + 1));
             }
         });
 
@@ -103,18 +72,29 @@ public class ListaArreglo extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (pagina > 0) {
-                    pagina--;
+                    pagina -= 20;
+                    botonAdelante.setEnabled(true);
+                } else {
+                    botonAtras.setEnabled(false);
                 }
-
-                botonAtras.setEnabled(pagina > 0);
-                botonAdelante.setEnabled(true);
-
                 listaArreglos.setModel(cargarDatos());
                 centrarDatosTabla();
+                lblPagina.setText("Página " + (pagina / 20 + 1) + " de " + ((getTotalCount() - 1) / 20 + 1));
             }
         });
 
-
+        campoBusqueda.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                busqueda = campoBusqueda.getText();
+                pagina = 0; // Reiniciar la paginación
+                listaArreglos.setModel(cargarDatos());
+                botonAtras.setEnabled(true);
+                botonAdelante.setEnabled(true);
+                centrarDatosTabla();
+                lblPagina.setText("Página " + (pagina / 20 + 1) + " de " + ((getTotalCount() - 1) / 20 + 1));
+            }
+        });
 
         botonCrear.addActionListener(new ActionListener() {
             @Override
@@ -129,6 +109,7 @@ public class ListaArreglo extends JFrame {
         Color primaryColor = Color.decode("#37474f"); // Gris azul oscuro
         Color lightColor = Color.decode("#cfd8dc"); // Gris azul claro
         Color darkColor = Color.decode("#263238"); // Gris azul más oscuro
+
 
         // Color de fondo
         panelPrincipal.setBackground(primaryColor);
@@ -147,66 +128,17 @@ public class ListaArreglo extends JFrame {
         botonCrear.setBackground(darkColor);
         botonEditar.setBackground(darkColor);
 
-        // Color de fondo de la tabla
-        listaArreglos.setBackground(lightColor);
-
-        // Color de texto del campo de búsqueda
+        // Color de texto del campo de búsqueda y del label de la página
         campoBusqueda.setForeground(Color.WHITE);
+        lblPagina.setForeground(Color.WHITE);
 
         // Color de fondo del campo de búsqueda
         campoBusqueda.setBackground(darkColor);
 
         // Color del placeholder del campo de búsqueda
-        placeholder.changeAlpha(0.6f);
-        placeholder.setForeground(lightColor);
-        placeholder.setFont(new Font("Arial", Font.BOLD, 12));
-
-
-        // Color de los bordes de los botones al pasar el cursor sobre ellos
-        botonVer.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                botonVer.setBackground(lightColor);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                botonVer.setBackground(darkColor);
-            }
-        });
-
-        botonAtras.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                botonAtras.setBackground(lightColor);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                botonAtras.setBackground(darkColor);
-            }
-        });
-
-        botonAdelante.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                botonAdelante.setBackground(lightColor);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                botonAdelante.setBackground(darkColor);
-            }
-        });
-
-        botonCrear.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                botonCrear.setBackground(lightColor);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                botonCrear.setBackground(darkColor);
-            }
-        });
-
-        botonEditar.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                botonEditar.setBackground(lightColor);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                botonEditar.setBackground(darkColor);
-            }
-        });
+        placeholder.changeAlpha(0.75f);
+        placeholder.setForeground(Color.LIGHT_GRAY);
+        placeholder.setFont(new Font("Nunito", Font.ITALIC, 11));
     }
 
     private void centrarDatosTabla() {
@@ -221,30 +153,19 @@ public class ListaArreglo extends JFrame {
     private ModeloArreglo cargarDatos() {
         sql = new Conexion();
         try (Connection mysql = sql.conectamysql();
-             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT * FROM arreglos WHERE nombre LIKE CONCAT('%', ?, '%') LIMIT ?, 20")) {
+             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT * FROM arreglos WHERE nombre LIKE CONCAT('%', ?, '%') LIMIT ?, 20")){
+            preparedStatement.setString(1, busqueda);
 
-            preparedStatement.setString(1, campoBusqueda.getText());
             preparedStatement.setInt(2, pagina);
             ResultSet resultSet = preparedStatement.executeQuery();
             listaArreglo = new ArrayList<>();
 
             while (resultSet.next()) {
                 Arreglo arreglo = new Arreglo();
-
-                // Obtener el nombre de la imagen correspondiente
-                String nombreImagen = resultSet.getString("imagen");
-                // Crear la ruta completa de la imagen
-                String rutaImagen = "C:/Laragon/www/grupo3_eventos/src/main/resources/img/" + nombreImagen;
-
                 arreglo.setId(resultSet.getInt("id"));
                 arreglo.setNombre(resultSet.getString("nombre"));
                 arreglo.setPrecio(resultSet.getDouble("precio"));
                 arreglo.setDisponible(resultSet.getString("disponible"));
-
-                // Crear un objeto ImageIcon con la ruta de la imagen
-                ImageIcon imagen = cargarImagen(rutaImagen);
-                arreglo.setImagen(imagen); // Establecer la imagen en el objeto Floristeria
-
                 listaArreglo.add(arreglo);
             }
 
@@ -253,23 +174,63 @@ public class ListaArreglo extends JFrame {
             JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
             listaArreglo = new ArrayList<>();
         }
+
+
+        if (listaArreglos.getColumnCount() > 0) {
+            TableColumn columnId = listaArreglos.getColumnModel().getColumn(0);
+            columnId.setPreferredWidth(50); // Puedes ajustar este valor según tus necesidades
+        }
+
         return new ModeloArreglo(listaArreglo, sql);
+
     }
 
-    private ImageIcon cargarImagen(String rutaImagen) {
-        try {
-            File file = new File(rutaImagen);
-            if (file.exists()) {
-                ImageIcon imagenIcon = new ImageIcon(file.getAbsolutePath());
-                if (imagenIcon.getIconWidth() > 0) {
-                    return imagenIcon;
+    private void configuraColumnas() {
+        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                if (value instanceof ImageIcon) {
+                    ImageIcon icon = (ImageIcon) value;
+                    label.setIcon(icon);
+                    label.setText(null);
+                } else {
+                    label.setIcon(null);
+                    label.setText(value != null ? value.toString() : "");
                 }
+                return label;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        };
+
+        if (listaArreglos.getColumnCount() > 1) {
+            TableColumn imageColumn = listaArreglos.getColumnModel().getColumn(1);
+            imageColumn.setCellRenderer(renderer);
         }
-        return null;
+
+        // Ajustar el ancho de la columna de ID
+        if (listaArreglos.getColumnCount() > 0) {
+            TableColumn columnId = listaArreglos.getColumnModel().getColumn(0);
+            columnId.setPreferredWidth(50); // Puedes ajustar este valor según tus necesidades
+        }
     }
+
+    private int getTotalCount() {
+        int count = 0;
+        try (Connection mysql = sql.conectamysql();
+             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT COUNT(*) AS total FROM Floristeria f WHERE f.nombre LIKE CONCAT('%', ?, '%')")){
+            preparedStatement.setString(1, busqueda);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                count = resultSet.getInt("total");
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+        }
+        return count;
+    }
+
+
 
     public static void main(String[] args) {
         ListaArreglo listaArreglo = new ListaArreglo();

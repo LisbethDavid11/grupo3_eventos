@@ -27,55 +27,32 @@ public class ListaFloristeria extends JFrame {
     private JButton botonAtras;
     private JButton botonAdelante;
     private JTextField campoBusqueda;
-    private TextPrompt placeholder = new TextPrompt("Busca por nombre", campoBusqueda);
+    private TextPrompt placeholder = new TextPrompt("Buscar por nombre", campoBusqueda);
     private JButton botonEditar;
     private JButton botonCrear;
+    private JLabel lbltxt;
     private ImageIcon imagen;
-
     private List<Floristeria> listaFloristeria;
     private int pagina = 0;
     private Connection mysql;
     private Conexion sql;
     private ListaFloristeria actual = this;
 
+    private String busqueda = "";
+
     public ListaFloristeria() {
         super("");
-        setSize(850, 500);
+        setSize(850, 490);
         setLocationRelativeTo(null);
         setContentPane(panelPrincipal);
         campoBusqueda.setText("");
 
+
         listaFloristerias.setModel(cargarDatos());
         centrarDatosTabla();
 
-        // Establecer el renderizador personalizado para la columna de imágenes
-        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer() {
-            @Override
-            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-                JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                if (value instanceof ImageIcon) {
-                    ImageIcon icon = (ImageIcon) value;
-                    label.setIcon(icon);
-                    label.setText(null);
-                } else {
-                    label.setIcon(null);
-                    label.setText(value != null ? value.toString() : "");
-                }
-                return label;
-            }
-        };
-        TableColumn imageColumn = listaFloristerias.getColumnModel().getColumn(1);
-        imageColumn.setCellRenderer(renderer);
-
-        campoBusqueda.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyReleased(KeyEvent e) {
-                listaFloristerias.setModel(cargarDatos());
-                botonAtras.setEnabled(true);
-                botonAdelante.setEnabled(true);
-                centrarDatosTabla();
-            }
-        });
+        // Calcular el número total de páginas al inicio
+        lbltxt.setText("Página " + (pagina / 20 + 1) + " de " + ((getTotalCount() - 1) / 20 + 1));
 
         botonAdelante.addActionListener(new ActionListener() {
             @Override
@@ -87,7 +64,9 @@ public class ListaFloristeria extends JFrame {
                     botonAdelante.setEnabled(false);
                 }
                 listaFloristerias.setModel(cargarDatos());
+                configuraColumnas();
                 centrarDatosTabla();
+                lbltxt.setText("Página " + (pagina / 20 + 1) + " de " + ((getTotalCount() - 1) / 20 + 1));
             }
         });
 
@@ -102,6 +81,20 @@ public class ListaFloristeria extends JFrame {
                 }
                 listaFloristerias.setModel(cargarDatos());
                 centrarDatosTabla();
+                lbltxt.setText("Página " + (pagina / 20 + 1) + " de " + ((getTotalCount() - 1) / 20 + 1));
+            }
+        });
+
+        campoBusqueda.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                busqueda = campoBusqueda.getText();
+                pagina = 0; // Reiniciar la paginación
+                listaFloristerias.setModel(cargarDatos());
+                botonAtras.setEnabled(true);
+                botonAdelante.setEnabled(true);
+                centrarDatosTabla();
+                lbltxt.setText("Página " + (pagina / 20 + 1) + " de " + ((getTotalCount() - 1) / 20 + 1));
             }
         });
 
@@ -128,6 +121,7 @@ public class ListaFloristeria extends JFrame {
         botonAdelante.setForeground(Color.WHITE);
         botonCrear.setForeground(Color.WHITE);
         botonEditar.setForeground(Color.WHITE);
+        lbltxt.setForeground(Color.WHITE);
 
         // Color de fondo de los botones
         botonVer.setBackground(darkColor);
@@ -148,7 +142,7 @@ public class ListaFloristeria extends JFrame {
         // Color del placeholder del campo de búsqueda
         placeholder.changeAlpha(0.6f);
         placeholder.setForeground(lightColor);
-        placeholder.setFont(new Font("Arial", Font.BOLD, 12));
+        placeholder.setFont(new Font("Nunito", Font.ITALIC, 11));
 
 
         // Color de los bordes de los botones al pasar el cursor sobre ellos
@@ -211,29 +205,18 @@ public class ListaFloristeria extends JFrame {
         sql = new Conexion();
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement("SELECT f.*, p.empresaProveedora FROM Floristeria f JOIN Proveedores p ON f.proveedor_id = p.id WHERE f.nombre LIKE CONCAT('%', ?, '%') LIMIT ?, 20")){
+            preparedStatement.setString(1, busqueda);
 
-            preparedStatement.setString(1, campoBusqueda.getText());
             preparedStatement.setInt(2, pagina);
             ResultSet resultSet = preparedStatement.executeQuery();
             listaFloristeria = new ArrayList<>();
 
             while (resultSet.next()) {
                 Floristeria floristeria = new Floristeria();
-
-                // Obtener el nombre de la imagen correspondiente
-                String nombreImagen = resultSet.getString("imagen");
-                // Crear la ruta completa de la imagen
-                String rutaImagen = "C:/Laragon/www/grupo3_eventos/src/main/resources/img/" + nombreImagen;
-
                 floristeria.setId(resultSet.getInt("id"));
                 floristeria.setNombre(resultSet.getString("nombre"));
                 floristeria.setPrecio(resultSet.getDouble("precio"));
                 floristeria.setProveedorId(resultSet.getInt("proveedor_id"));
-
-                // Crear un objeto ImageIcon con la ruta de la imagen
-                ImageIcon imagen = cargarImagen(rutaImagen);
-                floristeria.setImagen(imagen); // Establecer la imagen en el objeto Floristeria
-
                 listaFloristeria.add(floristeria);
             }
 
@@ -242,23 +225,64 @@ public class ListaFloristeria extends JFrame {
             JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
             listaFloristeria = new ArrayList<>();
         }
+
+
+        if (listaFloristerias.getColumnCount() > 0) {
+            TableColumn columnId = listaFloristerias.getColumnModel().getColumn(0);
+            columnId.setPreferredWidth(50); // Puedes ajustar este valor según tus necesidades
+        }
+
         return new ModeloFloristeria(listaFloristeria, sql);
+
     }
 
-    private ImageIcon cargarImagen(String rutaImagen) {
-        try {
-            File file = new File(rutaImagen);
-            if (file.exists()) {
-                ImageIcon imagenIcon = new ImageIcon(file.getAbsolutePath());
-                if (imagenIcon.getIconWidth() > 0) {
-                    return imagenIcon;
+    private void configuraColumnas() {
+        // Establecer el renderizador personalizado para la columna de imágenes
+        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                if (value instanceof ImageIcon) {
+                    ImageIcon icon = (ImageIcon) value;
+                    label.setIcon(icon);
+                    label.setText(null);
+                } else {
+                    label.setIcon(null);
+                    label.setText(value != null ? value.toString() : "");
                 }
+                return label;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        };
+
+        if (listaFloristerias.getColumnCount() > 1) {
+            TableColumn imageColumn = listaFloristerias.getColumnModel().getColumn(1);
+            imageColumn.setCellRenderer(renderer);
         }
-        return null;
+
+        // Ajustar el ancho de la columna de ID
+        if (listaFloristerias.getColumnCount() > 0) {
+            TableColumn columnId = listaFloristerias.getColumnModel().getColumn(0);
+            columnId.setPreferredWidth(50); // Puedes ajustar este valor según tus necesidades
+        }
     }
+
+    private int getTotalCount() {
+        int count = 0;
+        try (Connection mysql = sql.conectamysql();
+             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT COUNT(*) AS total FROM Floristeria f WHERE f.nombre LIKE CONCAT('%', ?, '%')")){
+            preparedStatement.setString(1, busqueda);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                count = resultSet.getInt("total");
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+        }
+        return count;
+    }
+
+
 
     public static void main(String[] args) {
         ListaFloristeria listaFloristeria = new ListaFloristeria();
