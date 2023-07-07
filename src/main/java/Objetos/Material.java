@@ -1,30 +1,32 @@
 package Objetos;
 
-import javax.swing.*;
-
-public class Floristeria {
+public class Material {
     private int id;
-    private ImageIcon imagen;
     private String nombre;
     private double precio;
+    private String disponible;
+    private String descripcion;
     private int proveedorId;
 
-    public static String nombreTabla = "floristeria";
+    public static String nombreTabla = "materiales";
 
-    public Floristeria() {
+    public Material() {
     }
 
     public Object[] toTableRow() {
-        return new Object[] {id, imagen, nombre, precio, proveedorId};
+        return new Object[] {id, nombre, precio, disponible, descripcion, proveedorId};
     }
 
-    public Floristeria(int id, ImageIcon imagen, String nombre, double precio,  int proveedorId) {
+    public Material(int id, String nombre, double precio, String disponible, String descripcion, int proveedorId) {
         this.id = id;
-        this.imagen = imagen;
         this.nombre = nombre;
         this.precio = precio;
+        this.disponible = disponible;
+        this.descripcion = descripcion;
         this.proveedorId = proveedorId;
     }
+
+    // getters y setters
 
     public int getId() {
         return id;
@@ -32,14 +34,6 @@ public class Floristeria {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public ImageIcon getImagen() {
-        return imagen;
-    }
-
-    public void setImagen(ImageIcon imagen) {
-        this.imagen = imagen;
     }
 
     public String getNombre() {
@@ -58,6 +52,22 @@ public class Floristeria {
         this.precio = precio;
     }
 
+    public String getDisponible() {
+        return disponible;
+    }
+
+    public void setDisponible(String disponible) {
+        this.disponible = disponible;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
     public int getProveedorId() {
         return proveedorId;
     }
@@ -65,4 +75,5 @@ public class Floristeria {
     public void setProveedorId(int proveedorId) {
         this.proveedorId = proveedorId;
     }
+
 }

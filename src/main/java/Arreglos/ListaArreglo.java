@@ -50,7 +50,8 @@ public class ListaArreglo extends JFrame {
         centrarDatosTabla();
 
         // Calcular el número total de páginas al inicio
-        lblPagina.setText("Página " + (pagina / 20 + 1) + " de " + ((getTotalCount() - 1) / 20 + 1));
+        lblPagina.setText("Página " + (pagina / 20 + 1) + " de " + getTotalPageCount());
+
 
         botonAdelante.addActionListener(new ActionListener() {
             @Override
@@ -64,7 +65,8 @@ public class ListaArreglo extends JFrame {
                 listaArreglos.setModel(cargarDatos());
                 configuraColumnas();
                 centrarDatosTabla();
-                lblPagina.setText("Página " + (pagina / 20 + 1) + " de " + ((getTotalCount() - 1) / 20 + 1));
+                lblPagina.setText("Página " + (pagina / 20 + 1) + " de " + getTotalPageCount());
+
             }
         });
 
@@ -79,7 +81,8 @@ public class ListaArreglo extends JFrame {
                 }
                 listaArreglos.setModel(cargarDatos());
                 centrarDatosTabla();
-                lblPagina.setText("Página " + (pagina / 20 + 1) + " de " + ((getTotalCount() - 1) / 20 + 1));
+                lblPagina.setText("Página " + (pagina / 20 + 1) + " de " + getTotalPageCount());
+
             }
         });
 
@@ -92,7 +95,8 @@ public class ListaArreglo extends JFrame {
                 botonAtras.setEnabled(true);
                 botonAdelante.setEnabled(true);
                 centrarDatosTabla();
-                lblPagina.setText("Página " + (pagina / 20 + 1) + " de " + ((getTotalCount() - 1) / 20 + 1));
+                lblPagina.setText("Página " + (pagina / 20 + 1) + " de " + getTotalPageCount());
+
             }
         });
 
@@ -214,10 +218,10 @@ public class ListaArreglo extends JFrame {
         }
     }
 
-    private int getTotalCount() {
+    private int getTotalPageCount() {
         int count = 0;
         try (Connection mysql = sql.conectamysql();
-             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT COUNT(*) AS total FROM Floristeria f WHERE f.nombre LIKE CONCAT('%', ?, '%')")){
+             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT COUNT(*) AS total FROM Materiales f WHERE f.nombre LIKE CONCAT('%', ?, '%')")) {
             preparedStatement.setString(1, busqueda);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
@@ -227,8 +231,38 @@ public class ListaArreglo extends JFrame {
             System.out.println(e.getMessage());
             JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
         }
-        return count;
+
+        int totalPageCount = count / 20;
+        if (count % 20 != 0) {
+            totalPageCount++; // Añade una página adicional si hay elementos restantes
+        }
+
+        return totalPageCount;
     }
+
+    private void loadPage() {
+        listaArreglos.setModel(cargarDatos());
+        configuraColumnas();
+        centrarDatosTabla();
+        lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+
+        // Deshabilitar el botón de adelante si estamos en la última página
+        botonAdelante.setEnabled(pagina < getTotalPageCount() - 1);
+
+        // Deshabilitar el botón de atrás si estamos en la primera página
+        botonAtras.setEnabled(pagina > 0);
+    }
+
+    private void btnAdelanteActionPerformed(ActionEvent evt) {
+        pagina++;
+        loadPage();
+    }
+
+    private void btnAtrasActionPerformed(ActionEvent evt) {
+        pagina--;
+        loadPage();
+    }
+
 
 
 

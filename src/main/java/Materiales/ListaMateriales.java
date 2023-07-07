@@ -1,8 +1,8 @@
-package Floristeria;
+package Materiales;
 
-import Modelos.ModeloFloristeria;
+import Modelos.ModeloMateriales;
 import Objetos.Conexion;
-import Objetos.Floristeria;
+import Objetos.Material;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -12,7 +12,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -20,10 +19,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ListaFloristeria extends JFrame {
+public class ListaMateriales extends JFrame {
     private JPanel panelPrincipal;
     private JButton botonVer;
-    private JTable listaFloristerias;
+    private JTable listaMateriales;
     private JButton botonAtras;
     private JButton botonAdelante;
     private JTextField campoBusqueda;
@@ -32,15 +31,15 @@ public class ListaFloristeria extends JFrame {
     private JButton botonCrear;
     private JLabel lbltxt;
     private ImageIcon imagen;
-    private List<Floristeria> listaFloristeria;
+    private List<Material> materialList;
     private int pagina = 0;
     private Connection mysql;
     private Conexion sql;
-    private ListaFloristeria actual = this;
+    private ListaMateriales actual = this;
 
     private String busqueda = "";
 
-    public ListaFloristeria() {
+    public ListaMateriales() {
         super("");
         setSize(850, 490);
         setLocationRelativeTo(null);
@@ -48,7 +47,7 @@ public class ListaFloristeria extends JFrame {
         campoBusqueda.setText("");
 
 
-        listaFloristerias.setModel(cargarDatos());
+        listaMateriales.setModel(cargarDatos());
         centrarDatosTabla();
 
         // Calcular el número total de páginas al inicio
@@ -57,13 +56,13 @@ public class ListaFloristeria extends JFrame {
         botonAdelante.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (listaFloristerias.getRowCount() == 20) {
+                if (listaMateriales.getRowCount() == 20) {
                     pagina += 20;
                     botonAtras.setEnabled(true);
                 } else {
                     botonAdelante.setEnabled(false);
                 }
-                listaFloristerias.setModel(cargarDatos());
+                listaMateriales.setModel(cargarDatos());
                 configuraColumnas();
                 centrarDatosTabla();
                 lbltxt.setText("Página " + (pagina / 20 + 1) + " de " + getTotalPageCount());
@@ -79,7 +78,7 @@ public class ListaFloristeria extends JFrame {
                 } else {
                     botonAtras.setEnabled(false);
                 }
-                listaFloristerias.setModel(cargarDatos());
+                listaMateriales.setModel(cargarDatos());
                 centrarDatosTabla();
                 lbltxt.setText("Página " + (pagina / 20 + 1) + " de " + getTotalPageCount());
             }
@@ -90,7 +89,7 @@ public class ListaFloristeria extends JFrame {
             public void keyReleased(KeyEvent e) {
                 busqueda = campoBusqueda.getText();
                 pagina = 0; // Reiniciar la paginación
-                listaFloristerias.setModel(cargarDatos());
+                listaMateriales.setModel(cargarDatos());
                 botonAtras.setEnabled(true);
                 botonAdelante.setEnabled(true);
                 centrarDatosTabla();
@@ -101,8 +100,8 @@ public class ListaFloristeria extends JFrame {
         botonCrear.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                CrearFloristeria floristeria = new CrearFloristeria();
-                floristeria.setVisible(true);
+                CrearMateriales materiales = new CrearMateriales();
+                materiales.setVisible(true);
                 actual.dispose();
             }
         });
@@ -131,7 +130,7 @@ public class ListaFloristeria extends JFrame {
         botonEditar.setBackground(darkColor);
 
         // Color de fondo de la tabla
-        listaFloristerias.setBackground(lightColor);
+        listaMateriales.setBackground(lightColor);
 
         // Color de texto del campo de búsqueda
         campoBusqueda.setForeground(Color.WHITE);
@@ -196,43 +195,46 @@ public class ListaFloristeria extends JFrame {
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 
-        for (int i = 0; i < listaFloristerias.getColumnCount(); i++) {
-            listaFloristerias.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        for (int i = 0; i < listaMateriales.getColumnCount(); i++) {
+            listaMateriales.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
     }
 
-    private ModeloFloristeria cargarDatos() {
+    private ModeloMateriales cargarDatos() {
         sql = new Conexion();
         try (Connection mysql = sql.conectamysql();
-             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT f.*, p.empresaProveedora FROM Floristeria f JOIN Proveedores p ON f.proveedor_id = p.id WHERE f.nombre LIKE CONCAT('%', ?, '%') LIMIT ?, 20")){
+             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT f.*, p.empresaProveedora FROM Materiales f JOIN Proveedores p ON f.proveedor_id = p.id WHERE f.nombre LIKE CONCAT('%', ?, '%') LIMIT ?, 20")){
             preparedStatement.setString(1, busqueda);
             preparedStatement.setInt(2, pagina);
             ResultSet resultSet = preparedStatement.executeQuery();
-            listaFloristeria = new ArrayList<>();
+            materialList = new ArrayList<>();
 
             while (resultSet.next()) {
-                Floristeria floristeria = new Floristeria();
-                floristeria.setId(resultSet.getInt("id"));
-                floristeria.setNombre(resultSet.getString("nombre"));
-                floristeria.setPrecio(resultSet.getDouble("precio"));
-                floristeria.setProveedorId(resultSet.getInt("proveedor_id"));
-                listaFloristeria.add(floristeria);
+                Material material = new Material();
+
+                material.setId(resultSet.getInt("id"));
+                material.setNombre(resultSet.getString("nombre"));
+                material.setPrecio(resultSet.getDouble("precio"));
+                material.setDisponible(resultSet.getString("disponible"));
+                material.setDescripcion(resultSet.getString("descripcion"));
+                material.setProveedorId(resultSet.getInt("proveedor_id"));
+                materialList.add(material);
+
             }
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
-            listaFloristeria = new ArrayList<>();
+            materialList = new ArrayList<>();
         }
 
 
-        if (listaFloristerias.getColumnCount() > 0) {
-            TableColumn columnId = listaFloristerias.getColumnModel().getColumn(0);
+        if (listaMateriales.getColumnCount() > 0) {
+            TableColumn columnId = listaMateriales.getColumnModel().getColumn(0);
             columnId.setPreferredWidth(50); // Puedes ajustar este valor según tus necesidades
         }
 
-        return new ModeloFloristeria(listaFloristeria, sql);
-
+        return new ModeloMateriales(materialList, sql);
     }
 
     private void configuraColumnas() {
@@ -253,14 +255,14 @@ public class ListaFloristeria extends JFrame {
             }
         };
 
-        if (listaFloristerias.getColumnCount() > 1) {
-            TableColumn imageColumn = listaFloristerias.getColumnModel().getColumn(1);
+        if (listaMateriales.getColumnCount() > 1) {
+            TableColumn imageColumn = listaMateriales.getColumnModel().getColumn(1);
             imageColumn.setCellRenderer(renderer);
         }
 
         // Ajustar el ancho de la columna de ID
-        if (listaFloristerias.getColumnCount() > 0) {
-            TableColumn columnId = listaFloristerias.getColumnModel().getColumn(0);
+        if (listaMateriales.getColumnCount() > 0) {
+            TableColumn columnId = listaMateriales.getColumnModel().getColumn(0);
             columnId.setPreferredWidth(50); // Puedes ajustar este valor según tus necesidades
         }
     }
@@ -287,13 +289,34 @@ public class ListaFloristeria extends JFrame {
         return totalPageCount;
     }
 
+    private void loadPage() {
+        listaMateriales.setModel(cargarDatos());
+        configuraColumnas();
+        centrarDatosTabla();
+        lbltxt.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
 
+        // Deshabilitar el botón de adelante si estamos en la última página
+        botonAdelante.setEnabled(pagina < getTotalPageCount() - 1);
+
+        // Deshabilitar el botón de atrás si estamos en la primera página
+        botonAtras.setEnabled(pagina > 0);
+    }
+
+    private void btnAdelanteActionPerformed(ActionEvent evt) {
+        pagina++;
+        loadPage();
+    }
+
+    private void btnAtrasActionPerformed(ActionEvent evt) {
+        pagina--;
+        loadPage();
+    }
 
 
 
     public static void main(String[] args) {
-        ListaFloristeria listaFloristeria = new ListaFloristeria();
-        listaFloristeria.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        listaFloristeria.setVisible(true);
+        ListaMateriales listaMateriales = new ListaMateriales();
+        listaMateriales.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        listaMateriales.setVisible(true);
     }
 }
