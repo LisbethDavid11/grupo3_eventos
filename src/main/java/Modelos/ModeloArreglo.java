@@ -11,12 +11,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Currency;
 import java.util.List;
-
 
 public class ModeloArreglo extends AbstractTableModel {
 
-    private final String[] columnas = {"N°", "Imagen", "Nombre", "Precio", "Disponible"};
+    private final String[] columnas = {"N°", "Nombre", "Precio", "Disponible"};
 
     private final List<Arreglo> arreglos;
     private final Conexion sql;
@@ -56,39 +58,19 @@ public class ModeloArreglo extends AbstractTableModel {
         switch (columnIndex) {
             case 0: // N°
                 return rowIndex + 1;
-            case 1: // Imagen
-                ImageIcon imagenIcon = arreglo.getImagen();
-                if (imagenIcon != null) {
-                    // Redimensionar la imagen para que encaje en la celda de la tabla
-                    Image imagenOriginal = imagenIcon.getImage();
-                    Image imagenRedimensionada = imagenOriginal.getScaledInstance(150, 120, Image.SCALE_SMOOTH);
-                    imagenIcon = new ImageIcon(imagenRedimensionada);
-
-                    return imagenIcon;
-                }
-                return null;
-            case 2: // Nombre
+            case 1: // Nombre
                 return arreglo.getNombre();
-            case 3: // Precio
-                return arreglo.getPrecio();
-            case 4: // Disponible
+            case 2: // Precio
+                double precio = arreglo.getPrecio();
+                if (precio < 0) {
+                    precio = 0;
+                }
+                String precioFormateado = String.format("L. %,.2f", precio);
+                return precioFormateado;
+            case 3: // Disponible
                 return arreglo.getDisponible();
             default:
                 return null;
         }
-    }
-
-    @Override
-    public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-        if (columnIndex == 4 && aValue instanceof ImageIcon) {
-            Arreglo arreglo = arreglos.get(rowIndex);
-            arreglo.setImagen((ImageIcon) aValue);
-            fireTableCellUpdated(rowIndex, columnIndex);
-        }
-    }
-
-    @Override
-    public boolean isCellEditable(int rowIndex, int columnIndex) {
-        return columnIndex == 4;
     }
 }
