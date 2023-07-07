@@ -1,8 +1,6 @@
 package Modelos;
-
 import Objetos.Conexion;
 import Objetos.Material;
-
 import javax.swing.table.AbstractTableModel;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,8 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ModeloMateriales extends AbstractTableModel {
-    private final String[] columnas = {"N°", "Nombre", "Precio", "Disponible", "Descripcion", "Proveedor"};
-
+    private final String[] columnas = {"N°", "Nombre", "Precio", "Proveedor", "Disponible"};
     private final List<Material> materiales;
     private final Conexion sql;
     private final Map<Integer, String> proveedores;
@@ -58,19 +55,16 @@ public class ModeloMateriales extends AbstractTableModel {
                 }
                 String precioFormateado = String.format("L. %,.2f", precio);
                 return precioFormateado;
-            case 3: // Disponible
-                return material.getDisponible();
-            case 4: // Descripcion
-                return material.getDescripcion();
-            case 5: // Proveedor
+            case 3: // Proveedor
                 int proveedorId = material.getProveedorId();
                 String proveedorNombre = obtenerNombreProveedor(proveedorId);
                 return proveedorNombre;
+            case 4: // Disponible
+                return material.getDisponible();
             default:
                 return null;
         }
     }
-
 
     private String obtenerNombreProveedor(int proveedorId) {
         return proveedores.get(proveedorId);

@@ -1,9 +1,7 @@
-package Floristeria;
-
+package Floristerias;
 import Modelos.ModeloFloristeria;
 import Objetos.Conexion;
 import Objetos.Floristeria;
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -12,7 +10,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -37,7 +34,6 @@ public class ListaFloristeria extends JFrame {
     private Connection mysql;
     private Conexion sql;
     private ListaFloristeria actual = this;
-
     private String busqueda = "";
 
     public ListaFloristeria() {
@@ -47,26 +43,24 @@ public class ListaFloristeria extends JFrame {
         setContentPane(panelPrincipal);
         campoBusqueda.setText("");
 
-
         listaFloristerias.setModel(cargarDatos());
         centrarDatosTabla();
 
-        // Calcular el número total de páginas al inicio
-        lbltxt.setText("Página " + (pagina / 20 + 1) + " de " + getTotalPageCount());
+        lbltxt.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
 
         botonAdelante.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (listaFloristerias.getRowCount() == 20) {
-                    pagina += 20;
+                if ((pagina + 1) < getTotalPageCount()) {
+                    pagina++;
                     botonAtras.setEnabled(true);
-                } else {
-                    botonAdelante.setEnabled(false);
+                    if ((pagina + 1) == getTotalPageCount()) {
+                        botonAdelante.setEnabled(false);
+                    }
                 }
                 listaFloristerias.setModel(cargarDatos());
-                configuraColumnas();
                 centrarDatosTabla();
-                lbltxt.setText("Página " + (pagina / 20 + 1) + " de " + getTotalPageCount());
+                lbltxt.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
 
@@ -74,14 +68,15 @@ public class ListaFloristeria extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (pagina > 0) {
-                    pagina -= 20;
+                    pagina--;
                     botonAdelante.setEnabled(true);
-                } else {
-                    botonAtras.setEnabled(false);
+                    if (pagina == 0) {
+                        botonAtras.setEnabled(false);
+                    }
                 }
                 listaFloristerias.setModel(cargarDatos());
                 centrarDatosTabla();
-                lbltxt.setText("Página " + (pagina / 20 + 1) + " de " + getTotalPageCount());
+                lbltxt.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
 
@@ -89,12 +84,12 @@ public class ListaFloristeria extends JFrame {
             @Override
             public void keyReleased(KeyEvent e) {
                 busqueda = campoBusqueda.getText();
-                pagina = 0; // Reiniciar la paginación
+                pagina = 0;
+                botonAdelante.setEnabled((pagina + 1) < getTotalPageCount());
+                botonAtras.setEnabled(pagina > 0);
                 listaFloristerias.setModel(cargarDatos());
-                botonAtras.setEnabled(true);
-                botonAdelante.setEnabled(true);
                 centrarDatosTabla();
-                lbltxt.setText("Página " + (pagina / 20 + 1) + " de " + getTotalPageCount());
+                lbltxt.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
 
@@ -112,40 +107,6 @@ public class ListaFloristeria extends JFrame {
         Color lightColor = Color.decode("#cfd8dc"); // Gris azul claro
         Color darkColor = Color.decode("#263238"); // Gris azul más oscuro
 
-        // Color de fondo
-        panelPrincipal.setBackground(primaryColor);
-
-        // Color de texto de los botones
-        botonVer.setForeground(Color.WHITE);
-        botonAtras.setForeground(Color.WHITE);
-        botonAdelante.setForeground(Color.WHITE);
-        botonCrear.setForeground(Color.WHITE);
-        botonEditar.setForeground(Color.WHITE);
-        lbltxt.setForeground(Color.WHITE);
-
-        // Color de fondo de los botones
-        botonVer.setBackground(darkColor);
-        botonAtras.setBackground(darkColor);
-        botonAdelante.setBackground(darkColor);
-        botonCrear.setBackground(darkColor);
-        botonEditar.setBackground(darkColor);
-
-        // Color de fondo de la tabla
-        listaFloristerias.setBackground(lightColor);
-
-        // Color de texto del campo de búsqueda
-        campoBusqueda.setForeground(Color.WHITE);
-
-        // Color de fondo del campo de búsqueda
-        campoBusqueda.setBackground(darkColor);
-
-        // Color del placeholder del campo de búsqueda
-        placeholder.changeAlpha(0.6f);
-        placeholder.setForeground(lightColor);
-        placeholder.setFont(new Font("Nunito", Font.ITALIC, 11));
-
-
-        // Color de los bordes de los botones al pasar el cursor sobre ellos
         botonVer.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 botonVer.setBackground(lightColor);
@@ -190,6 +151,35 @@ public class ListaFloristeria extends JFrame {
                 botonEditar.setBackground(darkColor);
             }
         });
+
+        // Color de fondo
+        panelPrincipal.setBackground(primaryColor);
+
+        // Color de texto de los botones
+        botonVer.setForeground(Color.WHITE);
+        botonAtras.setForeground(Color.WHITE);
+        botonAdelante.setForeground(Color.WHITE);
+        botonCrear.setForeground(Color.WHITE);
+        botonEditar.setForeground(Color.WHITE);
+
+        // Color de fondo de los botones
+        botonVer.setBackground(darkColor);
+        botonAtras.setBackground(darkColor);
+        botonAdelante.setBackground(darkColor);
+        botonCrear.setBackground(darkColor);
+        botonEditar.setBackground(darkColor);
+
+        // Color de texto del campo de búsqueda y del label de la página
+        campoBusqueda.setForeground(Color.WHITE);
+        lbltxt.setForeground(Color.WHITE);
+
+        // Color de fondo del campo de búsqueda
+        campoBusqueda.setBackground(darkColor);
+
+        // Color del placeholder del campo de búsqueda
+        placeholder.changeAlpha(0.75f);
+        placeholder.setForeground(Color.LIGHT_GRAY);
+        placeholder.setFont(new Font("Nunito", Font.ITALIC, 11));
     }
 
     private void centrarDatosTabla() {
@@ -206,7 +196,8 @@ public class ListaFloristeria extends JFrame {
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement("SELECT f.*, p.empresaProveedora FROM Floristeria f JOIN Proveedores p ON f.proveedor_id = p.id WHERE f.nombre LIKE CONCAT('%', ?, '%') LIMIT ?, 20")){
             preparedStatement.setString(1, busqueda);
-            preparedStatement.setInt(2, pagina);
+            preparedStatement.setInt(2, pagina * 20);
+
             ResultSet resultSet = preparedStatement.executeQuery();
             listaFloristeria = new ArrayList<>();
 
@@ -225,50 +216,18 @@ public class ListaFloristeria extends JFrame {
             listaFloristeria = new ArrayList<>();
         }
 
-
         if (listaFloristerias.getColumnCount() > 0) {
             TableColumn columnId = listaFloristerias.getColumnModel().getColumn(0);
-            columnId.setPreferredWidth(50); // Puedes ajustar este valor según tus necesidades
+            columnId.setPreferredWidth(50);
         }
 
         return new ModeloFloristeria(listaFloristeria, sql);
-
-    }
-
-    private void configuraColumnas() {
-        // Establecer el renderizador personalizado para la columna de imágenes
-        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer() {
-            @Override
-            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-                JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                if (value instanceof ImageIcon) {
-                    ImageIcon icon = (ImageIcon) value;
-                    label.setIcon(icon);
-                    label.setText(null);
-                } else {
-                    label.setIcon(null);
-                    label.setText(value != null ? value.toString() : "");
-                }
-                return label;
-            }
-        };
-
-        if (listaFloristerias.getColumnCount() > 1) {
-            TableColumn imageColumn = listaFloristerias.getColumnModel().getColumn(1);
-            imageColumn.setCellRenderer(renderer);
-        }
-
-        // Ajustar el ancho de la columna de ID
-        if (listaFloristerias.getColumnCount() > 0) {
-            TableColumn columnId = listaFloristerias.getColumnModel().getColumn(0);
-            columnId.setPreferredWidth(50); // Puedes ajustar este valor según tus necesidades
-        }
     }
 
     private int getTotalPageCount() {
         int count = 0;
         try (Connection mysql = sql.conectamysql();
-             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT COUNT(*) AS total FROM Materiales f WHERE f.nombre LIKE CONCAT('%', ?, '%')")) {
+             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT COUNT(*) AS total FROM Floristeria WHERE nombre LIKE CONCAT('%', ?, '%')")) {
             preparedStatement.setString(1, busqueda);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
@@ -280,16 +239,13 @@ public class ListaFloristeria extends JFrame {
         }
 
         int totalPageCount = count / 20;
-        if (count % 20 != 0) {
-            totalPageCount++; // Añade una página adicional si hay elementos restantes
+
+        if (count % 20 > 0) {
+            totalPageCount++;
         }
 
         return totalPageCount;
     }
-
-
-
-
 
     public static void main(String[] args) {
         ListaFloristeria listaFloristeria = new ListaFloristeria();

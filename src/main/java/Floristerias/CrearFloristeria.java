@@ -1,4 +1,4 @@
-package Floristeria;
+package Floristerias;
 
 import Objetos.Conexion;
 
@@ -11,7 +11,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.DecimalFormat;
 import java.text.ParseException;
 
 public class CrearFloristeria extends JFrame {

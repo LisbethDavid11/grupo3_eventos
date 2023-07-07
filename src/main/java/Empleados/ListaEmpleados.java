@@ -1,5 +1,4 @@
 package Empleados;
-
 import Modelos.ModeloEmpleado;
 import Objetos.Conexion;
 import Objetos.Empleado;
@@ -28,13 +27,14 @@ public class ListaEmpleados extends JFrame {
     private TextPrompt placeholder = new TextPrompt("Buscar por nombre", campoBusqueda);
     private JButton botonEditar;
     private JButton botonCrear;
+    private JLabel lblPagina;
     private ImageIcon imagen;
-
     private List<Empleado> listaEmpleado;
     private int pagina = 0;
     private Connection mysql;
     private Conexion sql;
     private ListaEmpleados actual = this;
+    private String busqueda = "";
 
     public ListaEmpleados() {
         super("");
@@ -43,48 +43,26 @@ public class ListaEmpleados extends JFrame {
         setContentPane(panelPrincipal);
         campoBusqueda.setText("");
 
-        listaEmpleado = new ArrayList<>(); // Crear una instancia de listaEmpleado
+        listaEmpleado = new ArrayList<>();
 
         listaEmpleados.setModel(cargarDatos());
         centrarDatosTabla();
 
-        // Establecer el renderizador personalizado para la columna de imágenes
-        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer() {
-            @Override
-            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-                JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                if (value instanceof ImageIcon) {
-                    ImageIcon icon = (ImageIcon) value;
-                    label.setIcon(icon);
-                    label.setText(null);
-                } else {
-                    label.setIcon(null);
-                    label.setText(value != null ? value.toString() : "");
-                }
-                return label;
-            }
-        };
-        TableColumn imageColumn = listaEmpleados.getColumnModel().getColumn(1);
-        imageColumn.setCellRenderer(renderer);
-
-        campoBusqueda.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyReleased(KeyEvent e) {
-                pagina = 0; // Restablecer la página a 0 al realizar una nueva búsqueda
-                listaEmpleados.setModel(cargarDatos());
-                botonAtras.setEnabled(false); // Deshabilitar el botón de retroceso
-                botonAdelante.setEnabled(true);
-                centrarDatosTabla();
-            }
-        });
+        lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
 
         botonAdelante.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                pagina += 20;
+                if ((pagina + 1) < getTotalPageCount()) {
+                    pagina++;
+                    botonAtras.setEnabled(true);
+                    if ((pagina + 1) == getTotalPageCount()) {
+                        botonAdelante.setEnabled(false);
+                    }
+                }
                 listaEmpleados.setModel(cargarDatos());
-                botonAtras.setEnabled(true);
                 centrarDatosTabla();
+                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
 
@@ -92,13 +70,35 @@ public class ListaEmpleados extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (pagina > 0) {
-                    pagina -= 20;
+                    pagina--;
+                    botonAdelante.setEnabled(true);
+                    if (pagina == 0) {
+                        botonAtras.setEnabled(false);
+                    }
                 }
                 listaEmpleados.setModel(cargarDatos());
-                botonAdelante.setEnabled(true);
                 centrarDatosTabla();
+                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
+
+        campoBusqueda.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                busqueda = campoBusqueda.getText();
+                pagina = 0;
+                botonAdelante.setEnabled((pagina + 1) < getTotalPageCount());
+                botonAtras.setEnabled(pagina > 0);
+                listaEmpleados.setModel(cargarDatos());
+                centrarDatosTabla();
+                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+            }
+        });
+
+        // Colores de la paleta
+        Color primaryColor = Color.decode("#37474f"); // Gris azul oscuro
+        Color lightColor = Color.decode("#cfd8dc"); // Gris azul claro
+        Color darkColor = Color.decode("#263238"); // Gris azul más oscuro
 
         botonCrear.addActionListener(new ActionListener() {
             @Override
@@ -109,43 +109,6 @@ public class ListaEmpleados extends JFrame {
             }
         });
 
-        // Colores de la paleta
-        Color primaryColor = Color.decode("#37474f"); // Gris azul oscuro
-        Color lightColor = Color.decode("#cfd8dc"); // Gris azul claro
-        Color darkColor = Color.decode("#263238"); // Gris azul más oscuro
-
-        // Color de fondo
-        panelPrincipal.setBackground(primaryColor);
-
-        // Color de texto de los botones
-        botonVer.setForeground(Color.WHITE);
-        botonAtras.setForeground(Color.WHITE);
-        botonAdelante.setForeground(Color.WHITE);
-        botonCrear.setForeground(Color.WHITE);
-        botonEditar.setForeground(Color.WHITE);
-
-        // Color de fondo de los botones
-        botonVer.setBackground(darkColor);
-        botonAtras.setBackground(darkColor);
-        botonAdelante.setBackground(darkColor);
-        botonCrear.setBackground(darkColor);
-        botonEditar.setBackground(darkColor);
-
-        // Color de fondo de la tabla
-        listaEmpleados.setBackground(lightColor);
-
-        // Color de texto del campo de búsqueda
-        campoBusqueda.setForeground(Color.WHITE);
-
-        // Color de fondo del campo de búsqueda
-        campoBusqueda.setBackground(darkColor);
-
-        // Color del placeholder del campo de búsqueda
-        placeholder.changeAlpha(0.6f);
-        placeholder.setForeground(lightColor);
-        placeholder.setFont(new Font("Arial", Font.BOLD, 12));
-
-        // Color de los bordes de los botones al pasar el cursor sobre ellos
         botonVer.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 botonVer.setBackground(lightColor);
@@ -221,6 +184,36 @@ public class ListaEmpleados extends JFrame {
                 actual.dispose();
             }
         });
+
+
+        // Color de fondo
+        panelPrincipal.setBackground(primaryColor);
+
+        // Color de texto de los botones
+        botonVer.setForeground(Color.WHITE);
+        botonAtras.setForeground(Color.WHITE);
+        botonAdelante.setForeground(Color.WHITE);
+        botonCrear.setForeground(Color.WHITE);
+        botonEditar.setForeground(Color.WHITE);
+
+        // Color de fondo de los botones
+        botonVer.setBackground(darkColor);
+        botonAtras.setBackground(darkColor);
+        botonAdelante.setBackground(darkColor);
+        botonCrear.setBackground(darkColor);
+        botonEditar.setBackground(darkColor);
+
+        // Color de texto del campo de búsqueda y del label de la página
+        campoBusqueda.setForeground(Color.WHITE);
+        lblPagina.setForeground(Color.WHITE);
+
+        // Color de fondo del campo de búsqueda
+        campoBusqueda.setBackground(darkColor);
+
+        // Color del placeholder del campo de búsqueda
+        placeholder.changeAlpha(0.75f);
+        placeholder.setForeground(Color.LIGHT_GRAY);
+        placeholder.setFont(new Font("Nunito", Font.ITALIC, 11));
     }
 
     private void centrarDatosTabla() {
@@ -236,15 +229,14 @@ public class ListaEmpleados extends JFrame {
         sql = new Conexion();
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement("SELECT * FROM Empleados WHERE Nombres LIKE CONCAT('%', ?, '%') LIMIT ?, 20")) {
-
             preparedStatement.setString(1, campoBusqueda.getText());
-            preparedStatement.setInt(2, pagina);
+            preparedStatement.setInt(2, pagina * 20);
+
             ResultSet resultSet = preparedStatement.executeQuery();
-            listaEmpleado.clear(); // Limpiar la lista antes de agregar nuevos elementos
+            listaEmpleado.clear();
 
             while (resultSet.next()) {
                 Empleado empleado = new Empleado();
-
                 empleado.setId(resultSet.getInt("id"));
                 empleado.setIdentidad(resultSet.getString("Identidad"));
                 empleado.setNombres(resultSet.getString("Nombres"));
@@ -261,7 +253,29 @@ public class ListaEmpleados extends JFrame {
             JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
             return new ModeloEmpleado(new ArrayList<>());
         }
-}
+    }
+
+    private int getTotalPageCount() {
+        int count = 0;
+        try (Connection mysql = sql.conectamysql();
+             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT COUNT(*) AS total FROM " + Empleado.nombreTabla + " WHERE nombres LIKE CONCAT('%',?,'%') OR apellidos LIKE CONCAT('%',?,'%') OR identidad LIKE CONCAT('%',?,'%')")) {
+            preparedStatement.setString(1, busqueda);
+            preparedStatement.setString(2, busqueda);
+            preparedStatement.setString(3, busqueda);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                count = resultSet.getInt("total"); // Obtiene el total de elementos
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+        }
+
+        int totalPageCount = (int) Math.ceil((double) count / 20); // Divide el total de elementos por 20 para obtener la cantidad de páginas completas
+
+        return totalPageCount; // Retorna el total de páginas necesarias
+    }
 
     public static void main(String[] args) {
         ListaEmpleados listaEmpleados = new ListaEmpleados();

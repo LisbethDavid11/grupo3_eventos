@@ -6,7 +6,7 @@ import javax.swing.table.AbstractTableModel;
 import java.util.List;
 
 public class ModeloClientes extends AbstractTableModel {
-    private final String[] columnas = {"N°", "Identidad", "Nombre Completo", "Teléfono", "Tipo", "Domicilio"};
+    private final String[] columnas = {"N°", "Identidad", "Nombre Completo", "Teléfono", "Tipo"};
     private final List<Cliente> clientes;
     public ModeloClientes(List<Cliente> clientes) {
         this.clientes = clientes;
@@ -50,8 +50,6 @@ public class ModeloClientes extends AbstractTableModel {
                 return cliente.getTelefono();
             case 4:
                 return cliente.getTipo_cliente();
-            case 5:
-                return cliente.getDomicilio();
             default:
                 return null;
         }

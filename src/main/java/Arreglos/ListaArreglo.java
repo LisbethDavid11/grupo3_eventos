@@ -1,10 +1,7 @@
 package Arreglos;
-
 import Modelos.ModeloArreglo;
 import Objetos.Arreglo;
 import Objetos.Conexion;
-import Objetos.Floristeria;
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -30,9 +27,8 @@ public class ListaArreglo extends JFrame {
     private TextPrompt placeholder = new TextPrompt("Buscar por nombre", campoBusqueda);
     private JButton botonEditar;
     private JButton botonCrear;
-    private JLabel lblPagina; // Label para mostrar la página actual y el total de páginas
+    private JLabel lblPagina;
     private List<Arreglo> listaArreglo;
-
     private int pagina = 0;
     private Connection mysql;
     private Conexion sql;
@@ -49,24 +45,21 @@ public class ListaArreglo extends JFrame {
         listaArreglos.setModel(cargarDatos());
         centrarDatosTabla();
 
-        // Calcular el número total de páginas al inicio
-        lblPagina.setText("Página " + (pagina / 20 + 1) + " de " + getTotalPageCount());
-
+        lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
 
         botonAdelante.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (listaArreglos.getRowCount() == 20) {
-                    pagina += 20;
+                if ((pagina + 1) < getTotalPageCount()) {
+                    pagina++;
                     botonAtras.setEnabled(true);
-                } else {
-                    botonAdelante.setEnabled(false);
+                    if ((pagina + 1) == getTotalPageCount()) {
+                        botonAdelante.setEnabled(false);
+                    }
                 }
                 listaArreglos.setModel(cargarDatos());
-                configuraColumnas();
                 centrarDatosTabla();
-                lblPagina.setText("Página " + (pagina / 20 + 1) + " de " + getTotalPageCount());
-
+                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
 
@@ -74,15 +67,15 @@ public class ListaArreglo extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (pagina > 0) {
-                    pagina -= 20;
+                    pagina--;
                     botonAdelante.setEnabled(true);
-                } else {
-                    botonAtras.setEnabled(false);
+                    if (pagina == 0) {
+                        botonAtras.setEnabled(false);
+                    }
                 }
                 listaArreglos.setModel(cargarDatos());
                 centrarDatosTabla();
-                lblPagina.setText("Página " + (pagina / 20 + 1) + " de " + getTotalPageCount());
-
+                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
 
@@ -90,13 +83,12 @@ public class ListaArreglo extends JFrame {
             @Override
             public void keyReleased(KeyEvent e) {
                 busqueda = campoBusqueda.getText();
-                pagina = 0; // Reiniciar la paginación
+                pagina = 0;
+                botonAdelante.setEnabled((pagina + 1) < getTotalPageCount());
+                botonAtras.setEnabled(pagina > 0);
                 listaArreglos.setModel(cargarDatos());
-                botonAtras.setEnabled(true);
-                botonAdelante.setEnabled(true);
                 centrarDatosTabla();
-                lblPagina.setText("Página " + (pagina / 20 + 1) + " de " + getTotalPageCount());
-
+                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
 
@@ -113,7 +105,6 @@ public class ListaArreglo extends JFrame {
         Color primaryColor = Color.decode("#37474f"); // Gris azul oscuro
         Color lightColor = Color.decode("#cfd8dc"); // Gris azul claro
         Color darkColor = Color.decode("#263238"); // Gris azul más oscuro
-
 
         // Color de fondo
         panelPrincipal.setBackground(primaryColor);
@@ -159,8 +150,8 @@ public class ListaArreglo extends JFrame {
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement("SELECT * FROM arreglos WHERE nombre LIKE CONCAT('%', ?, '%') LIMIT ?, 20")){
             preparedStatement.setString(1, busqueda);
+            preparedStatement.setInt(2, pagina * 20);
 
-            preparedStatement.setInt(2, pagina);
             ResultSet resultSet = preparedStatement.executeQuery();
             listaArreglo = new ArrayList<>();
 
@@ -179,43 +170,12 @@ public class ListaArreglo extends JFrame {
             listaArreglo = new ArrayList<>();
         }
 
-
         if (listaArreglos.getColumnCount() > 0) {
             TableColumn columnId = listaArreglos.getColumnModel().getColumn(0);
-            columnId.setPreferredWidth(50); // Puedes ajustar este valor según tus necesidades
+            columnId.setPreferredWidth(50);
         }
 
         return new ModeloArreglo(listaArreglo, sql);
-
-    }
-
-    private void configuraColumnas() {
-        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer() {
-            @Override
-            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-                JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                if (value instanceof ImageIcon) {
-                    ImageIcon icon = (ImageIcon) value;
-                    label.setIcon(icon);
-                    label.setText(null);
-                } else {
-                    label.setIcon(null);
-                    label.setText(value != null ? value.toString() : "");
-                }
-                return label;
-            }
-        };
-
-        if (listaArreglos.getColumnCount() > 1) {
-            TableColumn imageColumn = listaArreglos.getColumnModel().getColumn(1);
-            imageColumn.setCellRenderer(renderer);
-        }
-
-        // Ajustar el ancho de la columna de ID
-        if (listaArreglos.getColumnCount() > 0) {
-            TableColumn columnId = listaArreglos.getColumnModel().getColumn(0);
-            columnId.setPreferredWidth(50); // Puedes ajustar este valor según tus necesidades
-        }
     }
 
     private int getTotalPageCount() {
@@ -233,38 +193,13 @@ public class ListaArreglo extends JFrame {
         }
 
         int totalPageCount = count / 20;
-        if (count % 20 != 0) {
-            totalPageCount++; // Añade una página adicional si hay elementos restantes
+
+        if (count % 20 > 0) {
+            totalPageCount++;
         }
 
         return totalPageCount;
     }
-
-    private void loadPage() {
-        listaArreglos.setModel(cargarDatos());
-        configuraColumnas();
-        centrarDatosTabla();
-        lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
-
-        // Deshabilitar el botón de adelante si estamos en la última página
-        botonAdelante.setEnabled(pagina < getTotalPageCount() - 1);
-
-        // Deshabilitar el botón de atrás si estamos en la primera página
-        botonAtras.setEnabled(pagina > 0);
-    }
-
-    private void btnAdelanteActionPerformed(ActionEvent evt) {
-        pagina++;
-        loadPage();
-    }
-
-    private void btnAtrasActionPerformed(ActionEvent evt) {
-        pagina--;
-        loadPage();
-    }
-
-
-
 
     public static void main(String[] args) {
         ListaArreglo listaArreglo = new ListaArreglo();
