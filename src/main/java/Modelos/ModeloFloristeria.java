@@ -3,24 +3,30 @@ package Modelos;
 import Objetos.Conexion;
 import Objetos.Floristeria;
 
-import javax.swing.ImageIcon;
+import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.awt.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ModeloFloristeria extends AbstractTableModel {
-    private final String[] columnas = {"N°", "Imagen", "Nombre", "Precio", "Proveedor"};
+    private final String[] columnas = {"N°", "Nombre", "Precio", "Proveedor"};
 
     private final List<Floristeria> floristerias;
     private final Conexion sql;
+    private final Map<Integer, String> proveedores;
 
     public ModeloFloristeria(List<Floristeria> floristerias, Conexion sql) {
         this.floristerias = floristerias;
         this.sql = sql;
+        this.proveedores = new HashMap<>();
+
+        cargarProveedores();
     }
 
     @Override
@@ -39,36 +45,22 @@ public class ModeloFloristeria extends AbstractTableModel {
     }
 
     @Override
-    public Class<?> getColumnClass(int columnIndex) {
-        if (getColumnName(columnIndex).equals("Imagen")) {
-            return ImageIcon.class;
-        }
-        return super.getColumnClass(columnIndex);
-    }
-
-    @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         Floristeria floristeria = floristerias.get(rowIndex);
 
         switch (columnIndex) {
             case 0: // N°
                 return rowIndex + 1;
-            case 1: // Imagen
-                ImageIcon imagenIcon = floristeria.getImagen();
-                if (imagenIcon != null) {
-                    // Redimensionar la imagen para que encaje en la celda de la tabla
-                    Image imagenOriginal = imagenIcon.getImage();
-                    Image imagenRedimensionada = imagenOriginal.getScaledInstance(150, 120, Image.SCALE_SMOOTH);
-                    imagenIcon = new ImageIcon(imagenRedimensionada);
-
-                    return imagenIcon;
-                }
-                return null;
-            case 2: // Nombre
+            case 1: // Nombre
                 return floristeria.getNombre();
-            case 3: // Precio
-                return floristeria.getPrecio();
-            case 4: // Proveedor
+            case 2: // Precio
+                double precio = floristeria.getPrecio();
+                if (precio < 0) {
+                    precio = 0;
+                }
+                String precioFormateado = String.format("L. %,.2f", precio);
+                return precioFormateado;
+            case 3: // Proveedor
                 int proveedorId = floristeria.getProveedorId();
                 String proveedorNombre = obtenerNombreProveedor(proveedorId);
                 return proveedorNombre;
@@ -77,32 +69,22 @@ public class ModeloFloristeria extends AbstractTableModel {
         }
     }
 
-    @Override
-    public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-        if (columnIndex == 4 && aValue instanceof ImageIcon) {
-            Floristeria floristeria = floristerias.get(rowIndex);
-            floristeria.setImagen((ImageIcon) aValue);
-            fireTableCellUpdated(rowIndex, columnIndex);
-        }
-    }
-
-    @Override
-    public boolean isCellEditable(int rowIndex, int columnIndex) {
-        return columnIndex == 4;
-    }
-
     private String obtenerNombreProveedor(int proveedorId) {
-        try (Connection mysql = sql.conectamysql();
-             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT empresaProveedora FROM Proveedores WHERE id = ?")) {
+        return proveedores.get(proveedorId);
+    }
 
-            preparedStatement.setInt(1, proveedorId);
+    private void cargarProveedores() {
+        try (Connection mysql = sql.conectamysql();
+             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT id, empresaProveedora FROM Proveedores")) {
+
             ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                return resultSet.getString("empresaProveedora");
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String nombre = resultSet.getString("empresaProveedora");
+                proveedores.put(id, nombre);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return "";
     }
 }
