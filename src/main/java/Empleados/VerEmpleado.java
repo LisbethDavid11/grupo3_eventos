@@ -15,19 +15,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class VerEmpleado extends JFrame {
-    public JLabel campoApellidos;
-    public JLabel campoGenero;
-    public JLabel campoEdad;
-    public JLabel campoCorreo;
-    public JLabel campoTelefono;
-    public JLabel campoNombreContacto;
-    public JLabel campoContacto;
-    public JLabel campoTipo;
-    public JLabel lblID;
     public JButton cancelarButton;
     public JPanel panel1;
-    public JLabel lblnomConcat;
-    public JLabel lblapeConcat;
     private JTextArea etiquetaDireccion;
     private JTextField etiquetaIdentidad;
     private JTextField etiquetaNombre;
@@ -48,7 +37,7 @@ public class VerEmpleado extends JFrame {
 
     public VerEmpleado(int id) {
         super("");
-        setSize(600, 600);
+        setSize(600, 420);
         setLocationRelativeTo(null);
         setContentPane(panel1);
 
@@ -124,34 +113,33 @@ public class VerEmpleado extends JFrame {
         // Color de fondo para el JTextArea
         etiquetaDireccion.setBackground(textFieldColor);
 
-        // Color de fondo y texto para el botón
-        Color buttonColor = Color.decode("#37474f");
-        cancelarButton.setBackground(buttonColor);
-        cancelarButton.setForeground(textFieldColor);
-        // Quitar el icono del botón
-        cancelarButton.setIcon(null);
+        // Color de texto de los botones
+        cancelarButton.setForeground(Color.WHITE);
 
-        // Color de fondo y texto para el botón
-        cancelarButton.setBackground(primaryColor);
-        cancelarButton.setForeground(Color.white);
-
-        // Establecer tono oscuro al pasar el cursor sobre el botón
-        Color darkerColor = primaryColor.darker();
-        cancelarButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                cancelarButton.setBackground(darkerColor);
-            }
-
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                cancelarButton.setBackground(primaryColor);
-            }
-        });
-
-        // Eliminar borde alrededor del texto del botón
-        cancelarButton.setBorderPainted(false);
+        // Color de fondo de los botones
+        cancelarButton.setBackground(Color.decode("#263238"));
         cancelarButton.setFocusPainted(false);
 
+        Color primaryColors = new Color(244, 67, 54); // Rojo primario
+        Color lightColors = new Color(239, 154, 154); // Rojo claro
+        Color darkColors = new Color(211, 47, 47); // Rojo oscuro
 
+        cancelarButton.setBackground(primaryColors);
+
+        // Crea un margen de 10 píxeles desde el borde inferior
+        EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
+
+        // Aplica el margen al botón
+        cancelarButton.setBorder(margin);
+
+        cancelarButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                cancelarButton.setBackground(lightColors);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                cancelarButton.setBackground(darkColors);
+            }
+        });
 
 
         cancelarButton.addActionListener(new ActionListener() {
