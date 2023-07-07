@@ -4,6 +4,7 @@ import Objetos.Cliente;
 import Objetos.Conexion;
 import java.awt.Color;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
@@ -27,8 +28,8 @@ public class VerCliente extends JFrame {
     private int id;
 
     public VerCliente(int id) {
-        super("Ver Registro de los Clientes");
-        setSize(600, 300);
+        super("");
+        setSize(550, 350);
         setLocationRelativeTo(null);
         setContentPane(panel1);
 
@@ -77,10 +78,36 @@ public class VerCliente extends JFrame {
         // Color de fondo para el JTextArea
         etiquetaDomicilio.setBackground(textFieldColor);
 
-        // Color de fondo y texto para el botón
-        Color buttonColor = Color.decode("#E91E63");
-        volverButton.setBackground(buttonColor);
-        volverButton.setForeground(textColor);
+        // Color de texto de los botones
+        volverButton.setForeground(Color.WHITE);
+
+        // Color de fondo de los botones
+        volverButton.setBackground(Color.decode("#263238"));
+        volverButton.setFocusPainted(false);
+
+
+        Color primaryColor = new Color(33, 150, 243); // Azul primario
+        Color lightColor = new Color(100, 181, 246); // Azul claro
+        Color darkColor = new Color(25, 118, 210); // Azul oscuro
+
+        volverButton.setBackground(primaryColor);
+
+        // Crea un margen de 10 píxeles desde el borde inferior
+        EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
+
+        // Aplica el margen al botón
+        volverButton.setBorder(margin);
+
+        volverButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                volverButton.setBackground(lightColor);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                volverButton.setBackground(darkColor);
+            }
+        });
+
+
 
         volverButton.addActionListener(new ActionListener() {
             @Override
