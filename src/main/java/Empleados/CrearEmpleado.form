@@ -1,87 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="Empleados.CrearEmpleado">
-  <grid id="27dc6" binding="panel1" layout-manager="GridLayoutManager" row-count="12" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+  <grid id="27dc6" binding="panel1" layout-manager="GridLayoutManager" row-count="22" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="10" left="10" bottom="10" right="10"/>
     <constraints>
-      <xy x="20" y="20" width="757" height="512"/>
+      <xy x="20" y="20" width="893" height="672"/>
     </constraints>
     <properties>
       <background color="-8545088"/>
     </properties>
     <border type="none"/>
     <children>
-      <component id="3092b" class="javax.swing.JLabel" binding="lbl3">
-        <constraints>
-          <grid row="3" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <font name="Arial" size="12" style="1"/>
-          <foreground color="-16119289"/>
-          <text value="Nombres"/>
-        </properties>
-      </component>
-      <component id="ffe87" class="javax.swing.JLabel" binding="lbl4">
-        <constraints>
-          <grid row="4" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <font name="Arial" size="12" style="1"/>
-          <foreground color="-16119289"/>
-          <text value="Apellidos"/>
-        </properties>
-      </component>
-      <component id="77dc" class="javax.swing.JLabel" binding="lbl10">
-        <constraints>
-          <grid row="9" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <font name="Arial" size="12" style="1"/>
-          <foreground color="-16119289"/>
-          <text value="Dirección"/>
-        </properties>
-      </component>
-      <component id="9d348" class="javax.swing.JButton" binding="guardarButton" default-binding="true">
-        <constraints>
-          <grid row="11" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
-            <preferred-size width="188" height="30"/>
-          </grid>
-        </constraints>
-        <properties>
-          <background color="-532740"/>
-          <font name="JetBrains Mono" size="11" style="1"/>
-          <foreground color="-16119289"/>
-          <icon value="IconosBotones/disco.png"/>
-          <text value="Guardar"/>
-        </properties>
-      </component>
-      <component id="f0e61" class="javax.swing.JTextField" binding="campoNombres">
-        <constraints>
-          <grid row="3" column="2" row-span="1" col-span="3" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-            <preferred-size width="150" height="-1"/>
-          </grid>
-        </constraints>
-        <properties>
-          <background color="-2631721"/>
-          <font name="Arial" size="12" style="0"/>
-          <foreground color="-16119289"/>
-          <text value=""/>
-        </properties>
-      </component>
-      <component id="7a7c8" class="javax.swing.JLabel" binding="lbl1">
-        <constraints>
-          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
-            <preferred-size width="122" height="14"/>
-          </grid>
-        </constraints>
-        <properties>
-          <font name="Arial" size="12" style="1"/>
-          <foreground color="-16119289"/>
-          <text value="Identidad"/>
-        </properties>
-      </component>
       <component id="853b9" class="javax.swing.JLabel" binding="lbl5">
         <constraints>
-          <grid row="5" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="12" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <font name="Arial" size="12" style="1"/>
@@ -89,52 +20,53 @@
           <text value="Género"/>
         </properties>
       </component>
-      <component id="49873" class="javax.swing.JLabel" binding="lbl6">
-        <constraints>
-          <grid row="6" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <font name="Arial" size="12" style="1"/>
-          <foreground color="-16119289"/>
-          <text value="Correo electrónico"/>
-        </properties>
-      </component>
-      <component id="89b3c" class="javax.swing.JLabel" binding="lbl11">
-        <constraints>
-          <grid row="10" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <font name="JetBrains Mono" size="12" style="1"/>
-          <foreground color="-16119289"/>
-          <text value="Tipo"/>
-        </properties>
-      </component>
       <component id="3b859" class="javax.swing.JLabel" binding="lbl8">
         <constraints>
-          <grid row="8" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="18" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <font name="Arial" size="12" style="1"/>
           <foreground color="-16119289"/>
-          <text value="Nombre (contacto)"/>
+          <text value="Nombre del contacto de emergencia"/>
         </properties>
       </component>
-      <component id="3b592" class="javax.swing.JFormattedTextField" binding="campoIdentidad">
+      <component id="5a41" class="javax.swing.JLabel" binding="lbl12">
         <constraints>
-          <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-            <preferred-size width="188" height="18"/>
+          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
+            <preferred-size width="139" height="29"/>
           </grid>
         </constraints>
         <properties>
-          <background color="-2631721"/>
-          <font name="Arial" size="12" style="0"/>
+          <font name="Arial" size="12" style="1"/>
           <foreground color="-16119289"/>
-          <text value=""/>
+          <text value="DATOS PERSONALES"/>
         </properties>
       </component>
-      <component id="4bd66" class="javax.swing.JLabel" binding="lbl0">
+      <component id="3e0d" class="javax.swing.JLabel" binding="lbl13">
         <constraints>
-          <grid row="0" column="1" row-span="1" col-span="4" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false">
+          <grid row="16" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
+            <preferred-size width="183" height="28"/>
+          </grid>
+        </constraints>
+        <properties>
+          <font name="Arial" size="12" style="1"/>
+          <foreground color="-16119289"/>
+          <text value="CONTACTO DE EMERGENCIA"/>
+        </properties>
+      </component>
+      <component id="3092b" class="javax.swing.JLabel" binding="lbl3">
+        <constraints>
+          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font name="Arial" size="12" style="1"/>
+          <foreground color="-16119289"/>
+          <text value="Nombres"/>
+        </properties>
+      </component>
+      <component id="62cf6" class="javax.swing.JLabel" binding="lbl0">
+        <constraints>
+          <grid row="0" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false">
             <preferred-size width="239" height="27"/>
           </grid>
         </constraints>
@@ -144,10 +76,33 @@
           <text value="INGRESAR DATOS DEL EMPLEADO"/>
         </properties>
       </component>
-      <component id="df94" class="javax.swing.JTextField" binding="campoApellidos">
+      <component id="250f1" class="javax.swing.JLabel" binding="lbl4">
         <constraints>
-          <grid row="4" column="2" row-span="1" col-span="3" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-            <preferred-size width="150" height="-1"/>
+          <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font name="Arial" size="12" style="1"/>
+          <foreground color="-16119289"/>
+          <text value="Apellidos"/>
+        </properties>
+      </component>
+      <component id="d8be1" class="javax.swing.JRadioButton" binding="femeninoRadioButton" default-binding="true">
+        <constraints>
+          <grid row="13" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
+            <preferred-size width="261" height="28"/>
+          </grid>
+        </constraints>
+        <properties>
+          <background color="-532740"/>
+          <font name="Arial" size="12" style="1"/>
+          <foreground color="-16119289"/>
+          <text value="Femenino"/>
+        </properties>
+      </component>
+      <component id="e9a83" class="javax.swing.JTextField" binding="campoNombreContacto">
+        <constraints>
+          <grid row="19" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="261" height="36"/>
           </grid>
         </constraints>
         <properties>
@@ -156,31 +111,53 @@
           <foreground color="-16119289"/>
         </properties>
       </component>
-      <component id="1b856" class="javax.swing.JTextArea" binding="campoDireccion">
+      <component id="781b9" class="javax.swing.JLabel" binding="lbl9">
         <constraints>
-          <grid row="9" column="2" row-span="1" col-span="3" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
-            <preferred-size width="150" height="50"/>
-          </grid>
-        </constraints>
-        <properties/>
-      </component>
-      <component id="7b92" class="javax.swing.JButton" binding="cancelarButton">
-        <constraints>
-          <grid row="11" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
-            <preferred-size width="234" height="30"/>
+          <grid row="18" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
+            <preferred-size width="128" height="14"/>
           </grid>
         </constraints>
         <properties>
-          <background color="-532740"/>
-          <font name="JetBrains Mono" size="11" style="1"/>
+          <font name="Arial" size="12" style="1"/>
           <foreground color="-16119289"/>
-          <icon value="IconosBotones/disco.png"/>
-          <text value="Cancelar"/>
+          <text value="Teléfono del contacto de emergencia"/>
         </properties>
       </component>
-      <component id="bb635" class="javax.swing.JRadioButton" binding="temporalRadioButton">
+      <component id="f0cad" class="javax.swing.JTextField" binding="campoContactoEmergencia">
         <constraints>
-          <grid row="10" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
+          <grid row="19" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="234" height="36"/>
+          </grid>
+        </constraints>
+        <properties>
+          <background color="-2631721"/>
+          <font name="Arial" size="12" style="0"/>
+          <foreground color="-16119289"/>
+        </properties>
+      </component>
+      <component id="80e08" class="javax.swing.JLabel" binding="lbl11">
+        <constraints>
+          <grid row="12" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font name="JetBrains Mono" size="12" style="1"/>
+          <foreground color="-16119289"/>
+          <text value="Tipo de empleado"/>
+        </properties>
+      </component>
+      <component id="93e6d" class="javax.swing.JButton" binding="guardarButton">
+        <constraints>
+          <grid row="21" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="261" height="30"/>
+          </grid>
+        </constraints>
+        <properties>
+          <text value="GUARDAR"/>
+        </properties>
+      </component>
+      <component id="4aa02" class="javax.swing.JRadioButton" binding="temporalRadioButton">
+        <constraints>
+          <grid row="13" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
             <preferred-size width="188" height="28"/>
           </grid>
         </constraints>
@@ -191,23 +168,18 @@
           <text value="Temporal"/>
         </properties>
       </component>
-      <component id="8d226" class="javax.swing.JRadioButton" binding="femeninoRadioButton" default-binding="true">
+      <component id="55985" class="javax.swing.JButton" binding="cancelarButton">
         <constraints>
-          <grid row="5" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
-            <preferred-size width="188" height="28"/>
-          </grid>
+          <grid row="21" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <background color="-532740"/>
-          <font name="Arial" size="12" style="1"/>
-          <foreground color="-16119289"/>
-          <text value="Femenino"/>
+          <text value="CANCELAR"/>
         </properties>
       </component>
-      <component id="396bc" class="javax.swing.JRadioButton" binding="masculinoRadioButton" default-binding="true">
+      <component id="96c74" class="javax.swing.JRadioButton" binding="masculinoRadioButton">
         <constraints>
-          <grid row="5" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
-            <preferred-size width="128" height="28"/>
+          <grid row="14" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
+            <preferred-size width="261" height="28"/>
           </grid>
         </constraints>
         <properties>
@@ -217,23 +189,105 @@
           <text value="Masculino"/>
         </properties>
       </component>
-      <component id="e3378" class="javax.swing.JRadioButton" binding="permanenteRadioButton" default-binding="true">
+      <component id="53430" class="javax.swing.JRadioButton" binding="permanenteRadioButton">
         <constraints>
-          <grid row="10" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
-            <preferred-size width="128" height="28"/>
+          <grid row="14" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
+            <preferred-size width="188" height="28"/>
           </grid>
         </constraints>
         <properties>
           <background color="-532740"/>
-          <font name="JetBrains Mono" size="12" style="1"/>
+          <font name="Arial" size="12" style="1"/>
           <foreground color="-16119289"/>
-          <hideActionText value="false"/>
           <text value="Permanente"/>
         </properties>
       </component>
-      <component id="9fd63" class="javax.swing.JLabel" binding="lbl2">
+      <vspacer id="406e1">
         <constraints>
-          <grid row="2" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
+          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </vspacer>
+      <vspacer id="33ab8">
+        <constraints>
+          <grid row="15" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </vspacer>
+      <vspacer id="ffbff">
+        <constraints>
+          <grid row="20" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </vspacer>
+      <component id="408e2" class="javax.swing.JLabel" binding="lbl6">
+        <constraints>
+          <grid row="8" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font name="Arial" size="12" style="1"/>
+          <foreground color="-16119289"/>
+          <text value="Correo electrónico"/>
+        </properties>
+      </component>
+      <component id="9bf6d" class="javax.swing.JTextField" binding="campoCorreo">
+        <constraints>
+          <grid row="9" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="261" height="36"/>
+          </grid>
+        </constraints>
+        <properties>
+          <background color="-2631721"/>
+          <font name="Arial" size="12" style="0"/>
+          <foreground color="-16119289"/>
+        </properties>
+      </component>
+      <vspacer id="140d6">
+        <constraints>
+          <grid row="17" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </vspacer>
+      <vspacer id="1bd0c">
+        <constraints>
+          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </vspacer>
+      <component id="991a5" class="javax.swing.JTextField" binding="campoNombres">
+        <constraints>
+          <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="261" height="36"/>
+          </grid>
+        </constraints>
+        <properties>
+          <background color="-2631721"/>
+          <font name="Arial" size="12" style="0"/>
+          <foreground color="-16119289"/>
+        </properties>
+      </component>
+      <component id="1f74c" class="javax.swing.JTextField" binding="campoApellidos">
+        <constraints>
+          <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="261" height="36"/>
+          </grid>
+        </constraints>
+        <properties>
+          <background color="-2631721"/>
+          <font name="Arial" size="12" style="0"/>
+          <foreground color="-16119289"/>
+        </properties>
+      </component>
+      <component id="1af2b" class="javax.swing.JTextField" binding="campoEdad">
+        <constraints>
+          <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="261" height="36"/>
+          </grid>
+        </constraints>
+        <properties>
+          <background color="-2631721"/>
+          <font name="Arial" size="12" style="0"/>
+          <foreground color="-16119289"/>
+        </properties>
+      </component>
+      <component id="2f876" class="javax.swing.JLabel" binding="lbl2">
+        <constraints>
+          <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
             <preferred-size width="128" height="14"/>
           </grid>
         </constraints>
@@ -243,10 +297,22 @@
           <text value="Edad"/>
         </properties>
       </component>
-      <component id="7926c" class="javax.swing.JTextField" binding="campoEdad">
+      <component id="95c6c" class="javax.swing.JLabel" binding="lbl1">
         <constraints>
-          <grid row="2" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-            <preferred-size width="150" height="-1"/>
+          <grid row="10" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
+            <preferred-size width="261" height="14"/>
+          </grid>
+        </constraints>
+        <properties>
+          <font name="Arial" size="12" style="1"/>
+          <foreground color="-16119289"/>
+          <text value="Identidad"/>
+        </properties>
+      </component>
+      <component id="7b0df" class="javax.swing.JFormattedTextField" binding="campoIdentidad">
+        <constraints>
+          <grid row="11" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="188" height="18"/>
           </grid>
         </constraints>
         <properties>
@@ -256,21 +322,9 @@
           <text value=""/>
         </properties>
       </component>
-      <component id="71c06" class="javax.swing.JTextField" binding="campoTelefono">
+      <component id="f59c" class="javax.swing.JLabel" binding="lbl17">
         <constraints>
-          <grid row="6" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-            <preferred-size width="174" height="36"/>
-          </grid>
-        </constraints>
-        <properties>
-          <background color="-2631721"/>
-          <font name="Arial" size="12" style="0"/>
-          <foreground color="-16119289"/>
-        </properties>
-      </component>
-      <component id="25ad5" class="javax.swing.JLabel" binding="lbl7">
-        <constraints>
-          <grid row="6" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
+          <grid row="6" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
             <preferred-size width="128" height="14"/>
           </grid>
         </constraints>
@@ -280,22 +334,10 @@
           <text value="Teléfono"/>
         </properties>
       </component>
-      <component id="95cea" class="javax.swing.JLabel" binding="lbl9">
+      <component id="a29db" class="javax.swing.JTextField" binding="campoTelefono">
         <constraints>
-          <grid row="8" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
-            <preferred-size width="128" height="14"/>
-          </grid>
-        </constraints>
-        <properties>
-          <font name="Arial" size="12" style="1"/>
-          <foreground color="-16119289"/>
-          <text value="Teléfono (contacto)"/>
-        </properties>
-      </component>
-      <component id="390a" class="javax.swing.JTextField" binding="campoContactoEmergencia">
-        <constraints>
-          <grid row="8" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-            <preferred-size width="234" height="36"/>
+          <grid row="7" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="174" height="36"/>
           </grid>
         </constraints>
         <properties>
@@ -304,53 +346,23 @@
           <foreground color="-16119289"/>
         </properties>
       </component>
-      <component id="d2a44" class="javax.swing.JTextField" binding="campoCorreo">
+      <component id="8779d" class="javax.swing.JLabel" binding="lbl10">
         <constraints>
-          <grid row="6" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-            <preferred-size width="188" height="36"/>
-          </grid>
-        </constraints>
-        <properties>
-          <background color="-2631721"/>
-          <font name="Arial" size="12" style="0"/>
-          <foreground color="-16119289"/>
-        </properties>
-      </component>
-      <component id="da868" class="javax.swing.JTextField" binding="campoNombreContacto">
-        <constraints>
-          <grid row="8" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-            <preferred-size width="188" height="36"/>
-          </grid>
-        </constraints>
-        <properties>
-          <background color="-2631721"/>
-          <font name="Arial" size="12" style="0"/>
-          <foreground color="-16119289"/>
-        </properties>
-      </component>
-      <component id="5a41" class="javax.swing.JLabel" binding="lbl12">
-        <constraints>
-          <grid row="1" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
-            <preferred-size width="139" height="29"/>
-          </grid>
+          <grid row="8" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <font name="Arial" size="12" style="1"/>
           <foreground color="-16119289"/>
-          <text value="+ DATOS PERSONALES"/>
+          <text value="Dirección"/>
         </properties>
       </component>
-      <component id="3e0d" class="javax.swing.JLabel" binding="lbl13">
+      <component id="e209c" class="javax.swing.JTextArea" binding="campoDireccion">
         <constraints>
-          <grid row="7" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
-            <preferred-size width="183" height="28"/>
+          <grid row="9" column="1" row-span="3" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="50"/>
           </grid>
         </constraints>
-        <properties>
-          <font name="Arial" size="12" style="1"/>
-          <foreground color="-16119289"/>
-          <text value="+ CONTACTO DE EMERGENCIA"/>
-        </properties>
+        <properties/>
       </component>
     </children>
   </grid>

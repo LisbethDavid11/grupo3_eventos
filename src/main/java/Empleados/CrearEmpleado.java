@@ -4,6 +4,7 @@ import Objetos.Conexion;
 import Objetos.Empleado;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.MaskFormatter;
 import java.awt.*;
@@ -41,14 +42,13 @@ public class CrearEmpleado extends JFrame {
     private JLabel lbl4;
     private JLabel lbl5;
     private JLabel lbl6;
-    private JLabel lbl7;
+    private JLabel lbl17;
     private JLabel lbl8;
     private JLabel lbl9;
     private JLabel lbl10;
     private JLabel lbl11;
     private JLabel lbl12;
     private JLabel lbl13;
-
     private Conexion sql;
     private Connection mysql;
     public CrearEmpleado crearEmpleado = this;
@@ -73,13 +73,10 @@ public class CrearEmpleado extends JFrame {
 
     public CrearEmpleado() {
         super("Crear Empleados");
-        setSize(800, 550);
+        setSize(600, 570);
         setLocationRelativeTo(null);
         setContentPane(panel1);
         sql = new Conexion();
-
-        // Color de fondo
-        panel1.setBackground(lightColor);
 
         campoDireccion.setLineWrap(true);
         campoDireccion.setWrapStyleWord(true);
@@ -100,7 +97,6 @@ public class CrearEmpleado extends JFrame {
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
-
 
         // Asignar nombres a los campos de texto
         campoNombres.setName("Nombre");
@@ -316,18 +312,59 @@ public class CrearEmpleado extends JFrame {
             }
         });
 
-        cancelarButton.setBackground(darkColor);
-        cancelarButton.setForeground(textColor);
-        guardarButton.setBackground(darkColor);
-        guardarButton.setForeground(textColor);
+        // Color de fondo del panel
+        panel1.setBackground(Color.decode("#F5F5F5"));
 
-        temporalRadioButton.setBackground(lightColor);
+        // Color de texto para los JTextField
+        Color textColor = Color.decode("#212121");
+
+        // Cargar los iconos en blanco
+        ImageIcon cancelIcon = new ImageIcon("cancel_icon_white.png");
+        ImageIcon saveIcon = new ImageIcon("save_icon_white.png");
+        ImageIcon updateIcon = new ImageIcon("update_icon_white.png");
+
+        // Colores para el botón "Cyan"
+        Color primaryColorCyan = new Color(0, 188, 212); // Cyan primario
+        Color lightColorCyan = new Color(77, 208, 225); // Cyan claro
+        Color darkColorCyan = new Color(0, 151, 167); // Cyan oscuro
+
+        // Colores para el botón "Aqua"
+        Color primaryColorAqua = new Color(0, 150, 136); // Aqua primario
+        Color lightColorAqua = new Color(77, 182, 172); // Aqua claro
+        Color darkColorAqua = new Color(0, 121, 107); // Aqua oscuro
+
+        // Colores para el botón "Rosado"
+        Color primaryColorRosado = new Color(233, 30, 99); // Rosado primario
+        Color lightColorRosado = new Color(240, 98, 146); // Rosado claro
+        Color darkColorRosado = new Color(194, 24, 91); // Rosado oscuro
+
+        // Crea un margen de 10 píxeles desde el borde inferior
+        EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
+
+        // Color de texto para el JTextArea
+        campoDireccion.setForeground(textColor);
+        // Color de texto de los botones
+        cancelarButton.setForeground(Color.WHITE);
+        guardarButton.setForeground(Color.WHITE);
+
+        // Color de fondo de los botones
+        cancelarButton.setBackground(darkColorCyan);
+        guardarButton.setBackground(darkColorAqua);
+
+        cancelarButton.setFocusPainted(false);
+        guardarButton.setFocusPainted(false);
+
+        // Aplica el margen al botón
+        cancelarButton.setBorder(margin);
+        guardarButton.setBorder(margin);
+
+        temporalRadioButton.setBackground(Color.decode("#F5F5F5"));
         temporalRadioButton.setForeground(textColor);
-        permanenteRadioButton.setBackground(lightColor);
+        permanenteRadioButton.setBackground(Color.decode("#F5F5F5"));
         permanenteRadioButton.setForeground(textColor);
-        femeninoRadioButton.setBackground(lightColor);
+        femeninoRadioButton.setBackground(Color.decode("#F5F5F5"));
         femeninoRadioButton.setForeground(textColor);
-        masculinoRadioButton.setBackground(lightColor);
+        masculinoRadioButton.setBackground(Color.decode("#F5F5F5"));
         masculinoRadioButton.setForeground(textColor);
 
         lbl0.setForeground(textColor);
@@ -337,30 +374,19 @@ public class CrearEmpleado extends JFrame {
         lbl4.setForeground(textColor);
         lbl5.setForeground(textColor);
         lbl6.setForeground(textColor);
-        lbl7.setForeground(textColor);
+        lbl17.setForeground(textColor);
         lbl8.setForeground(textColor);
         lbl9.setForeground(textColor);
         lbl10.setForeground(textColor);
         lbl11.setForeground(textColor);
-        lbl12.setForeground(textColor);
-        lbl13.setForeground(textColor);
+        lbl12.setForeground(darkColorCyan);
+        lbl13.setForeground(darkColorCyan);
 
-        // Cargar los iconos en blanco
-        ImageIcon cancelIcon = new ImageIcon("cancel_icon_white.png");
-        ImageIcon saveIcon = new ImageIcon("save_icon_white.png");
-        ImageIcon updateIcon = new ImageIcon("update_icon_white.png");
+        campoDireccion.setBackground(new Color(215, 215, 215));
 
         // Establecer los iconos en los botones
         cancelarButton.setIcon(cancelIcon);
         guardarButton.setIcon(saveIcon);
-
-        // Establecer el color de texto en blanco para los botones
-        cancelarButton.setForeground(textColor);
-        guardarButton.setForeground(textColor);
-
-        // Establecer el fondo oscuro para los botones
-        cancelarButton.setBackground(darkColor);
-        guardarButton.setBackground(darkColor);
 
         // Boton cancelar
         cancelarButton.addActionListener(new ActionListener() {
@@ -735,4 +761,6 @@ public class CrearEmpleado extends JFrame {
     private void createUIComponents() {
         // TODO: place custom component creation code here
     }
+
+
 }
