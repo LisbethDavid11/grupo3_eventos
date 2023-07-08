@@ -5,6 +5,7 @@ import Objetos.Conexion;
 import Objetos.Empleado;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.MaskFormatter;
 import java.awt.*;
@@ -39,22 +40,18 @@ public class CrearCliente extends JFrame{
     private CrearCliente actual = this;
     private Connection mysql;
     private Conexion sql;
-
     public CrearCliente crearCliente = this;
-
     Color primaryColor = Color.decode("#263238"); // Gris azul oscuro
     Color lightColor = Color.decode("#37474f"); // Gris azul claro
     Color darkColor = Color.decode("#000a12"); // Gris azul más oscuro
     Color textColor = Color.WHITE; // Texto blanco
 
     public CrearCliente() {
-        super("Crear Clientes");
-        setSize(600,400);
+        super("");
+        setSize(600,480);
         setLocationRelativeTo(null);
         setContentPane(panel);
         sql = new Conexion();
-
-        panel.setBackground(lightColor);
 
         campoDomicilio.setLineWrap(true);
         campoDomicilio.setWrapStyleWord(true);
@@ -196,14 +193,62 @@ public class CrearCliente extends JFrame{
             }
         });
 
-        botonCancelar.setBackground(darkColor);
-        botonCancelar.setForeground(textColor);
-        botonGuardar.setBackground(darkColor);
-        botonGuardar.setForeground(textColor);
+        ButtonGroup buttonGroup = new ButtonGroup();
+        buttonGroup.add(radioAldetalle);
+        buttonGroup.add(radioMayorista);
 
-        radioAldetalle.setBackground(lightColor);
+        // No seleccionar ningún botón de radio por defecto
+        buttonGroup.clearSelection();
+
+        // Color de fondo del panel
+        panel.setBackground(Color.decode("#F5F5F5"));
+
+        // Color de texto para los JTextField
+        Color textColor = Color.decode("#212121");
+
+        // Cargar los iconos en blanco
+        ImageIcon cancelIcon = new ImageIcon("cancel_icon_white.png");
+        ImageIcon saveIcon = new ImageIcon("save_icon_white.png");
+        ImageIcon updateIcon = new ImageIcon("update_icon_white.png");
+
+        // Colores para el botón "Cyan"
+        Color primaryColorCyan = new Color(0, 188, 212); // Cyan primario
+        Color lightColorCyan = new Color(77, 208, 225); // Cyan claro
+        Color darkColorCyan = new Color(0, 151, 167); // Cyan oscuro
+
+        // Colores para el botón "Aqua"
+        Color primaryColorAqua = new Color(0, 150, 136); // Aqua primario
+        Color lightColorAqua = new Color(77, 182, 172); // Aqua claro
+        Color darkColorAqua = new Color(0, 121, 107); // Aqua oscuro
+
+        // Colores para el botón "Rosado"
+        Color primaryColorRosado = new Color(233, 30, 99); // Rosado primario
+        Color lightColorRosado = new Color(240, 98, 146); // Rosado claro
+        Color darkColorRosado = new Color(194, 24, 91); // Rosado oscuro
+
+        // Crea un margen de 10 píxeles desde el borde inferior
+        EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
+
+        // Color de texto para el JTextArea
+        campoDomicilio.setForeground(textColor);
+        // Color de texto de los botones
+        botonCancelar.setForeground(Color.WHITE);
+        botonGuardar.setForeground(Color.WHITE);
+
+        // Color de fondo de los botones
+        botonCancelar.setBackground(darkColorCyan);
+        botonGuardar.setBackground(darkColorAqua);
+
+        botonCancelar.setFocusPainted(false);
+        botonGuardar.setFocusPainted(false);
+
+        // Aplica el margen al botón
+        botonCancelar.setBorder(margin);
+        botonGuardar.setBorder(margin);
+
+        radioAldetalle.setBackground(Color.decode("#F5F5F5"));
         radioAldetalle.setForeground(textColor);
-        radioMayorista.setBackground(lightColor);
+        radioMayorista.setBackground(Color.decode("#F5F5F5"));
         radioMayorista.setForeground(textColor);
 
         label1.setForeground(textColor);
@@ -214,12 +259,11 @@ public class CrearCliente extends JFrame{
         label6.setForeground(textColor);
         label7.setForeground(textColor);
 
-        ButtonGroup buttonGroup = new ButtonGroup();
-        buttonGroup.add(radioAldetalle);
-        buttonGroup.add(radioMayorista);
+        campoDomicilio.setBackground(new Color(215, 215, 215));
 
-        // No seleccionar ningún botón de radio por defecto
-        buttonGroup.clearSelection();
+        // Establecer los iconos en los botones
+        botonCancelar.setIcon(cancelIcon);
+        botonGuardar.setIcon(saveIcon);
 
         try {
             MaskFormatter dni = new MaskFormatter("####-####-#####");
@@ -227,23 +271,6 @@ public class CrearCliente extends JFrame{
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
-
-        // Cargar los iconos en blanco
-        ImageIcon cancelIcon = new ImageIcon("cancel_icon_white.png");
-        ImageIcon saveIcon = new ImageIcon("save_icon_white.png");
-        ImageIcon updateIcon = new ImageIcon("update_icon_white.png");
-
-        // Establecer los iconos en los botones
-        botonCancelar.setIcon(cancelIcon);
-        botonGuardar.setIcon(saveIcon);
-
-        // Establecer el color de texto en blanco para los botones
-        botonCancelar.setForeground(textColor);
-        botonGuardar.setForeground(textColor);
-
-        // Establecer el fondo oscuro para los botones
-        botonCancelar.setBackground(darkColor);
-        botonGuardar.setBackground(darkColor);
 
         botonCancelar.addActionListener(new ActionListener() {
             @Override
@@ -283,12 +310,6 @@ public class CrearCliente extends JFrame{
                     mensaje += "Apellidos\n";
                 }
 
-                String dni = campoIdentidad.getText().trim();
-                if (dni.length() != 15) {
-                    validacion++;
-                    mensaje += "Identidad\n";
-                }
-
                 if (campoTelefono.getText().trim().isEmpty()) {
                     validacion++;
                     mensaje += "Teléfono\n";
@@ -297,6 +318,12 @@ public class CrearCliente extends JFrame{
                 if (!radioMayorista.isSelected() && !radioAldetalle.isSelected()) {
                     validacion++;
                     mensaje += "Tipo de cliente\n";
+                }
+
+                String dni = campoIdentidad.getText().trim();
+                if (dni.length() != 15) {
+                    validacion++;
+                    mensaje += "Identidad\n";
                 }
 
                 if (campoDomicilio.getText().trim().isEmpty()) {
@@ -337,21 +364,9 @@ public class CrearCliente extends JFrame{
                         return;
                     }
                 } else {
-                    JOptionPane.showMessageDialog(null, "El apellido de nombre de cliente no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "El apellido del cliente no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-
-                String domicilio = campoDomicilio.getText().trim();
-                if (!domicilio.isEmpty()) {
-                    if (domicilio.length() < 2 || domicilio.length() > 200) {
-                        JOptionPane.showMessageDialog(null, "El domicilio debe tener entre 2 y 200 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(null, "El campo de domicilio no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
 
                 String telefono = campoTelefono.getText().trim();
                 if (!telefono.isEmpty()) {
@@ -367,11 +382,6 @@ public class CrearCliente extends JFrame{
                 } else {
                     JOptionPane.showMessageDialog(null, "El campo de teléfono no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
                     return;
-                }
-
-                if (!radioAldetalle.isSelected() && !radioMayorista.isSelected()) {
-                    validacion++;
-                    mensaje += "Tipo de empleado\n";
                 }
 
                 String identidad = campoIdentidad.getText().trim();
@@ -396,6 +406,17 @@ public class CrearCliente extends JFrame{
                     }
                 } else {
                     JOptionPane.showMessageDialog(null, "El campo de identidad no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                String domicilio = campoDomicilio.getText().trim();
+                if (!domicilio.isEmpty()) {
+                    if (domicilio.length() < 2 || domicilio.length() > 200) {
+                        JOptionPane.showMessageDialog(null, "El domicilio debe tener entre 2 y 200 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "El campo de domicilio no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
@@ -514,5 +535,4 @@ public class CrearCliente extends JFrame{
         }
         return false;
     }
-
 }
