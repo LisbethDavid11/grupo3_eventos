@@ -288,15 +288,15 @@ public class CrearCliente extends JFrame{
                 int validacion = 0;
                 String mensaje = "Faltó ingresar: \n";
 
-                // Verificar si ya existe un empleado con la misma identidad
-                if (validarIdentidadExistente(campoIdentidad.getText().trim())) {
-                    JOptionPane.showMessageDialog(null, "La identidad ingresada ya está asociada a otro cliente", "Validación", JOptionPane.ERROR_MESSAGE);
+                // Verificar si ya existe un cliente con el mismo teléfono
+                if (validarTelefonoExistente(campoTelefono.getText().trim())) {
+                    JOptionPane.showMessageDialog(null, "El teléfono ingresado ya está asociado a otro cliente", "Validación", JOptionPane.ERROR_MESSAGE);
                     return; // Detener la ejecución del método
                 }
 
-                // Verificar si ya existe un empleado con el mismo teléfono
-                if (validarTelefonoExistente(campoTelefono.getText().trim())) {
-                    JOptionPane.showMessageDialog(null, "El teléfono ingresado ya está asociado a otro cliente", "Validación", JOptionPane.ERROR_MESSAGE);
+                // Verificar si ya existe un cliente con la misma identidad
+                if (validarIdentidadExistente(campoIdentidad.getText().trim())) {
+                    JOptionPane.showMessageDialog(null, "La identidad ingresada ya está asociada a otro cliente", "Validación", JOptionPane.ERROR_MESSAGE);
                     return; // Detener la ejecución del método
                 }
 
@@ -397,9 +397,8 @@ public class CrearCliente extends JFrame{
                     }
 
                     String numerosIdentidad = identidad.replace("-", "");
-
-                    Empleado empleado = new Empleado();
-                    boolean esIdentidadValida = empleado.comprobarIdentidad(numerosIdentidad);
+                    Cliente cliente = new Cliente();
+                    boolean esIdentidadValida = cliente.comprobarIdentidad(numerosIdentidad);
                     if (!esIdentidadValida) {
                         JOptionPane.showMessageDialog(null, "La identidad ingresada no es válida", "Validación", JOptionPane.ERROR_MESSAGE);
                         return;
@@ -476,7 +475,7 @@ public class CrearCliente extends JFrame{
 
             // Mensaje personalizado
             System.out.println("Cliente " + nombreCompleto + " ha sido registrado exitosamente.");
-            JOptionPane.showMessageDialog(null, "Cliente " + nombreCompleto + " ha sido registrado exitosamente.", "Éxito", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Cliente " + nombreCompleto + " ha sido registrado exitosamente.", "Éxito", JOptionPane.DEFAULT_OPTION);
 
         } catch (SQLException e) {
 
@@ -486,7 +485,7 @@ public class CrearCliente extends JFrame{
     private boolean validarTelefonoExistente(String telefono) {
         try {
             mysql = sql.conectamysql();
-            String query = "SELECT COUNT(*) FROM empleados WHERE Telefono = ?";
+            String query = "SELECT COUNT(*) FROM clientes WHERE telefono = ?";
             PreparedStatement statement = mysql.prepareStatement(query);
             statement.setString(1, telefono);
             ResultSet resultSet = statement.executeQuery();

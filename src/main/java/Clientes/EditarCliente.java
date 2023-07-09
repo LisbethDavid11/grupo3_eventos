@@ -29,7 +29,6 @@ public class EditarCliente extends  JFrame{
     private ButtonGroup tipoClienteGroup;
     private JButton cancelarButton;
     private JButton guardarButton;
-
     private final EditarCliente actual = this;
     private Conexion sql;
     private Connection mysql;
@@ -53,15 +52,8 @@ public class EditarCliente extends  JFrame{
         tipoClienteGroup.add(mayoristaRadioButton);
         tipoClienteGroup.add(alDetalleRadioButton);
 
-
         campoDomicilio.setLineWrap(true);
         campoDomicilio.setWrapStyleWord(true);
-
-        // Asignar nombres a los campos de texto
-        campoNombre.setName("Nombre");
-        campoApellido.setName("Apellido");
-        campoIdentidad.setName("Identidad");
-        campoTelefono.setName("Teléfono");
 
         campoNombre.addKeyListener(new KeyAdapter() {
             @Override
@@ -261,7 +253,6 @@ public class EditarCliente extends  JFrame{
                 ListaCliente indexCliente = new ListaCliente();
                 indexCliente.setVisible(true);
                 actual.dispose();
-
             }
         });
 
@@ -413,6 +404,7 @@ public class EditarCliente extends  JFrame{
             }
         });
     }
+
     private void mostrar() {
         sql = new Conexion();
         mysql = sql.conectamysql();
@@ -483,16 +475,6 @@ public class EditarCliente extends  JFrame{
             selectStatement.setInt(2, this.id);
             ResultSet resultSet = selectStatement.executeQuery();
 
-            if (resultSet.next()) {
-                // Mostrar mensaje de error indicando que la identidad ya está registrada
-                String mensajeError = "La identidad " + identidad + " ya está registrada para el siguiente cliente:\n" +
-                        "- Nombre: " + resultSet.getString("nombre") + "\n" +
-                        "- Apellido: " + resultSet.getString("apellido") + "\n" +
-                        "- Teléfono: " + resultSet.getString("telefono");
-                JOptionPane.showMessageDialog(null, mensajeError, "Error", JOptionPane.ERROR_MESSAGE);
-                return; // Detener el proceso de guardado
-            }
-
             // Actualizar cliente
             PreparedStatement statement = mysql.prepareStatement("UPDATE " + Cliente.nombreTabla + " SET `nombre` = ?, `apellido` = ?, `identidad` = ?, `telefono` = ?, `domicilio` = ?, `tipo_cliente` = ? WHERE id = ?");
             statement.setString(1, campoNombre.getText());
@@ -502,15 +484,15 @@ public class EditarCliente extends  JFrame{
             statement.setString(5, campoDomicilio.getText());
             statement.setString(6, tipoCliente);
             statement.setInt(7, this.id);
-
             System.out.println(statement.execute());
 
             // Mostrar mensaje de éxito
             String nombreCompleto = campoNombre.getText() + " " + campoApellido.getText();
-            JOptionPane.showMessageDialog(null, "Cliente " + nombreCompleto + " ha sido actualizado exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            System.out.println("Cliente " + nombreCompleto + " ha sido actualizado exitosamente.");
+            JOptionPane.showMessageDialog(null, "Cliente " + nombreCompleto + " ha sido actualizado exitosamente.", "Éxito", JOptionPane.DEFAULT_OPTION);
         } catch (SQLException e) {
             String mensajeError = "Error al guardar el cliente: " + e.getMessage();
-            JOptionPane.showMessageDialog(null, mensajeError, "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "No se pudo realizar el registro del cliente", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 

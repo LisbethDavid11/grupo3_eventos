@@ -108,7 +108,7 @@ public class ListaCliente extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (listaClientes.getSelectedRow() == -1) {
-                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
                     return;
                 }
                 VerCliente cliente = new VerCliente(listaCliente.get(listaClientes.getSelectedRow()).getId());
@@ -121,7 +121,7 @@ public class ListaCliente extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (listaClientes.getSelectedRow() == -1) {
-                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
                     return;
                 }
                 EditarCliente cliente = new EditarCliente(listaCliente.get(listaClientes.getSelectedRow()).getId());
@@ -208,7 +208,7 @@ public class ListaCliente extends JFrame {
             mysql.close();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos","Error", JOptionPane.ERROR_MESSAGE);
             listaCliente = new ArrayList<>();
         }
 
@@ -229,7 +229,7 @@ public class ListaCliente extends JFrame {
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos","Error", JOptionPane.ERROR_MESSAGE);
         }
 
         int totalPageCount = (int) Math.ceil((double) count / 20); // Divide el total de elementos por 20 para obtener la cantidad de páginas completas
