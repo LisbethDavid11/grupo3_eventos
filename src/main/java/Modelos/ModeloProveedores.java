@@ -1,18 +1,17 @@
 package Modelos;
 
-import Objetos.Proveedores;
+import Objetos.Proveedor;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
 
 public class ModeloProveedores extends AbstractTableModel {
+    private final String[] columnas = {
+            "N°", "Empresa Proveedora", "Teléfono","RTN", "Correo", "Nombre Vendedor", "Teléfono Vendedor"
+    };
+    private final List<Proveedor> proveedores;
 
-    //Crearemos una variable para crear las columnas
-    private final String[] columnas;
-    private List<Proveedores> proveedores;
-
-    public ModeloProveedores(String[] columnas, List<Proveedores> proveedores) {
-        this.columnas = columnas;
+    public ModeloProveedores(List<Proveedor> proveedores) {
         this.proveedores = proveedores;
     }
 
@@ -26,13 +25,11 @@ public class ModeloProveedores extends AbstractTableModel {
         return columnas.length;
     }
 
-    public List<Proveedores> getProveedore() {
-
+    public List<Proveedor> getProveedores() {
         return proveedores;
     }
 
-    public Proveedores getProveedores(int index) {
-
+    public Proveedor getProveedor(int index) {
         return proveedores.get(index);
     }
 
@@ -41,21 +38,27 @@ public class ModeloProveedores extends AbstractTableModel {
         return columnas[column];
     }
 
-    //Genera toda la renderización de la tabla
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
+        Proveedor proveedor = proveedores.get(rowIndex);
 
-        return switch (columnIndex) {
-            case 0 -> proveedores.get(rowIndex).getId();
-            case 1 -> proveedores.get(rowIndex).getNombre();
-            case 2 -> proveedores.get(rowIndex).getRtn();
-            case 3 -> proveedores.get(rowIndex).getTelefono();
-            case 4 -> proveedores.get(rowIndex).getCorreo();
-            case 5 -> proveedores.get(rowIndex).getDireccion();
-            case 6 -> proveedores.get(rowIndex).getDescripcion();
-            case 7 -> proveedores.get(rowIndex).getNombreVendedor();
-            case 8 -> proveedores.get(rowIndex).getTelefonoVendedor();
-            default -> null;
-        };
+        switch (columnIndex) {
+            case 0:
+                return rowIndex + 1;
+            case 1:
+                return proveedor.getEmpresaProveedora();
+            case 2:
+                return proveedor.getTelefono();
+            case 3:
+                return proveedor.getRtn();
+            case 4:
+                return proveedor.getCorreo();
+            case 5:
+                return proveedor.getNombreVendedor();
+            case 6:
+                return proveedor.getTelefonoVendedor();
+            default:
+                return null;
+        }
     }
 }

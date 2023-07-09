@@ -3,7 +3,7 @@ import Clientes.ListaCliente;
 import Empleados.ListaEmpleados;
 import Floristerias.ListaFloristeria;
 import Materiales.ListaMateriales;
-import Proveedores.IndexProveedores;
+import Proveedores.ListaProveedores;
 
 import javax.swing.*;
 import java.awt.*;
@@ -111,7 +111,7 @@ public class SubMenu extends JFrame {
         proveedoresButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                IndexProveedores proveedores = new IndexProveedores();
+                ListaProveedores proveedores = new ListaProveedores();
                 proveedores.setVisible(true);
             }
         });
