@@ -1,5 +1,6 @@
 package Objetos;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -98,9 +99,11 @@ public class Cliente {
     public static boolean comprobarIdentidad(String identidad) {
         String digitoRegionalStr = identidad.substring(0, 2);
         String digitoMunicipalStr = identidad.substring(2, 4);
+        String anoNacimientoStr = identidad.substring(4, 8); // Nuevas líneas
 
         int digitoRegional = Integer.parseInt(digitoRegionalStr);
         int digitoMunicipal = Integer.parseInt(digitoMunicipalStr);
+        int anoNacimiento = Integer.parseInt(anoNacimientoStr); // Nueva línea
 
         if (digitoRegional < 1 || digitoRegional > 18) {
             return false;
@@ -113,6 +116,13 @@ public class Cliente {
             }
         }
 
+        int anoActual = LocalDate.now().getYear();
+        int edad = anoActual - anoNacimiento;
+        if (edad < 18 || edad > 60) {
+            return false;
+        }
+
         return true;
+
     }
 }

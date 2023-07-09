@@ -1,9 +1,11 @@
 package Clientes;
-
 import Objetos.Cliente;
 import Objetos.Conexion;
-
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.text.DefaultFormatterFactory;
+import javax.swing.text.MaskFormatter;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -12,17 +14,16 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Objects;
+import java.text.ParseException;
 
 public class EditarCliente extends  JFrame{
-
     private JPanel panel1;
     private JTextField campoNombre;
     private JTextField campoApellido;
     private JTextField campoTelefono;
     private JFormattedTextField campoIdentidad;
     private JTextArea campoDomicilio;
-
+    private JLabel label1,label2,label3,label4,label5,label6,label7;
     private JRadioButton mayoristaRadioButton;
     private JRadioButton alDetalleRadioButton;
     private ButtonGroup tipoClienteGroup;
@@ -41,7 +42,7 @@ public class EditarCliente extends  JFrame{
     };
     public EditarCliente(int id) {
         super("Editar Registro de los Clientes");
-        setSize(600,600);
+        setSize(600,480);
         setLocationRelativeTo(null);
         setContentPane(panel1);
 
@@ -182,17 +183,77 @@ public class EditarCliente extends  JFrame{
             }
         });
 
-        campoIdentidad.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                String identidad = campoIdentidad.getText();
-                if (!Character.isDigit(e.getKeyChar()) || identidad.length() >= 15) {
-                    e.consume(); // Evita que se escriban caracteres no numéricos o se exceda la longitud
-                }
-            }
-        });
+        // Color de fondo del panel
+        panel1.setBackground(Color.decode("#F5F5F5"));
 
+        // Color de texto para los JTextField
+        Color textColor = Color.decode("#212121");
 
+        // Cargar los iconos en blanco
+        ImageIcon cancelIcon = new ImageIcon("cancel_icon_white.png");
+        ImageIcon saveIcon = new ImageIcon("save_icon_white.png");
+        ImageIcon updateIcon = new ImageIcon("update_icon_white.png");
+
+        // Colores para el botón "Cyan"
+        Color primaryColorCyan = new Color(0, 188, 212); // Cyan primario
+        Color lightColorCyan = new Color(77, 208, 225); // Cyan claro
+        Color darkColorCyan = new Color(0, 151, 167); // Cyan oscuro
+
+        // Colores para el botón "Aqua"
+        Color primaryColorAqua = new Color(0, 150, 136); // Aqua primario
+        Color lightColorAqua = new Color(77, 182, 172); // Aqua claro
+        Color darkColorAqua = new Color(0, 121, 107); // Aqua oscuro
+
+        // Colores para el botón "Rosado"
+        Color primaryColorRosado = new Color(233, 30, 99); // Rosado primario
+        Color lightColorRosado = new Color(240, 98, 146); // Rosado claro
+        Color darkColorRosado = new Color(194, 24, 91); // Rosado oscuro
+
+        // Crea un margen de 10 píxeles desde el borde inferior
+        EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
+
+        // Color de texto para el JTextArea
+        campoDomicilio.setForeground(textColor);
+        // Color de texto de los botones
+        cancelarButton.setForeground(Color.WHITE);
+        guardarButton.setForeground(Color.WHITE);
+
+        // Color de fondo de los botones
+        cancelarButton.setBackground(darkColorCyan);
+        guardarButton.setBackground(darkColorAqua);
+
+        cancelarButton.setFocusPainted(false);
+        guardarButton.setFocusPainted(false);
+
+        // Aplica el margen al botón
+        cancelarButton.setBorder(margin);
+        guardarButton.setBorder(margin);
+
+        alDetalleRadioButton.setBackground(Color.decode("#F5F5F5"));
+        alDetalleRadioButton.setForeground(textColor);
+        mayoristaRadioButton.setBackground(Color.decode("#F5F5F5"));
+        mayoristaRadioButton.setForeground(textColor);
+
+        label1.setForeground(textColor);
+        label2.setForeground(textColor);
+        label3.setForeground(textColor);
+        label4.setForeground(textColor);
+        label5.setForeground(textColor);
+        label6.setForeground(textColor);
+        label7.setForeground(textColor);
+
+        campoDomicilio.setBackground(new Color(215, 215, 215));
+
+        // Establecer los iconos en los botones
+        cancelarButton.setIcon(cancelIcon);
+        guardarButton.setIcon(saveIcon);
+
+        try {
+            MaskFormatter dni = new MaskFormatter("####-####-#####");
+            campoIdentidad.setFormatterFactory(new DefaultFormatterFactory(dni));
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
 
         cancelarButton.addActionListener(new ActionListener() {
             @Override
@@ -207,31 +268,133 @@ public class EditarCliente extends  JFrame{
         guardarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                StringBuilder mensaje = new StringBuilder("Faltó ingresar:\n");
-                boolean camposVacios = false;
+                int validacion = 0;
+                String mensaje = "Faltó ingresar: \n";
 
-                // Verificar los campos de nombre, apellido, identidad, telefono, tipo de cliente y domicilio
-                for (JTextField campo : campos) {
-                    if (campo.getText().trim().isEmpty()) {
-                        camposVacios = true;
-                        mensaje.append(campo.getName()).append("\n");
+                // Asume que tienes el ID del cliente disponible como una variable llamada clienteId
+                Integer clienteId = id; // Utiliza la variable id de la clase
+
+                // Verificar si ya existe un cliente con la misma identidad (ignorando el cliente actual)
+                if (validarIdentidadExistente(campoIdentidad.getText().trim(), clienteId)) {
+                    JOptionPane.showMessageDialog(null, "La identidad ingresada ya está asociada a otro cliente", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return; // Detener la ejecución del método
+                }
+
+                // Verificar si ya existe un cliente con el mismo teléfono (ignorando el cliente actual)
+                if (validarTelefonoExistente(campoTelefono.getText().trim(), clienteId)) {
+                    JOptionPane.showMessageDialog(null, "El teléfono ingresado ya está asociado a otro cliente", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return; // Detener la ejecución del método
+                }
+
+
+                if (campoNombre.getText().trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "Nombres\n";
+                }
+
+                if (campoApellido.getText().trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "Apellidos\n";
+                }
+
+                if (campoTelefono.getText().trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "Teléfono\n";
+                }
+
+                if (!mayoristaRadioButton.isSelected() && !alDetalleRadioButton.isSelected()) {
+                    validacion++;
+                    mensaje += "Tipo de cliente\n";
+                }
+
+                String dni = campoIdentidad.getText().trim();
+                if (dni.length() != 15) {
+                    validacion++;
+                    mensaje += "Identidad\n";
+                }
+
+                if (campoDomicilio.getText().trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "Domicilio\n";
+                }
+
+                if (validacion > 0) {
+                    JOptionPane.showMessageDialog(null, mensaje, "Validación", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                String nombre = campoNombre.getText().trim();
+                if (!nombre.isEmpty()) {
+                    if (nombre.length() > 50) {
+                        JOptionPane.showMessageDialog(null, "El nombre de cliente debe tener como máximo 50 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
                     }
+
+                    if (!nombre.matches("[a-zA-Z]{2,}(\\s[a-zA-Z]+)?")) {
+                        JOptionPane.showMessageDialog(null, "El nombre de cliente debe tener mínimo 2 letras; y máximo 1 espacio entre palabras.", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "El campo de nombre de cliente no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return;
                 }
 
-                // Verificar que el campo identidad no esté vacio
+                String apellido = campoApellido.getText().trim();
+                if (!apellido.isEmpty()) {
+                    if (apellido.length() > 50) {
+                        JOptionPane.showMessageDialog(null, "El apellido de cliente debe tener como máximo 50 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    if (!apellido.matches("[a-zA-Z]{2,}(\\s[a-zA-Z]+)?")) {
+                        JOptionPane.showMessageDialog(null, "El apellido de cliente debe tener mínimo 2 letras; y máximo 1 espacio entre palabras.", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "El apellido del cliente no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                String telefono = campoTelefono.getText().trim();
+                if (!telefono.isEmpty()) {
+                    if (telefono.length() != 8) {
+                        JOptionPane.showMessageDialog(null, "El número de teléfono debe tener exactamente 8 dígitos", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    if (!telefono.matches("[2389]\\d{7}")) {
+                        JOptionPane.showMessageDialog(null, "El número de teléfono debe empezar con 2, 3, 8 o 9", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "El campo de teléfono no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
                 String identidad = campoIdentidad.getText().trim();
-                if (identidad.length() != 15) {
-                    camposVacios = true;
-                    mensaje.append("Identidad").append("\n");
+                if (!identidad.isEmpty()) {
+                    if (identidad.length() != 15) {
+                        JOptionPane.showMessageDialog(null, "La identidad debe tener 15 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    if (!identidad.matches("\\d{4}-\\d{4}-\\d{5}")) {
+                        JOptionPane.showMessageDialog(null, "La identidad debe tener el formato ####-####-#####", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    String numerosIdentidad = identidad.replace("-", "");
+                    Cliente cliente = new Cliente();
+                    boolean esIdentidadValida = cliente.comprobarIdentidad(numerosIdentidad);
+                    if (!esIdentidadValida) {
+                        JOptionPane.showMessageDialog(null, "La identidad ingresada no es válida", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "El campo de identidad no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return;
                 }
 
-                // Verificar que el campo tipo de cliente no esté vacio
-                if (!alDetalleRadioButton.isSelected() && !mayoristaRadioButton.isSelected()) {
-                    camposVacios = true;
-                    mensaje.append("Tipo de Cliente").append("\n");
-                }
-
-                // Verificar que el campo domicilio no esté vacio
                 String domicilio = campoDomicilio.getText().trim();
                 if (!domicilio.isEmpty()) {
                     if (domicilio.length() < 2 || domicilio.length() > 200) {
@@ -239,82 +402,8 @@ public class EditarCliente extends  JFrame{
                         return;
                     }
                 } else {
-                    camposVacios = true;
-                    mensaje.append("Domicilio").append("\n");
-                }
-
-                // Mostrar mensaje de campos vacíos si es necesario
-                if (camposVacios) {
-                    JOptionPane.showMessageDialog(null, mensaje.toString(), "Validación", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "El campo de domicilio no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
                     return;
-                }
-
-                // Verificar el campo de nombre, otras validaciones extras
-                String nombre = campoNombre.getText().trim();
-                if (!nombre.isEmpty()) {
-                    if (nombre.length() > 50) {
-                        JOptionPane.showMessageDialog(null, "El nombre debe tener como máximo 50 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-
-                    if (!nombre.matches("[a-zA-Z]{2,}(\\s[a-zA-Z]+)?")) {
-                        JOptionPane.showMessageDialog(null, "El nombre debe tener mínimo 2 letras; y máximo 1 espacio entre palabras. ", "Validación", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                }
-
-                // Verificar el campo de apellido, otras validaciones extras
-                String apellido = campoApellido.getText().trim();
-                if (!apellido.isEmpty()) {
-                    if (apellido.length() > 50) {
-                        JOptionPane.showMessageDialog(null, "El apellido debe tener como máximo 50 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-
-                    if (!apellido.matches("[a-zA-Z]{2,}(\\s[a-zA-Z]+)?")) {
-                        JOptionPane.showMessageDialog(null, "El apellido debe tener mínimo 2 letras; y máximo 1 espacio entre palabras. ", "Validación", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                }
-
-                // Validar el formato de identidad solo si no está vacío, otras validaciones extras
-                if (!identidad.isEmpty()) {
-                    // Verificar la longitud de la identidad
-                    if (identidad.length() != 15) {
-                        JOptionPane.showMessageDialog(null, "La identidad debe tener 15 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-
-                    // Verificar que la identidad tenga el formato correcto
-                    if (!identidad.matches("\\d{4}-\\d{4}-\\d{5}")) {
-                        JOptionPane.showMessageDialog(null, "La identidad debe tener el formato ####-####-#####", "Validación", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-
-                    // Quitar los guiones de la identidad para obtener solo los números
-                    String numerosIdentidad = identidad.replace("-", "");
-
-                    // Utilizar el método comprobarIdentidad de la clase Cliente
-                    Cliente cliente = new Cliente();
-                    boolean esIdentidadValida = cliente.comprobarIdentidad(numerosIdentidad);
-                    if (!esIdentidadValida) {
-                        JOptionPane.showMessageDialog(null, "La identidad ingresada no es válida", "Validación", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                }
-
-                // Verificar el campo de telefono, otras validaciones extras
-                String telefono = campoTelefono.getText().trim();
-                if (!telefono.isEmpty()) {
-                    if (telefono.length() != 8) {
-                        JOptionPane.showMessageDialog(null, "El teléfono debe tener 8 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-
-                    if (!telefono.matches("[389]\\d+")) {
-                        JOptionPane.showMessageDialog(null, "El teléfono debe comenzar con 3, 8 o 9", "Validación", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
                 }
 
                 guardar();
@@ -339,6 +428,9 @@ public class EditarCliente extends  JFrame{
             resultSet.next();
             campoNombre.setText(resultSet.getString(2));
             campoApellido.setText(resultSet.getString(3));
+            String identidad = resultSet.getString("identidad");
+            campoIdentidad.setValue(identidad);
+
             campoIdentidad.setText(resultSet.getString(4));
             campoTelefono.setText(resultSet.getString(5));
             campoDomicilio.setText(resultSet.getString(6));
@@ -422,9 +514,59 @@ public class EditarCliente extends  JFrame{
         }
     }
 
+    private boolean validarTelefonoExistente(String telefono, Integer clienteId) {
+        try {
+            mysql = sql.conectamysql();
+            String query = "SELECT COUNT(*) FROM clientes WHERE telefono = ? AND id != ?";
+            PreparedStatement statement = mysql.prepareStatement(query);
+            statement.setString(1, telefono);
+            statement.setInt(2, clienteId);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                int count = resultSet.getInt(1);
+                return count > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (mysql != null) {
+                try {
+                    mysql.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return false;
+    }
 
+    private boolean validarIdentidadExistente(String identidad, Integer clienteId) {
+        try {
+            mysql = sql.conectamysql();
 
+            String query = "SELECT COUNT(*) FROM clientes WHERE Identidad = ? AND id != ?";
+            PreparedStatement statement = mysql.prepareStatement(query);
+            statement.setString(1, identidad);
+            statement.setInt(2, clienteId);
 
+            ResultSet resultSet = statement.executeQuery();
 
+            if (resultSet.next()) {
+                int count = resultSet.getInt(1);
+                return count > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (mysql != null) {
+                try {
+                    mysql.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return false;
+    }
 
 }
