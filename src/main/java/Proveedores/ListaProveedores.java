@@ -48,6 +48,19 @@ public class ListaProveedores extends JFrame {
 
         lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
 
+        botonEditar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (listaProveedores.getSelectedRow() == -1) {
+                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                EditarProveedores proveedores = new EditarProveedores(listaProveedor.get(listaProveedores.getSelectedRow()).getId());
+                proveedores.setVisible(true);
+                actual.dispose();
+            }
+        });
+
         botonAdelante.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -101,34 +114,20 @@ public class ListaProveedores extends JFrame {
                 actual.dispose();
             }
         });
-
-        /*
-        botonVer.addActionListener(new ActionListener() {
+                 botonVer.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (listaProveedores.getSelectedRow() == -1) {
-                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                VerProveedor proveedor = new VerProveedor(listaProveedor.get(listaProveedores.getSelectedRow()).getId());
-                proveedor.setVisible(true);
+                VerProveedores proveedores = new VerProveedores(listaProveedor.get(listaProveedores.getSelectedRow()).getId());
+                proveedores.setVisible(true);
                 actual.dispose();
             }
         });
 
-        botonEditar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (listaProveedores.getSelectedRow() == -1) {
-                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
-                EditarProveedor proveedor = new EditarProveedor(listaProveedor.get(listaProveedores.getSelectedRow()).getId());
-                proveedor.setVisible(true);
-                actual.dispose();
-            }
-        });
-        */
+
 
         // Colores de la paleta
         Color primaryColor = Color.decode("#37474f"); // Gris azul oscuro

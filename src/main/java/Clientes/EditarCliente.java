@@ -1,6 +1,8 @@
 package Clientes;
 import Objetos.Cliente;
 import Objetos.Conexion;
+
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.DefaultFormatterFactory;
@@ -385,6 +387,7 @@ public class EditarCliente extends  JFrame{
                     JOptionPane.showMessageDialog(null, "El campo de identidad no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
+
 
                 String domicilio = campoDomicilio.getText().trim();
                 if (!domicilio.isEmpty()) {

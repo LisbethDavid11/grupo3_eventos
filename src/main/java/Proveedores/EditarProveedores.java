@@ -1,6 +1,5 @@
 package Proveedores;
 
-import Objetos.Cliente;
 import Objetos.Conexion;
 import Objetos.Proveedor;
 
@@ -19,42 +18,41 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 
-import static Objetos.Proveedor.comprobarRTN;
-
-public class CrearProveedor extends JFrame {
-    public JTextField campoEmpresaProveedora;
-    public JFormattedTextField campoRTN;
-    public JTextField campoTelefono;
-    public JTextField campoCorreo;
-    public JTextArea campoDireccion;
-    public JTextArea campoDescripcion;
-    public JTextField campoNombreVendedor;
-    public JTextField campoTelefonoVendedor;
-    public JButton guardarButton;
-    public JButton cancelarButton;
-    private JPanel panel1;
-    private JLabel lbl0,lbl1,lbl2,lbl3,lbl4,lbl5,lbl6,lbl7,lbl8,lbl9, lbl11;
+public class EditarProveedores extends JFrame {
+    private JTextField campoEmpresaProveedora;
+    private JTextField campoCorreo;
+    private JTextField campoTelefono;
+    private JFormattedTextField campoRTN;
+    private JTextField campoNombreVendedor;
+    private JTextField campoTelefonoVendedor;
+    private JTextArea campoDireccion;
+    private JTextArea campoDescripcion;
+    private JButton guardarButton;
+    private JButton cancelarButton;
+    private JLabel lbl0, lbl4, lbl2, lbl1,lbl3, lbl8, lbl9, lbl6, lbl7, lbl5, lbl11;
+    private final EditarProveedores actual = this;
     private Conexion sql;
     private Connection mysql;
-    public CrearProveedor crearProveedor = this;
+    private int id;
+    private JPanel panel1;
 
-
-    // Colores personalizados
-    Color primaryColor = Color.decode("#263238"); // Gris azul oscuro
-    Color lightColor = Color.decode("#37474f"); // Gris azul claro
-    Color darkColor = Color.decode("#000a12"); // Gris azul más oscuro
-    Color textColor = Color.WHITE; // Texto blanco
-
-    private JTextField[] campos = {
-            campoRTN, campoEmpresaProveedora, campoTelefono, campoCorreo,campoNombreVendedor, campoTelefonoVendedor
+    private JTextField[] campos = new JTextField[]{
+            campoEmpresaProveedora,
+            campoCorreo,
+            campoTelefono,
+            campoRTN,
+            campoNombreVendedor,
+            campoTelefonoVendedor,
     };
 
-    public CrearProveedor() {
-        super("Crear Proveedor");
-        setSize(600, 570);
+    public EditarProveedores(int id) {
+        super("Editar Registro de Proveedores");
+        setSize(600, 480);
         setLocationRelativeTo(null);
         setContentPane(panel1);
-        sql = new Conexion();
+
+        this.id = id;
+        mostrar();
 
         campoDireccion.setLineWrap(true);
         campoDireccion.setWrapStyleWord(true);
@@ -62,12 +60,6 @@ public class CrearProveedor extends JFrame {
         campoDescripcion.setLineWrap(true);
         campoDescripcion.setWrapStyleWord(true);
 
-        try {
-            MaskFormatter formatoRTN = new MaskFormatter("####-####-######");
-            campoRTN.setFormatterFactory(new DefaultFormatterFactory(formatoRTN));
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
 
         campoEmpresaProveedora.addKeyListener(new KeyAdapter() {
             @Override
@@ -257,7 +249,7 @@ public class CrearProveedor extends JFrame {
             }
         });
 
-        // Color de fondo del panel
+// Color de fondo del panel
         panel1.setBackground(Color.decode("#F5F5F5"));
 
         // Color de texto para los JTextField
@@ -326,13 +318,20 @@ public class CrearProveedor extends JFrame {
         cancelarButton.setIcon(cancelIcon);
         guardarButton.setIcon(saveIcon);
 
+        try{
+            MaskFormatter rtn = new MaskFormatter("####-####-######");
+            campoRTN.setFormatterFactory(new DefaultFormatterFactory(rtn));
+        }catch (ParseException e){
+            throw new RuntimeException(e);
+        }
+
         // Boton cancelar
         cancelarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 ListaProveedores listaProveedores = new ListaProveedores();
                 listaProveedores.setVisible(true);
-                crearProveedor.dispose();
+                actual.dispose();
             }
         });
 
@@ -340,19 +339,22 @@ public class CrearProveedor extends JFrame {
         guardarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
                     int validacion = 0;
                     String mensaje = "Faltó ingresar: \n";
 
-                    // Verificar si ya existe un empleado con la misma identidad
+                // Asume que tienes el ID del cliente disponible como una variable llamada clienteId
+                Integer proveedorId = id; // Utiliza la variable id de la clase
+
+
+                // Verificar si ya existe un proveedor con el mismo RTN
                     if (validarRTNExistente(campoRTN.getText().trim())) {
                         JOptionPane.showMessageDialog(null, "El RTN ingresado ya está asociada a otro proveedor", "Validación", JOptionPane.ERROR_MESSAGE);
                         return; // Detener la ejecución del método
                     }
 
-                    // Verificar si ya existe un empleado con el mismo teléfono
+                    // Verificar si ya existe un proveedor con el mismo teléfono
                     if (validarTelefonoExistente(campoTelefono.getText().trim())) {
-                        JOptionPane.showMessageDialog(null, "El teléfono ingresado ya está asociado a otro empleado", "Validación", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "El teléfono ingresado ya está asociado a otro proveedor", "Validación", JOptionPane.ERROR_MESSAGE);
                         return; // Detener la ejecución del método
                     }
 
@@ -394,7 +396,7 @@ public class CrearProveedor extends JFrame {
                         mensaje += "Nombre del vendedor\n";
                     }
 
-                    if (campoTelefono.getText().trim().isEmpty()) {
+                    if (campoTelefonoVendedor.getText().trim().isEmpty()) {
                         validacion++;
                         mensaje += "Teléfono del vendedor\n";
                     }
@@ -419,7 +421,6 @@ public class CrearProveedor extends JFrame {
                         JOptionPane.showMessageDialog(null, "El campo de nombre de la empresa no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
-
 
 
                     String correoElectronico = campoCorreo.getText().trim();
@@ -462,10 +463,10 @@ public class CrearProveedor extends JFrame {
                             return;
                         }
 
-                        String numerosIdentidad = numerortn.replace("-", "");
+                        String numerosRTN = numerortn.replace("-", "");
                         Proveedor proveedor = new Proveedor();
-                        boolean esIdentidadValida = proveedor.comprobarRTN(numerosIdentidad);
-                        if (!esIdentidadValida) {
+                        boolean esRTNValido = proveedor.comprobarRTN(numerosRTN);
+                        if (!esRTNValido) {
                             JOptionPane.showMessageDialog(null, "El RTN ingresado no es válido", "Validación", JOptionPane.ERROR_MESSAGE);
                             return;
                         }
@@ -477,7 +478,7 @@ public class CrearProveedor extends JFrame {
                     String direccion = campoDireccion.getText().trim();
                     if (!direccion.isEmpty()) {
                         if (direccion.length() < 2 || direccion.length() > 200) {
-                            JOptionPane.showMessageDialog(null, "El domicilio debe tener entre 2 y 200 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.showMessageDialog(null, "La dirección debe tener entre 2 y 200 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
                             return;
                         }
                     } else {
@@ -485,16 +486,6 @@ public class CrearProveedor extends JFrame {
                         return;
                     }
 
-                    direccion = campoDireccion.getText().trim();
-                    if (!direccion.isEmpty()) {
-                        if (direccion.length() < 2 || direccion.length() > 200) {
-                            JOptionPane.showMessageDialog(null, "La dirección de la empresa debe tener entre 2 y 200 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-                    } else {
-                        JOptionPane.showMessageDialog(null, "El campo de dirección no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
 
                     String descripcion = campoDescripcion.getText().trim();
                     if (!descripcion.isEmpty()) {
@@ -531,67 +522,90 @@ public class CrearProveedor extends JFrame {
                         }
 
                         if (!telefonoVendedor.matches("[2389]\\d{7}")) {
-                            JOptionPane.showMessageDialog(null, "El número de teléfono del vendedor debe empezar con 2, 3, 8 o 9", "Validación", JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.showMessageDialog(null, "El número de teléfono del vendededor debe empezar con 2, 3, 8 o 9", "Validación", JOptionPane.ERROR_MESSAGE);
                             return;
                         }
                     } else {
-                        JOptionPane.showMessageDialog(null, "El campo de teléfono del vendedor no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "El campo de teléfono del proveedor no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
 
-                    GuardarDatos();
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
+                    guardar();
+                    ListaProveedores listaProveedores = new ListaProveedores();
+                    listaProveedores.setVisible(true);
+                    actual.dispose();
                 }
+            });
+        }
 
-                ListaProveedores listaProveedores = new ListaProveedores();
-                listaProveedores.setVisible(true);
-                crearProveedor.dispose();
-            }
-        });
-    }
+        private void mostrar() {
+            sql = new Conexion();
+            mysql = sql.conectamysql();
 
-    public void GuardarDatos() throws SQLException {
-        sql = new Conexion();
-        mysql = sql.conectamysql();
-        PreparedStatement preparedStatement = mysql.prepareStatement("INSERT INTO Proveedores (empresaProveedora, rtn, telefono, correo, direccion, descripcion, nombreVendedor, telefonoVendedor) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-        preparedStatement.setString(1, campoEmpresaProveedora.getText());
-        preparedStatement.setString(2, campoRTN.getText());
-        preparedStatement.setString(3, campoTelefono.getText());
-        preparedStatement.setString(4, campoCorreo.getText());
-        preparedStatement.setString(5, campoDireccion.getText());
-        preparedStatement.setString(6, campoDescripcion.getText());
-        preparedStatement.setString(7, campoNombreVendedor.getText());
-        preparedStatement.setString(8, campoTelefonoVendedor.getText());
-        // preparedStatement.execute();
+            try {
+                PreparedStatement statement = mysql.prepareStatement("SELECT * FROM " + Proveedor.nombreTabla + " WHERE id = ? ;");
+                statement.setInt(1, this.id);
+                ResultSet resultSet = statement.executeQuery();
 
-        preparedStatement.executeUpdate();
+                resultSet.next();
+                campoEmpresaProveedora.setText(resultSet.getString(2));
+                String rtn = resultSet.getString("rtn");
+                campoRTN.setValue(rtn);
+                campoRTN.setText(resultSet.getString(3));
+                campoTelefono.setText(resultSet.getString(4));
+                campoCorreo.setText(resultSet.getString(5));
+                campoDireccion.setText(resultSet.getString(6));
+                campoDescripcion.setText(resultSet.getString(7));
+                campoNombreVendedor.setText(resultSet.getString(8));
+                campoTelefonoVendedor.setText(resultSet.getString(9));
 
-        boolean listaProveedoresAbierta = false;
-        Window[] windows = Window.getWindows();
-        for (Window window : windows) {
-            if (window instanceof ListaProveedores) {
-                listaProveedoresAbierta = true;
-                break;
+
+                System.out.println(statement.execute());
+
+            } catch (SQLException erro) {
+                //Mensaje de error
+                System.out.println(erro.getMessage());
+
             }
         }
 
-        // Abrir la ventana ListaCliente solo si no está abierta
-        if (!listaProveedoresAbierta) {
-            ListaProveedores proveedores = new ListaProveedores();
-            proveedores.setVisible(true);
+
+
+    private void guardar () {
+            sql = new Conexion();
+            mysql = sql.conectamysql();
+            try {
+                String rtn = campoRTN.getText().trim();
+                String selectQuery = "SELECT * FROM" + Proveedor.nombreTabla + " WHERE rtn = ? AND id <> ?";
+                PreparedStatement selectStatement = mysql.prepareStatement(selectQuery);
+                selectStatement.setString(1, rtn);
+                selectStatement.setInt(2, this.id);
+                ResultSet resultSet = selectStatement.executeQuery();
+
+                //Actualizar datos del proveedor
+                PreparedStatement statement = mysql.prepareStatement("UPDATE" + Proveedor.nombreTabla + " SET 'empresaProveedora' = ?, 'rtn' = ?, 'telefono' = ?, 'correo' = ?, 'direccion' = ?, 'descripcion' = ?, 'nombreVendedor' = ?, 'telefonoVendedor' = ? WHERE id = ?");
+                statement.setString(1, campoEmpresaProveedora.getText());
+                statement.setString(2, campoCorreo.getText());
+                statement.setString(3, campoTelefono.getText());
+                statement.setString(4, campoRTN.getText());
+                statement.setString(5, campoNombreVendedor.getText());
+                statement.setString(6, campoTelefonoVendedor.getText());
+                statement.setString(7, campoDireccion.getText());
+                statement.setString(8, campoDescripcion.getText());
+                statement.setInt(9, this.id);
+                System.out.println(statement.execute());
+
+                // Mostrar mensaje de éxito
+                String nombreCompleto = campoEmpresaProveedora.getText();
+
+                // Mensaje personalizado
+                System.out.println("Proveedor " + nombreCompleto + " ha sido actualizado exitosamente.");
+                JOptionPane.showMessageDialog(null, "Proveedor " + nombreCompleto + " ha sido actualizado exitosamente.", "Éxito", JOptionPane.DEFAULT_OPTION);
+            } catch (SQLException e) {
+                String mensajeError = "Error al guardar el proveedor" + e.getMessage();
+                JOptionPane.showMessageDialog(null, "No se pudo realizar el registro del proveedor", "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
-
-        crearProveedor.dispose();
-
-        // Mostrar mensaje de éxito
-        String nombreCompleto = campoEmpresaProveedora.getText();
-
-        // Mensaje personalizado
-        System.out.println("Proveedor " + nombreCompleto + " ha sido registrado exitosamente.");
-        JOptionPane.showMessageDialog(null, "Proveedor " + nombreCompleto + " ha sido registrado exitosamente.", "Éxito", JOptionPane.DEFAULT_OPTION);
-    }
-
 
 
     // Método para validar si el teléfono ya está asociado a un proveedor en la base de datos
@@ -625,7 +639,7 @@ public class CrearProveedor extends JFrame {
                 }
             }
         }
-        return false; // En caso de error, se asume que no existe un empleado con ese teléfono
+        return false; // En caso de error, se asume que no existe un proveedor con ese teléfono
     }
 
     private boolean validarRTNExistente(String rtn) {
@@ -662,9 +676,5 @@ public class CrearProveedor extends JFrame {
         return false; // En caso de error, se asume que no existe un proveedor con ese RTN
     }
 
-    private void createUIComponents() {
-        // TODO: place custom component creation code here
     }
 
-
-}
