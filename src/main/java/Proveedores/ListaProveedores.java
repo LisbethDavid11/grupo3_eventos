@@ -29,6 +29,7 @@ public class ListaProveedores extends JFrame {
     private JButton botonEditar;
     private JButton botonCrear;
     private JLabel lblPagina;
+    private JLabel lbl0;
     private List<Proveedor> listaProveedor;
     private int pagina = 0;
     private Connection mysql;

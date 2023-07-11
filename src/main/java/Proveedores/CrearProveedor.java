@@ -326,6 +326,14 @@ public class CrearProveedor extends JFrame {
         cancelarButton.setIcon(cancelIcon);
         guardarButton.setIcon(saveIcon);
 
+        // Crea un margen de 15 píxeles desde el borde inferior
+        EmptyBorder marginTitulo = new EmptyBorder(15, 0, 15, 0);
+        lbl0.setBorder(marginTitulo);
+
+        // Crear una fuente con un tamaño de 18 puntos
+        Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
+        lbl0.setFont(fontTitulo);
+
         // Boton cancelar
         cancelarButton.addActionListener(new ActionListener() {
             @Override

@@ -25,6 +25,7 @@ public class VerProveedores extends JFrame {
     private JTextArea etiquetaDireccion;
     private JTextArea etiquetaDescripcion;
     private JButton volverButton;
+    private JLabel lbl0;
 
     private final VerProveedores actual = this;
 
@@ -34,7 +35,7 @@ public class VerProveedores extends JFrame {
 
     public VerProveedores(int id){
         super("");
-        setSize(550,350);
+        setSize(550,400);
         setLocationRelativeTo(null);
         setContentPane(panel1);
 
@@ -113,6 +114,15 @@ public class VerProveedores extends JFrame {
 
         // Aplica el margen al botón
         volverButton.setBorder(margin);
+
+        // Crea un margen de 15 píxeles desde el borde inferior
+        EmptyBorder marginTitulo = new EmptyBorder(15, 0, 15, 0);
+        lbl0.setBorder(marginTitulo);
+
+        // Crear una fuente con un tamaño de 18 puntos
+        Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
+        lbl0.setFont(fontTitulo);
+
 
         volverButton.addMouseListener(new java.awt.event.MouseAdapter(){
 

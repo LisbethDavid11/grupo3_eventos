@@ -318,6 +318,14 @@ public class EditarProveedores extends JFrame {
         cancelarButton.setIcon(cancelIcon);
         guardarButton.setIcon(saveIcon);
 
+        // Crea un margen de 15 píxeles desde el borde inferior
+        EmptyBorder marginTitulo = new EmptyBorder(15, 0, 15, 0);
+        lbl0.setBorder(marginTitulo);
+
+        // Crear una fuente con un tamaño de 18 puntos
+        Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
+        lbl0.setFont(fontTitulo);
+
         try{
             MaskFormatter rtn = new MaskFormatter("####-####-######");
             campoRTN.setFormatterFactory(new DefaultFormatterFactory(rtn));
@@ -346,17 +354,17 @@ public class EditarProveedores extends JFrame {
                 Integer proveedorId = id; // Utiliza la variable id de la clase
 
 
-                // Verificar si ya existe un proveedor con el mismo RTN
-                    if (validarRTNExistente(campoRTN.getText().trim())) {
-                        JOptionPane.showMessageDialog(null, "El RTN ingresado ya está asociada a otro proveedor", "Validación", JOptionPane.ERROR_MESSAGE);
-                        return; // Detener la ejecución del método
-                    }
+                // Verificar si ya existe un cliente con la misma identidad (ignorando el cliente actual)
+                if (validarRTNExistente(campoRTN.getText().trim(), proveedorId)) {
+                    JOptionPane.showMessageDialog(null, "La identidad ingresada ya está asociada a otro cliente", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return; // Detener la ejecución del método
+                }
 
-                    // Verificar si ya existe un proveedor con el mismo teléfono
-                    if (validarTelefonoExistente(campoTelefono.getText().trim())) {
-                        JOptionPane.showMessageDialog(null, "El teléfono ingresado ya está asociado a otro proveedor", "Validación", JOptionPane.ERROR_MESSAGE);
-                        return; // Detener la ejecución del método
-                    }
+                // Verificar si ya existe un cliente con el mismo teléfono (ignorando el cliente actual)
+                if (validarTelefonoExistente(campoTelefono.getText().trim(), proveedorId)) {
+                    JOptionPane.showMessageDialog(null, "El teléfono ingresado ya está asociado a otro cliente", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return; // Detener la ejecución del método
+                }
 
                     // Verificar el nombre
                     if (campoEmpresaProveedora.getText().trim().isEmpty()) {
@@ -571,66 +579,60 @@ public class EditarProveedores extends JFrame {
 
 
 
-    private void guardar () {
-            sql = new Conexion();
-            mysql = sql.conectamysql();
-            try {
-                String rtn = campoRTN.getText().trim();
-                String selectQuery = "SELECT * FROM" + Proveedor.nombreTabla + " WHERE rtn = ? AND id <> ?";
-                PreparedStatement selectStatement = mysql.prepareStatement(selectQuery);
-                selectStatement.setString(1, rtn);
-                selectStatement.setInt(2, this.id);
-                ResultSet resultSet = selectStatement.executeQuery();
+    private void guardar() {
+        sql = new Conexion();
+        mysql = sql.conectamysql();
+        try {
+            String rtn = campoRTN.getText().trim();
+            String selectQuery = "SELECT * FROM " + Proveedor.nombreTabla + " WHERE rtn = ? AND id <> ?";
+            PreparedStatement selectStatement = mysql.prepareStatement(selectQuery);
+            selectStatement.setString(1, rtn);
+            selectStatement.setInt(2, this.id);
+            ResultSet resultSet = selectStatement.executeQuery();
 
-                //Actualizar datos del proveedor
-                PreparedStatement statement = mysql.prepareStatement("UPDATE" + Proveedor.nombreTabla + " SET 'empresaProveedora' = ?, 'rtn' = ?, 'telefono' = ?, 'correo' = ?, 'direccion' = ?, 'descripcion' = ?, 'nombreVendedor' = ?, 'telefonoVendedor' = ? WHERE id = ?");
-                statement.setString(1, campoEmpresaProveedora.getText());
-                statement.setString(2, campoCorreo.getText());
-                statement.setString(3, campoTelefono.getText());
-                statement.setString(4, campoRTN.getText());
-                statement.setString(5, campoNombreVendedor.getText());
-                statement.setString(6, campoTelefonoVendedor.getText());
-                statement.setString(7, campoDireccion.getText());
-                statement.setString(8, campoDescripcion.getText());
-                statement.setInt(9, this.id);
-                System.out.println(statement.execute());
+            // Actualizar datos del proveedor
+            PreparedStatement statement = mysql.prepareStatement("UPDATE " + Proveedor.nombreTabla + " SET empresaProveedora = ?, rtn = ?, telefono = ?, correo = ?, direccion = ?, descripcion = ?, nombreVendedor = ?, telefonoVendedor = ? WHERE id = ?");
+            statement.setString(1, campoEmpresaProveedora.getText());
+            statement.setString(2, campoRTN.getText());
+            statement.setString(3, campoTelefono.getText());
+            statement.setString(4, campoCorreo.getText());
+            statement.setString(5, campoDireccion.getText());
+            statement.setString(6, campoDescripcion.getText());
+            statement.setString(7, campoNombreVendedor.getText());
+            statement.setString(8, campoTelefonoVendedor.getText());
+            statement.setInt(9, this.id);
+            statement.executeUpdate();
 
-                // Mostrar mensaje de éxito
-                String nombreCompleto = campoEmpresaProveedora.getText();
+            // Mostrar mensaje de éxito
+            String nombreCompleto = campoEmpresaProveedora.getText();
 
-                // Mensaje personalizado
-                System.out.println("Proveedor " + nombreCompleto + " ha sido actualizado exitosamente.");
-                JOptionPane.showMessageDialog(null, "Proveedor " + nombreCompleto + " ha sido actualizado exitosamente.", "Éxito", JOptionPane.DEFAULT_OPTION);
-            } catch (SQLException e) {
-                String mensajeError = "Error al guardar el proveedor" + e.getMessage();
-                JOptionPane.showMessageDialog(null, "No se pudo realizar el registro del proveedor", "Error", JOptionPane.ERROR_MESSAGE);
-            }
+            // Mensaje personalizado
+            System.out.println("Proveedor " + nombreCompleto + " ha sido actualizado exitosamente.");
+            JOptionPane.showMessageDialog(null, "Proveedor " + nombreCompleto + " ha sido actualizado exitosamente.", "Éxito", JOptionPane.DEFAULT_OPTION);
+        } catch (SQLException e) {
+            String mensajeError = "Error al guardar el proveedor: " + e.getMessage();
+            JOptionPane.showMessageDialog(null, "No se pudo actualizar el proveedor", "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
 
 
     // Método para validar si el teléfono ya está asociado a un proveedor en la base de datos
-    private boolean validarTelefonoExistente(String telefono) {
+    private boolean validarTelefonoExistente(String telefono, Integer proveedorId) {
         try {
-            // Crear la conexión a la base de datos (usando el objeto 'mysql' y 'sql' definidos en la clase)
             mysql = sql.conectamysql();
-
-            // Preparar la consulta SQL
-            String query = "SELECT COUNT(*) FROM proveedores WHERE Telefono = ?";
+            String query = "SELECT COUNT(*) FROM clientes WHERE telefono = ? AND id != ?";
             PreparedStatement statement = mysql.prepareStatement(query);
             statement.setString(1, telefono);
-
-            // Ejecutar la consulta
+            statement.setInt(2, proveedorId);
             ResultSet resultSet = statement.executeQuery();
-
-            // Obtener el resultado
             if (resultSet.next()) {
                 int count = resultSet.getInt(1);
-                return count > 0; // Retorna true si el conteo es mayor que cero (existe al menos un proveedor con ese teléfono)
+                return count > 0;
             }
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            // Cerrar la conexión a la base de datos
             if (mysql != null) {
                 try {
                     mysql.close();
@@ -639,31 +641,27 @@ public class EditarProveedores extends JFrame {
                 }
             }
         }
-        return false; // En caso de error, se asume que no existe un proveedor con ese teléfono
+        return false;
     }
 
-    private boolean validarRTNExistente(String rtn) {
+    private boolean validarRTNExistente(String rtn, Integer proveedorId) {
         try {
-            // Crear la conexión a la base de datos (usando el objeto 'mysql' y 'sql' definidos en la clase)
             mysql = sql.conectamysql();
 
-            // Preparar la consulta SQL
-            String query = "SELECT COUNT(*) FROM proveedores WHERE rtn = ?";
+            String query = "SELECT COUNT(*) FROM proveedores WHERE rtn = ? AND id != ?";
             PreparedStatement statement = mysql.prepareStatement(query);
             statement.setString(1, rtn);
+            statement.setInt(2, proveedorId);
 
-            // Ejecutar la consulta
             ResultSet resultSet = statement.executeQuery();
 
-            // Obtener el resultado
             if (resultSet.next()) {
                 int count = resultSet.getInt(1);
-                return count > 0; // Retorna true si el conteo es mayor que cero (existe al menos un proveedor con ese RTN)
+                return count > 0;
             }
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            // Cerrar la conexión a la base de datos
             if (mysql != null) {
                 try {
                     mysql.close();
@@ -672,9 +670,8 @@ public class EditarProveedores extends JFrame {
                 }
             }
         }
-
-        return false; // En caso de error, se asume que no existe un proveedor con ese RTN
+        return false;
     }
 
-    }
+}
 
