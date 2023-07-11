@@ -108,6 +108,10 @@ public class CrearArreglo extends JFrame {
         botonGuardar.setIcon(saveIcon);
         botonCargarImagen.setIcon(updateIcon);
 
+        // Crear una fuente con un tamaño de 18 puntos
+        Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
+        lbl0.setFont(fontTitulo);
+
         // Inicializar JRadioButtons
         ButtonGroup buttonGroup = new ButtonGroup();
         buttonGroup.add(radioButtonNo);

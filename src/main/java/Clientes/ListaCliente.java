@@ -64,7 +64,6 @@ public class ListaCliente extends JFrame {
             }
         });
 
-
         botonAtras.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

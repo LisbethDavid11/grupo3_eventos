@@ -265,6 +265,14 @@ public class CrearCliente extends JFrame{
         botonCancelar.setIcon(cancelIcon);
         botonGuardar.setIcon(saveIcon);
 
+        // Crea un margen de 15 píxeles desde el borde inferior
+        EmptyBorder marginTitulo = new EmptyBorder(15, 0, 15, 0);
+        label1.setBorder(marginTitulo);
+
+        // Crear una fuente con un tamaño de 18 puntos
+        Font fontTitulo = new Font(label1.getFont().getName(), label1.getFont().getStyle(), 18);
+        label1.setFont(fontTitulo);
+
         try {
             MaskFormatter dni = new MaskFormatter("####-####-#####");
             campoIdentidad.setFormatterFactory(new DefaultFormatterFactory(dni));

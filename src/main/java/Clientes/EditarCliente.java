@@ -42,7 +42,7 @@ public class EditarCliente extends  JFrame{
             campoTelefono,
     };
     public EditarCliente(int id) {
-        super("Editar Registro de los Clientes");
+        super("");
         setSize(600,480);
         setLocationRelativeTo(null);
         setContentPane(panel1);
@@ -241,6 +241,14 @@ public class EditarCliente extends  JFrame{
         // Establecer los iconos en los botones
         cancelarButton.setIcon(cancelIcon);
         guardarButton.setIcon(saveIcon);
+
+        // Crea un margen de 15 píxeles desde el borde inferior
+        EmptyBorder marginTitulo = new EmptyBorder(15, 0, 15, 0);
+        label1.setBorder(marginTitulo);
+
+        // Crear una fuente con un tamaño de 18 puntos
+        Font fontTitulo = new Font(label1.getFont().getName(), label1.getFont().getStyle(), 18);
+        label1.setFont(fontTitulo);
 
         try {
             MaskFormatter dni = new MaskFormatter("####-####-#####");
@@ -495,7 +503,7 @@ public class EditarCliente extends  JFrame{
             JOptionPane.showMessageDialog(null, "Cliente " + nombreCompleto + " ha sido actualizado exitosamente.", "Éxito", JOptionPane.DEFAULT_OPTION);
         } catch (SQLException e) {
             String mensajeError = "Error al guardar el cliente: " + e.getMessage();
-            JOptionPane.showMessageDialog(null, "No se pudo realizar el registro del cliente", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "No se pudo realizar la actualización del cliente", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 

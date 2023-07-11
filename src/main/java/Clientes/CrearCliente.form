@@ -28,12 +28,12 @@
       </component>
       <component id="a6692" class="javax.swing.JLabel" binding="label2">
         <constraints>
-          <grid row="3" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <font name="Arial" size="12" style="1"/>
           <foreground color="-16315129"/>
-          <text value="Nombre"/>
+          <text value="Nombres"/>
         </properties>
       </component>
       <component id="77ed2" class="javax.swing.JTextArea" binding="campoDomicilio">
@@ -171,8 +171,8 @@
         </constraints>
         <properties>
           <font name="Arial" size="12" style="1"/>
-          <label value="Al detalle"/>
-          <text value="Al detalle"/>
+          <label value="Al Detalle"/>
+          <text value="Al Detalle"/>
         </properties>
       </component>
       <hspacer id="ac152">
