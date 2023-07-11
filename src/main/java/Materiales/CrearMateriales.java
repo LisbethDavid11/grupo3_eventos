@@ -35,7 +35,7 @@ public class CrearMateriales extends JFrame {
 
     public CrearMateriales() {
         super("");
-        setSize(500, 550);
+        setSize(500, 490);
         setLocationRelativeTo(null);
         setContentPane(panel);
 
@@ -98,6 +98,14 @@ public class CrearMateriales extends JFrame {
         // Establecer los iconos en los botones
         botonCancelar.setIcon(cancelIcon);
         botonGuardar.setIcon(saveIcon);
+
+        // Crea un margen de 15 píxeles desde el borde inferior
+        EmptyBorder marginTitulo = new EmptyBorder(15, 0, 15, 0);
+        lbl0.setBorder(marginTitulo);
+
+        // Crear una fuente con un tamaño de 18 puntos
+        Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
+        lbl0.setFont(fontTitulo);
 
         // Inicializar JRadioButtons
         ButtonGroup buttonGroup = new ButtonGroup();

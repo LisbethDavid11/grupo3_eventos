@@ -28,6 +28,7 @@ public class VerEmpleado extends JFrame {
     private JTextField etiquetaNombreContacto;
     private JTextField etiquetaTelefonoContacto;
     private JTextField etiquetaTipo;
+    private JLabel lbl0;
     public VerEmpleado mostrarEmpleado = this;
     private final VerEmpleado actual = this;
     private Conexion sql;
@@ -37,7 +38,7 @@ public class VerEmpleado extends JFrame {
 
     public VerEmpleado(int id) {
         super("");
-        setSize(600, 420);
+        setSize(600, 450);
         setLocationRelativeTo(null);
         setContentPane(panel1);
 
@@ -131,6 +132,14 @@ public class VerEmpleado extends JFrame {
 
         // Aplica el margen al botón
         cancelarButton.setBorder(margin);
+
+        // Crea un margen de 15 píxeles desde el borde inferior
+        EmptyBorder marginTitulo = new EmptyBorder(15, 0, 15, 0);
+        lbl0.setBorder(marginTitulo);
+
+        // Crear una fuente con un tamaño de 18 puntos
+        Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
+        lbl0.setFont(fontTitulo);
 
         cancelarButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {

@@ -350,19 +350,19 @@ public class EditarProveedores extends JFrame {
                     int validacion = 0;
                     String mensaje = "Faltó ingresar: \n";
 
-                // Asume que tienes el ID del cliente disponible como una variable llamada clienteId
+                // Asume que tienes el ID del proveedor disponible como una variable llamada proveedorId
                 Integer proveedorId = id; // Utiliza la variable id de la clase
 
 
-                // Verificar si ya existe un cliente con la misma identidad (ignorando el cliente actual)
+                // Verificar si ya existe un proveedor con la misma RTN (ignorando el proveedor actual)
                 if (validarRTNExistente(campoRTN.getText().trim(), proveedorId)) {
-                    JOptionPane.showMessageDialog(null, "La identidad ingresada ya está asociada a otro cliente", "Validación", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "El RTN ingresado ya está asociada a otro proveedor", "Validación", JOptionPane.ERROR_MESSAGE);
                     return; // Detener la ejecución del método
                 }
 
-                // Verificar si ya existe un cliente con el mismo teléfono (ignorando el cliente actual)
+                // Verificar si ya existe un proveedor con el mismo teléfono (ignorando el proveedor actual)
                 if (validarTelefonoExistente(campoTelefono.getText().trim(), proveedorId)) {
-                    JOptionPane.showMessageDialog(null, "El teléfono ingresado ya está asociado a otro cliente", "Validación", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "El teléfono ingresado ya está asociado a otro proveedor", "Validación", JOptionPane.ERROR_MESSAGE);
                     return; // Detener la ejecución del método
                 }
 
@@ -621,7 +621,7 @@ public class EditarProveedores extends JFrame {
     private boolean validarTelefonoExistente(String telefono, Integer proveedorId) {
         try {
             mysql = sql.conectamysql();
-            String query = "SELECT COUNT(*) FROM clientes WHERE telefono = ? AND id != ?";
+            String query = "SELECT COUNT(*) FROM proveedores WHERE telefono = ? AND id != ?";
             PreparedStatement statement = mysql.prepareStatement(query);
             statement.setString(1, telefono);
             statement.setInt(2, proveedorId);

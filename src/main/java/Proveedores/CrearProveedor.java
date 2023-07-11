@@ -1,9 +1,6 @@
 package Proveedores;
-
-import Objetos.Cliente;
 import Objetos.Conexion;
 import Objetos.Proveedor;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.DefaultFormatterFactory;
@@ -18,8 +15,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
-
-import static Objetos.Proveedor.comprobarRTN;
 
 public class CrearProveedor extends JFrame {
     public JTextField campoEmpresaProveedora;
@@ -584,7 +579,7 @@ public class CrearProveedor extends JFrame {
             }
         }
 
-        // Abrir la ventana ListaCliente solo si no está abierta
+        // Abrir la ventana ListaProveedor solo si no está abierta
         if (!listaProveedoresAbierta) {
             ListaProveedores proveedores = new ListaProveedores();
             proveedores.setVisible(true);

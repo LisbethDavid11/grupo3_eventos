@@ -73,7 +73,7 @@
         <properties>
           <font name="Arial" size="14" style="1"/>
           <foreground color="-16119289"/>
-          <text value="INGRESAR DATOS DEL EMPLEADO"/>
+          <text value="INGRESAR LOS DATOS DEL EMPLEADO"/>
         </properties>
       </component>
       <component id="250f1" class="javax.swing.JLabel" binding="lbl4">
@@ -322,7 +322,7 @@
           <text value=""/>
         </properties>
       </component>
-      <component id="f59c" class="javax.swing.JLabel" binding="lbl17">
+      <component id="f59c" class="javax.swing.JLabel" binding="lbl7">
         <constraints>
           <grid row="6" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
             <preferred-size width="128" height="14"/>

@@ -1,9 +1,11 @@
-package Empleados;
-import Modelos.ModeloEmpleado;
+package Compras;
+import Modelos.ModeloCompras;
+import Objetos.Compra;
 import Objetos.Conexion;
-import Objetos.Empleado;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,10 +18,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ListaEmpleados extends JFrame {
+public class ListaCompras extends JFrame {
     private JPanel panelPrincipal;
     private JButton botonVer;
-    private JTable listaFacturas;
+    private JTable listaCompras;
     private JButton botonAtras;
     private JButton botonAdelante;
     private JTextField campoBusqueda;
@@ -27,24 +29,24 @@ public class ListaEmpleados extends JFrame {
     private JButton botonEditar;
     private JButton botonCrear;
     private JLabel lblPagina;
-    private ImageIcon imagen;
-    private List<Empleado> listaEmpleado;
+    private JButton botonImprimir;
+    private List<Compra> compraList;
     private int pagina = 0;
     private Connection mysql;
     private Conexion sql;
-    private ListaEmpleados actual = this;
+    private ListaCompras actual = this;
     private String busqueda = "";
 
-    public ListaEmpleados() {
+    public ListaCompras() {
         super("");
-        setSize(850, 490);
+        setSize(950, 500);
         setLocationRelativeTo(null);
         setContentPane(panelPrincipal);
         campoBusqueda.setText("");
 
-        listaEmpleado = new ArrayList<>();
+        compraList = new ArrayList<>();
 
-        listaFacturas.setModel(cargarDatos());
+        listaCompras.setModel(cargarDatos());
         centrarDatosTabla();
 
         lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
@@ -59,7 +61,7 @@ public class ListaEmpleados extends JFrame {
                         botonAdelante.setEnabled(false);
                     }
                 }
-                listaFacturas.setModel(cargarDatos());
+                listaCompras.setModel(cargarDatos());
                 centrarDatosTabla();
                 lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
@@ -75,7 +77,7 @@ public class ListaEmpleados extends JFrame {
                         botonAtras.setEnabled(false);
                     }
                 }
-                listaFacturas.setModel(cargarDatos());
+                listaCompras.setModel(cargarDatos());
                 centrarDatosTabla();
                 lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
@@ -88,7 +90,7 @@ public class ListaEmpleados extends JFrame {
                 pagina = 0;
                 botonAdelante.setEnabled((pagina + 1) < getTotalPageCount());
                 botonAtras.setEnabled(pagina > 0);
-                listaFacturas.setModel(cargarDatos());
+                listaCompras.setModel(cargarDatos());
                 centrarDatosTabla();
                 lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
@@ -99,14 +101,16 @@ public class ListaEmpleados extends JFrame {
         Color lightColor = Color.decode("#cfd8dc"); // Gris azul claro
         Color darkColor = Color.decode("#263238"); // Gris azul más oscuro
 
+        /*
         botonCrear.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                CrearEmpleado empleado = new CrearEmpleado();
-                empleado.setVisible(true);
+                CrarFactura factura = new CrearFactura();
+                factura.setVisible(true);
                 actual.dispose();
             }
         });
+        */
 
         botonVer.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
@@ -148,18 +152,20 @@ public class ListaEmpleados extends JFrame {
             }
         });
 
+        /*
         botonVer.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (listaFacturas.getSelectedRow() == -1) {
-                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar", "Validación", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar", "Validación", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                VerEmpleado empleado = new VerEmpleado(listaEmpleado.get(listaFacturas.getSelectedRow()).getId());
-                empleado.setVisible(true);
+                VerFactura factura = new VerFactura(listaFactura.get(listaFacturas.getSelectedRow()).getId());
+                factura.setVisible(true);
                 actual.dispose();
             }
         });
+         */
 
         botonEditar.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
@@ -171,18 +177,20 @@ public class ListaEmpleados extends JFrame {
             }
         });
 
+        /*
         botonEditar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (listaFacturas.getSelectedRow() == -1) {
-                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar", "Validación", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar", "Validación", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                EditarEmpleado empleado = new EditarEmpleado(listaEmpleado.get(listaFacturas.getSelectedRow()).getId());
-                empleado.setVisible(true);
+                EditarFactura factura = new EditarFactura(listaFactura.get(listaFacturas.getSelectedRow()).getId());
+                factura.setVisible(true);
                 actual.dispose();
             }
         });
+        */
 
 
         // Color de fondo
@@ -219,48 +227,51 @@ public class ListaEmpleados extends JFrame {
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 
-        for (int i = 0; i < listaFacturas.getColumnCount(); i++) {
-            listaFacturas.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        for (int i = 0; i < listaCompras.getColumnCount(); i++) {
+            listaCompras.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
     }
 
-    private ModeloEmpleado cargarDatos() {
+    private ModeloCompras cargarDatos() {
         sql = new Conexion();
         try (Connection mysql = sql.conectamysql();
-             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT * FROM Empleados WHERE Nombres LIKE CONCAT('%', ?, '%') LIMIT ?, 20")) {
-            preparedStatement.setString(1, campoBusqueda.getText());
+             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT c.*, p.empresaProveedora, CONCAT(e.Nombres, ' ', e.Apellidos) AS empleadoNombre FROM compras c JOIN proveedores p ON c.proveedor_id = p.id JOIN empleados e ON c.empleado_id = e.id WHERE c.codigo_compra LIKE CONCAT('%', ?, '%') LIMIT ?, 20")) {
+
+            preparedStatement.setString(1, busqueda);
             preparedStatement.setInt(2, pagina * 20);
 
             ResultSet resultSet = preparedStatement.executeQuery();
-            listaEmpleado.clear();
+            compraList = new ArrayList<>();
 
             while (resultSet.next()) {
-                Empleado empleado = new Empleado();
-                empleado.setId(resultSet.getInt("id"));
-                empleado.setIdentidad(resultSet.getString("Identidad"));
-                empleado.setNombres(resultSet.getString("Nombres"));
-                empleado.setApellidos(resultSet.getString("Apellidos"));
-                empleado.setTelefono(resultSet.getString("Telefono"));
-
-                listaEmpleado.add(empleado);
+                Compra compra = new Compra();
+                compra.setId(resultSet.getInt("id"));
+                compra.setCodigoCompra(resultSet.getString("codigo_compra"));
+                compra.setFecha(resultSet.getString("fecha"));
+                compra.setProveedorId(resultSet.getInt("proveedor_id"));
+                compra.setEmpleadoId(resultSet.getInt("empleado_id"));
+                compraList.add(compra);
             }
-
-            return new ModeloEmpleado(listaEmpleado);
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
-            return new ModeloEmpleado(new ArrayList<>());
+            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            compraList = new ArrayList<>();
         }
+
+        if (listaCompras.getColumnCount() > 0) {
+            TableColumn columnId = listaCompras.getColumnModel().getColumn(0);
+            columnId.setPreferredWidth(50);
+        }
+
+        return new ModeloCompras(compraList, sql);
     }
 
     private int getTotalPageCount() {
         int count = 0;
         try (Connection mysql = sql.conectamysql();
-             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT COUNT(*) AS total FROM " + Empleado.nombreTabla + " WHERE nombres LIKE CONCAT('%',?,'%') OR apellidos LIKE CONCAT('%',?,'%') OR identidad LIKE CONCAT('%',?,'%')")) {
+             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT COUNT(*) AS total FROM " + Compra.nombreTabla + " WHERE codigo_compra LIKE CONCAT('%',?,'%')")) {
             preparedStatement.setString(1, busqueda);
-            preparedStatement.setString(2, busqueda);
-            preparedStatement.setString(3, busqueda);
 
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
@@ -268,7 +279,7 @@ public class ListaEmpleados extends JFrame {
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
         }
 
         int totalPageCount = (int) Math.ceil((double) count / 20); // Divide el total de elementos por 20 para obtener la cantidad de páginas completas
@@ -277,8 +288,8 @@ public class ListaEmpleados extends JFrame {
     }
 
     public static void main(String[] args) {
-        ListaEmpleados listaEmpleados = new ListaEmpleados();
-        listaEmpleados.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        listaEmpleados.setVisible(true);
+        ListaCompras listaCompras = new ListaCompras();
+        listaCompras.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        listaCompras.setVisible(true);
     }
 }

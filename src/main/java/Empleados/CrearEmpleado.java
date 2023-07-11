@@ -42,7 +42,7 @@ public class CrearEmpleado extends JFrame {
     private JLabel lbl4;
     private JLabel lbl5;
     private JLabel lbl6;
-    private JLabel lbl17;
+    private JLabel lbl7;
     private JLabel lbl8;
     private JLabel lbl9;
     private JLabel lbl10;
@@ -73,7 +73,7 @@ public class CrearEmpleado extends JFrame {
 
     public CrearEmpleado() {
         super("Crear Empleados");
-        setSize(600, 570);
+        setSize(600, 600);
         setLocationRelativeTo(null);
         setContentPane(panel1);
         sql = new Conexion();
@@ -374,7 +374,7 @@ public class CrearEmpleado extends JFrame {
         lbl4.setForeground(textColor);
         lbl5.setForeground(textColor);
         lbl6.setForeground(textColor);
-        lbl17.setForeground(textColor);
+        lbl7.setForeground(textColor);
         lbl8.setForeground(textColor);
         lbl9.setForeground(textColor);
         lbl10.setForeground(textColor);
@@ -387,6 +387,14 @@ public class CrearEmpleado extends JFrame {
         // Establecer los iconos en los botones
         cancelarButton.setIcon(cancelIcon);
         guardarButton.setIcon(saveIcon);
+
+        // Crea un margen de 15 píxeles desde el borde inferior
+        EmptyBorder marginTitulo = new EmptyBorder(15, 0, 15, 0);
+        lbl0.setBorder(marginTitulo);
+
+        // Crear una fuente con un tamaño de 18 puntos
+        Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
+        lbl0.setFont(fontTitulo);
 
         // Boton cancelar
         cancelarButton.addActionListener(new ActionListener() {
@@ -682,7 +690,7 @@ public class CrearEmpleado extends JFrame {
 
         // Mensaje personalizado
         System.out.println("Empleado " + nombreCompleto + " ha sido registrado exitosamente.");
-        JOptionPane.showMessageDialog(null, "Cliente " + nombreCompleto + " ha sido registrado exitosamente.", "Éxito", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(null, "Empleado " + nombreCompleto + " ha sido registrado exitosamente.", "Éxito", JOptionPane.DEFAULT_OPTION);
 
 
     }

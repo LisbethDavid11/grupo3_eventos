@@ -1,10 +1,8 @@
 package Empleados;
-
-import Objetos.Cliente;
 import Objetos.Conexion;
 import Objetos.Empleado;
-
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.MaskFormatter;
 import java.awt.*;
@@ -76,7 +74,7 @@ public class EditarEmpleado extends JFrame {
 
     public EditarEmpleado(int id) {
         super("");
-        setSize(800, 550);
+        setSize(600, 600);
         setLocationRelativeTo(null);
         setContentPane(panel1);
         sql = new Conexion();
@@ -319,18 +317,59 @@ public class EditarEmpleado extends JFrame {
             }
         });
 
-        cancelarButton.setBackground(darkColor);
-        cancelarButton.setForeground(textColor);
-        guardarButton.setBackground(darkColor);
-        guardarButton.setForeground(textColor);
+        // Color de fondo del panel
+        panel1.setBackground(Color.decode("#F5F5F5"));
 
-        temporalRadioButton.setBackground(lightColor);
+        // Color de texto para los JTextField
+        Color textColor = Color.decode("#212121");
+
+        // Cargar los iconos en blanco
+        ImageIcon cancelIcon = new ImageIcon("cancel_icon_white.png");
+        ImageIcon saveIcon = new ImageIcon("save_icon_white.png");
+        ImageIcon updateIcon = new ImageIcon("update_icon_white.png");
+
+        // Colores para el botón "Cyan"
+        Color primaryColorCyan = new Color(0, 188, 212); // Cyan primario
+        Color lightColorCyan = new Color(77, 208, 225); // Cyan claro
+        Color darkColorCyan = new Color(0, 151, 167); // Cyan oscuro
+
+        // Colores para el botón "Aqua"
+        Color primaryColorAqua = new Color(0, 150, 136); // Aqua primario
+        Color lightColorAqua = new Color(77, 182, 172); // Aqua claro
+        Color darkColorAqua = new Color(0, 121, 107); // Aqua oscuro
+
+        // Colores para el botón "Rosado"
+        Color primaryColorRosado = new Color(233, 30, 99); // Rosado primario
+        Color lightColorRosado = new Color(240, 98, 146); // Rosado claro
+        Color darkColorRosado = new Color(194, 24, 91); // Rosado oscuro
+
+        // Crea un margen de 10 píxeles desde el borde inferior
+        EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
+
+        // Color de texto para el JTextArea
+        campoDireccion.setForeground(textColor);
+        // Color de texto de los botones
+        cancelarButton.setForeground(Color.WHITE);
+        guardarButton.setForeground(Color.WHITE);
+
+        // Color de fondo de los botones
+        cancelarButton.setBackground(darkColorCyan);
+        guardarButton.setBackground(darkColorAqua);
+
+        cancelarButton.setFocusPainted(false);
+        guardarButton.setFocusPainted(false);
+
+        // Aplica el margen al botón
+        cancelarButton.setBorder(margin);
+        guardarButton.setBorder(margin);
+
+        temporalRadioButton.setBackground(Color.decode("#F5F5F5"));
         temporalRadioButton.setForeground(textColor);
-        permanenteRadioButton.setBackground(lightColor);
+        permanenteRadioButton.setBackground(Color.decode("#F5F5F5"));
         permanenteRadioButton.setForeground(textColor);
-        femeninoRadioButton.setBackground(lightColor);
+        femeninoRadioButton.setBackground(Color.decode("#F5F5F5"));
         femeninoRadioButton.setForeground(textColor);
-        masculinoRadioButton.setBackground(lightColor);
+        masculinoRadioButton.setBackground(Color.decode("#F5F5F5"));
         masculinoRadioButton.setForeground(textColor);
 
         lbl0.setForeground(textColor);
@@ -345,25 +384,22 @@ public class EditarEmpleado extends JFrame {
         lbl9.setForeground(textColor);
         lbl10.setForeground(textColor);
         lbl11.setForeground(textColor);
-        lbl12.setForeground(textColor);
-        lbl13.setForeground(textColor);
+        lbl12.setForeground(darkColorCyan);
+        lbl13.setForeground(darkColorCyan);
 
-        // Cargar los iconos en blanco
-        ImageIcon cancelIcon = new ImageIcon("cancel_icon_white.png");
-        ImageIcon saveIcon = new ImageIcon("save_icon_white.png");
-        ImageIcon updateIcon = new ImageIcon("update_icon_white.png");
+        campoDireccion.setBackground(new Color(215, 215, 215));
 
         // Establecer los iconos en los botones
         cancelarButton.setIcon(cancelIcon);
         guardarButton.setIcon(saveIcon);
 
-        // Establecer el color de texto en blanco para los botones
-        cancelarButton.setForeground(textColor);
-        guardarButton.setForeground(textColor);
+        // Crea un margen de 15 píxeles desde el borde inferior
+        EmptyBorder marginTitulo = new EmptyBorder(15, 0, 15, 0);
+        lbl0.setBorder(marginTitulo);
 
-        // Establecer el fondo oscuro para los botones
-        cancelarButton.setBackground(darkColor);
-        guardarButton.setBackground(darkColor);
+        // Crear una fuente con un tamaño de 18 puntos
+        Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
+        lbl0.setFont(fontTitulo);
 
         // Boton cancelar
         cancelarButton.addActionListener(new ActionListener() {
@@ -383,14 +419,17 @@ public class EditarEmpleado extends JFrame {
                     int validacion = 0;
                     String mensaje = "Faltó ingresar: \n";
 
-                    // Verificar si ya existe un empleado con la misma identidad
-                    if (validarIdentidadExistente(campoIdentidad.getText().trim())) {
+                    // Asume que tienes el ID del empleado disponible como una variable llamada empleadoId
+                    Integer empleadoId = id; // Utiliza la variable id de la clase
+
+                    // Verificar si ya existe un empleado con la misma identidad (ignorando el empleado actual)
+                    if (validarIdentidadExistente(campoIdentidad.getText().trim(), empleadoId)) {
                         JOptionPane.showMessageDialog(null, "La identidad ingresada ya está asociada a otro empleado", "Validación", JOptionPane.ERROR_MESSAGE);
                         return; // Detener la ejecución del método
                     }
 
-                    // Verificar si ya existe un empleado con el mismo teléfono
-                    if (validarTelefonoExistente(campoTelefono.getText().trim())) {
+                    // Verificar si ya existe un empleado con el mismo teléfono (ignorando el empleado actual)
+                    if (validarTelefonoExistente(campoTelefono.getText().trim(), empleadoId)) {
                         JOptionPane.showMessageDialog(null, "El teléfono ingresado ya está asociado a otro empleado", "Validación", JOptionPane.ERROR_MESSAGE);
                         return; // Detener la ejecución del método
                     }
@@ -613,30 +652,21 @@ public class EditarEmpleado extends JFrame {
         });
     }
 
-
-    // Método para validar si el teléfono ya está asociado a un empleado en la base de datos
-    private boolean validarTelefonoExistente(String telefono) {
+    private boolean validarTelefonoExistente(String telefono, Integer empleadoId) {
         try {
-            // Crear la conexión a la base de datos (usando el objeto 'mysql' y 'sql' definidos en la clase)
             mysql = sql.conectamysql();
-
-            // Preparar la consulta SQL
-            String query = "SELECT COUNT(*) FROM empleados WHERE Telefono = ?";
+            String query = "SELECT COUNT(*) FROM empleados WHERE telefono = ? AND id != ?";
             PreparedStatement statement = mysql.prepareStatement(query);
             statement.setString(1, telefono);
-
-            // Ejecutar la consulta
+            statement.setInt(2, empleadoId);
             ResultSet resultSet = statement.executeQuery();
-
-            // Obtener el resultado
             if (resultSet.next()) {
                 int count = resultSet.getInt(1);
-                return count > 0; // Retorna true si el conteo es mayor que cero (existe al menos un empleado con ese teléfono)
+                return count > 0;
             }
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            // Cerrar la conexión a la base de datos
             if (mysql != null) {
                 try {
                     mysql.close();
@@ -645,32 +675,27 @@ public class EditarEmpleado extends JFrame {
                 }
             }
         }
-        return false; // En caso de error, se asume que no existe un empleado con ese teléfono
+        return false;
     }
 
-    // Método para validar si la identidad ya está asociada a un empleado en la base de datos
-    private boolean validarIdentidadExistente(String identidad) {
+    private boolean validarIdentidadExistente(String identidad, Integer empleadoId) {
         try {
-            // Crear la conexión a la base de datos (usando el objeto 'mysql' y 'sql' definidos en la clase)
             mysql = sql.conectamysql();
 
-            // Preparar la consulta SQL
-            String query = "SELECT COUNT(*) FROM empleados WHERE Identidad = ?";
+            String query = "SELECT COUNT(*) FROM empleados WHERE Identidad = ? AND id != ?";
             PreparedStatement statement = mysql.prepareStatement(query);
             statement.setString(1, identidad);
+            statement.setInt(2, empleadoId);
 
-            // Ejecutar la consulta
             ResultSet resultSet = statement.executeQuery();
 
-            // Obtener el resultado
             if (resultSet.next()) {
                 int count = resultSet.getInt(1);
-                return count > 0; // Retorna true si el conteo es mayor que cero (existe al menos un empleado con esa identidad)
+                return count > 0;
             }
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            // Cerrar la conexión a la base de datos
             if (mysql != null) {
                 try {
                     mysql.close();
@@ -679,8 +704,7 @@ public class EditarEmpleado extends JFrame {
                 }
             }
         }
-
-        return false; // En caso de error, se asume que no existe un empleado con esa identidad
+        return false;
     }
 
     private void mostrar() {
@@ -804,7 +828,6 @@ public class EditarEmpleado extends JFrame {
             }
         }
 
-        // Abrir la ventana ListaCliente solo si no está abierta
         if (!listaEmpleadoAbierta) {
             ListaEmpleados empleados = new ListaEmpleados();
             empleados.setVisible(true);
@@ -817,9 +840,7 @@ public class EditarEmpleado extends JFrame {
 
         // Mensaje personalizado
         System.out.println("Empleado " + nombreCompleto + " ha sido actualizado exitosamente.");
-        JOptionPane.showMessageDialog(null, "Empleado " + nombreCompleto + " ha sido actualizado exitosamente.", "Éxito", JOptionPane.ERROR_MESSAGE);
-
-
+        JOptionPane.showMessageDialog(null, "Empleado " + nombreCompleto + " ha sido actualizado exitosamente.", "Éxito", JOptionPane.DEFAULT_OPTION);
     }
 
     private void createUIComponents() {
