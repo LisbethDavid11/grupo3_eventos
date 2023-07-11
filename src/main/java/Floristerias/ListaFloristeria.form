@@ -30,6 +30,7 @@
         <properties>
           <background color="-532740"/>
           <font name="Arial" size="12" style="1"/>
+          <icon value="IconosBotones/Verr.png"/>
           <text value="Ver"/>
         </properties>
       </component>
@@ -40,6 +41,7 @@
         <properties>
           <background color="-532740"/>
           <font name="Arial" size="12" style="1"/>
+          <icon value="IconosBotones/editarP.png"/>
           <text value="Editar"/>
         </properties>
       </component>
@@ -50,6 +52,7 @@
         <properties>
           <background color="-532740"/>
           <font name="Arial" size="12" style="1"/>
+          <icon value="IconosBotones/crearr.png"/>
           <text value="Crear"/>
         </properties>
       </component>
