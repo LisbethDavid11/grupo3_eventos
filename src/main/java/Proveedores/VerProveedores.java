@@ -34,8 +34,8 @@ public class VerProveedores extends JFrame {
     private int id;
 
     public VerProveedores(int id){
-        super("");
-        setSize(550,400);
+        super("Ver proveedor");
+        setSize(600,400);
         setLocationRelativeTo(null);
         setContentPane(panel1);
 
