@@ -314,7 +314,6 @@ public class EditarProveedores extends JFrame {
         campoDireccion.setBackground(new Color(215, 215, 215));
         campoDescripcion.setBackground(new Color(215, 215, 215));
 
-
         // Crea un margen de 15 píxeles desde el borde inferior
         EmptyBorder marginTitulo = new EmptyBorder(15, 0, 15, 0);
         lbl0.setBorder(marginTitulo);
@@ -322,6 +321,10 @@ public class EditarProveedores extends JFrame {
         // Crear una fuente con un tamaño de 18 puntos
         Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
         lbl0.setFont(fontTitulo);
+
+        // Crea un margen de 15 píxeles desde el borde inferior
+        EmptyBorder marginRTN = new EmptyBorder(10, 0, 10, 0);
+        campoRTN.setBorder(marginRTN);
 
         try{
             MaskFormatter rtn = new MaskFormatter("####-####-######");

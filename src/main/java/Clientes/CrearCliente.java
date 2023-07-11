@@ -273,6 +273,10 @@ public class CrearCliente extends JFrame{
         Font fontTitulo = new Font(label1.getFont().getName(), label1.getFont().getStyle(), 18);
         label1.setFont(fontTitulo);
 
+        // Crea un margen de 15 píxeles desde el borde inferior
+        EmptyBorder marginDNI = new EmptyBorder(10, 0, 10, 0);
+        campoIdentidad.setBorder(marginDNI);
+
         try {
             MaskFormatter dni = new MaskFormatter("####-####-#####");
             campoIdentidad.setFormatterFactory(new DefaultFormatterFactory(dni));

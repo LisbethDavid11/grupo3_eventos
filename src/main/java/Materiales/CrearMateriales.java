@@ -94,6 +94,7 @@ public class CrearMateriales extends JFrame {
         lbl1.setForeground(textColor);
         lbl2.setForeground(textColor);
         lbl3.setForeground(textColor);
+        lbl4.setForeground(textColor);
 
         // Establecer los iconos en los botones
         botonCancelar.setIcon(cancelIcon);

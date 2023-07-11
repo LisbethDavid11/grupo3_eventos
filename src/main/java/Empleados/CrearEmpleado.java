@@ -73,7 +73,7 @@ public class CrearEmpleado extends JFrame {
 
     public CrearEmpleado() {
         super("Crear Empleados");
-        setSize(600, 600);
+        setSize(600, 620);
         setLocationRelativeTo(null);
         setContentPane(panel1);
         sql = new Conexion();
@@ -395,6 +395,10 @@ public class CrearEmpleado extends JFrame {
         // Crear una fuente con un tamaño de 18 puntos
         Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
         lbl0.setFont(fontTitulo);
+
+        // Crea un margen de 15 píxeles desde el borde inferior
+        EmptyBorder marginDNI = new EmptyBorder(10, 0, 10, 0);
+        campoIdentidad.setBorder(marginDNI);
 
         // Boton cancelar
         cancelarButton.addActionListener(new ActionListener() {

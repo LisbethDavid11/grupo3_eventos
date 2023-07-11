@@ -326,6 +326,10 @@ public class CrearProveedor extends JFrame {
         Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
         lbl0.setFont(fontTitulo);
 
+        // Crea un margen de 15 píxeles desde el borde inferior
+        EmptyBorder marginRTN = new EmptyBorder(10, 0, 10, 0);
+        campoRTN.setBorder(marginRTN);
+
         // Boton cancelar
         cancelarButton.addActionListener(new ActionListener() {
             @Override
