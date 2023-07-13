@@ -103,10 +103,6 @@ public class CrearArreglo extends JFrame {
         lbl2.setForeground(textColor);
         lbl3.setForeground(textColor);
 
-        // Establecer los iconos en los botones
-        botonCancelar.setIcon(cancelIcon);
-        botonGuardar.setIcon(saveIcon);
-        botonCargarImagen.setIcon(updateIcon);
 
         // Crear una fuente con un tamaño de 18 puntos
         Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
