@@ -1,5 +1,7 @@
 package Floristerias;
+
 import Objetos.Conexion;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -10,32 +12,29 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Random;
 
 public class CrearFloristeria extends JFrame {
-    private JTextField campoNombre;
-    private JTextField campoPrecio;
+    private JTextField campoNombre, campoPrecio;
     private JComboBox<String> comboBoxProveedor;
-    private JButton botonGuardar;
-    private JButton botonCancelar;
+    private JButton botonGuardar, botonCancelar, botonCargarImagen;
     private JPanel panel;
-    private JLabel imagenLabel;
-    private JButton botonCargarImagen;
-    private JLabel lbl1;
-    private JLabel lbl2;
-    private JLabel lbl3;
-    private JLabel lbl0;
+    private JLabel imagenLabel, lbl1, lbl2, lbl3, lbl0;
     private String imagePath = "";
     private CrearFloristeria actual = this;
     private Conexion sql;
 
     public CrearFloristeria() {
         super("");
-        setSize(500, 550);
+        setSize(500, 600);
         setLocationRelativeTo(null);
         setContentPane(panel);
 
@@ -72,7 +71,6 @@ public class CrearFloristeria extends JFrame {
         // Crea un margen de 10 píxeles desde el borde inferior
         EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
 
-
         // Color de texto de los botones
         botonCancelar.setForeground(Color.WHITE);
         botonGuardar.setForeground(Color.WHITE);
@@ -81,7 +79,7 @@ public class CrearFloristeria extends JFrame {
         // Color de fondo de los botones
         botonCancelar.setBackground(darkColorCyan);
         botonGuardar.setBackground(darkColorAqua);
-        botonCargarImagen.setBackground(darkColorRosado);
+        botonCargarImagen.setBackground(primaryColorRosado);
 
         botonCancelar.setFocusPainted(false);
         botonGuardar.setFocusPainted(false);
@@ -96,9 +94,6 @@ public class CrearFloristeria extends JFrame {
         lbl1.setForeground(textColor);
         lbl2.setForeground(textColor);
         lbl3.setForeground(textColor);
-
-        // Establecer los iconos en los botones
-        botonCargarImagen.setIcon(updateIcon);
 
         // Crear una fuente con un tamaño de 18 puntos
         Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
@@ -183,8 +178,6 @@ public class CrearFloristeria extends JFrame {
             }
         });
 
-
-
         botonCancelar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -200,7 +193,6 @@ public class CrearFloristeria extends JFrame {
                 int validacion = 0;
                 String mensaje = "Faltó ingresar: \n";
 
-
                 if (campoNombre.getText().trim().isEmpty()) {
                     validacion++;
                     mensaje += "Nombres\n";
@@ -215,11 +207,6 @@ public class CrearFloristeria extends JFrame {
                 if (proveedorText.equals("Seleccione un proveedor")) {
                     validacion++;
                     mensaje += "Proveedor\n";
-                }
-
-                if (imagePath.isEmpty()) {
-                    validacion++;
-                    mensaje += "Imagen\n";
                 }
 
                 if (validacion > 0) {
@@ -242,7 +229,6 @@ public class CrearFloristeria extends JFrame {
                     JOptionPane.showMessageDialog(null, "El campo de nombre no puede estar vacío.", "Validación", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-
 
                 String precioText = campoPrecio.getText().trim();
                 if (precioText.isEmpty()) {
@@ -267,34 +253,20 @@ public class CrearFloristeria extends JFrame {
                     return;
                 }
 
-                if (imagePath.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Faltó cargar la imagen.", "Validación", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
                 guardarFloristeria();
             }
         });
-
 
         botonCargarImagen.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JFileChooser fileChooser = new JFileChooser();
-                int returnValue = fileChooser.showOpenDialog(null);
-                if (returnValue == JFileChooser.APPROVE_OPTION) {
-                    File selectedFile = fileChooser.getSelectedFile();
-                    imagePath = "src/main/resources/img/floristeria/" + selectedFile.getName();
-                    ImageIcon imageIcon = new ImageIcon(selectedFile.getAbsolutePath());
-                    Image image = imageIcon.getImage();
-                    Image resizedImage = image.getScaledInstance(200, 200, Image.SCALE_SMOOTH);
-                    imageIcon = new ImageIcon(resizedImage);
-                    imagenLabel.setIcon(imageIcon);
-
-                    try {
-                        Files.copy(selectedFile.toPath(), new File(imagePath).toPath(), StandardCopyOption.REPLACE_EXISTING);
-                    } catch (IOException ioException) {
-                        ioException.printStackTrace();
-                    }
+                int seleccion = fileChooser.showOpenDialog(actual);
+                if (seleccion == JFileChooser.APPROVE_OPTION) {
+                    File file = fileChooser.getSelectedFile();
+                    imagePath = file.getAbsolutePath();
+                    ImageIcon icon = new ImageIcon(imagePath);
+                    imagenLabel.setIcon(icon);
                 }
             }
         });
@@ -326,12 +298,31 @@ public class CrearFloristeria extends JFrame {
 
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO floristeria (imagen, nombre, precio, proveedor_id) VALUES (?, ?, ?, ?)")) {
-            preparedStatement.setString(1, imagePath);
+
+            // Generar el nombre de la imagen
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH-mm-ss");
+            String fechaActual = dateFormat.format(new Date());
+            String nombreImagen = "imagen " + fechaActual + " " + generarNumeroAleatorio(0, 9999);
+
+            // Guardar la imagen en la carpeta
+            String rutaImagen = nombreImagen + obtenerExtensionImagen(imagePath);
+            File destino = new File("img/floristeria/" + rutaImagen);
+
+            try {
+                // Copiar el archivo seleccionado a la ubicación destino
+                Path origenPath = Path.of(imagePath);
+                Files.copy(origenPath, destino.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error al guardar la imagen", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            preparedStatement.setString(1, rutaImagen);
             preparedStatement.setString(2, nombre);
             preparedStatement.setDouble(3, precio);
             preparedStatement.setInt(4, idProveedor);
             preparedStatement.executeUpdate();
-
 
             JOptionPane.showMessageDialog(null, "Floristería creada exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
 
@@ -339,9 +330,37 @@ public class CrearFloristeria extends JFrame {
             ListaFloristeria listaFloristeria = new ListaFloristeria();
             listaFloristeria.setVisible(true);
             actual.dispose();
+
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error al guardar la floristería", "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private String obtenerExtensionImagen(String imagePath) {
+        int extensionIndex = imagePath.lastIndexOf(".");
+        if (extensionIndex != -1) {
+            return imagePath.substring(extensionIndex);
+        }
+        return "";
+    }
+
+    private String generarNumeroAleatorio(int min, int max) {
+        Random random = new Random();
+        int numeroAleatorio = random.nextInt(max - min + 1) + min;
+        return String.format("%04d", numeroAleatorio);
+    }
+
+    public static void main(String[] args) {
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                try {
+                    CrearFloristeria frame = new CrearFloristeria();
+                    frame.setVisible(true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 }

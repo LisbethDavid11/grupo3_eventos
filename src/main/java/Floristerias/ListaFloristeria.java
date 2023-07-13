@@ -38,7 +38,7 @@ public class ListaFloristeria extends JFrame {
 
     public ListaFloristeria() {
         super("");
-        setSize(850, 490);
+        setSize(850, 500);
         setLocationRelativeTo(null);
         setContentPane(panelPrincipal);
         campoBusqueda.setText("");
@@ -97,6 +97,19 @@ public class ListaFloristeria extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 CrearFloristeria floristeria = new CrearFloristeria();
+                floristeria.setVisible(true);
+                actual.dispose();
+            }
+        });
+
+        botonVer.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (listaFloristerias.getSelectedRow() == -1) {
+                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                VerFloristeria floristeria = new VerFloristeria(listaFloristeria.get(listaFloristerias.getSelectedRow()).getId());
                 floristeria.setVisible(true);
                 actual.dispose();
             }
