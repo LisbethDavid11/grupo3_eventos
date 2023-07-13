@@ -98,8 +98,6 @@ public class CrearFloristeria extends JFrame {
         lbl3.setForeground(textColor);
 
         // Establecer los iconos en los botones
-        botonCancelar.setIcon(cancelIcon);
-        botonGuardar.setIcon(saveIcon);
         botonCargarImagen.setIcon(updateIcon);
 
         // Crear una fuente con un tamaño de 18 puntos

@@ -96,9 +96,6 @@ public class CrearMateriales extends JFrame {
         lbl3.setForeground(textColor);
         lbl4.setForeground(textColor);
 
-        // Establecer los iconos en los botones
-        botonCancelar.setIcon(cancelIcon);
-        botonGuardar.setIcon(saveIcon);
 
         // Crea un margen de 15 píxeles desde el borde inferior
         EmptyBorder marginTitulo = new EmptyBorder(15, 0, 15, 0);
