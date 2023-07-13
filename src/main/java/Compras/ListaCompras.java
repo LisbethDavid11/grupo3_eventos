@@ -1,8 +1,8 @@
 package Compras;
 import Modelos.ModeloCompras;
+import Modelos.ModeloDetallesCompras;
 import Objetos.Compra;
 import Objetos.Conexion;
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -11,13 +11,27 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
+import Objetos.DetalleCompra;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 public class ListaCompras extends JFrame {
     private JPanel panelPrincipal;
     private JButton botonVer;
@@ -101,17 +115,6 @@ public class ListaCompras extends JFrame {
         Color lightColor = Color.decode("#cfd8dc"); // Gris azul claro
         Color darkColor = Color.decode("#263238"); // Gris azul más oscuro
 
-        /*
-        botonCrear.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                CrarFactura factura = new CrearFactura();
-                factura.setVisible(true);
-                actual.dispose();
-            }
-        });
-        */
-
         botonVer.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 botonVer.setBackground(lightColor);
@@ -152,21 +155,6 @@ public class ListaCompras extends JFrame {
             }
         });
 
-        /*
-        botonVer.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (listaFacturas.getSelectedRow() == -1) {
-                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar", "Validación", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-                VerFactura factura = new VerFactura(listaFactura.get(listaFacturas.getSelectedRow()).getId());
-                factura.setVisible(true);
-                actual.dispose();
-            }
-        });
-         */
-
         botonEditar.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 botonEditar.setBackground(lightColor);
@@ -177,21 +165,16 @@ public class ListaCompras extends JFrame {
             }
         });
 
-        /*
-        botonEditar.addActionListener(new ActionListener() {
+        botonImprimir.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (listaFacturas.getSelectedRow() == -1) {
-                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar", "Validación", JOptionPane.ERROR_MESSAGE);
-                    return;
+                int filaSeleccionada = listaCompras.getSelectedRow();
+                if (filaSeleccionada >= 0) {
+                    int indiceItemSeleccionado = listaCompras.convertRowIndexToModel(filaSeleccionada);
+                    imprimirFactura(indiceItemSeleccionado);
                 }
-                EditarFactura factura = new EditarFactura(listaFactura.get(listaFacturas.getSelectedRow()).getId());
-                factura.setVisible(true);
-                actual.dispose();
             }
         });
-        */
-
 
         // Color de fondo
         panelPrincipal.setBackground(primaryColor);
@@ -222,27 +205,21 @@ public class ListaCompras extends JFrame {
         placeholder.setForeground(Color.LIGHT_GRAY);
         placeholder.setFont(new Font("Nunito", Font.ITALIC, 11));
     }
-
     private void centrarDatosTabla() {
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-
         for (int i = 0; i < listaCompras.getColumnCount(); i++) {
             listaCompras.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
     }
-
     private ModeloCompras cargarDatos() {
         sql = new Conexion();
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement("SELECT c.*, p.empresaProveedora, CONCAT(e.Nombres, ' ', e.Apellidos) AS empleadoNombre FROM compras c JOIN proveedores p ON c.proveedor_id = p.id JOIN empleados e ON c.empleado_id = e.id WHERE c.codigo_compra LIKE CONCAT('%', ?, '%') LIMIT ?, 20")) {
-
             preparedStatement.setString(1, busqueda);
             preparedStatement.setInt(2, pagina * 20);
-
             ResultSet resultSet = preparedStatement.executeQuery();
             compraList = new ArrayList<>();
-
             while (resultSet.next()) {
                 Compra compra = new Compra();
                 compra.setId(resultSet.getInt("id"));
@@ -252,18 +229,15 @@ public class ListaCompras extends JFrame {
                 compra.setEmpleadoId(resultSet.getInt("empleado_id"));
                 compraList.add(compra);
             }
-
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
             compraList = new ArrayList<>();
         }
-
         if (listaCompras.getColumnCount() > 0) {
             TableColumn columnId = listaCompras.getColumnModel().getColumn(0);
             columnId.setPreferredWidth(50);
         }
-
         return new ModeloCompras(compraList, sql);
     }
 
@@ -272,19 +246,258 @@ public class ListaCompras extends JFrame {
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement("SELECT COUNT(*) AS total FROM " + Compra.nombreTabla + " WHERE codigo_compra LIKE CONCAT('%',?,'%')")) {
             preparedStatement.setString(1, busqueda);
-
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                count = resultSet.getInt("total"); // Obtiene el total de elementos
+                count = resultSet.getInt("total");
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
         }
+        int totalPageCount = (int) Math.ceil((double) count / 20);
+        return totalPageCount;
+    }
 
-        int totalPageCount = (int) Math.ceil((double) count / 20); // Divide el total de elementos por 20 para obtener la cantidad de páginas completas
+    public void imprimirFactura(int indiceItem) {
+        try {
+            // Obtener la compra asociada al ítem seleccionado
+            Compra compra = compraList.get(indiceItem);
 
-        return totalPageCount; // Retorna el total de páginas necesarias
+            // Crear un nuevo documento
+            PDDocument doc = new PDDocument();
+            PDPage page = new PDPage(PDRectangle.LETTER);
+            doc.addPage(page);
+
+            PDPageContentStream contentStream = new PDPageContentStream(doc, page);
+
+            // Establecer el tipo de letra y el tamaño para el encabezado
+            contentStream.setFont(PDType1Font.HELVETICA_BOLD, 16);
+            contentStream.setLeading(14.5f);
+
+            // Agregar encabezado
+            contentStream.beginText();
+            contentStream.newLineAtOffset(50, 750);
+            contentStream.showText("EMPRESA XYZ");
+            contentStream.setFont(PDType1Font.HELVETICA, 12);
+            contentStream.newLine();
+            contentStream.showText("Dirección de la empresa");
+            contentStream.newLine();
+            contentStream.showText("Teléfono: 1234567890");
+            contentStream.newLine();
+            contentStream.showText("Fecha: " + new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
+            contentStream.endText();
+
+            // Establecer el tipo de letra y el tamaño para el cuerpo
+            contentStream.setFont(PDType1Font.HELVETICA, 12);
+
+            // Calcular el ancho de las columnas
+            float[] columnWidths = {30, 200, 60, 80, 80};
+            float tableHeight = 600;
+            float tableWidth = page.getMediaBox().getWidth() - 100;
+            float yStart = 650;
+            float yPosition = yStart;
+            int rowsPerPage = 20;
+            int pageNumber = 1;
+            int rowNumber = 0;
+
+            // Agregar títulos de las columnas
+            contentStream.beginText();
+            contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
+            contentStream.newLineAtOffset(50, yPosition);
+            contentStream.showText("N°");
+            contentStream.newLineAtOffset(columnWidths[0], 0);
+            contentStream.showText("Material");
+            contentStream.newLineAtOffset(columnWidths[1], 0);
+            contentStream.showText("Cantidad");
+            contentStream.newLineAtOffset(columnWidths[2], 0);
+            contentStream.showText("Precio");
+            contentStream.newLineAtOffset(columnWidths[3], 0);
+            contentStream.showText("Total");
+            contentStream.endText();
+
+            // Agregar línea por línea
+            Conexion sql = new Conexion();
+            ModeloDetallesCompras mdc = new ModeloDetallesCompras(new ArrayList<>(), sql);
+            double subTotal = 0.0;
+            List<DetalleCompra> detalles = mdc.getDetallesPorCompra(compra.getId());
+            for (DetalleCompra detalle : detalles) {
+                if (rowNumber == rowsPerPage) {
+                    contentStream.endText();
+                    contentStream.close();
+                    page = new PDPage(PDRectangle.LETTER);
+                    doc.addPage(page);
+                    contentStream = new PDPageContentStream(doc, page);
+                    contentStream.setFont(PDType1Font.HELVETICA, 12);
+                    contentStream.beginText();
+                    contentStream.newLineAtOffset(50, yStart);
+                    yPosition = yStart;
+                    pageNumber++;
+                    rowNumber = 0;
+                    contentStream.showText("N°");
+                    contentStream.newLineAtOffset(columnWidths[0], 0);
+                    contentStream.showText("Material");
+                    contentStream.newLineAtOffset(columnWidths[1], 0);
+                    contentStream.showText("Cantidad");
+                    contentStream.newLineAtOffset(columnWidths[2], 0);
+                    contentStream.showText("Precio");
+                    contentStream.newLineAtOffset(columnWidths[3], 0);
+                    contentStream.showText("Total");
+                    contentStream.endText();
+                }
+
+                yPosition -= 20;
+                contentStream.beginText();
+                contentStream.setFont(PDType1Font.HELVETICA, 12);
+                contentStream.newLineAtOffset(50, yPosition);
+                contentStream.showText(String.valueOf(rowNumber + 1));
+                contentStream.newLineAtOffset(columnWidths[0], 0);
+                contentStream.showText(obtenerNombreMaterial(detalle.getMaterialId(), sql));
+                contentStream.newLineAtOffset(columnWidths[1], 0);
+                contentStream.showText(String.valueOf(detalle.getCantidad()));
+                contentStream.newLineAtOffset(columnWidths[2], 0);
+                contentStream.showText(String.format("L. %.2f", detalle.getPrecio()));
+                contentStream.newLineAtOffset(columnWidths[3], 0);
+                contentStream.showText(String.format("L. %.2f", detalle.getCantidad() * detalle.getPrecio()));
+                contentStream.endText();
+
+                subTotal += detalle.getCantidad() * detalle.getPrecio();
+
+                rowNumber++;
+            }
+
+            // Calcular el ISV y el total
+            double isv = subTotal * 0.15;
+            double total = subTotal + isv;
+
+            // Agregar línea de separación
+            contentStream.setLineWidth(1f);
+            contentStream.moveTo(50, yPosition - 10);
+            contentStream.lineTo(tableWidth, yPosition - 10);
+            contentStream.stroke();
+
+            // Agregar pie de página
+            contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
+            contentStream.beginText();
+            contentStream.newLineAtOffset(tableWidth - 200, yPosition - 30);
+            contentStream.showText("Subtotal:");
+            contentStream.endText();
+            contentStream.beginText();
+            contentStream.setFont(PDType1Font.HELVETICA, 12);
+            contentStream.newLineAtOffset(tableWidth - 80, yPosition - 30);
+            contentStream.showText("L. " + String.format("%.2f", subTotal));
+            contentStream.endText();
+
+            contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
+            contentStream.beginText();
+            contentStream.newLineAtOffset(tableWidth - 200, yPosition - 50);
+            contentStream.showText("ISV (15%):");
+            contentStream.endText();
+            contentStream.beginText();
+            contentStream.setFont(PDType1Font.HELVETICA, 12);
+            contentStream.newLineAtOffset(tableWidth - 80, yPosition - 50);
+            contentStream.showText("L. " + String.format("%.2f", isv));
+            contentStream.endText();
+
+            contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
+            contentStream.beginText();
+            contentStream.newLineAtOffset(tableWidth - 200, yPosition - 70);
+            contentStream.showText("Total:");
+            contentStream.endText();
+            contentStream.beginText();
+            contentStream.setFont(PDType1Font.HELVETICA, 12);
+            contentStream.newLineAtOffset(tableWidth - 80, yPosition - 70);
+            contentStream.showText("L. " + String.format("%.2f", total));
+            contentStream.endText();
+
+            // Cerrar el flujo de contenido y guardar el documento
+            contentStream.close();
+
+// Obtener la fecha y hora actual en el formato deseado
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy");
+            SimpleDateFormat timeFormat = new SimpleDateFormat("HH-mm-ss");
+            String fechaActual = dateFormat.format(new Date());
+            String horaActual = timeFormat.format(new Date());
+
+// Generar un número aleatorio de cuatro dígitos entre 0001 y 9999
+            Random random = new Random();
+            int numeroAleatorio = random.nextInt(9999 - 1 + 1) + 1;
+            String numeroAleatorioFormateado = String.format("%04d", numeroAleatorio);
+
+            // Generar el nombre del archivo PDF
+            String nombreArchivo = "Factura " + fechaActual + " " + horaActual + " " + numeroAleatorioFormateado + ".pdf";
+
+            // Reemplazar los caracteres no válidos en el nombre del archivo
+            nombreArchivo = nombreArchivo.replace(":", "-");
+
+            // Crear un objeto JFileChooser para permitir al usuario seleccionar dónde guardar el archivo PDF
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Seleccione dónde guardar el archivo PDF");
+
+            // Establecer el directorio actual del JFileChooser a la ruta del escritorio
+            File desktopPath = new File(System.getProperty("user.home"), "Desktop");
+            fileChooser.setCurrentDirectory(desktopPath);
+
+            // Predeterminar el nombre del archivo PDF en el diálogo de selección de archivos
+            fileChooser.setSelectedFile(new File(desktopPath, nombreArchivo));
+
+            // Mostrar el diálogo de selección de archivos
+            int userSelection = fileChooser.showSaveDialog(null);
+
+            if (userSelection == JFileChooser.APPROVE_OPTION) {
+                // Si el usuario ha seleccionado una ubicación de almacenamiento, guardar el archivo PDF allí
+                File fileToSave = fileChooser.getSelectedFile();
+                doc.save(fileToSave.getAbsolutePath());
+
+                // Mostrar un JOptionPane para informar al usuario que el archivo se ha guardado correctamente
+                JOptionPane.showMessageDialog(null, "Archivo guardado exitosamente como: " + fileToSave.getName(), "Archivo guardado", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                // Si el usuario ha cancelado el diálogo de selección de archivos, no guardar el archivo PDF
+                JOptionPane.showMessageDialog(null, "Guardado cancelado", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+            // Cerrar el documento
+            doc.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public double obtenerTotalCompra(int idCompra) {
+        double subTotal = 0.0;
+
+        // Obtener los detalles de la compra
+        Conexion sql = new Conexion();
+        ModeloDetallesCompras mdc = new ModeloDetallesCompras(new ArrayList<>(), sql);
+        List<DetalleCompra> detalles = mdc.getDetallesPorCompra(idCompra);
+
+        // Calcular el total sumando los subtotales de cada detalle
+        for (DetalleCompra detalle : detalles) {
+            subTotal += detalle.getCantidad() * detalle.getPrecio();
+        }
+
+        // Calcular el ISV
+        double isv = subTotal * 0.15;
+
+        // Calcular el total
+        double total = subTotal + isv;
+
+        return total;
+    }
+
+    public String obtenerNombreMaterial(int materialId, Conexion sql) {
+        String nombreMaterial = "";
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT nombre FROM materiales WHERE id = ?")) {
+            preparedStatement.setInt(1, materialId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                nombreMaterial = resultSet.getString("nombre");
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+        }
+        return nombreMaterial;
     }
 
     public static void main(String[] args) {
