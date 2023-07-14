@@ -165,6 +165,18 @@ public class ListaCompras extends JFrame {
             }
         });
 
+        botonCrear.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                CrearCompra crearCompra = new CrearCompra();
+                crearCompra.setVisible(true);
+                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(listaCompras); // Obtén la ventana que contiene la lista de compras
+                if (frame != null) {
+                    frame.dispose(); // Cierra la ventana
+                }
+            }
+        });
+
         botonImprimir.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
