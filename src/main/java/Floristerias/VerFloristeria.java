@@ -40,14 +40,14 @@ public class VerFloristeria extends JFrame {
         lblImagen = new JLabel();
         lblImagen.setHorizontalAlignment(JLabel.CENTER);
         lblImagen.setVerticalAlignment(JLabel.CENTER);
-        lblImagen.setPreferredSize(new Dimension(300, 300));
+        lblImagen.setMaximumSize(new Dimension(300, 300)); // Establece un tamaño máximo
 
         // Agrega la etiqueta de la imagen al panel2 con la restricción gbc
         panel2.add(lblImagen, gbc);
 
         mostrar();
 
-        // Deshabilitar la edición de los JTextField y el JTextArea
+        // Deshabilitar la edición de los JTextField
         etiquetaNombre.setEditable(false);
         etiquetaNombre.setFocusable(false);
         etiquetaPrecio.setEditable(false);
@@ -155,10 +155,13 @@ public class VerFloristeria extends JFrame {
                         Image imagenEscalada = imagenOriginal.getScaledInstance(anchoEscalado, altoEscalado, Image.SCALE_SMOOTH);
 
                         // Crea un ImageIcon a partir de la imagen escalada
-                        imagenIcono = new ImageIcon(imagenEscalada);
+                        ImageIcon imagenIconoEscalado = new ImageIcon(imagenEscalada);
 
-                        // Actualiza la etiqueta lblImagen con el ImageIcon
-                        lblImagen.setIcon(imagenIcono);
+                        // Establece el tamaño máximo para el ImageIcon
+                        imagenIconoEscalado.setImageObserver(lblImagen);
+
+                        // Actualiza la etiqueta lblImagen con el ImageIcon escalado
+                        lblImagen.setIcon(imagenIconoEscalado);
                     } else {
                         System.out.println("No se encontró la imagen: " + imagenPath);
                     }

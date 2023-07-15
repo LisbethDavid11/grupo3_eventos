@@ -1,5 +1,7 @@
 package Arreglos;
+
 import Objetos.Conexion;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -38,7 +40,7 @@ public class VerArreglo extends JFrame {
         lblImagen = new JLabel();
         lblImagen.setHorizontalAlignment(JLabel.CENTER);
         lblImagen.setVerticalAlignment(JLabel.CENTER);
-        lblImagen.setPreferredSize(new Dimension(300, 300));
+        lblImagen.setMaximumSize(new Dimension(300, 300)); // Establece un tamaño máximo
 
         // Agrega la etiqueta de la imagen al panel2 con la restricción gbc
         panel2.add(lblImagen, gbc);
@@ -168,7 +170,6 @@ public class VerArreglo extends JFrame {
             System.out.println(error.getMessage());
         }
     }
-
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {

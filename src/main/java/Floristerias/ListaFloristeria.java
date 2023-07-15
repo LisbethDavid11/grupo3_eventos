@@ -1,4 +1,5 @@
 package Floristerias;
+import Arreglos.EditarArreglo;
 import Modelos.ModeloFloristeria;
 import Objetos.Conexion;
 import Objetos.Floristeria;
@@ -110,6 +111,19 @@ public class ListaFloristeria extends JFrame {
                     return;
                 }
                 VerFloristeria floristeria = new VerFloristeria(listaFloristeria.get(listaFloristerias.getSelectedRow()).getId());
+                floristeria.setVisible(true);
+                actual.dispose();
+            }
+        });
+
+        botonEditar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (listaFloristerias.getSelectedRow() == -1) {
+                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                EditarFloristeria floristeria = new EditarFloristeria(listaFloristeria.get(listaFloristerias.getSelectedRow()).getId());
                 floristeria.setVisible(true);
                 actual.dispose();
             }
