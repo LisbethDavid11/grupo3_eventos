@@ -1,7 +1,5 @@
 package Floristerias;
-
 import Objetos.Conexion;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -26,7 +24,7 @@ public class CrearFloristeria extends JFrame {
     private JTextField campoNombre, campoPrecio;
     private JComboBox<String> comboBoxProveedor;
     private JButton botonGuardar, botonCancelar, botonCargarImagen;
-    private JPanel panel;
+    private JPanel panel, panelImg;
     private JLabel imagenLabel, lbl1, lbl2, lbl3, lbl0;
     private String imagePath = "";
     private CrearFloristeria actual = this;
@@ -39,11 +37,39 @@ public class CrearFloristeria extends JFrame {
         setContentPane(panel);
 
         sql = new Conexion();
+
+        // Establecer ancho y alto deseados para el panelImg
+        int panelImgWidth = 200;
+        int panelImgHeight = 200;
+
+        // Crear una instancia de Dimension con las dimensiones deseadas
+        Dimension panelImgSize = new Dimension(panelImgWidth, panelImgHeight);
+
+        // Establecer las dimensiones en el panelImg
+        panelImg.setPreferredSize(panelImgSize);
+        panelImg.setMaximumSize(panelImgSize);
+        panelImg.setMinimumSize(panelImgSize);
+        panelImg.setSize(panelImgSize);
+
+        // Configurar el layout del panelImg como GridBagLayout
+        panelImg.setLayout(new GridBagLayout());
+
+        // Configurar restricciones de diseño para la etiqueta de imagen
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        imagenLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        panelImg.add(imagenLabel, gbc);
+
         comboBoxProveedor.addItem("Seleccione un proveedor"); // Agregar mensaje inicial
         cargarProveedores();
 
         // Color de fondo del panel
         panel.setBackground(Color.decode("#F5F5F5"));
+        panelImg.setBackground(Color.decode("#F5F5F5"));
 
         // Color de texto para los JTextField
         Color textColor = Color.decode("#212121");
@@ -209,6 +235,11 @@ public class CrearFloristeria extends JFrame {
                     mensaje += "Proveedor\n";
                 }
 
+                if (imagePath.isEmpty()) {
+                    validacion++;
+                    mensaje += "Imagen\n";
+                }
+
                 if (validacion > 0) {
                     JOptionPane.showMessageDialog(null, mensaje, "Validación", JOptionPane.ERROR_MESSAGE);
                     return;
@@ -265,11 +296,34 @@ public class CrearFloristeria extends JFrame {
                 if (seleccion == JFileChooser.APPROVE_OPTION) {
                     File file = fileChooser.getSelectedFile();
                     imagePath = file.getAbsolutePath();
-                    ImageIcon icon = new ImageIcon(imagePath);
-                    imagenLabel.setIcon(icon);
+                    ImageIcon originalIcon = new ImageIcon(imagePath);
+
+                    // Obtener las dimensiones originales de la imagen
+                    int originalWidth = originalIcon.getIconWidth();
+                    int originalHeight = originalIcon.getIconHeight();
+
+                    // Obtener las dimensiones del JPanel
+                    int panelImgWidth = panelImg.getWidth();
+                    int panelImgHeight = panelImg.getHeight();
+
+                    // Calcular la escala para ajustar la imagen al JPanel
+                    double scale = Math.min((double) panelImgWidth / originalWidth, (double) panelImgHeight / originalHeight);
+
+                    // Calcular las nuevas dimensiones de la imagen redimensionada
+                    int scaledWidth = (int) (originalWidth * scale);
+                    int scaledHeight = (int) (originalHeight * scale);
+
+                    // Redimensionar la imagen manteniendo su proporción
+                    Image resizedImage = originalIcon.getImage().getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH);
+
+                    // Crear un nuevo ImageIcon a partir de la imagen redimensionada
+                    ImageIcon scaledIcon = new ImageIcon(resizedImage);
+
+                    imagenLabel.setIcon(scaledIcon);
                 }
             }
         });
+
     }
 
     private void cargarProveedores() {

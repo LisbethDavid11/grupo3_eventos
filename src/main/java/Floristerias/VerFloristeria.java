@@ -2,13 +2,10 @@ package Floristerias;
 
 import Objetos.Conexion;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -26,7 +23,7 @@ public class VerFloristeria extends JFrame {
 
     public VerFloristeria(int id) {
         super("");
-        setSize(550, 450);
+        setSize(550, 500);
         setLocationRelativeTo(null);
         setContentPane(panel1);
 
@@ -60,6 +57,7 @@ public class VerFloristeria extends JFrame {
 
         // Color de fondo del panel
         panel1.setBackground(Color.decode("#F5F5F5"));
+        panel2.setBackground(Color.decode("#F5F5F5"));
 
         // Color de texto para los JTextField
         Color textColor = Color.decode("#212121");
@@ -140,15 +138,24 @@ public class VerFloristeria extends JFrame {
                         ImageIcon imagenIcono = new ImageIcon(imagenPath);
                         Image imagenOriginal = imagenIcono.getImage();
 
-                        // Especifica las dimensiones predeterminadas para la imagen
-                        int anchoPredeterminado = 150;
-                        int altoPredeterminado = 150;
+                        // Ajusta el tamaño de la imagen para que se ajuste al tamaño predeterminado del panel
+                        int anchoPanelPredeterminado = 300;
+                        int altoPanelPredeterminado = 300;
 
-                        // Escala la imagen utilizando el enfoque adecuado
-                        Image imagenScaled = imagenOriginal.getScaledInstance(anchoPredeterminado, altoPredeterminado, Image.SCALE_SMOOTH);
+                        // Calcula las proporciones de escalamiento para ajustar la imagen al tamaño del panel
+                        double proporcionAncho = (double) anchoPanelPredeterminado / imagenOriginal.getWidth(null);
+                        double proporcionAlto = (double) altoPanelPredeterminado / imagenOriginal.getHeight(null);
+
+                        // Escala la imagen utilizando la proporción más pequeña para evitar distorsiones
+                        double proporcionEscalamiento = Math.min(proporcionAncho, proporcionAlto);
+                        int anchoEscalado = (int) (imagenOriginal.getWidth(null) * proporcionEscalamiento);
+                        int altoEscalado = (int) (imagenOriginal.getHeight(null) * proporcionEscalamiento);
+
+                        // Crea una nueva imagen escalada con las dimensiones calculadas
+                        Image imagenEscalada = imagenOriginal.getScaledInstance(anchoEscalado, altoEscalado, Image.SCALE_SMOOTH);
 
                         // Crea un ImageIcon a partir de la imagen escalada
-                        imagenIcono = new ImageIcon(imagenScaled);
+                        imagenIcono = new ImageIcon(imagenEscalada);
 
                         // Actualiza la etiqueta lblImagen con el ImageIcon
                         lblImagen.setIcon(imagenIcono);
