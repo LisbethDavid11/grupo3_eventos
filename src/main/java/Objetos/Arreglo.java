@@ -9,6 +9,8 @@ public class Arreglo {
     private double precio;
     private String disponible;
 
+    public static String nombreTabla = "arreglos";
+
     public Arreglo() {
     }
 
