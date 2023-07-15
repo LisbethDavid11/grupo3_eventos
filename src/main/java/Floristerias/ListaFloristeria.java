@@ -1,5 +1,4 @@
 package Floristerias;
-import Arreglos.EditarArreglo;
 import Modelos.ModeloFloristeria;
 import Objetos.Conexion;
 import Objetos.Floristeria;

@@ -11,6 +11,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 
 public class EditarMaterial extends JFrame {
     private JTextField campoNombre;
@@ -358,7 +360,13 @@ public class EditarMaterial extends JFrame {
                 int idProveedor = resultSet.getInt("proveedor_id");
 
                 campoNombre.setText(nombre);
-                campoPrecio.setText(String.format("%.2f", precio)); // Formatear el precio a dos dígitos decimales
+
+                // Formatear el precio a dos decimales con el separador decimal "."
+                DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+                symbols.setDecimalSeparator('.');
+                DecimalFormat decimalFormat = new DecimalFormat("0.00", symbols);
+                campoPrecio.setText(decimalFormat.format(precio));
+
                 campoDescripcion.setText(descripcion);
 
                 if (disponibilidad.equals("Si")) {
@@ -420,14 +428,14 @@ public class EditarMaterial extends JFrame {
         }
 
         try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO materiales (nombre, precio, descripcion, disponible, proveedor_id) VALUES (?, ?, ?, ?, ?)")) {
+             PreparedStatement preparedStatement = connection.prepareStatement("UPDATE materiales SET nombre = ?, precio = ?, descripcion = ?, disponible = ?, proveedor_id = ? WHERE id = ?")) {
             preparedStatement.setString(1, nombre);
             preparedStatement.setDouble(2, precio);
             preparedStatement.setString(3, descripcion);
             preparedStatement.setString(4, disponibilidad);
             preparedStatement.setInt(5, idProveedor);
+            preparedStatement.setInt(6, idMaterial);
             preparedStatement.executeUpdate();
-
 
             JOptionPane.showMessageDialog(null, "Material actualizado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
 
@@ -440,4 +448,5 @@ public class EditarMaterial extends JFrame {
             JOptionPane.showMessageDialog(null, "Error al actualizar el material", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+
 }

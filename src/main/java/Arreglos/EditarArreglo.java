@@ -18,6 +18,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
@@ -354,7 +356,11 @@ public class EditarArreglo extends JFrame {
 
             if (resultSet.next()) {
                 campoNombre.setText(resultSet.getString("nombre"));
-                campoPrecio.setText(String.valueOf(resultSet.getDouble("precio")));
+                double precio = resultSet.getDouble("precio");
+                DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+                symbols.setDecimalSeparator('.');
+                DecimalFormat decimalFormat = new DecimalFormat("0.00", symbols);
+                campoPrecio.setText(decimalFormat.format(precio));
 
                 String imagenNombre = resultSet.getString("imagen");
                 String imagenPath = "img/arreglos/" + imagenNombre;

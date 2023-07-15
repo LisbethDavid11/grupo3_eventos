@@ -29,21 +29,35 @@ public class VerArreglo extends JFrame {
 
         this.id = id;
 
-        // Ajusta el layout del panel2 a GridBagLayout
+        // Establecer ancho y alto deseados para el panelImg
+        int panelImgWidth = 200;
+        int panelImgHeight = 200;
+
+        // Crear una instancia de Dimension con las dimensiones deseadas
+        Dimension panelImgSize = new Dimension(panelImgWidth, panelImgHeight);
+
+        // Establecer las dimensiones en el panelImg
+        panel2.setPreferredSize(panelImgSize);
+        panel2.setMaximumSize(panelImgSize);
+        panel2.setMinimumSize(panelImgSize);
+        panel2.setSize(panelImgSize);
+
+        // Configurar el layout del panelImg como GridBagLayout
         panel2.setLayout(new GridBagLayout());
+
+        // Configurar restricciones de diseño para la etiqueta de imagen
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.CENTER;
-
-        // Crea la etiqueta para mostrar la imagen
-        lblImagen = new JLabel();
-        lblImagen.setHorizontalAlignment(JLabel.CENTER);
-        lblImagen.setVerticalAlignment(JLabel.CENTER);
-        lblImagen.setMaximumSize(new Dimension(300, 300)); // Establece un tamaño máximo
-
-        // Agrega la etiqueta de la imagen al panel2 con la restricción gbc
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        lblImagen.setHorizontalAlignment(SwingConstants.CENTER);
         panel2.add(lblImagen, gbc);
+
+        // Color de fondo del panel
+        panel1.setBackground(Color.decode("#F5F5F5"));
+        panel2.setBackground(Color.decode("#F5F5F5"));
 
         mostrar();
 
