@@ -40,7 +40,7 @@ class ImagePanel extends JPanel {
         g2d.setFont(new Font("Arial", Font.BOLD, 16));
 
         // Dibujar el texto
-        String titulo = "Eventos y Más";
+        String titulo = "EMPRESA DE EVENTOS CHELSEA";
         String cuerpo = "\nBienvenido a nuestra empresa, líder en el sector de arreglos, eventos, floristería y más.  " ;
 
         int panelWidth = getWidth();
