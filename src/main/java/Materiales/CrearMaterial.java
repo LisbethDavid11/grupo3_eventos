@@ -14,7 +14,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class CrearMateriales extends JFrame {
+public class CrearMaterial extends JFrame {
     private JTextField campoNombre;
     private JTextField campoPrecio;
     private JTextArea campoDescripcion;
@@ -30,10 +30,10 @@ public class CrearMateriales extends JFrame {
     private JLabel lbl3;
     private JLabel lbl4;
     private String imagePath = "";
-    private CrearMateriales actual = this;
+    private CrearMaterial actual = this;
     private Conexion sql;
 
-    public CrearMateriales() {
+    public CrearMaterial() {
         super("");
         setSize(500, 490);
         setLocationRelativeTo(null);

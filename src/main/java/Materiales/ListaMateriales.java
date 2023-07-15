@@ -1,7 +1,9 @@
 package Materiales;
+
 import Modelos.ModeloMateriales;
 import Objetos.Conexion;
 import Objetos.Material;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -96,8 +98,34 @@ public class ListaMateriales extends JFrame {
         botonCrear.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                CrearMateriales materiales = new CrearMateriales();
+                CrearMaterial materiales = new CrearMaterial();
                 materiales.setVisible(true);
+                actual.dispose();
+            }
+        });
+
+        botonVer.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (listaMateriales.getSelectedRow() == -1) {
+                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                VerMaterial material = new VerMaterial(materialList.get(listaMateriales.getSelectedRow()).getId());
+                material.setVisible(true);
+                actual.dispose();
+            }
+        });
+
+        botonEditar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (listaMateriales.getSelectedRow() == -1) {
+                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                EditarMaterial material = new EditarMaterial(materialList.get(listaMateriales.getSelectedRow()).getId());
+                material.setVisible(true);
                 actual.dispose();
             }
         });

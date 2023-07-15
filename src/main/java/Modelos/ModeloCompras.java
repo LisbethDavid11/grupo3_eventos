@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.HashMap;
 
 public class ModeloCompras extends AbstractTableModel {
-    private final String[] columnas = {"ID", "Código", "Fecha", "Proveedor", "Empleado", "Sub Total", "ISV", "Total"};
+    private final String[] columnas = {"N°", "Código", "Fecha", "Proveedor", "Empleado", "Sub Total", "ISV", "Total"};
     private final List<Compra> compras;
     private final Conexion sql;
     private final Map<Integer, String> proveedores;
