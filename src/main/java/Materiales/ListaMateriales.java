@@ -38,7 +38,7 @@ public class ListaMateriales extends JFrame {
 
     public ListaMateriales() {
         super("");
-        setSize(850, 490);
+        setSize(850, 500);
         setLocationRelativeTo(null);
         setContentPane(panelPrincipal);
         campoBusqueda.setText("");

@@ -1,6 +1,4 @@
 package Arreglos;
-
-import Floristerias.ListaFloristeria;
 import Objetos.Conexion;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -12,40 +10,63 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Random;
 
 public class CrearArreglo extends JFrame {
-    private JTextField campoNombre;
-    private JTextField campoPrecio;
-    private JRadioButton radioButtonSi;
-    private JRadioButton radioButtonNo;
-    private JButton botonGuardar;
-    private JButton botonCancelar;
-    private JPanel panel;
+    private JTextField campoNombre, campoPrecio;
+    private JRadioButton radioButtonSi, radioButtonNo;
+    private JButton botonGuardar, botonCancelar, botonCargarImagen;
+    private JPanel panel, panelImg;
     private JLabel imagenLabel;
-    private JButton botonCargarImagen;
-    private JLabel lbl1;
-    private JLabel lbl2;
-    private JLabel lbl3;
-    private JLabel lbl0;
+    private JLabel lbl0, lbl1, lbl2, lbl3;
     private String imagePath = "";
     private CrearArreglo actual = this;
     private Conexion sql;
 
     public CrearArreglo() {
         super("");
-        setSize(500, 550);
+        setSize(500, 600);
         setLocationRelativeTo(null);
         setContentPane(panel);
 
         sql = new Conexion();
 
+        // Establecer ancho y alto deseados para el panelImg
+        int panelImgWidth = 200;
+        int panelImgHeight = 200;
+
+        // Crear una instancia de Dimension con las dimensiones deseadas
+        Dimension panelImgSize = new Dimension(panelImgWidth, panelImgHeight);
+
+        // Establecer las dimensiones en el panelImg
+        panelImg.setPreferredSize(panelImgSize);
+        panelImg.setMaximumSize(panelImgSize);
+        panelImg.setMinimumSize(panelImgSize);
+        panelImg.setSize(panelImgSize);
+
+        // Configurar el layout del panelImg como GridBagLayout
+        panelImg.setLayout(new GridBagLayout());
+
+        // Configurar restricciones de diseño para la etiqueta de imagen
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        imagenLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        panelImg.add(imagenLabel, gbc);
+
         // Color de fondo del panel
         panel.setBackground(Color.decode("#F5F5F5"));
+        panelImg.setBackground(Color.decode("#F5F5F5"));
 
         // Color de texto para los JTextField y JRadioButton
         Color textColor = Color.decode("#212121");
@@ -287,26 +308,41 @@ public class CrearArreglo extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JFileChooser fileChooser = new JFileChooser();
-                int returnValue = fileChooser.showOpenDialog(null);
-                if (returnValue == JFileChooser.APPROVE_OPTION) {
-                    File selectedFile = fileChooser.getSelectedFile();
-                    imagePath = "src/main/resources/img/arreglos/" + selectedFile.getName();
-                    ImageIcon imageIcon = new ImageIcon(selectedFile.getAbsolutePath());
-                    Image image = imageIcon.getImage();
-                    Image resizedImage = image.getScaledInstance(200, 200, Image.SCALE_SMOOTH);
-                    imageIcon = new ImageIcon(resizedImage);
-                    imagenLabel.setIcon(imageIcon);
+                int seleccion = fileChooser.showOpenDialog(actual);
+                if (seleccion == JFileChooser.APPROVE_OPTION) {
+                    File file = fileChooser.getSelectedFile();
+                    imagePath = file.getAbsolutePath();
+                    ImageIcon originalIcon = new ImageIcon(imagePath);
 
-                    try {
-                        Files.copy(selectedFile.toPath(), new File(imagePath).toPath(), StandardCopyOption.REPLACE_EXISTING);
-                    } catch (IOException ioException) {
-                        ioException.printStackTrace();
-                    }
+                    // Obtener las dimensiones originales de la imagen
+                    int originalWidth = originalIcon.getIconWidth();
+                    int originalHeight = originalIcon.getIconHeight();
+
+                    // Obtener las dimensiones del JPanel
+                    int panelImgWidth = panelImg.getWidth();
+                    int panelImgHeight = panelImg.getHeight();
+
+                    // Calcular la escala para ajustar la imagen al JPanel
+                    double scale = Math.min((double) panelImgWidth / originalWidth, (double) panelImgHeight / originalHeight);
+
+                    // Calcular las nuevas dimensiones de la imagen redimensionada
+                    int scaledWidth = (int) (originalWidth * scale);
+                    int scaledHeight = (int) (originalHeight * scale);
+
+                    // Redimensionar la imagen manteniendo su proporción
+                    Image resizedImage = originalIcon.getImage().getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH);
+
+                    // Crear un nuevo ImageIcon a partir de la imagen redimensionada
+                    ImageIcon scaledIcon = new ImageIcon(resizedImage);
+
+                    imagenLabel.setIcon(scaledIcon);
                 }
             }
         });
 
     }
+
+
 
     private void guardarArreglo() {
         String nombre = campoNombre.getText().trim();
@@ -316,7 +352,27 @@ public class CrearArreglo extends JFrame {
 
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO arreglos (imagen, nombre, precio, disponible) VALUES (?, ?, ?, ?)")) {
-            preparedStatement.setString(1, imagePath);
+
+            // Generar el nombre de la imagen
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH-mm-ss");
+            String fechaActual = dateFormat.format(new Date());
+            String nombreImagen = "imagen " + fechaActual + " " + generarNumeroAleatorio(0, 9999);
+
+            // Guardar la imagen en la carpeta
+            String rutaImagen = nombreImagen + obtenerExtensionImagen(imagePath);
+            File destino = new File("img/arreglos/" + rutaImagen);
+
+            try {
+                // Copiar el archivo seleccionado a la ubicación destino
+                Path origenPath = Path.of(imagePath);
+                Files.copy(origenPath, destino.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error al guardar la imagen", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            preparedStatement.setString(1, rutaImagen);
             preparedStatement.setString(2, nombre);
             preparedStatement.setDouble(3, precio);
             preparedStatement.setString(4, disponible);
@@ -334,5 +390,31 @@ public class CrearArreglo extends JFrame {
         }
     }
 
+    private String obtenerExtensionImagen(String imagePath) {
+        int extensionIndex = imagePath.lastIndexOf(".");
+        if (extensionIndex != -1) {
+            return imagePath.substring(extensionIndex);
+        }
+        return "";
+    }
+
+    private String generarNumeroAleatorio(int min, int max) {
+        Random random = new Random();
+        int numeroAleatorio = random.nextInt(max - min + 1) + min;
+        return String.format("%04d", numeroAleatorio);
+    }
+
+    public static void main(String[] args) {
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                try {
+                    CrearArreglo frame = new CrearArreglo();
+                    frame.setVisible(true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
 
 }

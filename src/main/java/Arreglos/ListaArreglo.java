@@ -1,4 +1,5 @@
 package Arreglos;
+import Clientes.EditarCliente;
 import Modelos.ModeloArreglo;
 import Objetos.Arreglo;
 import Objetos.Conexion;
@@ -37,7 +38,7 @@ public class ListaArreglo extends JFrame {
 
     public ListaArreglo() {
         super("");
-        setSize(850, 490);
+        setSize(850, 500);
         setLocationRelativeTo(null);
         setContentPane(panelPrincipal);
         campoBusqueda.setText("");
@@ -96,6 +97,19 @@ public class ListaArreglo extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 CrearArreglo arreglo = new CrearArreglo();
+                arreglo.setVisible(true);
+                actual.dispose();
+            }
+        });
+
+        botonEditar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (listaArreglos.getSelectedRow() == -1) {
+                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                EditarArreglo arreglo = new EditarArreglo(listaArreglo.get(listaArreglos.getSelectedRow()).getId());
                 arreglo.setVisible(true);
                 actual.dispose();
             }
