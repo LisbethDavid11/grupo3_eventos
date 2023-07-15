@@ -20,17 +20,18 @@ import java.util.Date;
 import java.util.Random;
 
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
 
 public class CrearCompra extends JFrame {
     private JPanel panel1;
-    private JTable tablaProductos; // Componente JTable agregado
+    private JTable tablaProductos;
     private DefaultTableModel modeloProductos;
 
     public JButton guardarButton, cancelarButton, limpiarButton, agregarButton;
     public JTextField campoCodigo, campoFecha, campoCantidad, campoPrecio;
     public JComboBox<String> boxProveedor, boxEmpleado, boxMaterial;
     private JLabel lbl0, lbl1, lbl2, lbl3, lbl4, lbl5,lbl6, lbl7,lbl8,lbl9,lbl10;
-
     private Conexion sql;
     private Connection mysql;
     public CrearCompra crearCompra = this;
@@ -99,9 +100,16 @@ public class CrearCompra extends JFrame {
         modeloProductos.addColumn("Cantidad");
         modeloProductos.addColumn("Precio");
         modeloProductos.addColumn("Total");
+        modeloProductos.addColumn("Eliminar"); // Nueva columna para el botón de eliminación
 
         // Asignar el modelo de datos a la JTable
         tablaProductos.setModel(modeloProductos);
+
+        // Asignar el renderizador de botones a la columna correspondiente
+        tablaProductos.getColumnModel().getColumn(4).setCellRenderer(new ButtonRenderer());
+
+
+
 
         campoPrecio.addKeyListener(new KeyAdapter() {
             @Override
@@ -175,6 +183,13 @@ public class CrearCompra extends JFrame {
         });
 
 
+        // Dentro del método CrearCompra()
+        tablaProductos.getColumnModel().getColumn(4).setCellRenderer(new ButtonRenderer());
+
+// Agregar el ActionListener para el botón de eliminación
+        tablaProductos.getColumnModel().getColumn(4).setCellEditor(new ButtonEditor(new JCheckBox()));
+
+
         cancelarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -203,7 +218,10 @@ public class CrearCompra extends JFrame {
         limpiarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                limpiar();
+                int opcion = JOptionPane.showConfirmDialog(null, "¿Está seguro que desea limpiar?", "Confirmación", JOptionPane.YES_NO_OPTION);
+                if (opcion == JOptionPane.YES_OPTION) {
+                    limpiar();
+                }
             }
         });
 
@@ -277,14 +295,31 @@ public class CrearCompra extends JFrame {
                     return;
                 }
 
-                // Obtener los valores seleccionados y calculados
+                // Verificar si el producto ya está agregado a la lista
                 String producto = (String) boxMaterial.getSelectedItem();
+                boolean productoExistente = false;
+                for (int i = 0; i < modeloProductos.getRowCount(); i++) {
+                    String productoEnLista = (String) modeloProductos.getValueAt(i, 0);
+                    if (productoEnLista.equals(producto)) {
+                        productoExistente = true;
+                        break;
+                    }
+                }
+
+                if (productoExistente) {
+                    JOptionPane.showMessageDialog(null, "El producto ya está agregado a la lista.", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                // Obtener los valores seleccionados y calculados
                 int cantidad = Integer.parseInt(campoCantidad.getText());
                 double precio = Double.parseDouble(campoPrecio.getText());
                 double total = cantidad * precio;
 
+
                 // Agregar la compra al modelo de datos de la lista de productos
-                modeloProductos.addRow(new Object[]{producto, cantidad, precio, total});
+                modeloProductos.addRow(new Object[]{producto, cantidad, precio, total, crearBotonEliminar()});
+
 
                 // Limpiar los campos después de agregar la compra
                 campoCantidad.setText("");
@@ -294,6 +329,7 @@ public class CrearCompra extends JFrame {
                 actualizarTotales();
             }
         });
+
 
         // Inicializar campoCodigo
         String fechaActual = new SimpleDateFormat("ddMMyyyy").format(new Date());
@@ -308,6 +344,13 @@ public class CrearCompra extends JFrame {
         campoFecha.setText(fechaMostrar);
         campoFecha.setEditable(false);
         campoFecha.setFocusable(false);
+    }
+
+    private class TablaModeloProductos extends DefaultTableModel {
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false; // Deshabilitar la edición de celdas en la tabla
+        }
     }
 
     private void cargarProveedores() {
@@ -358,6 +401,39 @@ public class CrearCompra extends JFrame {
             e.printStackTrace();
         }
     }
+
+    private JButton crearBotonEliminar() {
+        JButton botonEliminar = new JButton("Eliminar");
+        botonEliminar.setForeground(Color.WHITE);
+        botonEliminar.setBackground(darkColorRed);
+        botonEliminar.setFocusPainted(false);
+        botonEliminar.setBorder(margin);
+
+        botonEliminar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int opcion = JOptionPane.showConfirmDialog(null, "¿Está seguro que desea eliminar este producto?", "Confirmación", JOptionPane.YES_NO_OPTION);
+                if (opcion == JOptionPane.YES_OPTION) {
+                    // Obtener el botón que disparó el evento
+                    JButton boton = (JButton) e.getSource();
+
+                    // Obtener la fila correspondiente al botón en el modelo de datos de la tabla
+                    int filaSeleccionada = tablaProductos.convertRowIndexToModel(tablaProductos.getEditingRow());
+
+                    // Eliminar la fila del modelo de datos de la lista de productos
+                    modeloProductos.removeRow(filaSeleccionada);
+
+                    // Actualizar los totales
+                    actualizarTotales();
+                }
+            }
+        });
+
+        return botonEliminar;
+    }
+
+
+
 
     private void guardarDatos() {
         // Obtener los valores de la compra y guardarlos en la base de datos
@@ -418,34 +494,37 @@ public class CrearCompra extends JFrame {
                 preparedStatement.setInt(3, cantidad);
                 preparedStatement.setDouble(4, precio);
                 preparedStatement.executeUpdate();
-
-                boolean listaCompraAbierta = false;
-                Window[] windows = Window.getWindows();
-                for (Window window : windows) {
-                    if (window instanceof ListaCliente) {
-                        listaCompraAbierta = true;
-                        break;
-                    }
-                }
-
-                // Abrir la ventana ListaCliente solo si no está abierta
-                if (!listaCompraAbierta) {
-                    ListaCompras compras = new ListaCompras();
-                    compras.setVisible(true);
-                }
-
-                crearCompra.dispose();
-
-                // Mensaje personalizado
-                System.out.println("Compra registrada exitosamente.");
-                JOptionPane.showMessageDialog(null, "Compra registrada exitosamente.", "Éxito", JOptionPane.DEFAULT_OPTION);
-
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
-    }
 
+        // Mostrar el JOptionPane y ejecutar la ventana ListaCompras solo una vez después de guardar todos los detalles de la compra
+        boolean listaCompraAbierta = false;
+        Window[] windows = Window.getWindows();
+        for (Window window : windows) {
+            if (window instanceof ListaCliente) {
+                listaCompraAbierta = true;
+                break;
+            }
+        }
+
+        // Mostrar el JOptionPane solo si no está abierta la ventana ListaCompras
+        if (!listaCompraAbierta) {
+            // Mensaje personalizado
+            System.out.println("Compra registrada exitosamente.");
+            JOptionPane.showMessageDialog(null, "Compra registrada exitosamente.", "Éxito", JOptionPane.DEFAULT_OPTION);
+        }
+
+        crearCompra.dispose();
+
+        // Abrir la ventana ListaCompras solo si no está abierta y el usuario hizo clic en el botón "OK" del JOptionPane
+        if (!listaCompraAbierta) {
+            ListaCompras compras = new ListaCompras();
+            compras.setVisible(true);
+        }
+    }
+    
     private void actualizarTotales() {
         double sumaTotal = 0.0;
         for (int i = 0; i < modeloProductos.getRowCount(); i++) {
@@ -467,7 +546,6 @@ public class CrearCompra extends JFrame {
         lbl9.setText(" " + impuestoFormatted);
         lbl10.setText(" " + totalFinalFormatted);
     }
-
 
     private String generateRandomNumber(int length) {
         Random random = new Random();
@@ -515,5 +593,57 @@ public class CrearCompra extends JFrame {
         modeloProductos.setRowCount(0);
     }
 
+    class ButtonRenderer extends JButton implements TableCellRenderer {
+        public ButtonRenderer() {
+            setOpaque(true);
+            setForeground(Color.WHITE); // Establecer color de texto
+            setBackground(darkColorPink); // Establecer color de fondo
+            setFocusPainted(false); // Desactivar efecto de enfoque
+        }
 
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            setText("X");
+            return this;
+        }
+    }
+
+    class ButtonEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
+        private JButton button;
+
+        public ButtonEditor(JCheckBox checkBox) {
+            button = new JButton();
+            button.setOpaque(true);
+            button.addActionListener(this);
+
+            // Personalización del botón
+            button.setForeground(Color.WHITE);
+            button.setBackground(darkColorPink);
+            button.setFocusPainted(false);
+        }
+
+        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+            button.setText("X");
+            return button;
+        }
+
+        public Object getCellEditorValue() {
+            return null;
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            // Obtener el botón que disparó el evento
+            JButton boton = (JButton) e.getSource();
+
+            // Obtener la fila correspondiente al botón en el modelo de datos de la tabla
+            int filaSeleccionada = tablaProductos.convertRowIndexToModel(tablaProductos.getEditingRow());
+
+            // Eliminar la fila del modelo de datos de la lista de productos
+            modeloProductos.removeRow(filaSeleccionada);
+
+            // Actualizar los totales
+            actualizarTotales();
+        }
+    }
 }
+
+

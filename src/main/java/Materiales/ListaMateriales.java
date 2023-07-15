@@ -19,12 +19,6 @@ import java.util.List;
 
 public class ListaMateriales extends JFrame {
     private JPanel panelPrincipal;
-    private JButton ClientesButton;
-    private JButton arreglosButton;
-    private JButton empleadosButton;
-    private JButton proveedoresButton;
-    private JButton floristeriaButton;
-    private JButton materialesButton;
     private JButton botonVer;
     private JTable listaMateriales;
     private JButton botonAtras;

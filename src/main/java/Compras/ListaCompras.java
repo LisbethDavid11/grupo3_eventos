@@ -34,13 +34,10 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 public class ListaCompras extends JFrame {
     private JPanel panelPrincipal;
-    private JButton botonVer;
     private JTable listaCompras;
-    private JButton botonAtras;
-    private JButton botonAdelante;
+    private JButton botonAtras,botonAdelante;
     private JTextField campoBusqueda;
-    private TextPrompt placeholder = new TextPrompt("Buscar por nombre", campoBusqueda);
-    private JButton botonEditar;
+    private TextPrompt placeholder = new TextPrompt("Buscar por código de compra, fecha o proveedor ", campoBusqueda);
     private JButton botonCrear;
     private JLabel lblPagina;
     private JButton botonImprimir;
@@ -115,16 +112,6 @@ public class ListaCompras extends JFrame {
         Color lightColor = Color.decode("#cfd8dc"); // Gris azul claro
         Color darkColor = Color.decode("#263238"); // Gris azul más oscuro
 
-        botonVer.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                botonVer.setBackground(lightColor);
-            }
-
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                botonVer.setBackground(darkColor);
-            }
-        });
-
         botonAtras.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 botonAtras.setBackground(lightColor);
@@ -155,16 +142,6 @@ public class ListaCompras extends JFrame {
             }
         });
 
-        botonEditar.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                botonEditar.setBackground(lightColor);
-            }
-
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                botonEditar.setBackground(darkColor);
-            }
-        });
-
         botonCrear.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -180,6 +157,11 @@ public class ListaCompras extends JFrame {
         botonImprimir.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (listaCompras.getSelectedRow() == -1) {
+                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+
                 int filaSeleccionada = listaCompras.getSelectedRow();
                 if (filaSeleccionada >= 0) {
                     int indiceItemSeleccionado = listaCompras.convertRowIndexToModel(filaSeleccionada);
@@ -192,18 +174,14 @@ public class ListaCompras extends JFrame {
         panelPrincipal.setBackground(primaryColor);
 
         // Color de texto de los botones
-        botonVer.setForeground(Color.WHITE);
         botonAtras.setForeground(Color.WHITE);
         botonAdelante.setForeground(Color.WHITE);
         botonCrear.setForeground(Color.WHITE);
-        botonEditar.setForeground(Color.WHITE);
 
         // Color de fondo de los botones
-        botonVer.setBackground(darkColor);
         botonAtras.setBackground(darkColor);
         botonAdelante.setBackground(darkColor);
         botonCrear.setBackground(darkColor);
-        botonEditar.setBackground(darkColor);
 
         // Color de texto del campo de búsqueda y del label de la página
         campoBusqueda.setForeground(Color.WHITE);
@@ -227,9 +205,21 @@ public class ListaCompras extends JFrame {
     private ModeloCompras cargarDatos() {
         sql = new Conexion();
         try (Connection mysql = sql.conectamysql();
-             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT c.*, p.empresaProveedora, CONCAT(e.Nombres, ' ', e.Apellidos) AS empleadoNombre FROM compras c JOIN proveedores p ON c.proveedor_id = p.id JOIN empleados e ON c.empleado_id = e.id WHERE c.codigo_compra LIKE CONCAT('%', ?, '%') LIMIT ?, 20")) {
-            preparedStatement.setString(1, busqueda);
-            preparedStatement.setInt(2, pagina * 20);
+             PreparedStatement preparedStatement = mysql.prepareStatement(
+                     "SELECT c.*, p.empresaProveedora, CONCAT(e.Nombres, ' ', e.Apellidos) AS empleadoNombre " +
+                             "FROM compras c " +
+                             "JOIN proveedores p ON c.proveedor_id = p.id " +
+                             "JOIN empleados e ON c.empleado_id = e.id " +
+                             "WHERE c.codigo_compra LIKE CONCAT('%', ?, '%') " +
+                             "OR c.fecha LIKE CONCAT('%', ?, '%') " +
+                             "OR p.empresaProveedora LIKE CONCAT('%', ?, '%') " +
+                             "LIMIT ?, 20")) {
+
+            preparedStatement.setString(1, busqueda);  // Búsqueda por código de compra
+            preparedStatement.setString(2, busqueda);  // Búsqueda por fecha de la compra
+            preparedStatement.setString(3, busqueda);  // Búsqueda por empresa proveedora
+            preparedStatement.setInt(4, pagina * 20);
+
             ResultSet resultSet = preparedStatement.executeQuery();
             compraList = new ArrayList<>();
             while (resultSet.next()) {
@@ -252,6 +242,8 @@ public class ListaCompras extends JFrame {
         }
         return new ModeloCompras(compraList, sql);
     }
+
+
 
     private int getTotalPageCount() {
         int count = 0;
@@ -289,12 +281,12 @@ public class ListaCompras extends JFrame {
             // Agregar encabezado
             contentStream.beginText();
             contentStream.newLineAtOffset(50, 750);
-            contentStream.showText("EMPRESA XYZ");
+            contentStream.showText("EMPRESA DE EVENTOS CHELSEA");
             contentStream.setFont(PDType1Font.HELVETICA, 12);
             contentStream.newLine();
-            contentStream.showText("Dirección de la empresa");
+            contentStream.showText("Barrio Tierra Blanca, 100 mts adelante de Pintogama.");
             contentStream.newLine();
-            contentStream.showText("Teléfono: 1234567890");
+            contentStream.showText("Teléfono: 9699-1168");
             contentStream.newLine();
             contentStream.showText("Fecha: " + new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
             contentStream.endText();
@@ -373,7 +365,6 @@ public class ListaCompras extends JFrame {
                 contentStream.endText();
 
                 subTotal += detalle.getCantidad() * detalle.getPrecio();
-
                 rowNumber++;
             }
 
@@ -424,13 +415,13 @@ public class ListaCompras extends JFrame {
             // Cerrar el flujo de contenido y guardar el documento
             contentStream.close();
 
-// Obtener la fecha y hora actual en el formato deseado
+            // Obtener la fecha y hora actual en el formato deseado
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy");
             SimpleDateFormat timeFormat = new SimpleDateFormat("HH-mm-ss");
             String fechaActual = dateFormat.format(new Date());
             String horaActual = timeFormat.format(new Date());
 
-// Generar un número aleatorio de cuatro dígitos entre 0001 y 9999
+            // Generar un número aleatorio de cuatro dígitos entre 0001 y 9999
             Random random = new Random();
             int numeroAleatorio = random.nextInt(9999 - 1 + 1) + 1;
             String numeroAleatorioFormateado = String.format("%04d", numeroAleatorio);
@@ -472,28 +463,6 @@ public class ListaCompras extends JFrame {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public double obtenerTotalCompra(int idCompra) {
-        double subTotal = 0.0;
-
-        // Obtener los detalles de la compra
-        Conexion sql = new Conexion();
-        ModeloDetallesCompras mdc = new ModeloDetallesCompras(new ArrayList<>(), sql);
-        List<DetalleCompra> detalles = mdc.getDetallesPorCompra(idCompra);
-
-        // Calcular el total sumando los subtotales de cada detalle
-        for (DetalleCompra detalle : detalles) {
-            subTotal += detalle.getCantidad() * detalle.getPrecio();
-        }
-
-        // Calcular el ISV
-        double isv = subTotal * 0.15;
-
-        // Calcular el total
-        double total = subTotal + isv;
-
-        return total;
     }
 
     public String obtenerNombreMaterial(int materialId, Conexion sql) {
