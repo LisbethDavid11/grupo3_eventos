@@ -24,10 +24,14 @@ public class ListaMateriales extends JFrame {
     private JButton botonAtras;
     private JButton botonAdelante;
     private JTextField campoBusqueda;
-    private TextPrompt placeholder = new TextPrompt("Buscar por nombre", campoBusqueda);
+    private TextPrompt placeholder = new TextPrompt("Buscar por nombre de material o de empresa proveedora", campoBusqueda);
     private JButton botonEditar;
     private JButton botonCrear;
     private JLabel lbltxt;
+    private JLabel lbl0;
+    private JCheckBox noCheckBox;
+    private JCheckBox siCheckBox;
+    private JLabel lblD;
     private ImageIcon imagen;
     private List<Material> materialList;
     private int pagina = 0;
@@ -38,13 +42,14 @@ public class ListaMateriales extends JFrame {
 
     public ListaMateriales() {
         super("");
-        setSize(850, 500);
+        setSize(850, 505);
         setLocationRelativeTo(null);
         setContentPane(panelPrincipal);
         campoBusqueda.setText("");
 
         listaMateriales.setModel(cargarDatos());
         centrarDatosTabla();
+        mostrarTodos();
 
         lbltxt.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
 
@@ -92,6 +97,29 @@ public class ListaMateriales extends JFrame {
                 lbltxt.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
+
+        siCheckBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!siCheckBox.isSelected() && !noCheckBox.isSelected()) {
+
+                    siCheckBox.setSelected(true);
+                }
+                actualizarTabla();
+            }
+        });
+
+        noCheckBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!siCheckBox.isSelected() && !noCheckBox.isSelected()) {
+
+                    noCheckBox.setSelected(true);
+                }
+                actualizarTabla();
+            }
+        });
+
 
         botonCrear.addActionListener(new ActionListener() {
             @Override
@@ -198,6 +226,14 @@ public class ListaMateriales extends JFrame {
         // Color de texto del campo de búsqueda y del label de la página
         campoBusqueda.setForeground(Color.WHITE);
         lbltxt.setForeground(Color.WHITE);
+        lblD.setForeground(Color.WHITE);
+
+        noCheckBox.setBackground(primaryColor);
+        noCheckBox.setForeground(Color.WHITE);
+        noCheckBox.setFocusPainted(false);
+        siCheckBox.setBackground(primaryColor);
+        siCheckBox.setForeground(Color.WHITE);
+        siCheckBox.setFocusPainted(false);
 
         // Color de fondo del campo de búsqueda
         campoBusqueda.setBackground(darkColor);
@@ -206,6 +242,10 @@ public class ListaMateriales extends JFrame {
         placeholder.changeAlpha(0.75f);
         placeholder.setForeground(Color.LIGHT_GRAY);
         placeholder.setFont(new Font("Nunito", Font.ITALIC, 11));
+
+        // Crear una fuente con un tamaño de 18 puntos
+        Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
+        lbl0.setFont(fontTitulo);
     }
 
     private void centrarDatosTabla() {
@@ -220,9 +260,24 @@ public class ListaMateriales extends JFrame {
     private ModeloMateriales cargarDatos() {
         sql = new Conexion();
         try (Connection mysql = sql.conectamysql();
-             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT f.*, p.empresaProveedora FROM Materiales f JOIN Proveedores p ON f.proveedor_id = p.id WHERE f.nombre LIKE CONCAT('%', ?, '%') LIMIT ?, 20")){
+             PreparedStatement preparedStatement = mysql.prepareStatement(
+                     "SELECT m.*, p.empresaProveedora " +
+                             "FROM Materiales m " +
+                             "JOIN Proveedores p ON m.proveedor_id = p.id " +
+                             "WHERE (m.nombre LIKE CONCAT('%', ?, '%') OR p.empresaProveedora LIKE CONCAT('%', ?, '%')) " +
+                             "AND ((? = 'Si' AND m.disponible = 'Si') OR (? = 'No' AND m.disponible = 'No')) " +
+                             "LIMIT ?, 20"
+             )
+        ) {
+
+
+            String disponibilidadSi = siCheckBox.isSelected() ? "Si" : "";
+            String disponibilidadNo = noCheckBox.isSelected() ? "No" : "";
             preparedStatement.setString(1, busqueda);
-            preparedStatement.setInt(2, pagina * 20);
+            preparedStatement.setString(2, busqueda);
+            preparedStatement.setString(3, disponibilidadSi);
+            preparedStatement.setString(4, disponibilidadNo);
+            preparedStatement.setInt(5, pagina * 20);
 
             ResultSet resultSet = preparedStatement.executeQuery();
             materialList = new ArrayList<>();
@@ -236,7 +291,6 @@ public class ListaMateriales extends JFrame {
                 material.setDescripcion(resultSet.getString("descripcion"));
                 material.setProveedorId(resultSet.getInt("proveedor_id"));
                 materialList.add(material);
-
             }
 
         } catch (SQLException e) {
@@ -252,6 +306,8 @@ public class ListaMateriales extends JFrame {
 
         return new ModeloMateriales(materialList, sql);
     }
+
+
 
     private int getTotalPageCount() {
         int count = 0;
@@ -275,6 +331,19 @@ public class ListaMateriales extends JFrame {
 
         return totalPageCount;
     }
+
+    private void actualizarTabla() {
+        listaMateriales.setModel(cargarDatos());
+        centrarDatosTabla();
+        lbltxt.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+    }
+
+    private void mostrarTodos() {
+        siCheckBox.setSelected(true);
+        noCheckBox.setSelected(true);
+        actualizarTabla();
+    }
+
 
     public static void main(String[] args) {
         ListaMateriales listaMateriales = new ListaMateriales();

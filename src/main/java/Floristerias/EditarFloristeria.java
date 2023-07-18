@@ -445,45 +445,54 @@ public class EditarFloristeria extends JFrame {
         String proveedorText = comboBoxProveedor.getSelectedItem().toString();
         int idProveedor = Integer.parseInt(proveedorText.split(" - ")[0]);
 
-        try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("UPDATE floristeria SET imagen = ?, nombre = ?, precio = ?, proveedor_id = ? WHERE id = ?")) {
+        int opcion = JOptionPane.showOptionDialog(null, "¿Desea guardar los cambios en la flor?", "Guardar", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
 
-            // Generar el nombre de la imagen
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH-mm-ss");
-            String fechaActual = dateFormat.format(new Date());
-            String nombreImagen = "imagen " + fechaActual + " " + generarNumeroAleatorio(0, 9999);
+        if (opcion == JOptionPane.YES_OPTION) {
+            try (Connection connection = sql.conectamysql();
+                 PreparedStatement preparedStatement = connection.prepareStatement("UPDATE floristeria SET imagen = ?, nombre = ?, precio = ?, proveedor_id = ? WHERE id = ?")) {
 
-            // Guardar la imagen en la carpeta
-            String rutaImagen = nombreImagen + obtenerExtensionImagen(imagePath);
-            File destino = new File("img/floristeria/" + rutaImagen);
+                // Generar el nombre de la imagen
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH-mm-ss");
+                String fechaActual = dateFormat.format(new Date());
+                String nombreImagen = "imagen " + fechaActual + " " + generarNumeroAleatorio(0, 9999);
 
-            try {
-                // Copiar el archivo seleccionado a la ubicación destino
-                Path origenPath = Path.of(imagePath);
-                Files.copy(origenPath, destino.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException e) {
+                // Guardar la imagen en la carpeta
+                String rutaImagen = nombreImagen + obtenerExtensionImagen(imagePath);
+                File destino = new File("img/floristeria/" + rutaImagen);
+
+                try {
+                    // Copiar el archivo seleccionado a la ubicación destino
+                    Path origenPath = Path.of(imagePath);
+                    Files.copy(origenPath, destino.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "Error al guardar la imagen", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                preparedStatement.setString(1, rutaImagen);
+                preparedStatement.setString(2, nombre);
+                preparedStatement.setDouble(3, precio);
+                preparedStatement.setInt(4, idProveedor);
+                preparedStatement.setInt(5, idFloristeria);
+                preparedStatement.executeUpdate();
+
+                JOptionPane.showMessageDialog(null, "Flor actualizada exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+
+                // Volver a la lista de floristerías
+                ListaFloristeria listaFloristeria = new ListaFloristeria();
+                listaFloristeria.setVisible(true);
+                actual.dispose();
+
+            } catch (SQLException e) {
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Error al guardar la imagen", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
+                JOptionPane.showMessageDialog(null, "Error al guardar la flor", "Error", JOptionPane.ERROR_MESSAGE);
             }
-
-            preparedStatement.setString(1, rutaImagen);
-            preparedStatement.setString(2, nombre);
-            preparedStatement.setDouble(3, precio);
-            preparedStatement.setInt(4, idProveedor);
-            preparedStatement.setInt(5, idFloristeria);
-            preparedStatement.executeUpdate();
-
-            JOptionPane.showMessageDialog(null, "Flor actualizada exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-
-            // Volver a la lista de floristerías
+        } else {
+            // Regresar a la lista de floristerías
             ListaFloristeria listaFloristeria = new ListaFloristeria();
             listaFloristeria.setVisible(true);
             actual.dispose();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al guardar la flor", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 

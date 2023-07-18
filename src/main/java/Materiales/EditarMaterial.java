@@ -138,7 +138,7 @@ public class EditarMaterial extends JFrame {
                     // Verificar si se está ingresando una letra
                     if (Character.isLetter(e.getKeyChar())) {
                         // Verificar si se excede el límite de caracteres
-                        if (trimmedLength >= 50) {
+                        if (trimmedLength >= 100) {
                             e.consume(); // Ignorar la letra
                         } else {
                             // Verificar si es el primer carácter o el carácter después de un espacio en blanco
@@ -189,7 +189,7 @@ public class EditarMaterial extends JFrame {
                 int decimalLength = parts.length > 1 ? parts[1].length() : 0;
 
                 // Verificar si se excede el límite de dígitos antes o después del punto
-                if (integerLength >= 6 || decimalLength >= 2) {
+                if (integerLength > 5 || decimalLength > 2) {
                     e.consume(); // Ignorar el carácter si se excede el límite de dígitos
                     return;
                 }
@@ -215,7 +215,7 @@ public class EditarMaterial extends JFrame {
                 }
 
                 // Convertir la primera letra en mayúscula
-                if (texto.length() == 0 || texto.substring(caretPosition - 1, caretPosition).equals(" ")) {
+                if (texto.length() == 0 && Character.isLowerCase(e.getKeyChar())) {
                     e.setKeyChar(Character.toUpperCase(e.getKeyChar()));
                 }
 
@@ -244,7 +244,7 @@ public class EditarMaterial extends JFrame {
 
                 if (campoNombre.getText().trim().isEmpty()) {
                     validacion++;
-                    mensaje += "Nombres\n";
+                    mensaje += "Nombre\n";
                 }
 
                 if (campoPrecio.getText().trim().isEmpty()) {
@@ -275,8 +275,8 @@ public class EditarMaterial extends JFrame {
 
                 String nombre = campoNombre.getText().trim();
                 if (!nombre.isEmpty()) {
-                    if (nombre.length() > 50) {
-                        JOptionPane.showMessageDialog(null, "El nombre debe tener como máximo 50 caracteres.", "Validación", JOptionPane.ERROR_MESSAGE);
+                    if (nombre.length() > 100) {
+                        JOptionPane.showMessageDialog(null, "El nombre debe tener como máximo 100 caracteres.", "Validación", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
 
@@ -289,14 +289,13 @@ public class EditarMaterial extends JFrame {
                     return;
                 }
 
-
                 String precioText = campoPrecio.getText().trim();
                 if (precioText.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Faltó ingresar el precio.", "Validación", JOptionPane.ERROR_MESSAGE);
                     return;
                 } else {
-                    if (!precioText.matches("\\d{1,5}\\.\\d{2}")) {
-                        JOptionPane.showMessageDialog(null, "Precio inválido. Debe tener el formato correcto (ejemplo: 1234.56).", "Validación", JOptionPane.ERROR_MESSAGE);
+                    if (!precioText.matches("\\d{1,5}(\\.\\d{1,2})?")) {
+                        JOptionPane.showMessageDialog(null, "Precio inválido. Debe tener el formato correcto (ejemplo: 1234 o 1234.56).", "Validación", JOptionPane.ERROR_MESSAGE);
                         return;
                     } else {
                         double precio = Double.parseDouble(precioText);
@@ -403,6 +402,7 @@ public class EditarMaterial extends JFrame {
         return "";
     }
 
+
     private void guardarMateriales() {
         String nombre = campoNombre.getText().trim();
         String precioText = campoPrecio.getText().replace("L ", "").replace(",", "").replace("_", "");
@@ -427,26 +427,36 @@ public class EditarMaterial extends JFrame {
             }
         }
 
-        try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("UPDATE materiales SET nombre = ?, precio = ?, descripcion = ?, disponible = ?, proveedor_id = ? WHERE id = ?")) {
-            preparedStatement.setString(1, nombre);
-            preparedStatement.setDouble(2, precio);
-            preparedStatement.setString(3, descripcion);
-            preparedStatement.setString(4, disponibilidad);
-            preparedStatement.setInt(5, idProveedor);
-            preparedStatement.setInt(6, idMaterial);
-            preparedStatement.executeUpdate();
+        int opcion = JOptionPane.showOptionDialog(null, "¿Desea guardar los materiales actualizados?", "Guardar", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
 
-            JOptionPane.showMessageDialog(null, "Material actualizado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+        if (opcion == JOptionPane.YES_OPTION) {
+            try (Connection connection = sql.conectamysql();
+                 PreparedStatement preparedStatement = connection.prepareStatement("UPDATE materiales SET nombre = ?, precio = ?, descripcion = ?, disponible = ?, proveedor_id = ? WHERE id = ?")) {
+                preparedStatement.setString(1, nombre);
+                preparedStatement.setDouble(2, precio);
+                preparedStatement.setString(3, descripcion);
+                preparedStatement.setString(4, disponibilidad);
+                preparedStatement.setInt(5, idProveedor);
+                preparedStatement.setInt(6, idMaterial);
+                preparedStatement.executeUpdate();
 
-            // Volver a la lista de materiales
+                JOptionPane.showMessageDialog(null, "Material actualizado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+
+                // Volver a la lista de materiales
+                ListaMateriales listaMateriales = new ListaMateriales();
+                listaMateriales.setVisible(true);
+                actual.dispose();
+            } catch (SQLException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error al actualizar el material", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            // Regresar a la lista de materiales
             ListaMateriales listaMateriales = new ListaMateriales();
             listaMateriales.setVisible(true);
             actual.dispose();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al actualizar el material", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+
 
 }
