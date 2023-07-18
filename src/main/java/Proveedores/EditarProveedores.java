@@ -185,9 +185,10 @@ public class EditarProveedores extends JFrame {
                     return;
                 }
 
-                // Verificar si el carácter no es una letra, guion, arroba o punto (excepto el primer punto)
-                if (!Character.isLetter(e.getKeyChar()) && e.getKeyChar() != '-' && e.getKeyChar() != '@' && (e.getKeyChar() != '.' || correo.contains("."))) {
-                    e.consume(); // Ignorar el carácter si no es una letra, guion, arroba o punto (excepto el primer punto)
+                // Verificar si el carácter no es una letra, guion, arroba o punto
+                if (!Character.isLetter(e.getKeyChar()) && e.getKeyChar() != '-' && e.getKeyChar() != '@' && e.getKeyChar() != '.') {
+                    e.consume(); // Ignorar el carácter si no es una letra, guion, arroba o punto
+                    return;
                 }
             }
         });
@@ -416,8 +417,8 @@ public class EditarProveedores extends JFrame {
 
                     String nombre = campoEmpresaProveedora.getText().trim();
                     if (!nombre.isEmpty()) {
-                        if (nombre.length() > 50) {
-                            JOptionPane.showMessageDialog(null, "El nombre de la empresa debe tener como máximo 50 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
+                        if (nombre.length() > 100) {
+                            JOptionPane.showMessageDialog(null, "El nombre de la empresa debe tener como máximo 100 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
                             return;
                         }
 
@@ -508,8 +509,8 @@ public class EditarProveedores extends JFrame {
 
                     String nombreVendedor = campoNombreVendedor.getText().trim();
                     if (!nombreVendedor.isEmpty()) {
-                        if (nombreVendedor.length() > 50) {
-                            JOptionPane.showMessageDialog(null, "El nombre de vendedor debe tener como máximo 50 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
+                        if (nombreVendedor.length() > 100) {
+                            JOptionPane.showMessageDialog(null, "El nombre de vendedor debe tener como máximo 100 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
                             return;
                         }
 

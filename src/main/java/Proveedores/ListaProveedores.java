@@ -38,11 +38,13 @@ public class ListaProveedores extends JFrame {
     private String busqueda = "";
 
     public ListaProveedores() {
-        super("");
+        super("Lista Proveedores");
         setSize(850, 500);
         setLocationRelativeTo(null);
         setContentPane(panelPrincipal);
         campoBusqueda.setText("");
+
+        lbl0.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
 
         listaProveedores.setModel(cargarDatos());
         centrarDatosTabla();
