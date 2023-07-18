@@ -158,7 +158,7 @@ public class CrearArreglo extends JFrame {
                     // Verificar si se está ingresando una letra
                     if (Character.isLetter(e.getKeyChar())) {
                         // Verificar si se excede el límite de caracteres
-                        if (trimmedLength >= 50) {
+                        if (trimmedLength >= 100) {
                             e.consume(); // Ignorar la letra
                         } else {
                             // Verificar si es el primer carácter o el carácter después de un espacio en blanco
@@ -209,7 +209,7 @@ public class CrearArreglo extends JFrame {
                 int decimalLength = parts.length > 1 ? parts[1].length() : 0;
 
                 // Verificar si se excede el límite de dígitos antes o después del punto
-                if (integerLength >= 6 || decimalLength >= 2) {
+                if (integerLength > 5 || decimalLength > 2) {
                     e.consume(); // Ignorar el carácter si se excede el límite de dígitos
                     return;
                 }
@@ -234,7 +234,7 @@ public class CrearArreglo extends JFrame {
 
                 if (campoNombre.getText().trim().isEmpty()) {
                     validacion++;
-                    mensaje += "Nombres\n";
+                    mensaje += "Nombre\n";
                 }
 
                 if (campoPrecio.getText().trim().isEmpty()) {
@@ -259,8 +259,8 @@ public class CrearArreglo extends JFrame {
 
                 String nombre = campoNombre.getText().trim();
                 if (!nombre.isEmpty()) {
-                    if (nombre.length() > 50) {
-                        JOptionPane.showMessageDialog(null, "El nombre debe tener como máximo 50 caracteres.", "Validación", JOptionPane.ERROR_MESSAGE);
+                    if (nombre.length() > 100) {
+                        JOptionPane.showMessageDialog(null, "El nombre debe tener como máximo 100 caracteres.", "Validación", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
 
@@ -279,8 +279,8 @@ public class CrearArreglo extends JFrame {
                     JOptionPane.showMessageDialog(null, "Faltó ingresar el precio.", "Validación", JOptionPane.ERROR_MESSAGE);
                     return;
                 } else {
-                    if (!precioText.matches("\\d{1,5}\\.\\d{2}")) {
-                        JOptionPane.showMessageDialog(null, "Precio inválido. Debe tener el formato correcto (ejemplo: 1234.56).", "Validación", JOptionPane.ERROR_MESSAGE);
+                    if (!precioText.matches("\\d{1,5}(\\.\\d{1,2})?")) {
+                        JOptionPane.showMessageDialog(null, "Precio inválido. Debe tener el formato correcto (ejemplo: 1234 o 1234.56).", "Validación", JOptionPane.ERROR_MESSAGE);
                         return;
                     } else {
                         double precio = Double.parseDouble(precioText);
@@ -342,51 +342,58 @@ public class CrearArreglo extends JFrame {
 
     }
 
-
-
     private void guardarArreglo() {
         String nombre = campoNombre.getText().trim();
         String precioText = campoPrecio.getText().replace("L ", "").replace(",", "").replace("_", "");
         double precio = Double.parseDouble(precioText);
         String disponible = radioButtonSi.isSelected() ? "Si" : "No";
 
-        try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO arreglos (imagen, nombre, precio, disponible) VALUES (?, ?, ?, ?)")) {
+        int opcion = JOptionPane.showOptionDialog(null, "¿Desea guardar el nuevo arreglo?", "Guardar", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
 
-            // Generar el nombre de la imagen
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH-mm-ss");
-            String fechaActual = dateFormat.format(new Date());
-            String nombreImagen = "imagen " + fechaActual + " " + generarNumeroAleatorio(0, 9999);
+        if (opcion == JOptionPane.YES_OPTION) {
+            try (Connection connection = sql.conectamysql();
+                 PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO arreglos (imagen, nombre, precio, disponible) VALUES (?, ?, ?, ?)")) {
 
-            // Guardar la imagen en la carpeta
-            String rutaImagen = nombreImagen + obtenerExtensionImagen(imagePath);
-            File destino = new File("img/arreglos/" + rutaImagen);
+                // Generar el nombre de la imagen
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH-mm-ss");
+                String fechaActual = dateFormat.format(new Date());
+                String nombreImagen = "imagen " + fechaActual + " " + generarNumeroAleatorio(0, 9999);
 
-            try {
-                // Copiar el archivo seleccionado a la ubicación destino
-                Path origenPath = Path.of(imagePath);
-                Files.copy(origenPath, destino.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException e) {
+                // Guardar la imagen en la carpeta
+                String rutaImagen = nombreImagen + obtenerExtensionImagen(imagePath);
+                File destino = new File("img/arreglos/" + rutaImagen);
+
+                try {
+                    // Copiar el archivo seleccionado a la ubicación destino
+                    Path origenPath = Path.of(imagePath);
+                    Files.copy(origenPath, destino.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "Error al guardar la imagen", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                preparedStatement.setString(1, rutaImagen);
+                preparedStatement.setString(2, nombre);
+                preparedStatement.setDouble(3, precio);
+                preparedStatement.setString(4, disponible);
+                preparedStatement.executeUpdate();
+
+                JOptionPane.showMessageDialog(null, "Arreglo creado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+
+                // Volver a la lista de arreglos
+                ListaArreglo listaArreglos = new ListaArreglo();
+                listaArreglos.setVisible(true);
+                actual.dispose();
+            } catch (SQLException e) {
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Error al guardar la imagen", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
+                JOptionPane.showMessageDialog(null, "Error al guardar el arreglo", "Error", JOptionPane.ERROR_MESSAGE);
             }
-
-            preparedStatement.setString(1, rutaImagen);
-            preparedStatement.setString(2, nombre);
-            preparedStatement.setDouble(3, precio);
-            preparedStatement.setString(4, disponible);
-            preparedStatement.executeUpdate();
-
-            JOptionPane.showMessageDialog(null, "Arreglo creado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-
-            // Volver a la lista de arreglos
+        } else {
+            // Regresar a la lista de arreglos
             ListaArreglo listaArreglos = new ListaArreglo();
             listaArreglos.setVisible(true);
             actual.dispose();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al guardar el arreglo", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 

@@ -18,7 +18,7 @@ import java.util.List;
 
 public class ModeloArreglo extends AbstractTableModel {
 
-    private final String[] columnas = {"N°", "Nombre", "Precio", "Disponible"};
+    private final String[] columnas = {"N°", "Nombre del arreglo", "Precio", "Disponible"};
 
     private final List<Arreglo> arreglos;
     private final Conexion sql;

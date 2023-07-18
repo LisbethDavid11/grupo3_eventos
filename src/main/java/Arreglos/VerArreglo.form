@@ -70,7 +70,7 @@
         <properties>
           <font name="Arial" size="12" style="1"/>
           <foreground color="-16315129"/>
-          <text value="Nombre"/>
+          <text value="Nombre del arreglo"/>
         </properties>
       </component>
       <component id="5aeb4" class="javax.swing.JLabel">

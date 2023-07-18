@@ -28,6 +28,10 @@ public class ListaArreglo extends JFrame {
     private JButton botonEditar;
     private JButton botonCrear;
     private JLabel lblPagina;
+    private JCheckBox noCheckBox;
+    private JCheckBox siCheckBox;
+    private JLabel lblD;
+    private JLabel lbl0;
     private List<Arreglo> listaArreglo;
     private int pagina = 0;
     private Connection mysql;
@@ -37,13 +41,14 @@ public class ListaArreglo extends JFrame {
 
     public ListaArreglo() {
         super("");
-        setSize(850, 500);
+        setSize(850, 505);
         setLocationRelativeTo(null);
         setContentPane(panelPrincipal);
         campoBusqueda.setText("");
 
         listaArreglos.setModel(cargarDatos());
         centrarDatosTabla();
+        mostrarTodos();
 
         lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
 
@@ -89,6 +94,28 @@ public class ListaArreglo extends JFrame {
                 listaArreglos.setModel(cargarDatos());
                 centrarDatosTabla();
                 lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+            }
+        });
+
+        siCheckBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!siCheckBox.isSelected() && !noCheckBox.isSelected()) {
+
+                    siCheckBox.setSelected(true);
+                }
+                actualizarTabla();
+            }
+        });
+
+        noCheckBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!siCheckBox.isSelected() && !noCheckBox.isSelected()) {
+
+                    noCheckBox.setSelected(true);
+                }
+                actualizarTabla();
             }
         });
 
@@ -156,10 +183,23 @@ public class ListaArreglo extends JFrame {
         // Color de fondo del campo de búsqueda
         campoBusqueda.setBackground(darkColor);
 
+        lblD.setForeground(Color.WHITE);
+
+        noCheckBox.setBackground(primaryColor);
+        noCheckBox.setForeground(Color.WHITE);
+        noCheckBox.setFocusPainted(false);
+        siCheckBox.setBackground(primaryColor);
+        siCheckBox.setForeground(Color.WHITE);
+        siCheckBox.setFocusPainted(false);
+
         // Color del placeholder del campo de búsqueda
         placeholder.changeAlpha(0.75f);
         placeholder.setForeground(Color.LIGHT_GRAY);
         placeholder.setFont(new Font("Nunito", Font.ITALIC, 11));
+
+        // Crear una fuente con un tamaño de 18 puntos
+        Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
+        lbl0.setFont(fontTitulo);
     }
 
     private void centrarDatosTabla() {
@@ -174,9 +214,11 @@ public class ListaArreglo extends JFrame {
     private ModeloArreglo cargarDatos() {
         sql = new Conexion();
         try (Connection mysql = sql.conectamysql();
-             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT * FROM arreglos WHERE nombre LIKE CONCAT('%', ?, '%') LIMIT ?, 20")){
+             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT * FROM arreglos WHERE nombre LIKE CONCAT('%', ?, '%') AND (? = 'Si' AND disponible = 'Si' OR ? = 'No' AND disponible = 'No') LIMIT ?, 20")){
             preparedStatement.setString(1, busqueda);
-            preparedStatement.setInt(2, pagina * 20);
+            preparedStatement.setString(2, siCheckBox.isSelected() ? "Si" : "");
+            preparedStatement.setString(3, noCheckBox.isSelected() ? "No" : "");
+            preparedStatement.setInt(4, pagina * 20);
 
             ResultSet resultSet = preparedStatement.executeQuery();
             listaArreglo = new ArrayList<>();
@@ -204,6 +246,7 @@ public class ListaArreglo extends JFrame {
         return new ModeloArreglo(listaArreglo, sql);
     }
 
+
     private int getTotalPageCount() {
         int count = 0;
         try (Connection mysql = sql.conectamysql();
@@ -225,6 +268,18 @@ public class ListaArreglo extends JFrame {
         }
 
         return totalPageCount;
+    }
+
+    private void actualizarTabla() {
+        listaArreglos.setModel(cargarDatos());
+        centrarDatosTabla();
+        lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+    }
+
+    private void mostrarTodos() {
+        siCheckBox.setSelected(true);
+        noCheckBox.setSelected(true);
+        actualizarTabla();
     }
 
     public static void main(String[] args) {
