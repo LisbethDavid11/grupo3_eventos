@@ -188,12 +188,14 @@ public class CrearProveedor extends JFrame {
                     return;
                 }
 
-                // Verificar si el carácter no es una letra, guion, arroba o punto (excepto el primer punto)
-                if (!Character.isLetter(e.getKeyChar()) && e.getKeyChar() != '-' && e.getKeyChar() != '@' && (e.getKeyChar() != '.' || correo.contains("."))) {
-                    e.consume(); // Ignorar el carácter si no es una letra, guion, arroba o punto (excepto el primer punto)
+                // Verificar si el carácter no es una letra, guion, arroba o punto
+                if (!Character.isLetter(e.getKeyChar()) && e.getKeyChar() != '-' && e.getKeyChar() != '@' && e.getKeyChar() != '.') {
+                    e.consume(); // Ignorar el carácter si no es una letra, guion, arroba o punto
+                    return;
                 }
             }
         });
+
 
         campoTelefonoVendedor.addKeyListener(new KeyAdapter() {
             @Override
@@ -423,8 +425,6 @@ public class CrearProveedor extends JFrame {
                         JOptionPane.showMessageDialog(null, "El campo de nombre de la empresa no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
-
-
 
                     String correoElectronico = campoCorreo.getText().trim();
                     if (!correoElectronico.isEmpty()) {

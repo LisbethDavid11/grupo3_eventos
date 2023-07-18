@@ -42,6 +42,7 @@ public class ListaCompras extends JFrame {
     private JLabel lblPagina;
     private JButton botonImprimir;
     private JLabel lbl0;
+    private JComboBox fechaComboBox;
     private List<Compra> compraList;
     private int pagina = 0;
     private Connection mysql;
@@ -62,6 +63,26 @@ public class ListaCompras extends JFrame {
         centrarDatosTabla();
 
         lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+
+        // Obtén el modelo del JComboBox
+        DefaultComboBoxModel<String> comboBoxModel = new DefaultComboBoxModel<>();
+
+        // Agrega los meses al modelo del JComboBox
+        comboBoxModel.addElement("Enero");
+        comboBoxModel.addElement("Febrero");
+        comboBoxModel.addElement("Marzo");
+        comboBoxModel.addElement("Abril");
+        comboBoxModel.addElement("Mayo");
+        comboBoxModel.addElement("Junio");
+        comboBoxModel.addElement("Julio");
+        comboBoxModel.addElement("Agosto");
+        comboBoxModel.addElement("Septiembre");
+        comboBoxModel.addElement("Octubre");
+        comboBoxModel.addElement("Noviembre");
+        comboBoxModel.addElement("Diciembre");
+
+        // Asigna el modelo al JComboBox
+        fechaComboBox.setModel(comboBoxModel);
 
         botonAdelante.addActionListener(new ActionListener() {
             @Override
@@ -108,10 +129,22 @@ public class ListaCompras extends JFrame {
             }
         });
 
+        // Agrega el ActionListener al JComboBox
+        fechaComboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String mesSeleccionado = (String) fechaComboBox.getSelectedItem();
+                actualizarModeloTablaConMesSeleccionado(mesSeleccionado);
+            }
+        });
+
         // Colores de la paleta
         Color primaryColor = Color.decode("#37474f"); // Gris azul oscuro
         Color lightColor = Color.decode("#cfd8dc"); // Gris azul claro
         Color darkColor = Color.decode("#263238"); // Gris azul más oscuro
+
+        fechaComboBox.setBackground(primaryColor);
+        fechaComboBox.setForeground(Color.WHITE);
 
         botonAtras.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
@@ -485,6 +518,89 @@ public class ListaCompras extends JFrame {
         }
         return nombreMaterial;
     }
+
+    private void actualizarModeloTablaConMesSeleccionado(String mesSeleccionado) {
+        sql = new Conexion();
+        try (Connection mysql = sql.conectamysql();
+             PreparedStatement preparedStatement = mysql.prepareStatement(
+                     "SELECT c.*, p.empresaProveedora, CONCAT(e.Nombres, ' ', e.Apellidos) AS empleadoNombre " +
+                             "FROM compras c " +
+                             "JOIN proveedores p ON c.proveedor_id = p.id " +
+                             "JOIN empleados e ON c.empleado_id = e.id " +
+                             "WHERE MONTH(c.fecha) = ?")) {
+
+            // Obtén el número del mes seleccionado
+            int numeroMes = obtenerNumeroMes(mesSeleccionado);
+
+            // Establece el número del mes en el parámetro de la consulta
+            preparedStatement.setInt(1, numeroMes);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            compraList = new ArrayList<>();
+            while (resultSet.next()) {
+                Compra compra = new Compra();
+                compra.setId(resultSet.getInt("id"));
+                compra.setCodigoCompra(resultSet.getString("codigo_compra"));
+                compra.setFecha(resultSet.getString("fecha"));
+                compra.setProveedorId(resultSet.getInt("proveedor_id"));
+                compra.setEmpleadoId(resultSet.getInt("empleado_id"));
+                compraList.add(compra);
+            }
+
+            // Actualiza el modelo de la tabla con los resultados obtenidos
+            listaCompras.setModel(new ModeloCompras(compraList, sql));
+            centrarDatosTabla();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            compraList = new ArrayList<>();
+        }
+    }
+
+    private int obtenerNumeroMes(String mesSeleccionado) {
+        int numeroMes = 0;
+        switch (mesSeleccionado) {
+            case "Enero":
+                numeroMes = 1;
+                break;
+            case "Febrero":
+                numeroMes = 2;
+                break;
+            case "Marzo":
+                numeroMes = 3;
+                break;
+            case "Abril":
+                numeroMes = 4;
+                break;
+            case "Mayo":
+                numeroMes = 5;
+                break;
+            case "Junio":
+                numeroMes = 6;
+                break;
+            case "Julio":
+                numeroMes = 7;
+                break;
+            case "Agosto":
+                numeroMes = 8;
+                break;
+            case "Septiembre":
+                numeroMes = 9;
+                break;
+            case "Octubre":
+                numeroMes = 10;
+                break;
+            case "Noviembre":
+                numeroMes = 11;
+                break;
+            case "Diciembre":
+                numeroMes = 12;
+                break;
+            // Agrega los demás meses aquí...
+        }
+        return numeroMes;
+    }
+
 
     public static void main(String[] args) {
         ListaCompras listaCompras = new ListaCompras();
