@@ -140,13 +140,43 @@ public class ModeloCompras extends AbstractTableModel {
 
     private double calcularISV(Compra compra) {
         double subTotal = calcularSubTotal(compra);
-        return subTotal * 0.15;
+        double totalISV = 0.0;
+
+        // Obtener los detalles de compra asociados a la compra actual
+        List<DetalleCompra> detalles = obtenerDetallesCompra(compra.getId());
+
+        // Calcular el ISV sumando los montos de los detalles de compra que no están exentos
+        for (DetalleCompra detalle : detalles) {
+            if (!detalle.isExento()) {
+                double montoDetalle = detalle.getPrecio() * detalle.getCantidad();
+                totalISV += montoDetalle * 0.15;
+            }
+        }
+
+        return totalISV;
     }
+
 
     private double calcularTotal(Compra compra) {
         double subTotal = calcularSubTotal(compra);
-        return subTotal * 1.15;
+        double total = 0.0;
+
+        // Obtener los detalles de compra asociados a la compra actual
+        List<DetalleCompra> detalles = obtenerDetallesCompra(compra.getId());
+
+        // Calcular el total sumando los montos de los detalles de compra
+        for (DetalleCompra detalle : detalles) {
+            double montoDetalle = detalle.getPrecio() * detalle.getCantidad();
+            if (detalle.isExento()) {
+                total += montoDetalle;
+            } else {
+                total += montoDetalle * 1.15; // Aplicar el 15% de impuesto sobre ventas (ISV)
+            }
+        }
+
+        return total;
     }
+
 
     private List<DetalleCompra> obtenerDetallesCompra(int compraId) {
         List<DetalleCompra> detalles = new ArrayList<>();
@@ -161,8 +191,9 @@ public class ModeloCompras extends AbstractTableModel {
                 int materialId = resultSet.getInt("material_id");
                 int cantidad = resultSet.getInt("cantidad");
                 double precio = resultSet.getDouble("precio");
+                boolean exento = resultSet.getBoolean("exento");
 
-                DetalleCompra detalle = new DetalleCompra(detalleId, compraId, materialId, cantidad, precio);
+                DetalleCompra detalle = new DetalleCompra(detalleId, compraId, materialId, cantidad, precio, exento);
                 detalles.add(detalle);
             }
         } catch (SQLException e) {

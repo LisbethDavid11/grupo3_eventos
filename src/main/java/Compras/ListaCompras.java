@@ -58,7 +58,6 @@ public class ListaCompras extends JFrame {
         campoBusqueda.setText("");
 
         compraList = new ArrayList<>();
-
         listaCompras.setModel(cargarDatos());
         centrarDatosTabla();
 

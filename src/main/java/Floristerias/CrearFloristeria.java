@@ -167,39 +167,33 @@ public class CrearFloristeria extends JFrame {
             public void keyTyped(KeyEvent e) {
                 char c = e.getKeyChar();
                 String text = campoPrecio.getText();
-                int caretPosition = campoPrecio.getCaretPosition();
 
-                // Permitir solo dígitos y el carácter punto
-                if (!(Character.isDigit(c) || c == '.')) {
+                // Permitir solo dígitos y el carácter de punto decimal
+                if (!Character.isDigit(c) && c != '.') {
                     e.consume(); // Ignorar cualquier otro carácter
                     return;
                 }
 
-                // Verificar si el carácter es un punto
-                if (c == '.') {
-                    // Verificar si ya hay un punto en el texto o si es el primer carácter
-                    if (text.contains(".") || caretPosition == 0) {
-                        e.consume(); // Ignorar el punto adicional
-                        return;
-                    }
-                } else {
-                    // Verificar si se excede el límite de caracteres después del punto
-                    int dotIndex = text.indexOf('.');
-                    if (dotIndex != -1 && caretPosition > dotIndex + 2) {
-                        e.consume(); // Ignorar el carácter si se excede el límite de decimales
-                        return;
-                    }
+                // Verificar si se excede el límite de caracteres
+                if (text.length() >= 5 && c != '.' && !text.contains(".")) {
+                    e.consume(); // Ignorar el carácter si se excede el límite de dígitos y no es un punto decimal
+                    return;
                 }
 
-                // Verificar la longitud del texto antes y después del punto
-                String[] parts = text.split("\\.");
-                int integerLength = parts[0].length();
-                int decimalLength = parts.length > 1 ? parts[1].length() : 0;
-
-                // Verificar si se excede el límite de dígitos antes o después del punto
-                if (integerLength > 5 || decimalLength > 2) {
-                    e.consume(); // Ignorar el carácter si se excede el límite de dígitos
+                // Verificar si ya hay un punto decimal y se intenta ingresar otro
+                if (text.contains(".") && c == '.') {
+                    e.consume(); // Ignorar el carácter si ya hay un punto decimal
                     return;
+                }
+
+                // Verificar la cantidad de dígitos después del punto decimal
+                if (text.contains(".")) {
+                    int dotIndex = text.indexOf(".");
+                    int decimalDigits = text.length() - dotIndex - 1;
+                    if (decimalDigits >= 2) {
+                        e.consume(); // Ignorar el carácter si se excede la cantidad de dígitos después del punto decimal
+                        return;
+                    }
                 }
             }
         });
@@ -267,7 +261,7 @@ public class CrearFloristeria extends JFrame {
                     return;
                 } else {
                     if (!precioText.matches("\\d{1,5}(\\.\\d{1,2})?")) {
-                        JOptionPane.showMessageDialog(null, "Precio inválido. Debe tener el formato correcto (ejemplo: 1234 o 1234.56).", "Validación", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "Precio inválido. Debe tener el formato correcto (ejemplo: 12345 o 123.45).", "Validación", JOptionPane.ERROR_MESSAGE);
                         return;
                     } else {
                         double precio = Double.parseDouble(precioText);

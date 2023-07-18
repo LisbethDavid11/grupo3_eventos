@@ -149,21 +149,27 @@ public class EditarCliente extends  JFrame{
                 String texto = campoDomicilio.getText();
                 int caretPosition = campoDomicilio.getCaretPosition();
 
-                // Verificar si se están ingresando más de dos espacios en blanco seguidos
+                // Verificar la longitud del texto
+                if (texto.length() >= 200) {
+                    e.consume(); // Ignorar el evento si se alcanza el límite máximo de caracteres (200)
+                    return;
+                }
+
+                // Verificar si se están ingresando más de un espacio en blanco seguido
                 if (e.getKeyChar() == ' ' && texto.endsWith(" ")) {
                     e.consume(); // Ignorar el evento y no agregar el espacio en blanco adicional
                     return;
                 }
 
                 // Convertir la primera letra en mayúscula
-                if (texto.length() > 0) {
-                    String primeraLetra = texto.substring(0, 1).toUpperCase();
-                    String restoTexto = texto.substring(1);
-                    texto = primeraLetra + restoTexto;
-                    campoDomicilio.setText(texto);
+                if (texto.length() == 0 && Character.isLowerCase(e.getKeyChar())) {
+                    e.setKeyChar(Character.toUpperCase(e.getKeyChar()));
                 }
 
-                Conexion.soloLetra(e, texto.length(), 200, caretPosition);
+                // Permitir números, letras, espacios, punto, coma y tildes
+                if (!Character.isLetterOrDigit(e.getKeyChar()) && !Character.isSpaceChar(e.getKeyChar()) && e.getKeyChar() != '.' && e.getKeyChar() != ',' && !Character.isWhitespace(e.getKeyChar()) && !Character.isIdeographic(e.getKeyChar())) {
+                    e.consume(); // Ignorar el evento si no es una letra, número, espacio, punto, coma o tilde
+                }
             }
         });
 

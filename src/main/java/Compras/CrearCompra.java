@@ -3,6 +3,9 @@ import Clientes.ListaCliente;
 import Objetos.Conexion;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,9 +18,6 @@ import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
 
 public class CrearCompra extends JFrame {
     private JPanel panel1, panel2;
@@ -27,8 +27,9 @@ public class CrearCompra extends JFrame {
     public JButton guardarButton, cancelarButton, limpiarButton, agregarButton;
     public JTextField campoCodigo, campoFecha, campoCantidad, campoPrecio;
     public JComboBox<String> boxProveedor, boxEmpleado, boxMaterial;
-    private JLabel lbl0, lbl1, lbl2, lbl3, lbl4, lbl5,lbl6, lbl7,lbl8,lbl9,lbl10, lbl11;
+    private JLabel lbl0, lbl1, lbl2, lbl3, lbl4, lbl5, lbl6, lbl7, lbl8, lbl9, lbl10, lbl11;
     private JCheckBox siCheckBox;
+    private double sumaISVExento = 0.0;
     private JLabel lbl12;
     private Conexion sql;
     private Connection mysql;
@@ -41,8 +42,9 @@ public class CrearCompra extends JFrame {
     EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
     Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
     private JTextField[] campos = { campoCodigo, campoFecha, campoCantidad, campoPrecio };
+
     public CrearCompra() {
-        super("Crear Empleados");
+        super("");
         setSize(950, 650);
         setLocationRelativeTo(null);
         setContentPane(panel1);
@@ -95,6 +97,23 @@ public class CrearCompra extends JFrame {
         lbl0.setBorder(margin);
         lbl0.setFont(fontTitulo);
 
+        lbl8.setForeground(textColor);
+        lbl8.setHorizontalAlignment(SwingConstants.RIGHT);
+        lbl8.setText("0.00");
+
+        lbl9.setForeground(textColor);
+        lbl9.setHorizontalAlignment(SwingConstants.RIGHT);
+        lbl9.setText("0.00");
+
+        lbl10.setForeground(textColor);
+        lbl10.setHorizontalAlignment(SwingConstants.RIGHT);
+        lbl10.setText("0.00");
+
+        lbl12.setForeground(textColor);
+        lbl12.setHorizontalAlignment(SwingConstants.RIGHT);
+        lbl12.setText("0.00");
+
+
         modeloProductos = new DefaultTableModel();
         modeloProductos.addColumn("Nombre");
         modeloProductos.addColumn("Cantidad");
@@ -107,35 +126,38 @@ public class CrearCompra extends JFrame {
         tablaProductos.setModel(modeloProductos);
         tablaProductos.getColumnModel().getColumn(6).setCellRenderer(new ButtonRenderer());
 
-
         campoPrecio.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
                 char c = e.getKeyChar();
                 String text = campoPrecio.getText();
-                int caretPosition = campoPrecio.getCaretPosition();
-                if (!(Character.isDigit(c) || c == '.')) {
-                    e.consume();
+
+                // Permitir solo dígitos y el carácter de punto decimal
+                if (!Character.isDigit(c) && c != '.') {
+                    e.consume(); // Ignorar cualquier otro carácter
                     return;
                 }
-                if (c == '.') {
-                    if (text.contains(".") || caretPosition == 0) {
-                        e.consume();
-                        return;
-                    }
-                } else {
-                    int dotIndex = text.indexOf('.');
-                    if (dotIndex != -1 && caretPosition > dotIndex + 2) {
-                        e.consume();
-                        return;
-                    }
-                }
-                String[] parts = text.split("\\.");
-                int integerLength = parts[0].length();
-                int decimalLength = parts.length > 1 ? parts[1].length() : 0;
-                if (integerLength > 5 || decimalLength > 2) {
-                    e.consume();
+
+                // Verificar si se excede el límite de caracteres
+                if (text.length() >= 5 && c != '.' && !text.contains(".")) {
+                    e.consume(); // Ignorar el carácter si se excede el límite de dígitos y no es un punto decimal
                     return;
+                }
+
+                // Verificar si ya hay un punto decimal y se intenta ingresar otro
+                if (text.contains(".") && c == '.') {
+                    e.consume(); // Ignorar el carácter si ya hay un punto decimal
+                    return;
+                }
+
+                // Verificar la cantidad de dígitos después del punto decimal
+                if (text.contains(".")) {
+                    int dotIndex = text.indexOf(".");
+                    int decimalDigits = text.length() - dotIndex - 1;
+                    if (decimalDigits >= 2) {
+                        e.consume(); // Ignorar el carácter si se excede la cantidad de dígitos después del punto decimal
+                        return;
+                    }
                 }
             }
         });
@@ -169,22 +191,7 @@ public class CrearCompra extends JFrame {
         cancelarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int opcion = JOptionPane.showConfirmDialog(null, "¿Está seguro que desea cancelar?", "Confirmación", JOptionPane.YES_NO_OPTION);
-                if (opcion == JOptionPane.YES_OPTION) {
-                    boolean listaCompraAbierta = false;
-                    Window[] windows = Window.getWindows();
-                    for (Window window : windows) {
-                        if (window instanceof ListaCliente) {
-                            listaCompraAbierta = true;
-                            break;
-                        }
-                    }
-                    if (!listaCompraAbierta) {
-                        ListaCompras compras = new ListaCompras();
-                        compras.setVisible(true);
-                    }
-                    crearCompra.dispose();
-                }
+                cancelar();
             }
         });
 
@@ -243,7 +250,6 @@ public class CrearCompra extends JFrame {
         agregarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
                 int validacion = 0;
                 String mensaje = "Faltó ingresar: \n";
 
@@ -268,38 +274,35 @@ public class CrearCompra extends JFrame {
                     return;
                 }
 
-                // Verificar si el producto ya está agregado a la lista
-                String producto = (String) boxMaterial.getSelectedItem();
-                boolean productoExistente = false;
-                for (int i = 0; i < modeloProductos.getRowCount(); i++) {
-                    String productoEnLista = (String) modeloProductos.getValueAt(i, 0);
-                    if (productoEnLista.equals(producto)) {
-                        productoExistente = true;
-                        break;
+                String precioText = campoPrecio.getText().trim();
+                if (precioText.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Faltó ingresar el precio.", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return;
+                } else {
+                    if (!precioText.matches("\\d{1,5}(\\.\\d{1,2})?")) {
+                        JOptionPane.showMessageDialog(null, "Precio inválido. Debe tener el formato correcto (ejemplo: 1234 o 1234.56).", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    } else {
+                        double precio = Double.parseDouble(precioText);
+                        if (precio < 1.00 || precio > 99999.99) {
+                            JOptionPane.showMessageDialog(null, "Precio fuera del rango válido (1.00 - 99999.99).", "Validación", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
                     }
                 }
 
-                if (productoExistente) {
-                    JOptionPane.showMessageDialog(null, "El producto ya está agregado a la lista.", "Validación", JOptionPane.ERROR_MESSAGE);
-                    return;
+                agregarProducto();
+            }
+        });
+
+        siCheckBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (siCheckBox.isSelected()) {
+                    campoPrecio.setEnabled(true);
+                } else {
+                    campoPrecio.setEnabled(true);
                 }
-
-                // Obtener los valores seleccionados y calculados
-                int cantidad = Integer.parseInt(campoCantidad.getText());
-                double precio = Double.parseDouble(campoPrecio.getText());
-                double subtotal = cantidad * precio;
-                double isv = subtotal * 0.15;
-                double total = subtotal + isv;
-
-                // Agregar la compra al modelo de datos de la lista de productos
-                modeloProductos.addRow(new Object[]{producto, cantidad, precio, subtotal, isv, total, crearBotonEliminar()});
-
-                // Limpiar los campos después de agregar la compra
-                campoCantidad.setText("");
-                campoPrecio.setText("");
-
-                // Actualizar los totales
-                actualizarTotales();
             }
         });
 
@@ -358,7 +361,7 @@ public class CrearCompra extends JFrame {
 
             while (resultSet.next()) {
                 String nombre = resultSet.getString("nombre");
-                String materialText = nombre ;
+                String materialText = nombre;
                 boxMaterial.addItem(materialText);
             }
         } catch (SQLException e) {
@@ -389,6 +392,11 @@ public class CrearCompra extends JFrame {
     }
 
     private void guardarDatos() {
+        int confirmacionGuardar = JOptionPane.showConfirmDialog(null, "¿Desea guardar la compra?", "Confirmar", JOptionPane.YES_NO_OPTION);
+        if (confirmacionGuardar != JOptionPane.YES_OPTION) {
+            return; // El usuario ha cancelado la operación
+        }
+
         String codigoCompra = campoCodigo.getText();
         Date fechaActual = new Date();
         String fechaCompra = new SimpleDateFormat("yyyy-MM-dd").format(fechaActual);
@@ -426,11 +434,16 @@ public class CrearCompra extends JFrame {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            try (PreparedStatement preparedStatement = mysql.prepareStatement("INSERT INTO detalles_compras (compra_id, material_id, cantidad, precio) VALUES (?, ?, ?, ?)")) {
+            boolean exento = false; // Valor por defecto
+            if (modeloProductos.getValueAt(i, 4).toString().equalsIgnoreCase("Exento")) {
+                exento = true;
+            }
+            try (PreparedStatement preparedStatement = mysql.prepareStatement("INSERT INTO detalles_compras (compra_id, material_id, cantidad, precio, exento) VALUES (?, ?, ?, ?, ?)")) {
                 preparedStatement.setInt(1, compraId);
                 preparedStatement.setInt(2, materialId);
                 preparedStatement.setInt(3, cantidad);
                 preparedStatement.setDouble(4, precio);
+                preparedStatement.setBoolean(5, exento);
                 preparedStatement.executeUpdate();
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -445,11 +458,11 @@ public class CrearCompra extends JFrame {
             }
         }
         if (!listaCompraAbierta) {
-            System.out.println("Compra registrada exitosamente.");
             JOptionPane.showMessageDialog(null, "Compra registrada exitosamente.", "Éxito", JOptionPane.DEFAULT_OPTION);
         }
         crearCompra.dispose();
-       if (!listaCompraAbierta) {
+
+        if (!listaCompraAbierta) {
             ListaCompras compras = new ListaCompras();
             compras.setVisible(true);
         }
@@ -458,23 +471,47 @@ public class CrearCompra extends JFrame {
     private void actualizarTotales() {
         double sumaSubtotal = 0.0;
         double sumaISV = 0.0;
+        double sumaISVExento = 0.0;
         double sumaTotal = 0.0;
         for (int i = 0; i < modeloProductos.getRowCount(); i++) {
-            double subtotal = (double) modeloProductos.getValueAt(i, 3);
-            double isv = (double) modeloProductos.getValueAt(i, 4);
-            double total = (double) modeloProductos.getValueAt(i, 5);
-            sumaSubtotal += subtotal;
-            sumaISV += isv;
-            sumaTotal += total;
+            try {
+                double subtotal = Double.parseDouble(modeloProductos.getValueAt(i, 3).toString().replace(",", "."));
+                double isv;
+                if (modeloProductos.getValueAt(i, 4).toString().equalsIgnoreCase("Exento")) {
+                    isv = subtotal;  // Exempted amount goes into ISV
+                    sumaISVExento += isv;
+                } else {
+                    isv = Double.parseDouble(modeloProductos.getValueAt(i, 4).toString().replace(",", "."));
+                    sumaISV += isv;
+                }
+                double total = Double.parseDouble(modeloProductos.getValueAt(i, 5).toString().replace(",", "."));
+                sumaSubtotal += subtotal;
+                sumaTotal += total;
+            } catch (NumberFormatException e) {
+                // Handle the case when the string cannot be parsed as a double
+                // You can choose to display an error message or take any other appropriate action
+                System.err.println("Invalid number format encountered. Skipping calculation for row " + i);
+            }
         }
+        double isvExento = sumaISVExento * 0.15;  // Calcular el 15% del total de productos exentos
         DecimalFormat decimalFormat = new DecimalFormat("#.00");
+
         String sumaSubtotalFormatted = decimalFormat.format(sumaSubtotal);
+
         String sumaISVFormatted = decimalFormat.format(sumaISV);
+        String sumaISVExentoFormatted = decimalFormat.format(isvExento);
+
         String sumaTotalFormatted = decimalFormat.format(sumaTotal);
         lbl8.setText(" " + sumaSubtotalFormatted);
         lbl9.setText(" " + sumaISVFormatted);
         lbl10.setText(" " + sumaTotalFormatted);
+        lbl12.setText(" " + sumaISVExentoFormatted);
     }
+
+
+
+
+
 
     private void cancelar() {
         int dialogResult = JOptionPane.showConfirmDialog(null, "¿Está seguro de que desea cancelar?", "Confirmar cancelación", JOptionPane.YES_NO_OPTION);
@@ -496,12 +533,116 @@ public class CrearCompra extends JFrame {
     }
 
     private void limpiar() {
-        campoPrecio.setText("");
-        campoCantidad.setText("");
+        campoCodigo.setText("");
         boxProveedor.setSelectedIndex(0);
         boxEmpleado.setSelectedIndex(0);
         boxMaterial.setSelectedIndex(0);
+        campoCantidad.setText("");
+        campoPrecio.setText("");
         modeloProductos.setRowCount(0);
+        lbl8.setText("0.00");
+        lbl9.setText("0.00");
+        lbl10.setText("0.00");
+        lbl12.setText("0.00");
+    }
+
+
+    private boolean existeProductoEnTabla(String producto) {
+        for (int i = 0; i < modeloProductos.getRowCount(); i++) {
+            String nombreProducto = (String) modeloProductos.getValueAt(i, 0);
+            if (nombreProducto.equals(producto)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void agregarProducto() {
+
+        String producto = boxMaterial.getSelectedItem().toString();
+
+        if (existeProductoEnTabla(producto)) {
+            mostrarMensajeError("El producto ya ha sido agregado.");
+            return;
+        }
+
+        int cantidad = Integer.parseInt(campoCantidad.getText());
+        double precio;
+        String isv;
+        String total;
+        if (siCheckBox.isSelected()) {
+            precio = Double.parseDouble(campoPrecio.getText());
+            double subtotal = cantidad * precio;
+            DecimalFormat decimalFormat = new DecimalFormat("#.00");
+            isv = "Exento";
+            total = decimalFormat.format(subtotal);
+            sumaISVExento += subtotal;  // Sumar al total de productos exentos
+        } else {
+            precio = Double.parseDouble(campoPrecio.getText());
+            double subtotal = cantidad * precio;
+            double impuesto = subtotal * 0.15;
+            double totalProducto = subtotal + impuesto;
+            DecimalFormat decimalFormat = new DecimalFormat("#.00");
+            isv = decimalFormat.format(impuesto);
+            total = decimalFormat.format(totalProducto);
+        }
+        Object[] fila = { producto, cantidad, precio, cantidad * precio, isv, total, crearBotonEliminar() };
+        modeloProductos.addRow(fila);
+        campoCantidad.setText("");
+        campoPrecio.setText("");
+        actualizarTotales();
+    }
+
+    private int validarCampos() {
+        int contador = 0;
+        for (JTextField campo : campos) {
+            if (campo.getText().isEmpty()) {
+                campo.setBorder(BorderFactory.createLineBorder(Color.RED));
+                contador++;
+            } else {
+                campo.setBorder(UIManager.getLookAndFeel().getDefaults().getBorder("TextField.border"));
+            }
+        }
+        if (boxProveedor.getSelectedIndex() == 0) {
+            boxProveedor.setBorder(BorderFactory.createLineBorder(Color.RED));
+            contador++;
+        } else {
+            boxProveedor.setBorder(UIManager.getLookAndFeel().getDefaults().getBorder("ComboBox.border"));
+        }
+        if (boxEmpleado.getSelectedIndex() == 0) {
+            boxEmpleado.setBorder(BorderFactory.createLineBorder(Color.RED));
+            contador++;
+        } else {
+            boxEmpleado.setBorder(UIManager.getLookAndFeel().getDefaults().getBorder("ComboBox.border"));
+        }
+        return contador;
+    }
+
+    private int validarCamposProducto() {
+        int contador = 0;
+        if (boxMaterial.getSelectedIndex() == 0) {
+            boxMaterial.setBorder(BorderFactory.createLineBorder(Color.RED));
+            contador++;
+        } else {
+            boxMaterial.setBorder(UIManager.getLookAndFeel().getDefaults().getBorder("ComboBox.border"));
+        }
+        if (campoCantidad.getText().isEmpty()) {
+            campoCantidad.setBorder(BorderFactory.createLineBorder(Color.RED));
+            contador++;
+        } else {
+            campoCantidad.setBorder(UIManager.getLookAndFeel().getDefaults().getBorder("TextField.border"));
+        }
+        if (!siCheckBox.isSelected() && campoPrecio.getText().isEmpty()) {
+            campoPrecio.setBorder(BorderFactory.createLineBorder(Color.RED));
+            contador++;
+        } else {
+            campoPrecio.setBorder(UIManager.getLookAndFeel().getDefaults().getBorder("TextField.border"));
+        }
+        return contador;
+    }
+
+    private void mostrarMensajeError(String mensaje) {
+        JOptionPane.showMessageDialog(null, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
     class ButtonRenderer extends JButton implements TableCellRenderer {
@@ -545,5 +686,18 @@ public class CrearCompra extends JFrame {
             modeloProductos.removeRow(filaSeleccionada);
             actualizarTotales();
         }
+    }
+
+    public static void main(String[] args) {
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                try {
+                    CrearCompra frame = new CrearCompra();
+                    frame.setVisible(true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 }

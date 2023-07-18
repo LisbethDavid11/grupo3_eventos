@@ -167,7 +167,7 @@ public class CrearCliente extends JFrame{
                 }
 
                 // Convertir la primera letra en mayúscula
-                if (texto.length() == 0 || texto.substring(caretPosition - 1, caretPosition).equals(" ")) {
+                if (texto.length() == 0 && Character.isLowerCase(e.getKeyChar())) {
                     e.setKeyChar(Character.toUpperCase(e.getKeyChar()));
                 }
 

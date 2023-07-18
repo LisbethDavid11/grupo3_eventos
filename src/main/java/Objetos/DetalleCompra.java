@@ -6,6 +6,7 @@ public class DetalleCompra {
     private int materialId;
     private int cantidad;
     private double precio;
+    private boolean exento;
 
     public static String nombreTabla = "detalles_compras";
 
@@ -15,13 +16,13 @@ public class DetalleCompra {
     public Object[] toTableRow() {
         return new Object[]{id, compraId, materialId, cantidad, precio};
     }
-
-    public DetalleCompra(int id, int compraId, int materialId, int cantidad, double precio) {
+    public DetalleCompra(int id, int compraId, int materialId, int cantidad, double precio, boolean exento){
         this.id = id;
         this.compraId = compraId;
         this.materialId = materialId;
         this.cantidad = cantidad;
         this.precio = precio;
+        this.exento = exento;
     }
 
     public double calcularSubtotal() {
@@ -76,5 +77,9 @@ public class DetalleCompra {
 
     public void setPrecio(double precio) {
         this.precio = precio;
+    }
+
+    public boolean isExento() {
+        return exento;
     }
 }
