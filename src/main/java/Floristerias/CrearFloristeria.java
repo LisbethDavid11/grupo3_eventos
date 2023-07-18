@@ -146,7 +146,7 @@ public class CrearFloristeria extends JFrame {
                     // Verificar si se está ingresando una letra
                     if (Character.isLetter(e.getKeyChar())) {
                         // Verificar si se excede el límite de caracteres
-                        if (trimmedLength >= 50) {
+                        if (trimmedLength >= 100) {
                             e.consume(); // Ignorar la letra
                         } else {
                             // Verificar si es el primer carácter o el carácter después de un espacio en blanco
@@ -197,7 +197,7 @@ public class CrearFloristeria extends JFrame {
                 int decimalLength = parts.length > 1 ? parts[1].length() : 0;
 
                 // Verificar si se excede el límite de dígitos antes o después del punto
-                if (integerLength >= 6 || decimalLength >= 2) {
+                if (integerLength > 5 || decimalLength > 2) {
                     e.consume(); // Ignorar el carácter si se excede el límite de dígitos
                     return;
                 }
@@ -221,7 +221,7 @@ public class CrearFloristeria extends JFrame {
 
                 if (campoNombre.getText().trim().isEmpty()) {
                     validacion++;
-                    mensaje += "Nombres\n";
+                    mensaje += "Nombre\n";
                 }
 
                 if (campoPrecio.getText().trim().isEmpty()) {
@@ -247,8 +247,8 @@ public class CrearFloristeria extends JFrame {
 
                 String nombre = campoNombre.getText().trim();
                 if (!nombre.isEmpty()) {
-                    if (nombre.length() > 50) {
-                        JOptionPane.showMessageDialog(null, "El nombre debe tener como máximo 50 caracteres.", "Validación", JOptionPane.ERROR_MESSAGE);
+                    if (nombre.length() > 100) {
+                        JOptionPane.showMessageDialog(null, "El nombre debe tener como máximo 100 caracteres.", "Validación", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
 
@@ -266,8 +266,8 @@ public class CrearFloristeria extends JFrame {
                     JOptionPane.showMessageDialog(null, "Faltó ingresar el precio.", "Validación", JOptionPane.ERROR_MESSAGE);
                     return;
                 } else {
-                    if (!precioText.matches("\\d{1,5}\\.\\d{2}")) {
-                        JOptionPane.showMessageDialog(null, "Precio inválido. Debe tener el formato correcto (ejemplo: 1234.56).", "Validación", JOptionPane.ERROR_MESSAGE);
+                    if (!precioText.matches("\\d{1,5}(\\.\\d{1,2})?")) {
+                        JOptionPane.showMessageDialog(null, "Precio inválido. Debe tener el formato correcto (ejemplo: 1234 o 1234.56).", "Validación", JOptionPane.ERROR_MESSAGE);
                         return;
                     } else {
                         double precio = Double.parseDouble(precioText);
@@ -378,7 +378,7 @@ public class CrearFloristeria extends JFrame {
             preparedStatement.setInt(4, idProveedor);
             preparedStatement.executeUpdate();
 
-            JOptionPane.showMessageDialog(null, "Floristería creada exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Flor creada exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
 
             // Volver a la lista de floristerías
             ListaFloristeria listaFloristeria = new ListaFloristeria();
@@ -387,7 +387,7 @@ public class CrearFloristeria extends JFrame {
 
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al guardar la floristería", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error al guardar la flor", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 

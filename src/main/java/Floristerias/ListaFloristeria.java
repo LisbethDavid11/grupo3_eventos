@@ -24,10 +24,11 @@ public class ListaFloristeria extends JFrame {
     private JButton botonAtras;
     private JButton botonAdelante;
     private JTextField campoBusqueda;
-    private TextPrompt placeholder = new TextPrompt("Buscar por nombre", campoBusqueda);
+    private TextPrompt placeholder = new TextPrompt("Buscar por nombre de la flor o de la empresa proveedora", campoBusqueda);
     private JButton botonEditar;
     private JButton botonCrear;
     private JLabel lbltxt;
+    private JLabel lbl0;
     private ImageIcon imagen;
     private List<Floristeria> listaFloristeria;
     private int pagina = 0;
@@ -38,7 +39,7 @@ public class ListaFloristeria extends JFrame {
 
     public ListaFloristeria() {
         super("");
-        setSize(850, 500);
+        setSize(850, 510);
         setLocationRelativeTo(null);
         setContentPane(panelPrincipal);
         campoBusqueda.setText("");
@@ -133,6 +134,9 @@ public class ListaFloristeria extends JFrame {
         Color lightColor = Color.decode("#cfd8dc"); // Gris azul claro
         Color darkColor = Color.decode("#263238"); // Gris azul más oscuro
 
+        Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
+        lbl0.setFont(fontTitulo);
+
         botonVer.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 botonVer.setBackground(lightColor);
@@ -220,9 +224,17 @@ public class ListaFloristeria extends JFrame {
     private ModeloFloristeria cargarDatos() {
         sql = new Conexion();
         try (Connection mysql = sql.conectamysql();
-             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT f.*, p.empresaProveedora FROM Floristeria f JOIN Proveedores p ON f.proveedor_id = p.id WHERE f.nombre LIKE CONCAT('%', ?, '%') LIMIT ?, 20")){
+             PreparedStatement preparedStatement = mysql.prepareStatement(
+                     "SELECT f.*, p.empresaProveedora " +
+                             "FROM Floristeria f " +
+                             "JOIN Proveedores p ON f.proveedor_id = p.id " +
+                             "WHERE f.nombre LIKE CONCAT('%', ?, '%') OR p.empresaProveedora LIKE CONCAT('%', ?, '%') " +
+                             "LIMIT ?, 20"
+             )
+        ){
             preparedStatement.setString(1, busqueda);
-            preparedStatement.setInt(2, pagina * 20);
+            preparedStatement.setString(2, busqueda);
+            preparedStatement.setInt(3, pagina * 20);
 
             ResultSet resultSet = preparedStatement.executeQuery();
             listaFloristeria = new ArrayList<>();
@@ -249,6 +261,7 @@ public class ListaFloristeria extends JFrame {
 
         return new ModeloFloristeria(listaFloristeria, sql);
     }
+
 
     private int getTotalPageCount() {
         int count = 0;

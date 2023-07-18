@@ -52,7 +52,7 @@
         <properties>
           <font name="Arial" size="14" style="1"/>
           <foreground color="-16315129"/>
-          <text value="VISUALIZAR DATOS DE LA FLORISTERIA"/>
+          <text value="VISUALIZAR DATOS DE LA FLOR"/>
         </properties>
       </component>
       <component id="c9329" class="javax.swing.JButton" binding="volverButton">
