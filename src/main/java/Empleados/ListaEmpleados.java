@@ -23,7 +23,7 @@ public class ListaEmpleados extends JFrame {
     private JButton botonAtras;
     private JButton botonAdelante;
     private JTextField campoBusqueda;
-    private TextPrompt placeholder = new TextPrompt("Buscar por nombre", campoBusqueda);
+    private TextPrompt placeholder = new TextPrompt("Buscar por identidad, nombres y apellidos", campoBusqueda);
     private JButton botonEditar;
     private JButton botonCrear;
     private JLabel lblPagina;
