@@ -41,6 +41,7 @@ public class ListaCompras extends JFrame {
     private JButton botonCrear;
     private JLabel lblPagina;
     private JButton botonImprimir;
+    private JLabel lbl0;
     private List<Compra> compraList;
     private int pagina = 0;
     private Connection mysql;
@@ -50,7 +51,7 @@ public class ListaCompras extends JFrame {
 
     public ListaCompras() {
         super("");
-        setSize(950, 500);
+        setSize(950, 505);
         setLocationRelativeTo(null);
         setContentPane(panelPrincipal);
         campoBusqueda.setText("");
@@ -194,6 +195,10 @@ public class ListaCompras extends JFrame {
         placeholder.changeAlpha(0.75f);
         placeholder.setForeground(Color.LIGHT_GRAY);
         placeholder.setFont(new Font("Nunito", Font.ITALIC, 11));
+
+        // Crear una fuente con un tamaño de 18 puntos
+        Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
+        lbl0.setFont(fontTitulo);
     }
     private void centrarDatosTabla() {
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();

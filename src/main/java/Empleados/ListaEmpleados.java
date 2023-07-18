@@ -27,6 +27,7 @@ public class ListaEmpleados extends JFrame {
     private JButton botonEditar;
     private JButton botonCrear;
     private JLabel lblPagina;
+    private JLabel lbl0;
     private ImageIcon imagen;
     private List<Empleado> listaEmpleado;
     private int pagina = 0;
@@ -37,7 +38,7 @@ public class ListaEmpleados extends JFrame {
 
     public ListaEmpleados() {
         super("");
-        setSize(850, 490);
+        setSize(850, 505);
         setLocationRelativeTo(null);
         setContentPane(panelPrincipal);
         campoBusqueda.setText("");
@@ -213,6 +214,10 @@ public class ListaEmpleados extends JFrame {
         placeholder.changeAlpha(0.75f);
         placeholder.setForeground(Color.LIGHT_GRAY);
         placeholder.setFont(new Font("Nunito", Font.ITALIC, 11));
+
+        // Crear una fuente con un tamaño de 18 puntos
+        Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
+        lbl0.setFont(fontTitulo);
     }
 
     private void centrarDatosTabla() {
