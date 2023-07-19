@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ModeloFloristeria extends AbstractTableModel {
-    private final String[] columnas = {"N°", "Nombre", "Precio", "Proveedor"};
+    private final String[] columnas = {"N°", "Nombre de la flor", "Precio", "Proveedor"};
 
     private final List<Floristeria> floristerias;
     private final Conexion sql;

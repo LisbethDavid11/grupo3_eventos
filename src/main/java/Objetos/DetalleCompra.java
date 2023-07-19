@@ -30,11 +30,19 @@ public class DetalleCompra {
     }
 
     public double calcularISV() {
-        return calcularSubtotal() * 0.15;
+        if (exento) {
+            return 0.0;
+        } else {
+            return calcularSubtotal() * 0.15;
+        }
     }
 
     public double calcularTotal() {
-        return calcularSubtotal() * 1.15;
+        if (exento) {
+            return calcularSubtotal();
+        } else {
+            return calcularSubtotal() + calcularISV();
+        }
     }
 
     // Getters y setters

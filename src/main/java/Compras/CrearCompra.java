@@ -273,24 +273,6 @@ public class CrearCompra extends JFrame {
                     JOptionPane.showMessageDialog(null, mensaje, "Validación", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-
-                String precioText = campoPrecio.getText().trim();
-                if (precioText.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Faltó ingresar el precio.", "Validación", JOptionPane.ERROR_MESSAGE);
-                    return;
-                } else {
-                    if (!precioText.matches("\\d{1,5}(\\.\\d{1,2})?")) {
-                        JOptionPane.showMessageDialog(null, "Precio inválido. Debe tener el formato correcto (ejemplo: 1234 o 1234.56).", "Validación", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    } else {
-                        double precio = Double.parseDouble(precioText);
-                        if (precio < 1.00 || precio > 99999.99) {
-                            JOptionPane.showMessageDialog(null, "Precio fuera del rango válido (1.00 - 99999.99).", "Validación", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-                    }
-                }
-
                 agregarProducto();
             }
         });
@@ -483,17 +465,20 @@ public class CrearCompra extends JFrame {
                 } else {
                     isv = Double.parseDouble(modeloProductos.getValueAt(i, 4).toString().replace(",", "."));
                     sumaISV += isv;
+
+                    sumaSubtotal += subtotal;
+
                 }
                 double total = Double.parseDouble(modeloProductos.getValueAt(i, 5).toString().replace(",", "."));
-                sumaSubtotal += subtotal;
                 sumaTotal += total;
+
             } catch (NumberFormatException e) {
                 // Handle the case when the string cannot be parsed as a double
                 // You can choose to display an error message or take any other appropriate action
                 System.err.println("Invalid number format encountered. Skipping calculation for row " + i);
             }
         }
-        double isvExento = sumaISVExento * 0.15;  // Calcular el 15% del total de productos exentos
+        double isvExento = sumaISVExento;
         DecimalFormat decimalFormat = new DecimalFormat("#.00");
 
         String sumaSubtotalFormatted = decimalFormat.format(sumaSubtotal);
@@ -507,11 +492,6 @@ public class CrearCompra extends JFrame {
         lbl10.setText(" " + sumaTotalFormatted);
         lbl12.setText(" " + sumaISVExentoFormatted);
     }
-
-
-
-
-
 
     private void cancelar() {
         int dialogResult = JOptionPane.showConfirmDialog(null, "¿Está seguro de que desea cancelar?", "Confirmar cancelación", JOptionPane.YES_NO_OPTION);
