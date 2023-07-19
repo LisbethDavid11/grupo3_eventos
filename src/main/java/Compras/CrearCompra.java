@@ -185,6 +185,30 @@ public class CrearCompra extends JFrame {
             }
         });
 
+        campoCodigo.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                String text = campoCodigo.getText();
+                int length = text.length();
+
+                if (length >= 50) {
+                    e.consume();  // Ignorar la tecla si se alcanza la longitud máxima
+                    return;
+                }
+
+                char c = e.getKeyChar();
+                if (Character.isISOControl(c)) {
+                    return;  // Permitir teclas de control como retroceso y eliminar
+                }
+
+                String newText = text + c;
+                if (newText.length() > 50) {
+                    e.consume();  // Ignorar la tecla si se supera la longitud máxima
+                }
+            }
+        });
+
+
         tablaProductos.getColumnModel().getColumn(6).setCellRenderer(new ButtonRenderer());
         tablaProductos.getColumnModel().getColumn(6).setCellEditor(new ButtonEditor(new JCheckBox()));
 
@@ -286,6 +310,25 @@ public class CrearCompra extends JFrame {
                     }
                 }
 
+                if (campoCantidad.getText().trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "La cantidad\n";
+                } else {
+                    int cantidad = Integer.parseInt(campoCantidad.getText().trim());
+                    if (!(cantidad >= 1 && cantidad <= 99999)) {
+                        JOptionPane.showMessageDialog(null, "La cantidad debe estar entre 1 y 99999", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                }
+
+                String codigo = campoCodigo.getText().trim();
+                if (codigo.isEmpty()) {
+                    validacion++;
+                    mensaje += "El código\n";
+                } else if (codigo.length() < 1 || codigo.length() > 50) {
+                    JOptionPane.showMessageDialog(null, "El código debe tener entre 1 y 50 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
                 agregarProducto();
             }
         });

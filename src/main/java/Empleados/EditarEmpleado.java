@@ -228,20 +228,15 @@ public class EditarEmpleado extends JFrame {
                     return;
                 }
 
-                // Verificar si se están ingresando más de un espacio en blanco seguido
-                if (e.getKeyChar() == ' ' && texto.endsWith(" ")) {
-                    e.consume(); // Ignorar el evento y no agregar el espacio en blanco adicional
-                    return;
-                }
-
-                // Convertir la primera letra en mayúscula
-                if (texto.length() == 0 || texto.substring(caretPosition - 1, caretPosition).equals(" ")) {
-                    e.setKeyChar(Character.toUpperCase(e.getKeyChar()));
-                }
-
                 // Permitir números, letras, espacios, punto, coma y tildes
                 if (!Character.isLetterOrDigit(e.getKeyChar()) && !Character.isSpaceChar(e.getKeyChar()) && e.getKeyChar() != '.' && e.getKeyChar() != ',' && !Character.isWhitespace(e.getKeyChar()) && !Character.isIdeographic(e.getKeyChar())) {
                     e.consume(); // Ignorar el evento si no es una letra, número, espacio, punto, coma o tilde
+                    return;
+                }
+
+                // Convertir la primera letra en mayúscula si se ingresa un nuevo párrafo
+                if (texto.length() == 0 || texto.substring(caretPosition - 1, caretPosition).equals("\n")) {
+                    e.setKeyChar(Character.toUpperCase(e.getKeyChar()));
                 }
             }
         });
@@ -544,7 +539,6 @@ public class EditarEmpleado extends JFrame {
                     }
 
                     String correoElectronico = campoCorreo.getText().trim();
-
                     if (!correoElectronico.isEmpty()) {
                         // Verificar el formato del correo electrónico utilizando una expresión regular
                         if (!correoElectronico.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
