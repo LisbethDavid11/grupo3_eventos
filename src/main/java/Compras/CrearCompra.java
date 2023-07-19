@@ -198,7 +198,8 @@ public class CrearCompra extends JFrame {
         limpiarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int opcion = JOptionPane.showConfirmDialog(null, "¿Está seguro que desea limpiar?", "Confirmación", JOptionPane.YES_NO_OPTION);
+                Object[] options = {"Sí", "No"};
+                int opcion = JOptionPane.showOptionDialog(null, "¿Está seguro que desea limpiar?", "Confirmación", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
                 if (opcion == JOptionPane.YES_OPTION) {
                     limpiar();
                 }
@@ -273,6 +274,18 @@ public class CrearCompra extends JFrame {
                     JOptionPane.showMessageDialog(null, mensaje, "Validación", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
+
+                if (campoPrecio.getText().trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "El precio\n";
+                } else {
+                    double precio = Double.parseDouble(campoPrecio.getText().trim());
+                    if (!((precio >= 1 && precio <= 99999) || (precio >= 1 && precio <= 999.99))) {
+                        JOptionPane.showMessageDialog(null, "El precio debe estar entre 1 y 99999 o entre 1 y 999.99", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                }
+
                 agregarProducto();
             }
         });
@@ -361,7 +374,8 @@ public class CrearCompra extends JFrame {
         botonEliminar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int opcion = JOptionPane.showConfirmDialog(null, "¿Está seguro que desea eliminar este producto?", "Confirmación", JOptionPane.YES_NO_OPTION);
+                Object[] options = {"Sí", "No"};
+                int opcion = JOptionPane.showOptionDialog(null, "¿Está seguro que desea eliminar este producto?", "Confirmación", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
                 if (opcion == JOptionPane.YES_OPTION) {
                     JButton boton = (JButton) e.getSource();
                     int filaSeleccionada = tablaProductos.convertRowIndexToModel(tablaProductos.getEditingRow());
@@ -374,9 +388,11 @@ public class CrearCompra extends JFrame {
     }
 
     private void guardarDatos() {
-        int confirmacionGuardar = JOptionPane.showConfirmDialog(null, "¿Desea guardar la compra?", "Confirmar", JOptionPane.YES_NO_OPTION);
+        Object[] options = {"Sí", "No"};
+        int confirmacionGuardar = JOptionPane.showOptionDialog(null, "¿Desea guardar la compra?", "Confirmar", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+
         if (confirmacionGuardar != JOptionPane.YES_OPTION) {
-            return; // El usuario ha cancelado la operación
+            return;
         }
 
         String codigoCompra = campoCodigo.getText();
@@ -494,7 +510,9 @@ public class CrearCompra extends JFrame {
     }
 
     private void cancelar() {
-        int dialogResult = JOptionPane.showConfirmDialog(null, "¿Está seguro de que desea cancelar?", "Confirmar cancelación", JOptionPane.YES_NO_OPTION);
+        Object[] options = {"Sí", "No"};
+        int dialogResult = JOptionPane.showOptionDialog(null, "¿Está seguro de que desea cancelar?", "Confirmar cancelación", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+
         if (dialogResult == JOptionPane.YES_OPTION) {
             boolean listaCompraAbierta = false;
             Window[] windows = Window.getWindows();
@@ -525,7 +543,6 @@ public class CrearCompra extends JFrame {
         lbl10.setText("0.00");
         lbl12.setText("0.00");
     }
-
 
     private boolean existeProductoEnTabla(String producto) {
         for (int i = 0; i < modeloProductos.getRowCount(); i++) {
@@ -571,54 +588,6 @@ public class CrearCompra extends JFrame {
         campoCantidad.setText("");
         campoPrecio.setText("");
         actualizarTotales();
-    }
-
-    private int validarCampos() {
-        int contador = 0;
-        for (JTextField campo : campos) {
-            if (campo.getText().isEmpty()) {
-                campo.setBorder(BorderFactory.createLineBorder(Color.RED));
-                contador++;
-            } else {
-                campo.setBorder(UIManager.getLookAndFeel().getDefaults().getBorder("TextField.border"));
-            }
-        }
-        if (boxProveedor.getSelectedIndex() == 0) {
-            boxProveedor.setBorder(BorderFactory.createLineBorder(Color.RED));
-            contador++;
-        } else {
-            boxProveedor.setBorder(UIManager.getLookAndFeel().getDefaults().getBorder("ComboBox.border"));
-        }
-        if (boxEmpleado.getSelectedIndex() == 0) {
-            boxEmpleado.setBorder(BorderFactory.createLineBorder(Color.RED));
-            contador++;
-        } else {
-            boxEmpleado.setBorder(UIManager.getLookAndFeel().getDefaults().getBorder("ComboBox.border"));
-        }
-        return contador;
-    }
-
-    private int validarCamposProducto() {
-        int contador = 0;
-        if (boxMaterial.getSelectedIndex() == 0) {
-            boxMaterial.setBorder(BorderFactory.createLineBorder(Color.RED));
-            contador++;
-        } else {
-            boxMaterial.setBorder(UIManager.getLookAndFeel().getDefaults().getBorder("ComboBox.border"));
-        }
-        if (campoCantidad.getText().isEmpty()) {
-            campoCantidad.setBorder(BorderFactory.createLineBorder(Color.RED));
-            contador++;
-        } else {
-            campoCantidad.setBorder(UIManager.getLookAndFeel().getDefaults().getBorder("TextField.border"));
-        }
-        if (!siCheckBox.isSelected() && campoPrecio.getText().isEmpty()) {
-            campoPrecio.setBorder(BorderFactory.createLineBorder(Color.RED));
-            contador++;
-        } else {
-            campoPrecio.setBorder(UIManager.getLookAndFeel().getDefaults().getBorder("TextField.border"));
-        }
-        return contador;
     }
 
     private void mostrarMensajeError(String mensaje) {

@@ -66,6 +66,9 @@ public class ListaCompras extends JFrame {
         // Obtén el modelo del JComboBox
         DefaultComboBoxModel<String> comboBoxModel = new DefaultComboBoxModel<>();
 
+        // Agrega la opción "Todos" al modelo del JComboBox
+        comboBoxModel.addElement("Todos");
+
         // Agrega los meses al modelo del JComboBox
         comboBoxModel.addElement("Enero");
         comboBoxModel.addElement("Febrero");
@@ -92,6 +95,10 @@ public class ListaCompras extends JFrame {
                     if ((pagina + 1) == getTotalPageCount()) {
                         botonAdelante.setEnabled(false);
                     }
+                } else if ((pagina + 1) == getTotalPageCount()) {
+                    pagina = 0;
+                    botonAtras.setEnabled(false);
+                    botonAdelante.setEnabled(true);
                 }
                 listaCompras.setModel(cargarDatos());
                 centrarDatosTabla();
@@ -108,13 +115,17 @@ public class ListaCompras extends JFrame {
                     if (pagina == 0) {
                         botonAtras.setEnabled(false);
                     }
+                } else if (pagina == 0) {
+                    pagina = getTotalPageCount() - 1;
+                    botonAtras.setEnabled(true);
+                    botonAdelante.setEnabled(false);
                 }
                 listaCompras.setModel(cargarDatos());
                 centrarDatosTabla();
                 lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
-
+        
         campoBusqueda.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
@@ -133,9 +144,17 @@ public class ListaCompras extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String mesSeleccionado = (String) fechaComboBox.getSelectedItem();
-                actualizarModeloTablaConMesSeleccionado(mesSeleccionado);
+                if (mesSeleccionado.equals("Todos")) {
+                    // Actualiza el modelo de la tabla para mostrar todos los resultados
+                    listaCompras.setModel(cargarDatos());
+                } else {
+                    // Actualiza el modelo de la tabla con el mes seleccionado
+                    actualizarModeloTablaConMesSeleccionado(mesSeleccionado);
+                }
+                centrarDatosTabla();
             }
         });
+
 
         // Colores de la paleta
         Color primaryColor = Color.decode("#37474f"); // Gris azul oscuro
