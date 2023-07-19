@@ -117,8 +117,8 @@ public class EditarProveedores extends JFrame {
                     return;
                 }
 
-                // Convertir la primera letra en mayúscula
-                if (texto.length() == 0 || texto.substring(caretPosition - 1, caretPosition).equals(" ")) {
+                // Convertir la primera letra en mayúscula si se ingresa un nuevo párrafo
+                if (texto.length() == 0 || texto.substring(caretPosition - 1, caretPosition).equals("\n")) {
                     e.setKeyChar(Character.toUpperCase(e.getKeyChar()));
                 }
 
