@@ -1,7 +1,5 @@
 package Materiales;
-
 import Objetos.Conexion;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -48,6 +46,8 @@ public class CrearMaterial extends JFrame {
 
         // Color de fondo del panel
         panel.setBackground(Color.decode("#F5F5F5"));
+        radioButtonSi.setBackground(Color.decode("#F5F5F5"));
+        radioButtonNo.setBackground(Color.decode("#F5F5F5"));
 
         // Color de texto para los JTextField
         Color textColor = Color.decode("#212121");
@@ -140,9 +140,8 @@ public class CrearMaterial extends JFrame {
                         if (trimmedLength >= 100) {
                             e.consume(); // Ignorar la letra
                         } else {
-                            // Verificar si es el primer carácter o el carácter después de un espacio en blanco
-                            if (length == 0 || (caretPosition > 0 && text.charAt(caretPosition - 1) == ' ')) {
-                                // Convertir la letra a mayúscula
+                            // Convertir solo la primera letra a mayúscula
+                            if (caretPosition == 0) {
                                 e.setKeyChar(Character.toUpperCase(e.getKeyChar()));
                             }
                         }
@@ -223,9 +222,22 @@ public class CrearMaterial extends JFrame {
         botonCancelar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ListaMateriales listaMateriales = new ListaMateriales();
-                listaMateriales.setVisible(true);
-                actual.dispose();
+                int respuesta = JOptionPane.showOptionDialog(
+                        null,
+                        "¿Desea cancelar el registro del material?",
+                        "Confirmación",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        new Object[]{"Sí", "No"},
+                        "No"
+                );
+
+                if (respuesta == JOptionPane.YES_OPTION) {
+                    ListaMateriales listaMateriales = new ListaMateriales();
+                    listaMateriales.setVisible(true);
+                    actual.dispose();
+                }
             }
         });
 
@@ -274,7 +286,7 @@ public class CrearMaterial extends JFrame {
                         return;
                     }
 
-                    if (!nombre.matches("[a-zA-Z]{2,}(\\s[a-zA-Z]+\\s*)*")) {
+                    if (!nombre.matches("[a-zA-ZñÑ]{2,}(\\s[a-zA-ZñÑ]+\\s*)*")) {
                         JOptionPane.showMessageDialog(null, "El nombre debe tener mínimo 2 letras y máximo 1 espacio entre palabras.", "Validación", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
@@ -300,7 +312,6 @@ public class CrearMaterial extends JFrame {
                     }
                 }
 
-
                 String proveedors = comboBoxProveedor.getSelectedItem().toString();
                 if (proveedors.equals("Seleccione un proveedor")) {
                     JOptionPane.showMessageDialog(null, "Debe seleccionar un proveedor.", "Validación", JOptionPane.ERROR_MESSAGE);
@@ -315,11 +326,25 @@ public class CrearMaterial extends JFrame {
                         JOptionPane.showMessageDialog(null, "La descripción debe tener entre 2 y 200 caracteres.", "Validación", JOptionPane.ERROR_MESSAGE);
                     }
                 }
-                guardarMateriales();
+                int respuesta = JOptionPane.showOptionDialog(
+                        null,
+                        "¿Desea guardar la información del material?",
+                        "Confirmación",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        new Object[]{"Sí", "No"},
+                        "No"
+                );
+
+                if (respuesta == JOptionPane.YES_OPTION) {
+                    guardarMateriales();
+                    ListaMateriales listaMateriales = new ListaMateriales();
+                    listaMateriales.setVisible(true);
+                    actual.dispose();
+                }
             }
         });
-
-
     }
 
     private void cargarProveedores() {
@@ -348,24 +373,6 @@ public class CrearMaterial extends JFrame {
         String proveedorText = comboBoxProveedor.getSelectedItem().toString();
         int idProveedor = Integer.parseInt(proveedorText.split(" - ")[0]);
 
-        if (disponibilidad.equals("Seleccione la disponibilidad")) {
-            JOptionPane.showMessageDialog(null, "Debe seleccionar la disponibilidad del material.", "Validación", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        if (descripcion.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Faltó ingresar la descripción del material.", "Validación", JOptionPane.ERROR_MESSAGE);
-            return;
-        } else {
-            if (descripcion.length() > 200) {
-                JOptionPane.showMessageDialog(null, "La descripción debe tener como máximo 200 caracteres.", "Validación", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-        }
-
-        int opcion = JOptionPane.showOptionDialog(null, "¿Desea guardar el material?", "Guardar", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
-
-        if (opcion == JOptionPane.YES_OPTION) {
             try (Connection connection = sql.conectamysql();
                  PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO materiales (nombre, precio, descripcion, disponible, proveedor_id) VALUES (?, ?, ?, ?, ?)")) {
                 preparedStatement.setString(1, nombre);
@@ -375,23 +382,10 @@ public class CrearMaterial extends JFrame {
                 preparedStatement.setInt(5, idProveedor);
                 preparedStatement.executeUpdate();
 
-
-                JOptionPane.showMessageDialog(null, "Material creado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-
-                // Volver a la lista de materiales
-                ListaMateriales listaMateriales = new ListaMateriales();
-                listaMateriales.setVisible(true);
-                actual.dispose();
+                JOptionPane.showMessageDialog(null, "Material guardado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
             } catch (SQLException e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(null, "Error al guardar el material", "Error", JOptionPane.ERROR_MESSAGE);
             }
-        } else {
-            // Regresar a la lista de materiales
-            ListaMateriales listaMateriales = new ListaMateriales();
-            listaMateriales.setVisible(true);
-            actual.dispose();
-        }
     }
-
 }

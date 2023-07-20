@@ -51,6 +51,8 @@ public class EditarMaterial extends JFrame {
 
         // Color de fondo del panel
         panel.setBackground(Color.decode("#F5F5F5"));
+        radioButtonSi.setBackground(Color.decode("#F5F5F5"));
+        radioButtonNo.setBackground(Color.decode("#F5F5F5"));
 
         // Color de texto para los JTextField
         Color textColor = Color.decode("#212121");
@@ -141,9 +143,8 @@ public class EditarMaterial extends JFrame {
                         if (trimmedLength >= 100) {
                             e.consume(); // Ignorar la letra
                         } else {
-                            // Verificar si es el primer carácter o el carácter después de un espacio en blanco
-                            if (length == 0 || (caretPosition > 0 && text.charAt(caretPosition - 1) == ' ')) {
-                                // Convertir la letra a mayúscula
+                            // Convertir solo la primera letra a mayúscula
+                            if (caretPosition == 0) {
                                 e.setKeyChar(Character.toUpperCase(e.getKeyChar()));
                             }
                         }
@@ -223,9 +224,22 @@ public class EditarMaterial extends JFrame {
         botonCancelar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ListaMateriales listaMateriales = new ListaMateriales();
-                listaMateriales.setVisible(true);
-                actual.dispose();
+                int respuesta = JOptionPane.showOptionDialog(
+                        null,
+                        "¿Desea cancelar la actualización del material?",
+                        "Confirmación",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        new Object[]{"Sí", "No"},
+                        "No"
+                );
+
+                if (respuesta == JOptionPane.YES_OPTION) {
+                    ListaMateriales listaMateriales = new ListaMateriales();
+                    listaMateriales.setVisible(true);
+                    actual.dispose();
+                }
             }
         });
 
@@ -274,7 +288,7 @@ public class EditarMaterial extends JFrame {
                         return;
                     }
 
-                    if (!nombre.matches("[a-zA-Z]{2,}(\\s[a-zA-Z]+\\s*)*")) {
+                    if (!nombre.matches("[a-zA-ZñÑ]{2,}(\\s[a-zA-ZñÑ]+\\s*)*")) {
                         JOptionPane.showMessageDialog(null, "El nombre debe tener mínimo 2 letras y máximo 1 espacio entre palabras.", "Validación", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
@@ -314,7 +328,24 @@ public class EditarMaterial extends JFrame {
                         JOptionPane.showMessageDialog(null, "La descripción debe tener entre 2 y 200 caracteres.", "Validación", JOptionPane.ERROR_MESSAGE);
                     }
                 }
-                guardarMateriales();
+
+                int respuesta = JOptionPane.showOptionDialog(
+                        null,
+                        "¿Desea actualizar la información del material?",
+                        "Confirmación",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        new Object[]{"Sí", "No"},
+                        "No"
+                );
+
+                if (respuesta == JOptionPane.YES_OPTION) {
+                    guardarMateriales();
+                    ListaMateriales listaMateriales = new ListaMateriales();
+                    listaMateriales.setVisible(true);
+                    actual.dispose();
+                }
             }
         });
 
@@ -337,8 +368,6 @@ public class EditarMaterial extends JFrame {
         }
     }
 
-    // Resto del código...
-
     private void cargarMaterial() {
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM materiales WHERE id = ?")) {
@@ -354,7 +383,6 @@ public class EditarMaterial extends JFrame {
 
                 campoNombre.setText(nombre);
 
-                // Formatear el precio a dos decimales con el separador decimal "."
                 DecimalFormatSymbols symbols = new DecimalFormatSymbols();
                 symbols.setDecimalSeparator('.');
                 DecimalFormat decimalFormat = new DecimalFormat("0.00", symbols);
@@ -375,9 +403,6 @@ public class EditarMaterial extends JFrame {
         }
     }
 
-// Resto del código...
-
-
     private String obtenerProveedorText(int idProveedor) {
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement("SELECT empresaProveedora, nombreVendedor FROM Proveedores WHERE id = ?")) {
@@ -392,7 +417,6 @@ public class EditarMaterial extends JFrame {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return "";
     }
 
@@ -406,24 +430,6 @@ public class EditarMaterial extends JFrame {
         String proveedorText = comboBoxProveedor.getSelectedItem().toString();
         int idProveedor = Integer.parseInt(proveedorText.split(" - ")[0]);
 
-        if (disponibilidad.equals("Seleccione la disponibilidad")) {
-            JOptionPane.showMessageDialog(null, "Debe seleccionar la disponibilidad del material.", "Validación", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        if (descripcion.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Faltó ingresar la descripción del material.", "Validación", JOptionPane.ERROR_MESSAGE);
-            return;
-        } else {
-            if (descripcion.length() > 200) {
-                JOptionPane.showMessageDialog(null, "La descripción debe tener como máximo 200 caracteres.", "Validación", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-        }
-
-        int opcion = JOptionPane.showOptionDialog(null, "¿Desea guardar los materiales actualizados?", "Guardar", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
-
-        if (opcion == JOptionPane.YES_OPTION) {
             try (Connection connection = sql.conectamysql();
                  PreparedStatement preparedStatement = connection.prepareStatement("UPDATE materiales SET nombre = ?, precio = ?, descripcion = ?, disponible = ?, proveedor_id = ? WHERE id = ?")) {
                 preparedStatement.setString(1, nombre);
@@ -435,22 +441,9 @@ public class EditarMaterial extends JFrame {
                 preparedStatement.executeUpdate();
 
                 JOptionPane.showMessageDialog(null, "Material actualizado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-
-                // Volver a la lista de materiales
-                ListaMateriales listaMateriales = new ListaMateriales();
-                listaMateriales.setVisible(true);
-                actual.dispose();
             } catch (SQLException e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(null, "Error al actualizar el material", "Error", JOptionPane.ERROR_MESSAGE);
             }
-        } else {
-            // Regresar a la lista de materiales
-            ListaMateriales listaMateriales = new ListaMateriales();
-            listaMateriales.setVisible(true);
-            actual.dispose();
-        }
     }
-
-
 }

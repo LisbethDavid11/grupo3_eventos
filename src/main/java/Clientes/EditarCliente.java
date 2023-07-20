@@ -1,8 +1,6 @@
 package Clientes;
 import Objetos.Cliente;
 import Objetos.Conexion;
-
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.DefaultFormatterFactory;
@@ -270,9 +268,22 @@ public class EditarCliente extends  JFrame{
         cancelarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ListaCliente indexCliente = new ListaCliente();
-                indexCliente.setVisible(true);
-                actual.dispose();
+                int respuesta = JOptionPane.showOptionDialog(
+                        null,
+                        "¿Desea cancelar la actualización del cliente?",
+                        "Confirmación",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        new Object[]{"Sí", "No"},
+                        "No"
+                );
+
+                if (respuesta == JOptionPane.YES_OPTION) {
+                    ListaCliente cliente = new ListaCliente();
+                    cliente.setVisible(true);
+                    actual.dispose();
+                }
             }
         });
 
@@ -341,8 +352,8 @@ public class EditarCliente extends  JFrame{
                         return;
                     }
 
-                    if (!nombre.matches("[a-zA-Z]{2,}(\\s[a-zA-Z]+)?")) {
-                        JOptionPane.showMessageDialog(null, "El nombre de cliente debe tener mínimo 2 letras; y máximo 1 espacio entre palabras.", "Validación", JOptionPane.ERROR_MESSAGE);
+                    if (!nombre.matches("[a-zA-ZñÑáéíóúÁÉÍÓÚ]{2,}(\\s[a-zA-ZñÑáéíóúÁÉÍÓÚ]+)?")) {
+                        JOptionPane.showMessageDialog(null, "El nombre de cliente debe tener mínimo 2 letras y máximo 1 espacio entre palabras.", "Validación", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
                 } else {
@@ -357,8 +368,8 @@ public class EditarCliente extends  JFrame{
                         return;
                     }
 
-                    if (!apellido.matches("[a-zA-Z]{2,}(\\s[a-zA-Z]+)?")) {
-                        JOptionPane.showMessageDialog(null, "El apellido de cliente debe tener mínimo 2 letras; y máximo 1 espacio entre palabras.", "Validación", JOptionPane.ERROR_MESSAGE);
+                    if (!apellido.matches("[a-zA-ZñÑáéíóúÁÉÍÓÚ]{2,}(\\s[a-zA-ZñÑáéíóúÁÉÍÓÚ]+)?")) {
+                        JOptionPane.showMessageDialog(null, "El apellido de cliente debe tener mínimo 2 letras y máximo 1 espacio entre palabras.", "Validación", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
                 } else {
@@ -418,10 +429,23 @@ public class EditarCliente extends  JFrame{
                     return;
                 }
 
-                guardar();
-                ListaCliente indexCliente = new ListaCliente();
-                indexCliente.setVisible(true);
-                actual.dispose();
+                int respuesta = JOptionPane.showOptionDialog(
+                        null,
+                        "¿Desea actualizar la información del cliente?",
+                        "Confirmación",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        new Object[]{"Sí", "No"},
+                        "No"
+                );
+
+                if (respuesta == JOptionPane.YES_OPTION) {
+                    guardar();
+                    ListaCliente listaClientes = new ListaCliente();
+                    listaClientes.setVisible(true);
+                    actual.dispose();
+                }
             }
         });
     }
@@ -507,12 +531,11 @@ public class EditarCliente extends  JFrame{
             statement.setInt(7, this.id);
             System.out.println(statement.execute());
 
-            // Mostrar mensaje de éxito
             String nombreCompleto = campoNombre.getText() + " " + campoApellido.getText();
             System.out.println("Cliente " + nombreCompleto + " ha sido actualizado exitosamente.");
             JOptionPane.showMessageDialog(null, "Cliente " + nombreCompleto + " ha sido actualizado exitosamente.", "Éxito", JOptionPane.DEFAULT_OPTION);
         } catch (SQLException e) {
-            String mensajeError = "Error al guardar el cliente: " + e.getMessage();
+            String mensajeError = "Error al actualizar el cliente: " + e.getMessage();
             JOptionPane.showMessageDialog(null, "No se pudo realizar la actualización del cliente", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
