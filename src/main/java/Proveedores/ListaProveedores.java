@@ -39,7 +39,7 @@ public class ListaProveedores extends JFrame {
 
     public ListaProveedores() {
         super("Lista Proveedores");
-        setSize(850, 500);
+        setSize(860, 520);
         setLocationRelativeTo(null);
         setContentPane(panelPrincipal);
         campoBusqueda.setText("");

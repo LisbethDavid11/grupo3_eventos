@@ -73,9 +73,9 @@ public class CrearProveedor extends JFrame {
 
                 // Verificar si se está ingresando un espacio en blanco
                 if (e.getKeyChar() == ' ') {
-                    // Verificar si es el primer espacio en blanco
+                    // Verificar si es el primer espacio en blanco o si hay varios espacios consecutivos
                     if (length == 0 || caretPosition == 0 || text.charAt(caretPosition - 1) == ' ') {
-                        e.consume(); // Ignorar el espacio en blanco
+                        e.consume(); // Ignorar el espacio en blanco adicional
                     }
                 } else {
                     // Verificar la longitud del texto después de eliminar espacios en blanco
@@ -85,12 +85,11 @@ public class CrearProveedor extends JFrame {
                     // Verificar si se está ingresando una letra
                     if (Character.isLetter(e.getKeyChar())) {
                         // Verificar si se excede el límite de caracteres
-                        if (trimmedLength >= 50) {
+                        if (trimmedLength >= 100) {
                             e.consume(); // Ignorar la letra
                         } else {
-                            // Verificar si es el primer carácter o el carácter después de un espacio en blanco
-                            if (length == 0 || (caretPosition > 0 && text.charAt(caretPosition - 1) == ' ')) {
-                                // Convertir la letra a mayúscula
+                            // Convertir solo la primera letra a mayúscula
+                            if (caretPosition == 0) {
                                 e.setKeyChar(Character.toUpperCase(e.getKeyChar()));
                             }
                         }
@@ -100,7 +99,6 @@ public class CrearProveedor extends JFrame {
                 }
             }
         });
-
 
         campoDireccion.addKeyListener(new KeyAdapter() {
             @Override
@@ -195,7 +193,6 @@ public class CrearProveedor extends JFrame {
                 }
             }
         });
-
 
         campoTelefonoVendedor.addKeyListener(new KeyAdapter() {
             @Override
@@ -319,7 +316,6 @@ public class CrearProveedor extends JFrame {
         campoDireccion.setBackground(new Color(215, 215, 215));
         campoDescripcion.setBackground(new Color(215, 215, 215));
 
-
         // Crea un margen de 15 píxeles desde el borde inferior
         EmptyBorder marginTitulo = new EmptyBorder(15, 0, 15, 0);
         lbl0.setBorder(marginTitulo);
@@ -336,9 +332,22 @@ public class CrearProveedor extends JFrame {
         cancelarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ListaProveedores listaProveedores = new ListaProveedores();
-                listaProveedores.setVisible(true);
-                crearProveedor.dispose();
+                int respuesta = JOptionPane.showOptionDialog(
+                        null,
+                        "¿Desea cancelar el registro del proveedor?",
+                        "Confirmación",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        new Object[]{"Sí", "No"},
+                        "No"
+                );
+
+                if (respuesta == JOptionPane.YES_OPTION) {
+                    ListaProveedores listaProveedores = new ListaProveedores();
+                    listaProveedores.setVisible(true);
+                    crearProveedor.dispose();
+                }
             }
         });
 
@@ -346,259 +355,247 @@ public class CrearProveedor extends JFrame {
         guardarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    int validacion = 0;
-                    String mensaje = "Faltó ingresar: \n";
+                int validacion = 0;
+                String mensaje = "Faltó ingresar: \n";
 
-                    // Verificar si ya existe un empleado con la misma identidad
-                    if (validarRTNExistente(campoRTN.getText().trim())) {
-                        JOptionPane.showMessageDialog(null, "El RTN ingresado ya está asociada a otro proveedor", "Validación", JOptionPane.ERROR_MESSAGE);
-                        return; // Detener la ejecución del método
-                    }
-
-                    // Verificar si ya existe un empleado con el mismo teléfono
-                    if (validarTelefonoExistente(campoTelefono.getText().trim())) {
-                        JOptionPane.showMessageDialog(null, "El teléfono ingresado ya está asociado a otro empleado", "Validación", JOptionPane.ERROR_MESSAGE);
-                        return; // Detener la ejecución del método
-                    }
-
-                    // Verificar el nombre
-                    if (campoEmpresaProveedora.getText().trim().isEmpty()) {
-                        validacion++;
-                        mensaje += "Nombre de la empresa\n";
-                    }
-
-
-                    if (campoCorreo.getText().trim().isEmpty()) {
-                        validacion++;
-                        mensaje += "Correo electrónico\n";
-                    }
-
-                    if (campoTelefono.getText().trim().isEmpty()) {
-                        validacion++;
-                        mensaje += "Teléfono\n";
-                    }
-
-                    String rtn = campoRTN.getText().trim();
-                    if (rtn.length() != 16) {
-                        validacion++;
-                        mensaje += "RTN\n";
-                    }
-
-                    if (campoDireccion.getText().trim().isEmpty()) {
-                        validacion++;
-                        mensaje += "Dirección\n";
-                    }
-
-                    if (campoDescripcion.getText().trim().isEmpty()) {
-                        validacion++;
-                        mensaje += "Descripción\n";
-                    }
-
-                    if (campoNombreVendedor.getText().trim().isEmpty()) {
-                        validacion++;
-                        mensaje += "Nombre del vendedor\n";
-                    }
-
-                    if (campoTelefono.getText().trim().isEmpty()) {
-                        validacion++;
-                        mensaje += "Teléfono del vendedor\n";
-                    }
-
-                    if (validacion > 0) {
-                        JOptionPane.showMessageDialog(null, mensaje.toString(), "Validación", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-
-                    String nombre = campoEmpresaProveedora.getText().trim();
-                    if (!nombre.isEmpty()) {
-                        if (nombre.length() > 100) {
-                            JOptionPane.showMessageDialog(null, "El nombre de la empresa debe tener como máximo 100 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-
-                        if (!nombre.matches("[a-zA-Z\\s.&]{2,}")) {
-                            JOptionPane.showMessageDialog(null, "El nombre de la empresa debe tener mínimo 2 letras y puede contener espacios, puntos y el carácter '&'", "Validación", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-                    } else {
-                        JOptionPane.showMessageDialog(null, "El campo de nombre de la empresa no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-
-                    String correoElectronico = campoCorreo.getText().trim();
-                    if (!correoElectronico.isEmpty()) {
-                        // Verificar el formato del correo electrónico utilizando una expresión regular
-                        if (!correoElectronico.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
-                            JOptionPane.showMessageDialog(null, "El correo electrónico ingresado no tiene un formato válido", "Validación", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-                    } else {
-                        JOptionPane.showMessageDialog(null, "El campo de correo electrónico no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-
-                    String telefono = campoTelefono.getText().trim();
-                    if (!telefono.isEmpty()) {
-                        if (telefono.length() != 8) {
-                            JOptionPane.showMessageDialog(null, "El número de teléfono debe tener exactamente 8 dígitos", "Validación", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-
-                        if (!telefono.matches("[2389]\\d{7}")) {
-                            JOptionPane.showMessageDialog(null, "El número de teléfono debe empezar con 2, 3, 8 o 9", "Validación", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-                    } else {
-                        JOptionPane.showMessageDialog(null, "El campo de teléfono no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-
-                    String numerortn = campoRTN.getText().trim();
-                    if (!numerortn.isEmpty()) {
-                        if (numerortn.length() != 16) {
-                            JOptionPane.showMessageDialog(null, "El RTN debe tener 16 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-
-                        if (!numerortn.matches("\\d{4}-\\d{4}-\\d{6}")) {
-                            JOptionPane.showMessageDialog(null, "El RTN debe tener el formato ####-####-######", "Validación", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-
-                        String numerosIdentidad = numerortn.replace("-", "");
-                        Proveedor proveedor = new Proveedor();
-                        boolean esIdentidadValida = proveedor.comprobarRTN(numerosIdentidad);
-                        if (!esIdentidadValida) {
-                            JOptionPane.showMessageDialog(null, "El RTN ingresado no es válido", "Validación", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-                    } else {
-                        JOptionPane.showMessageDialog(null, "El campo RTN no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-
-                    String direccion = campoDireccion.getText().trim();
-                    if (!direccion.isEmpty()) {
-                        if (direccion.length() < 2 || direccion.length() > 200) {
-                            JOptionPane.showMessageDialog(null, "El domicilio debe tener entre 2 y 200 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-                    } else {
-                        JOptionPane.showMessageDialog(null, "El campo de dirección no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-
-                    direccion = campoDireccion.getText().trim();
-                    if (!direccion.isEmpty()) {
-                        if (direccion.length() < 2 || direccion.length() > 200) {
-                            JOptionPane.showMessageDialog(null, "La dirección de la empresa debe tener entre 2 y 200 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-                    } else {
-                        JOptionPane.showMessageDialog(null, "El campo de dirección no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-
-                    String descripcion = campoDescripcion.getText().trim();
-                    if (!descripcion.isEmpty()) {
-                        if (descripcion.length() < 2 || descripcion.length() > 200) {
-                            JOptionPane.showMessageDialog(null, "La descripción de la empresa debe tener entre 2 y 200 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-                    } else {
-                        JOptionPane.showMessageDialog(null, "El campo de descripción no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-
-                    String nombreVendedor = campoNombreVendedor.getText().trim();
-                    if (!nombreVendedor.isEmpty()) {
-                        if (nombreVendedor.length() > 100) {
-                            JOptionPane.showMessageDialog(null, "El nombre de vendedor debe tener como máximo 100 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-
-                        if (!nombreVendedor.matches("[a-zA-Z]{2,}(\\s[a-zA-Z]+)?")) {
-                            JOptionPane.showMessageDialog(null, "El nombre de vendedor debe tener mínimo 2 letras; y máximo 1 espacio entre palabras.", "Validación", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-                    } else {
-                        JOptionPane.showMessageDialog(null, "El campo de nombre de vendedor no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-
-                    String telefonoVendedor = campoTelefonoVendedor.getText().trim();
-                    if (!telefonoVendedor.isEmpty()) {
-                        if (telefonoVendedor.length() != 8) {
-                            JOptionPane.showMessageDialog(null, "El número de teléfono del vendedor debe tener exactamente 8 dígitos", "Validación", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-
-                        if (!telefonoVendedor.matches("[2389]\\d{7}")) {
-                            JOptionPane.showMessageDialog(null, "El número de teléfono del vendedor debe empezar con 2, 3, 8 o 9", "Validación", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-                    } else {
-                        JOptionPane.showMessageDialog(null, "El campo de teléfono del vendedor no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-
-                    GuardarDatos();
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
+                // Verificar si ya existe un empleado con la misma identidad
+                if (validarRTNExistente(campoRTN.getText().trim())) {
+                    JOptionPane.showMessageDialog(null, "El RTN ingresado ya está asociada a otro proveedor", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return; // Detener la ejecución del método
                 }
 
-                ListaProveedores listaProveedores = new ListaProveedores();
-                listaProveedores.setVisible(true);
-                crearProveedor.dispose();
+                // Verificar si ya existe un empleado con el mismo teléfono
+                if (validarTelefonoExistente(campoTelefono.getText().trim())) {
+                    JOptionPane.showMessageDialog(null, "El teléfono ingresado ya está asociado a otro empleado", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return; // Detener la ejecución del método
+                }
+
+                // Verificar el nombre
+                if (campoEmpresaProveedora.getText().trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "Nombre de la empresa\n";
+                }
+
+
+                if (campoCorreo.getText().trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "Correo electrónico\n";
+                }
+
+                if (campoTelefono.getText().trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "Teléfono\n";
+                }
+
+                String rtn = campoRTN.getText().trim();
+                if (rtn.length() != 16) {
+                    validacion++;
+                    mensaje += "RTN\n";
+                }
+
+                if (campoDireccion.getText().trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "Dirección\n";
+                }
+
+                if (campoDescripcion.getText().trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "Descripción\n";
+                }
+
+                if (campoNombreVendedor.getText().trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "Nombre del vendedor\n";
+                }
+
+                if (campoTelefono.getText().trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "Teléfono del vendedor\n";
+                }
+
+                if (validacion > 0) {
+                    JOptionPane.showMessageDialog(null, mensaje.toString(), "Validación", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                String nombre = campoEmpresaProveedora.getText().trim();
+                if (!nombre.isEmpty()) {
+                    if (nombre.length() > 100) {
+                        JOptionPane.showMessageDialog(null, "El nombre debe tener como máximo 100 caracteres.", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    if (!nombre.matches("[a-zA-ZñÑ]{2,}(\\s[a-zA-ZñÑ]+\\s*)*")) {
+                        JOptionPane.showMessageDialog(null, "El nombre debe tener mínimo 2 letras y máximo 1 espacio entre palabras.", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "El campo de nombre no puede estar vacío.", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                String correoElectronico = campoCorreo.getText().trim();
+                if (!correoElectronico.isEmpty()) {
+                    // Verificar el formato del correo electrónico utilizando una expresión regular
+                    if (!correoElectronico.matches("^[A-Za-zñÑ0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+                        JOptionPane.showMessageDialog(null, "El correo electrónico ingresado no tiene un formato válido", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "El campo de correo electrónico no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                String telefono = campoTelefono.getText().trim();
+                if (!telefono.isEmpty()) {
+                    if (telefono.length() != 8) {
+                        JOptionPane.showMessageDialog(null, "El número de teléfono debe tener exactamente 8 dígitos", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    if (!telefono.matches("[2389]\\d{7}")) {
+                        JOptionPane.showMessageDialog(null, "El número de teléfono debe empezar con 2, 3, 8 o 9", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "El campo de teléfono no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                String numerortn = campoRTN.getText().trim();
+                if (!numerortn.isEmpty()) {
+                    if (numerortn.length() != 16) {
+                        JOptionPane.showMessageDialog(null, "El RTN debe tener 16 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    if (!numerortn.matches("\\d{4}-\\d{4}-\\d{6}")) {
+                        JOptionPane.showMessageDialog(null, "El RTN debe tener el formato ####-####-######", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    String numerosIdentidad = numerortn.replace("-", "");
+                    Proveedor proveedor = new Proveedor();
+                    boolean esIdentidadValida = proveedor.comprobarRTN(numerosIdentidad);
+                    if (!esIdentidadValida) {
+                        JOptionPane.showMessageDialog(null, "El RTN ingresado no es válido", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "El campo RTN no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                String direccion = campoDireccion.getText().trim();
+                if (!direccion.isEmpty()) {
+                    if (direccion.length() < 2 || direccion.length() > 200) {
+                        JOptionPane.showMessageDialog(null, "El domicilio debe tener entre 2 y 200 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "El campo de dirección no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                direccion = campoDireccion.getText().trim();
+                if (!direccion.isEmpty()) {
+                    if (direccion.length() < 2 || direccion.length() > 200) {
+                        JOptionPane.showMessageDialog(null, "La dirección de la empresa debe tener entre 2 y 200 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "El campo de dirección no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                String descripcion = campoDescripcion.getText().trim();
+                if (!descripcion.isEmpty()) {
+                    if (descripcion.length() < 2 || descripcion.length() > 200) {
+                        JOptionPane.showMessageDialog(null, "La descripción de la empresa debe tener entre 2 y 200 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "El campo de descripción no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                String vendedor = campoNombreVendedor.getText().trim();
+                if (!vendedor.isEmpty()) {
+                    if (vendedor.length() > 50) {
+                        JOptionPane.showMessageDialog(null, "El nombre de empleado debe tener como máximo 50 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    if (!vendedor.matches("[a-zA-ZñÑáéíóúÁÉÍÓÚ]{2,}(\\s[a-zA-ZñÑáéíóúÁÉÍÓÚ]+)?")) {
+                        JOptionPane.showMessageDialog(null, "El nombre de empleado debe tener mínimo 2 letras y máximo 1 espacio entre palabras.", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "El campo de nombre de empleado no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                String telefonoVendedor = campoTelefonoVendedor.getText().trim();
+                if (!telefonoVendedor.isEmpty()) {
+                    if (telefonoVendedor.length() != 8) {
+                        JOptionPane.showMessageDialog(null, "El número de teléfono del vendedor debe tener exactamente 8 dígitos", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    if (!telefonoVendedor.matches("[2389]\\d{7}")) {
+                        JOptionPane.showMessageDialog(null, "El número de teléfono del vendedor debe empezar con 2, 3, 8 o 9", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "El campo de teléfono del vendedor no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+
+                int respuesta = JOptionPane.showOptionDialog(
+                        null,
+                        "¿Desea guardar la información del proveedor?",
+                        "Confirmación",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        new Object[]{"Sí", "No"},
+                        "No"
+                );
+
+                if (respuesta == JOptionPane.YES_OPTION) {
+                    GuardarDatos();
+                    ListaProveedores listaProveedores = new ListaProveedores();
+                    listaProveedores.setVisible(true);
+                    crearProveedor.dispose();
+                }
             }
         });
     }
 
-    public void GuardarDatos() throws SQLException {
+    public void GuardarDatos() {
         sql = new Conexion();
         mysql = sql.conectamysql();
-        PreparedStatement preparedStatement = mysql.prepareStatement("INSERT INTO Proveedores (empresaProveedora, rtn, telefono, correo, direccion, descripcion, nombreVendedor, telefonoVendedor) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-        preparedStatement.setString(1, campoEmpresaProveedora.getText());
-        preparedStatement.setString(2, campoRTN.getText());
-        preparedStatement.setString(3, campoTelefono.getText());
-        preparedStatement.setString(4, campoCorreo.getText());
-        preparedStatement.setString(5, campoDireccion.getText());
-        preparedStatement.setString(6, campoDescripcion.getText());
-        preparedStatement.setString(7, campoNombreVendedor.getText());
-        preparedStatement.setString(8, campoTelefonoVendedor.getText());
-        // preparedStatement.execute();
+        try (
+            PreparedStatement preparedStatement = mysql.prepareStatement("INSERT INTO Proveedores (empresaProveedora, rtn, telefono, correo, direccion, descripcion, nombreVendedor, telefonoVendedor) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")){
+            preparedStatement.setString(1, campoEmpresaProveedora.getText());
+            preparedStatement.setString(2, campoRTN.getText());
+            preparedStatement.setString(3, campoTelefono.getText());
+            preparedStatement.setString(4, campoCorreo.getText());
+            preparedStatement.setString(5, campoDireccion.getText());
+            preparedStatement.setString(6, campoDescripcion.getText());
+            preparedStatement.setString(7, campoNombreVendedor.getText());
+            preparedStatement.setString(8, campoTelefonoVendedor.getText());
+            preparedStatement.executeUpdate();
 
-        preparedStatement.executeUpdate();
-
-        boolean listaProveedoresAbierta = false;
-        Window[] windows = Window.getWindows();
-        for (Window window : windows) {
-            if (window instanceof ListaProveedores) {
-                listaProveedoresAbierta = true;
-                break;
-            }
+            System.out.println("Proveedor " + campoEmpresaProveedora.getText() + " registrado exitosamente.");
+            JOptionPane.showMessageDialog(null, "Proveedor " + campoEmpresaProveedora.getText() + " registrado exitosamente.", "Éxito", JOptionPane.DEFAULT_OPTION);
+        } catch (SQLException e) {
+            String mensajeError = "Error al guardar el proveedor: " + e.getMessage();
+            JOptionPane.showMessageDialog(null, "No se pudo realizar el registro del proveedor", "Error", JOptionPane.ERROR_MESSAGE);
         }
-
-        // Abrir la ventana ListaProveedor solo si no está abierta
-        if (!listaProveedoresAbierta) {
-            ListaProveedores proveedores = new ListaProveedores();
-            proveedores.setVisible(true);
-        }
-
-        crearProveedor.dispose();
-
-        // Mostrar mensaje de éxito
-        String nombreCompleto = campoEmpresaProveedora.getText();
-
-        // Mensaje personalizado
-        System.out.println("Proveedor " + nombreCompleto + " ha sido registrado exitosamente.");
-        JOptionPane.showMessageDialog(null, "Proveedor " + nombreCompleto + " ha sido registrado exitosamente.", "Éxito", JOptionPane.DEFAULT_OPTION);
     }
 
-
-
-    // Método para validar si el teléfono ya está asociado a un proveedor en la base de datos
     private boolean validarTelefonoExistente(String telefono) {
         try {
             // Crear la conexión a la base de datos (usando el objeto 'mysql' y 'sql' definidos en la clase)
@@ -662,13 +659,7 @@ public class CrearProveedor extends JFrame {
                 }
             }
         }
-
         return false; // En caso de error, se asume que no existe un proveedor con ese RTN
     }
-
-    private void createUIComponents() {
-        // TODO: place custom component creation code here
-    }
-
 
 }

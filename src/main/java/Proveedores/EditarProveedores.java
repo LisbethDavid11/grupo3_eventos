@@ -70,9 +70,9 @@ public class EditarProveedores extends JFrame {
 
                 // Verificar si se está ingresando un espacio en blanco
                 if (e.getKeyChar() == ' ') {
-                    // Verificar si es el primer espacio en blanco
+                    // Verificar si es el primer espacio en blanco o si hay varios espacios consecutivos
                     if (length == 0 || caretPosition == 0 || text.charAt(caretPosition - 1) == ' ') {
-                        e.consume(); // Ignorar el espacio en blanco
+                        e.consume(); // Ignorar el espacio en blanco adicional
                     }
                 } else {
                     // Verificar la longitud del texto después de eliminar espacios en blanco
@@ -82,12 +82,11 @@ public class EditarProveedores extends JFrame {
                     // Verificar si se está ingresando una letra
                     if (Character.isLetter(e.getKeyChar())) {
                         // Verificar si se excede el límite de caracteres
-                        if (trimmedLength >= 50) {
+                        if (trimmedLength >= 100) {
                             e.consume(); // Ignorar la letra
                         } else {
-                            // Verificar si es el primer carácter o el carácter después de un espacio en blanco
-                            if (length == 0 || (caretPosition > 0 && text.charAt(caretPosition - 1) == ' ')) {
-                                // Convertir la letra a mayúscula
+                            // Convertir solo la primera letra a mayúscula
+                            if (caretPosition == 0) {
                                 e.setKeyChar(Character.toUpperCase(e.getKeyChar()));
                             }
                         }
@@ -97,7 +96,6 @@ public class EditarProveedores extends JFrame {
                 }
             }
         });
-
 
         campoDireccion.addKeyListener(new KeyAdapter() {
             @Override
@@ -338,13 +336,25 @@ public class EditarProveedores extends JFrame {
         cancelarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ListaProveedores listaProveedores = new ListaProveedores();
-                listaProveedores.setVisible(true);
-                actual.dispose();
+                int respuesta = JOptionPane.showOptionDialog(
+                        null,
+                        "¿Desea cancelar la actualización del proveedor?",
+                        "Confirmación",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        new Object[]{"Sí", "No"},
+                        "No"
+                );
+
+                if (respuesta == JOptionPane.YES_OPTION) {
+                    ListaProveedores listaProveedores = new ListaProveedores();
+                    listaProveedores.setVisible(true);
+                    actual.dispose();
+                }
             }
         });
 
-        // Boton guardar
         guardarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -418,24 +428,23 @@ public class EditarProveedores extends JFrame {
                     String nombre = campoEmpresaProveedora.getText().trim();
                     if (!nombre.isEmpty()) {
                         if (nombre.length() > 100) {
-                            JOptionPane.showMessageDialog(null, "El nombre de la empresa debe tener como máximo 100 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.showMessageDialog(null, "El nombre debe tener como máximo 100 caracteres.", "Validación", JOptionPane.ERROR_MESSAGE);
                             return;
                         }
 
-                        if (!nombre.matches("[a-zA-Z\\s.&]{2,}")) {
-                            JOptionPane.showMessageDialog(null, "El nombre de la empresa debe tener mínimo 2 letras y puede contener espacios, puntos y el carácter '&'", "Validación", JOptionPane.ERROR_MESSAGE);
+                        if (!nombre.matches("[a-zA-ZñÑ]{2,}(\\s[a-zA-ZñÑ]+\\s*)*")) {
+                            JOptionPane.showMessageDialog(null, "El nombre debe tener mínimo 2 letras y máximo 1 espacio entre palabras.", "Validación", JOptionPane.ERROR_MESSAGE);
                             return;
                         }
                     } else {
-                        JOptionPane.showMessageDialog(null, "El campo de nombre de la empresa no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "El campo de nombre no puede estar vacío.", "Validación", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
-
 
                     String correoElectronico = campoCorreo.getText().trim();
                     if (!correoElectronico.isEmpty()) {
                         // Verificar el formato del correo electrónico utilizando una expresión regular
-                        if (!correoElectronico.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+                        if (!correoElectronico.matches("^[A-Za-zñÑ0-9+_.-]+@[A-Za-z0-9.-]+$")) {
                             JOptionPane.showMessageDialog(null, "El correo electrónico ingresado no tiene un formato válido", "Validación", JOptionPane.ERROR_MESSAGE);
                             return;
                         }
@@ -507,19 +516,19 @@ public class EditarProveedores extends JFrame {
                         return;
                     }
 
-                    String nombreVendedor = campoNombreVendedor.getText().trim();
-                    if (!nombreVendedor.isEmpty()) {
-                        if (nombreVendedor.length() > 100) {
-                            JOptionPane.showMessageDialog(null, "El nombre de vendedor debe tener como máximo 100 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
+                    String vendedor = campoNombreVendedor.getText().trim();
+                    if (!vendedor.isEmpty()) {
+                        if (vendedor.length() > 50) {
+                            JOptionPane.showMessageDialog(null, "El nombre de empleado debe tener como máximo 50 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
                             return;
                         }
 
-                        if (!nombreVendedor.matches("[a-zA-Z]{2,}(\\s[a-zA-Z]+)?")) {
-                            JOptionPane.showMessageDialog(null, "El nombre de vendedor debe tener mínimo 2 letras; y máximo 1 espacio entre palabras.", "Validación", JOptionPane.ERROR_MESSAGE);
+                        if (!vendedor.matches("[a-zA-ZñÑáéíóúÁÉÍÓÚ]{2,}(\\s[a-zA-ZñÑáéíóúÁÉÍÓÚ]+)?")) {
+                            JOptionPane.showMessageDialog(null, "El nombre de empleado debe tener mínimo 2 letras y máximo 1 espacio entre palabras.", "Validación", JOptionPane.ERROR_MESSAGE);
                             return;
                         }
                     } else {
-                        JOptionPane.showMessageDialog(null, "El campo de nombre de vendedor no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "El campo de nombre de empleado no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
 
@@ -539,10 +548,23 @@ public class EditarProveedores extends JFrame {
                         return;
                     }
 
-                    guardar();
-                    ListaProveedores listaProveedores = new ListaProveedores();
-                    listaProveedores.setVisible(true);
-                    actual.dispose();
+                    int respuesta = JOptionPane.showOptionDialog(
+                            null,
+                            "¿Desea actualizar la información del proveedor?",
+                            "Confirmación",
+                            JOptionPane.YES_NO_OPTION,
+                            JOptionPane.QUESTION_MESSAGE,
+                            null,
+                            new Object[]{"Sí", "No"},
+                            "No"
+                    );
+
+                    if (respuesta == JOptionPane.YES_OPTION) {
+                        guardar();
+                        ListaProveedores listaProveedores = new ListaProveedores();
+                        listaProveedores.setVisible(true);
+                        actual.dispose();
+                    }
                 }
             });
         }
@@ -568,17 +590,11 @@ public class EditarProveedores extends JFrame {
                 campoNombreVendedor.setText(resultSet.getString(8));
                 campoTelefonoVendedor.setText(resultSet.getString(9));
 
-
                 System.out.println(statement.execute());
-
             } catch (SQLException erro) {
-                //Mensaje de error
                 System.out.println(erro.getMessage());
-
             }
         }
-
-
 
     private void guardar() {
         sql = new Conexion();
@@ -604,15 +620,11 @@ public class EditarProveedores extends JFrame {
             statement.setInt(9, this.id);
             statement.executeUpdate();
 
-            // Mostrar mensaje de éxito
-            String nombreCompleto = campoEmpresaProveedora.getText();
-
-            // Mensaje personalizado
-            System.out.println("Proveedor " + nombreCompleto + " ha sido actualizado exitosamente.");
-            JOptionPane.showMessageDialog(null, "Proveedor " + nombreCompleto + " ha sido actualizado exitosamente.", "Éxito", JOptionPane.DEFAULT_OPTION);
+            System.out.println("Proveedor " + campoEmpresaProveedora.getText() + " actualizado exitosamente.");
+            JOptionPane.showMessageDialog(null, "Proveedor " + campoEmpresaProveedora.getText() + " actualizado exitosamente.", "Éxito", JOptionPane.DEFAULT_OPTION);
         } catch (SQLException e) {
-            String mensajeError = "Error al guardar el proveedor: " + e.getMessage();
-            JOptionPane.showMessageDialog(null, "No se pudo actualizar el proveedor", "Error", JOptionPane.ERROR_MESSAGE);
+            String mensajeError = "Error al guardar la empresa: " + e.getMessage();
+            JOptionPane.showMessageDialog(null, "No se pudo realizar la actualización del proveedor", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
