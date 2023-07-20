@@ -18,10 +18,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.*;
 import java.util.List;
-import java.util.Random;
 
 import Objetos.DetalleCompra;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -29,7 +27,6 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
-
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 public class ListaCompras extends JFrame {
@@ -52,7 +49,7 @@ public class ListaCompras extends JFrame {
 
     public ListaCompras() {
         super("");
-        setSize(950, 505);
+        setSize(990, 505);
         setLocationRelativeTo(null);
         setContentPane(panelPrincipal);
         campoBusqueda.setText("");
@@ -267,9 +264,11 @@ public class ListaCompras extends JFrame {
                              "JOIN proveedores p ON c.proveedor_id = p.id " +
                              "JOIN empleados e ON c.empleado_id = e.id " +
                              "WHERE c.codigo_compra LIKE CONCAT('%', ?, '%') " +
-                             "OR c.fecha LIKE CONCAT('%', ?, '%') " +
+                             "OR DATE_FORMAT(c.fecha, '%d de %M %Y') LIKE CONCAT('%', ?, '%') " +
                              "OR p.empresaProveedora LIKE CONCAT('%', ?, '%') " +
                              "LIMIT ?, 20")) {
+
+            SimpleDateFormat formatoFecha = new SimpleDateFormat("dd 'de' MMMM yyyy", new Locale("es"));
 
             preparedStatement.setString(1, busqueda);  // Búsqueda por código de compra
             preparedStatement.setString(2, busqueda);  // Búsqueda por fecha de la compra
@@ -282,7 +281,14 @@ public class ListaCompras extends JFrame {
                 Compra compra = new Compra();
                 compra.setId(resultSet.getInt("id"));
                 compra.setCodigoCompra(resultSet.getString("codigo_compra"));
-                compra.setFecha(resultSet.getString("fecha"));
+
+                java.util.Date fecha = resultSet.getDate("fecha");
+                if (fecha != null) {
+                    compra.setFecha(formatoFecha.format(fecha));
+                } else {
+                    compra.setFecha("");
+                }
+
                 compra.setProveedorId(resultSet.getInt("proveedor_id"));
                 compra.setEmpleadoId(resultSet.getInt("empleado_id"));
                 compraList.add(compra);
@@ -298,8 +304,6 @@ public class ListaCompras extends JFrame {
         }
         return new ModeloCompras(compraList, sql);
     }
-
-
 
     private int getTotalPageCount() {
         int count = 0;
@@ -618,7 +622,6 @@ public class ListaCompras extends JFrame {
         }
         return numeroMes;
     }
-
 
     public static void main(String[] args) {
         ListaCompras listaCompras = new ListaCompras();

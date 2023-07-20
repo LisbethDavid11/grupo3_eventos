@@ -1,11 +1,9 @@
 package Compras;
-
 import Clientes.ListaCliente;
 import Objetos.Conexion;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
@@ -68,7 +66,7 @@ public class CrearCompra extends JFrame {
         properties.put("text.year", "Año");
 
         JDatePanelImpl datePanel = new JDatePanelImpl(dateModel, properties);
-        JDatePickerImpl datePicker = new JDatePickerImpl(datePanel, new DateLabelFormatter());
+        datePicker = new JDatePickerImpl(datePanel, new DateLabelFormatter());
 
         Calendar today = Calendar.getInstance();
         Calendar firstDayOfMonth = Calendar.getInstance();
@@ -687,6 +685,7 @@ public class CrearCompra extends JFrame {
         private final String datePattern = "yyyy-MM-dd"; // Cambia el formato de fecha aquí
         private final SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);
 
+
         @Override
         public Object stringToValue(String text) throws ParseException {
             return dateFormatter.parseObject(text);
@@ -750,8 +749,6 @@ public class CrearCompra extends JFrame {
             actualizarTotales();
         }
     }
-
-
 
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
