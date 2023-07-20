@@ -1,6 +1,11 @@
 package Compras;
+
 import Clientes.ListaCliente;
 import Objetos.Conexion;
+import org.jdatepicker.impl.JDatePanelImpl;
+import org.jdatepicker.impl.JDatePickerImpl;
+import org.jdatepicker.impl.UtilDateModel;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
@@ -16,8 +21,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Properties;
 
 public class CrearCompra extends JFrame {
     private JPanel panel1, panel2;
@@ -31,6 +39,7 @@ public class CrearCompra extends JFrame {
     private JCheckBox siCheckBox;
     private double sumaISVExento = 0.0;
     private JLabel lbl12;
+    private JPanel panel3;
     private Conexion sql;
     private Connection mysql;
     public CrearCompra crearCompra = this;
@@ -42,6 +51,7 @@ public class CrearCompra extends JFrame {
     EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
     Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
     private JTextField[] campos = { campoCodigo, campoFecha, campoCantidad, campoPrecio };
+    private JDatePickerImpl datePicker; // Declare the datePicker variable at the class level
 
     public CrearCompra() {
         super("");
@@ -50,6 +60,46 @@ public class CrearCompra extends JFrame {
         setContentPane(panel1);
         sql = new Conexion();
         mysql = sql.conectamysql();
+
+        UtilDateModel dateModel = new UtilDateModel();
+        Properties properties = new Properties();
+        properties.put("text.today", "Hoy");
+        properties.put("text.month", "Mes");
+        properties.put("text.year", "Año");
+
+        JDatePanelImpl datePanel = new JDatePanelImpl(dateModel, properties);
+        JDatePickerImpl datePicker = new JDatePickerImpl(datePanel, new DateLabelFormatter());
+
+        Calendar today = Calendar.getInstance();
+        Calendar firstDayOfMonth = Calendar.getInstance();
+        firstDayOfMonth.set(Calendar.DAY_OF_MONTH, 0);
+
+        dateModel.addChangeListener(e -> {
+            Date selectedDate = dateModel.getValue();
+            if (selectedDate != null) {
+                Calendar selectedCal = Calendar.getInstance();
+                selectedCal.setTime(selectedDate);
+                if (selectedCal.before(firstDayOfMonth) || selectedCal.after(today)) {
+                    JOptionPane.showMessageDialog(null, "La fecha seleccionada está fuera del rango permitido", "Error", JOptionPane.ERROR_MESSAGE);
+                    dateModel.setValue(today.getTime());
+                    selectedDate = today.getTime();
+                }
+            }
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd 'de' MMMM yyyy"); // Formato de fecha deseado
+            String formattedDate = (selectedDate != null) ? dateFormat.format(selectedDate) : "";
+            datePicker.getJFormattedTextField().setText(formattedDate);
+        });
+
+// Mostrar la fecha inicial en el campo de fecha
+        Date selectedDate = dateModel.getValue();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd 'de' MMMM yyyy"); // Formato de fecha deseado
+        String formattedDate = (selectedDate != null) ? dateFormat.format(selectedDate) : "";
+        datePicker.getJFormattedTextField().setText(formattedDate);
+
+        panel3.add(datePicker);
+
+
 
         boxProveedor.addItem("Seleccione un proveedor");
         cargarProveedores();
@@ -62,6 +112,7 @@ public class CrearCompra extends JFrame {
 
         panel1.setBackground(Color.decode("#F5F5F5"));
         panel2.setBackground(Color.decode("#F5F5F5"));
+        panel3.setBackground(Color.decode("#F5F5F5"));
         siCheckBox.setBackground(Color.decode("#F5F5F5"));
         siCheckBox.setFocusPainted(false);
 
@@ -112,7 +163,6 @@ public class CrearCompra extends JFrame {
         lbl12.setForeground(textColor);
         lbl12.setHorizontalAlignment(SwingConstants.RIGHT);
         lbl12.setText("0.00");
-
 
         modeloProductos = new DefaultTableModel();
         modeloProductos.addColumn("Nombre");
@@ -241,7 +291,7 @@ public class CrearCompra extends JFrame {
                     mensaje += "El código\n";
                 }
 
-                if (campoFecha.getText().trim().isEmpty()) {
+                if (datePicker.getJFormattedTextField().getText().trim().isEmpty()) {
                     validacion++;
                     mensaje += "La fecha\n";
                 }
@@ -268,7 +318,7 @@ public class CrearCompra extends JFrame {
                     return;
                 }
 
-                guardarDatos();
+                guardarDatos(datePicker);
             }
         });
 
@@ -344,11 +394,6 @@ public class CrearCompra extends JFrame {
             }
         });
 
-        // Inicializar campoFecha
-        String fechaMostrar = new SimpleDateFormat("dd 'de' MMMM yyyy").format(new Date());
-        campoFecha.setText(fechaMostrar);
-        campoFecha.setEditable(false);
-        campoFecha.setFocusable(false);
     }
 
     private class TablaModeloProductos extends DefaultTableModel {
@@ -430,7 +475,7 @@ public class CrearCompra extends JFrame {
         return botonEliminar;
     }
 
-    private void guardarDatos() {
+    private void guardarDatos(JDatePickerImpl datePicker) {
         Object[] options = {"Sí", "No"};
         int confirmacionGuardar = JOptionPane.showOptionDialog(null, "¿Desea guardar la compra?", "Confirmar", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 
@@ -439,7 +484,7 @@ public class CrearCompra extends JFrame {
         }
 
         String codigoCompra = campoCodigo.getText();
-        Date fechaActual = new Date();
+        Date fechaActual = (Date) datePicker.getModel().getValue(); // Explicitly cast the value to Date
         String fechaCompra = new SimpleDateFormat("yyyy-MM-dd").format(fechaActual);
         int proveedorId = Integer.parseInt(boxProveedor.getSelectedItem().toString().split(" - ")[0]);
         int empleadoId = Integer.parseInt(boxEmpleado.getSelectedItem().toString().split(" - ")[0]);
@@ -508,6 +553,8 @@ public class CrearCompra extends JFrame {
             compras.setVisible(true);
         }
     }
+
+
 
     private void actualizarTotales() {
         double sumaSubtotal = 0.0;
@@ -633,6 +680,30 @@ public class CrearCompra extends JFrame {
         actualizarTotales();
     }
 
+
+
+    public class DateLabelFormatter extends JFormattedTextField.AbstractFormatter {
+
+        private final String datePattern = "yyyy-MM-dd"; // Cambia el formato de fecha aquí
+        private final SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);
+
+        @Override
+        public Object stringToValue(String text) throws ParseException {
+            return dateFormatter.parseObject(text);
+        }
+
+        @Override
+        public String valueToString(Object value) throws ParseException {
+            if (value instanceof Date) {
+                Calendar cal = Calendar.getInstance();
+                cal.setTime((Date) value);
+                return dateFormatter.format(cal.getTime());
+            }
+            throw new ParseException("Invalid object type", 0);
+        }
+    }
+
+
     private void mostrarMensajeError(String mensaje) {
         JOptionPane.showMessageDialog(null, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
     }
@@ -679,6 +750,8 @@ public class CrearCompra extends JFrame {
             actualizarTotales();
         }
     }
+
+
 
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
