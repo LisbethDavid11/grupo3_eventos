@@ -2,6 +2,7 @@ package Arreglos;
 import Objetos.Conexion;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -124,7 +125,6 @@ public class CrearArreglo extends JFrame {
         lbl2.setForeground(textColor);
         lbl3.setForeground(textColor);
 
-
         // Crear una fuente con un tamaño de 18 puntos
         Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
         lbl0.setFont(fontTitulo);
@@ -161,9 +161,8 @@ public class CrearArreglo extends JFrame {
                         if (trimmedLength >= 100) {
                             e.consume(); // Ignorar la letra
                         } else {
-                            // Verificar si es el primer carácter o el carácter después de un espacio en blanco
-                            if (length == 0 || (caretPosition > 0 && text.charAt(caretPosition - 1) == ' ')) {
-                                // Convertir la letra a mayúscula
+                            // Convertir solo la primera letra a mayúscula
+                            if (caretPosition == 0) {
                                 e.setKeyChar(Character.toUpperCase(e.getKeyChar()));
                             }
                         }
@@ -213,10 +212,22 @@ public class CrearArreglo extends JFrame {
         botonCancelar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Volver a la lista de floristerías
-                ListaArreglo listaArreglo = new ListaArreglo();
-                listaArreglo.setVisible(true);
-                actual.dispose();
+                int respuesta = JOptionPane.showOptionDialog(
+                        null,
+                        "¿Desea cancelar el registro del arreglo?",
+                        "Confirmación",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        new Object[]{"Sí", "No"},
+                        "No"
+                );
+
+                if (respuesta == JOptionPane.YES_OPTION) {
+                    ListaArreglo listaArreglo = new ListaArreglo();
+                    listaArreglo.setVisible(true);
+                    actual.dispose();
+                }
             }
         });
 
@@ -258,7 +269,7 @@ public class CrearArreglo extends JFrame {
                         return;
                     }
 
-                    if (!nombre.matches("[a-zA-Z]{2,}(\\s[a-zA-Z]+\\s*)*")) {
+                    if (!nombre.matches("[a-zA-ZñÑ]{2,}(\\s[a-zA-ZñÑ]+\\s*)*")) {
                         JOptionPane.showMessageDialog(null, "El nombre debe tener mínimo 2 letras y máximo 1 espacio entre palabras.", "Validación", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
@@ -266,7 +277,6 @@ public class CrearArreglo extends JFrame {
                     JOptionPane.showMessageDialog(null, "El campo de nombre no puede estar vacío.", "Validación", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-
 
                 String precioText = campoPrecio.getText().trim();
                 if (precioText.isEmpty()) {
@@ -294,14 +304,52 @@ public class CrearArreglo extends JFrame {
                     JOptionPane.showMessageDialog(null, "Faltó cargar la imagen.", "Validación", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                guardarArreglo();
+
+                int respuesta = JOptionPane.showOptionDialog(
+                        null,
+                        "¿Desea guardar la información del arreglo?",
+                        "Confirmación",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        new Object[]{"Sí", "No"},
+                        "No"
+                );
+
+                if (respuesta == JOptionPane.YES_OPTION) {
+                    guardarArreglo();
+                    ListaArreglo listaArreglo = new ListaArreglo();
+                    listaArreglo.setVisible(true);
+                    actual.dispose();
+                }
             }
         });
 
         botonCargarImagen.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                UIManager.put("FileChooser.openButtonText", "Cargar");
+                UIManager.put("FileChooser.cancelButtonText", "Cancelar");
+                UIManager.put("FileChooser.lookInLabelText", "Ver en");
+                UIManager.put("FileChooser.fileNameLabelText", "Nombre del archivo");
+                UIManager.put("FileChooser.filesOfTypeLabelText", "Archivos del tipo");
+                UIManager.put("FileChooser.upFolderToolTipText", "Subir un nivel");
+                UIManager.put("FileChooser.homeFolderToolTipText", "Escritorio");
+                UIManager.put("FileChooser.newFolderToolTipText", "Crear nueva carpeta");
+                UIManager.put("FileChooser.listViewButtonToolTipText", "Lista");
+                UIManager.put("FileChooser.newFolderButtonText", "Crear nueva carpeta");
+                UIManager.put("FileChooser.renameFileButtonText", "Renombrar archivo");
+                UIManager.put("FileChooser.deleteFileButtonText", "Eliminar archivo");
+                UIManager.put("FileChooser.filterLabelText", "Tipo de archivo");
+                UIManager.put("FileChooser.detailsViewButtonToolTipText", "Detalles");
+                UIManager.put("FileChooser.fileSizeHeaderText", "Tamaño");
+                UIManager.put("FileChooser.fileDateHeaderText", "Fecha de modificación");
+
                 JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setDialogTitle("Seleccionar imagen"); // Cambiar título del diálogo
+
+                fileChooser.setFileFilter(new FileNameExtensionFilter("Imágenes", "jpg", "jpeg", "png", "bmp", "gif"));
+
                 int seleccion = fileChooser.showOpenDialog(actual);
                 if (seleccion == JFileChooser.APPROVE_OPTION) {
                     File file = fileChooser.getSelectedFile();
@@ -333,7 +381,6 @@ public class CrearArreglo extends JFrame {
                 }
             }
         });
-
     }
 
     private void guardarArreglo() {
@@ -342,11 +389,8 @@ public class CrearArreglo extends JFrame {
         double precio = Double.parseDouble(precioText);
         String disponible = radioButtonSi.isSelected() ? "Si" : "No";
 
-        int opcion = JOptionPane.showOptionDialog(null, "¿Desea guardar el nuevo arreglo?", "Guardar", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
-
-        if (opcion == JOptionPane.YES_OPTION) {
-            try (Connection connection = sql.conectamysql();
-                 PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO arreglos (imagen, nombre, precio, disponible) VALUES (?, ?, ?, ?)")) {
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO arreglos (imagen, nombre, precio, disponible) VALUES (?, ?, ?, ?)")) {
 
                 // Generar el nombre de la imagen
                 SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH-mm-ss");
@@ -373,21 +417,10 @@ public class CrearArreglo extends JFrame {
                 preparedStatement.setString(4, disponible);
                 preparedStatement.executeUpdate();
 
-                JOptionPane.showMessageDialog(null, "Arreglo creado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-
-                // Volver a la lista de arreglos
-                ListaArreglo listaArreglos = new ListaArreglo();
-                listaArreglos.setVisible(true);
-                actual.dispose();
+                JOptionPane.showMessageDialog(null, "Arreglo guardado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
             } catch (SQLException e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Error al guardar el arreglo", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        } else {
-            // Regresar a la lista de arreglos
-            ListaArreglo listaArreglos = new ListaArreglo();
-            listaArreglos.setVisible(true);
-            actual.dispose();
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al guardar el arreglo", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -417,5 +450,4 @@ public class CrearArreglo extends JFrame {
             }
         });
     }
-
 }

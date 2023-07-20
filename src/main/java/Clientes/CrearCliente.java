@@ -1,9 +1,6 @@
 package Clientes;
-
 import Objetos.Cliente;
 import Objetos.Conexion;
-import Objetos.Empleado;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.DefaultFormatterFactory;
@@ -261,18 +258,17 @@ public class CrearCliente extends JFrame{
 
         campoDomicilio.setBackground(new Color(215, 215, 215));
 
-
         // Crea un margen de 15 píxeles desde el borde inferior
         EmptyBorder marginTitulo = new EmptyBorder(15, 0, 15, 0);
         label1.setBorder(marginTitulo);
 
-        // Crear una fuente con un tamaño de 18 puntos
-        Font fontTitulo = new Font(label1.getFont().getName(), label1.getFont().getStyle(), 18);
-        label1.setFont(fontTitulo);
-
         // Crea un margen de 15 píxeles desde el borde inferior
         EmptyBorder marginDNI = new EmptyBorder(10, 0, 10, 0);
         campoIdentidad.setBorder(marginDNI);
+
+        // Crear una fuente con un tamaño de 18 puntos
+        Font fontTitulo = new Font(label1.getFont().getName(), label1.getFont().getStyle(), 18);
+        label1.setFont(fontTitulo);
 
         try {
             MaskFormatter dni = new MaskFormatter("####-####-#####");
@@ -284,9 +280,22 @@ public class CrearCliente extends JFrame{
         botonCancelar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ListaCliente cliente = new ListaCliente();
-                cliente.setVisible(true);
-                actual.dispose();
+                int respuesta = JOptionPane.showOptionDialog(
+                        null,
+                        "¿Desea cancelar el registro del cliente?",
+                        "Confirmación",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        new Object[]{"Sí", "No"},
+                        "No"
+                );
+
+                if (respuesta == JOptionPane.YES_OPTION) {
+                    ListaCliente cliente = new ListaCliente();
+                    cliente.setVisible(true);
+                    actual.dispose();
+                }
             }
         });
 
@@ -352,8 +361,8 @@ public class CrearCliente extends JFrame{
                         return;
                     }
 
-                    if (!nombre.matches("[a-zA-Z]{2,}(\\s[a-zA-Z]+)?")) {
-                        JOptionPane.showMessageDialog(null, "El nombre de cliente debe tener mínimo 2 letras; y máximo 1 espacio entre palabras.", "Validación", JOptionPane.ERROR_MESSAGE);
+                    if (!nombre.matches("[a-zA-ZñÑáéíóúÁÉÍÓÚ]{2,}(\\s[a-zA-ZñÑáéíóúÁÉÍÓÚ]+)?")) {
+                        JOptionPane.showMessageDialog(null, "El nombre de cliente debe tener mínimo 2 letras y máximo 1 espacio entre palabras.", "Validación", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
                 } else {
@@ -361,15 +370,15 @@ public class CrearCliente extends JFrame{
                     return;
                 }
 
-                String apellido = campoNombre.getText().trim();
+                String apellido = campoApellido.getText().trim();
                 if (!apellido.isEmpty()) {
                     if (apellido.length() > 50) {
                         JOptionPane.showMessageDialog(null, "El apellido de cliente debe tener como máximo 50 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
 
-                    if (!apellido.matches("[a-zA-Z]{2,}(\\s[a-zA-Z]+)?")) {
-                        JOptionPane.showMessageDialog(null, "El apellido de cliente debe tener mínimo 2 letras; y máximo 1 espacio entre palabras.", "Validación", JOptionPane.ERROR_MESSAGE);
+                    if (!apellido.matches("[a-zA-ZñÑáéíóúÁÉÍÓÚ]{2,}(\\s[a-zA-ZñÑáéíóúÁÉÍÓÚ]+)?")) {
+                        JOptionPane.showMessageDialog(null, "El apellido de cliente debe tener mínimo 2 letras y máximo 1 espacio entre palabras.", "Validación", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
                 } else {
@@ -428,12 +437,23 @@ public class CrearCliente extends JFrame{
                     return;
                 }
 
-                guardar();
+                int respuesta = JOptionPane.showOptionDialog(
+                        null,
+                        "¿Desea guardar la información del cliente?",
+                        "Confirmación",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        new Object[]{"Sí", "No"},
+                        "No"
+                );
 
-                ListaCliente listaClientes = new ListaCliente();
-                listaClientes.setVisible(true);
-                crearCliente.dispose();
-                guardar();
+                if (respuesta == JOptionPane.YES_OPTION) {
+                    guardar();
+                    ListaCliente listaClientes = new ListaCliente();
+                    listaClientes.setVisible(true);
+                    crearCliente.dispose();
+                }
             }
         });
     }
@@ -445,7 +465,6 @@ public class CrearCliente extends JFrame{
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO " + Cliente.nombreTabla + "(`nombre`, `apellido`, `identidad`, `telefono`, `domicilio`, `tipo_cliente`) VALUES(?,?,?,?,?,?)")) {
 
-            // Verificar si ya existe un cliente con la misma identidad
             String identidad = campoIdentidad.getText().trim();
             String selectQuery = "SELECT * FROM " + Cliente.nombreTabla + " WHERE identidad = ?";
             PreparedStatement selectStatement = connection.prepareStatement(selectQuery);
@@ -459,35 +478,12 @@ public class CrearCliente extends JFrame{
             preparedStatement.setString(6, radioAldetalle.isSelected() ? "Al Detalle" : "Mayorista");
             preparedStatement.executeUpdate();
 
-            // No es necesario cerrar explícitamente la conexión, ya que se cerrará automáticamente al finalizar el bloque try-with-resources
-
-            // Verificar si la ventana ListaCliente ya está abierta
-            boolean listaClienteAbierta = false;
-            Window[] windows = Window.getWindows();
-            for (Window window : windows) {
-                if (window instanceof ListaCliente) {
-                    listaClienteAbierta = true;
-                    break;
-                }
-            }
-
-            // Abrir la ventana ListaCliente solo si no está abierta
-            if (!listaClienteAbierta) {
-                ListaCliente cliente = new ListaCliente();
-                cliente.setVisible(true);
-            }
-
-            actual.dispose();
-
-            // Mostrar mensaje de éxito
             String nombreCompleto = campoNombre.getText() + " " + campoApellido.getText();
-
-            // Mensaje personalizado
             System.out.println("Cliente " + nombreCompleto + " ha sido registrado exitosamente.");
             JOptionPane.showMessageDialog(null, "Cliente " + nombreCompleto + " ha sido registrado exitosamente.", "Éxito", JOptionPane.DEFAULT_OPTION);
-
         } catch (SQLException e) {
-
+            String mensajeError = "Error al guardar el cliente: " + e.getMessage();
+            JOptionPane.showMessageDialog(null, "No se pudo realizar el registro del cliente", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -519,11 +515,9 @@ public class CrearCliente extends JFrame{
     private boolean validarIdentidadExistente(String identidad) {
         try {
             mysql = sql.conectamysql();
-
             String query = "SELECT COUNT(*) FROM clientes WHERE Identidad = ?";
             PreparedStatement statement = mysql.prepareStatement(query);
             statement.setString(1, identidad);
-
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {

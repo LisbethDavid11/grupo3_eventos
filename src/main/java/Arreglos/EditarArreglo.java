@@ -1,9 +1,8 @@
 package Arreglos;
-
 import Objetos.Conexion;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -166,9 +165,8 @@ public class EditarArreglo extends JFrame {
                         if (trimmedLength >= 100) {
                             e.consume(); // Ignorar la letra
                         } else {
-                            // Verificar si es el primer carácter o el carácter después de un espacio en blanco
-                            if (length == 0 || (caretPosition > 0 && text.charAt(caretPosition - 1) == ' ')) {
-                                // Convertir la letra a mayúscula
+                            // Convertir solo la primera letra a mayúscula
+                            if (caretPosition == 0) {
                                 e.setKeyChar(Character.toUpperCase(e.getKeyChar()));
                             }
                         }
@@ -218,10 +216,22 @@ public class EditarArreglo extends JFrame {
         botonCancelar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Volver a la lista de floristerías
-                ListaArreglo listaArreglo = new ListaArreglo();
-                listaArreglo.setVisible(true);
-                actual.dispose();
+                int respuesta = JOptionPane.showOptionDialog(
+                        null,
+                        "¿Desea cancelar la actualización del arreglo?",
+                        "Confirmación",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        new Object[]{"Sí", "No"},
+                        "No"
+                );
+
+                if (respuesta == JOptionPane.YES_OPTION) {
+                    ListaArreglo listaArreglo = new ListaArreglo();
+                    listaArreglo.setVisible(true);
+                    actual.dispose();
+                }
             }
         });
 
@@ -263,7 +273,7 @@ public class EditarArreglo extends JFrame {
                         return;
                     }
 
-                    if (!nombre.matches("[a-zA-Z]{2,}(\\s[a-zA-Z]+\\s*)*")) {
+                    if (!nombre.matches("[a-zA-ZñÑ]{2,}(\\s[a-zA-ZñÑ]+\\s*)*")) {
                         JOptionPane.showMessageDialog(null, "El nombre debe tener mínimo 2 letras y máximo 1 espacio entre palabras.", "Validación", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
@@ -298,14 +308,52 @@ public class EditarArreglo extends JFrame {
                     JOptionPane.showMessageDialog(null, "Faltó cargar la imagen.", "Validación", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                guardarArreglo();
+
+                int respuesta = JOptionPane.showOptionDialog(
+                        null,
+                        "¿Desea actualizar la información del arreglo?",
+                        "Confirmación",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        new Object[]{"Sí", "No"},
+                        "No"
+                );
+
+                if (respuesta == JOptionPane.YES_OPTION) {
+                    actualizarArreglo();
+                    ListaArreglo listaArreglo = new ListaArreglo();
+                    listaArreglo.setVisible(true);
+                    actual.dispose();
+                }
             }
         });
 
         botonCargarImagen.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                UIManager.put("FileChooser.openButtonText", "Cargar");
+                UIManager.put("FileChooser.cancelButtonText", "Cancelar");
+                UIManager.put("FileChooser.lookInLabelText", "Ver en");
+                UIManager.put("FileChooser.fileNameLabelText", "Nombre del archivo");
+                UIManager.put("FileChooser.filesOfTypeLabelText", "Archivos del tipo");
+                UIManager.put("FileChooser.upFolderToolTipText", "Subir un nivel");
+                UIManager.put("FileChooser.homeFolderToolTipText", "Escritorio");
+                UIManager.put("FileChooser.newFolderToolTipText", "Crear nueva carpeta");
+                UIManager.put("FileChooser.listViewButtonToolTipText", "Lista");
+                UIManager.put("FileChooser.newFolderButtonText", "Crear nueva carpeta");
+                UIManager.put("FileChooser.renameFileButtonText", "Renombrar archivo");
+                UIManager.put("FileChooser.deleteFileButtonText", "Eliminar archivo");
+                UIManager.put("FileChooser.filterLabelText", "Tipo de archivo");
+                UIManager.put("FileChooser.detailsViewButtonToolTipText", "Detalles");
+                UIManager.put("FileChooser.fileSizeHeaderText", "Tamaño");
+                UIManager.put("FileChooser.fileDateHeaderText", "Fecha de modificación");
+
                 JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setDialogTitle("Seleccionar imagen"); // Cambiar título del diálogo
+
+                fileChooser.setFileFilter(new FileNameExtensionFilter("Imágenes", "jpg", "jpeg", "png", "bmp", "gif"));
+
                 int seleccion = fileChooser.showOpenDialog(actual);
                 if (seleccion == JFileChooser.APPROVE_OPTION) {
                     File file = fileChooser.getSelectedFile();
@@ -386,42 +434,66 @@ public class EditarArreglo extends JFrame {
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error al obtener los datos del arreglo.", "Error", JOptionPane.ERROR_MESSAGE);
         }
-
         botonGuardar.setIcon(new ImageIcon("update_icon_white.png"));
     }
 
-    private void guardarArreglo() {
+    private void actualizarArreglo() {
         try {
-            SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
-            Random rand = new Random();
-            int num = rand.nextInt(900) + 100;
-            String imagenNombre = format.format(new Date()) + num + ".jpg";
-            String destino = "img/arreglos/" + imagenNombre;
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH-mm-ss");
+            String fechaActual = dateFormat.format(new Date());
+            String nombreImagen = "imagen " + fechaActual + " " + generarNumeroAleatorio(0, 9999);
 
-            File imagenOrigen = new File(imagePath);
-            File imagenDestino = new File(destino);
-            Files.copy(imagenOrigen.toPath(), imagenDestino.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            String rutaImagen = nombreImagen + obtenerExtensionImagen(imagePath);
+            File destino = new File("img/arreglos/" + rutaImagen);
+
+            try {
+                // Copiar el archivo seleccionado a la ubicación destino
+                Path origenPath = Path.of(imagePath);
+                Files.copy(origenPath, destino.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error al guardar la imagen", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
             String nombre = campoNombre.getText().trim();
-            double precio = Double.parseDouble(campoPrecio.getText().trim());
-            String disponible = radioButtonSi.isSelected() ? "Sí" : "No";
+            String precioText = campoPrecio.getText().replace("L ", "").replace(",", "").replace("_", "");
+            double precio = Double.parseDouble(precioText);
+            String disponible = radioButtonSi.isSelected() ? "Si" : "No";
 
-            PreparedStatement statement = mysql.prepareStatement("UPDATE arreglos SET nombre = ?, precio = ?, imagen = ?, disponible = ? WHERE id = ?;");
-            statement.setString(1, nombre);
-            statement.setDouble(2, precio);
-            statement.setString(3, imagenNombre);
-            statement.setString(4, disponible);
-            statement.setInt(5, id);
-            statement.executeUpdate();
+            try (Connection connection = sql.conectamysql();
+                 PreparedStatement preparedStatement = connection.prepareStatement("UPDATE arreglos SET nombre = ?, precio = ?, imagen = ?, disponible = ? WHERE id = ?")) {
 
-            JOptionPane.showMessageDialog(null, "Arreglo actualizado correctamente.", "Actualización exitosa", JOptionPane.INFORMATION_MESSAGE);
+                preparedStatement.setString(1, nombre);
+                preparedStatement.setDouble(2, precio);
+                preparedStatement.setString(3, rutaImagen);
+                preparedStatement.setString(4, disponible);
+                preparedStatement.setInt(5, id);
+                preparedStatement.executeUpdate();
 
-            ListaArreglo listaArreglo = new ListaArreglo();
-            listaArreglo.setVisible(true);
-            actual.dispose();
-        } catch (IOException | SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error al guardar el arreglo.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Arreglo actualizado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error al actualizar el arreglo", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al actualizar el arreglo", "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private String obtenerExtensionImagen(String imagePath) {
+        int extensionIndex = imagePath.lastIndexOf(".");
+        if (extensionIndex != -1) {
+            return imagePath.substring(extensionIndex);
+        }
+        return "";
+    }
+
+    private String generarNumeroAleatorio(int min, int max) {
+        Random random = new Random();
+        int numeroAleatorio = random.nextInt(max - min + 1) + min;
+        return String.format("%04d", numeroAleatorio);
     }
 
     public static void main(String[] args) {
