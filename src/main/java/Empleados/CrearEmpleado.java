@@ -49,17 +49,13 @@ public class CrearEmpleado extends JFrame {
     private JLabel lbl11;
     private JLabel lbl12;
     private JLabel lbl13;
+    private JPanel panel3;
+    private JPanel panel4;
     private Conexion sql;
     private Connection mysql;
     public CrearEmpleado crearEmpleado = this;
     public ButtonGroup grupoGenero;
     public ButtonGroup grupoTipo;
-
-    // Colores personalizados
-    Color primaryColor = Color.decode("#263238"); // Gris azul oscuro
-    Color lightColor = Color.decode("#37474f"); // Gris azul claro
-    Color darkColor = Color.decode("#000a12"); // Gris azul más oscuro
-    Color textColor = Color.WHITE; // Texto blanco
 
     private JTextField[] campos = {
             campoIdentidad,
@@ -309,6 +305,8 @@ public class CrearEmpleado extends JFrame {
 
         // Color de fondo del panel
         panel1.setBackground(Color.decode("#F5F5F5"));
+        panel3.setBackground(Color.decode("#F5F5F5"));
+        panel4.setBackground(Color.decode("#F5F5F5"));
 
         // Color de texto para los JTextField
         Color textColor = Color.decode("#212121");
@@ -396,9 +394,18 @@ public class CrearEmpleado extends JFrame {
         cancelarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String[] opciones = {"Sí", "No"};
-                int opcion = JOptionPane.showOptionDialog(null, "¿Estás seguro de que quieres cancelar?", "Confirmar cancelación", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[1]);
-                if (opcion == JOptionPane.YES_OPTION) {
+                int respuesta = JOptionPane.showOptionDialog(
+                        null,
+                        "¿Desea cancelar el registro del empleado?",
+                        "Confirmación",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        new Object[]{"Sí", "No"},
+                        "No"
+                );
+
+                if (respuesta == JOptionPane.YES_OPTION) {
                     ListaEmpleados listaEmpleados = new ListaEmpleados();
                     listaEmpleados.setVisible(true);
                     crearEmpleado.dispose();
@@ -406,323 +413,290 @@ public class CrearEmpleado extends JFrame {
             }
         });
 
-
-        // Boton guardar
         guardarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int opcion = JOptionPane.showOptionDialog(null, "¿Estás seguro de que quieres guardar los datos?", "Confirmar guardar", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, new String[]{"Sí", "No"}, "No");
 
-                if (opcion == JOptionPane.YES_OPTION) {
-                    try {
-                        int validacion = 0;
-                        String mensaje = "Faltó ingresar: \n";
+                int validacion = 0;
+                String mensaje = "Faltó ingresar: \n";
 
-                        // Verificar si ya existe un empleado con la misma identidad
-                        if (validarIdentidadExistente(campoIdentidad.getText().trim())) {
-                            JOptionPane.showMessageDialog(null, "La identidad ingresada ya está asociada a otro empleado", "Validación", JOptionPane.ERROR_MESSAGE);
-                            return; // Detener la ejecución del método
-                        }
+                // Verificar si ya existe un empleado con la misma identidad
+                if (validarIdentidadExistente(campoIdentidad.getText().trim())) {
+                    JOptionPane.showMessageDialog(null, "La identidad ingresada ya está asociada a otro empleado", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return; // Detener la ejecución del método
+                }
 
-                        // Verificar si ya existe un empleado con el mismo teléfono
-                        if (validarTelefonoExistente(campoTelefono.getText().trim())) {
-                            JOptionPane.showMessageDialog(null, "El teléfono ingresado ya está asociado a otro empleado", "Validación", JOptionPane.ERROR_MESSAGE);
-                            return; // Detener la ejecución del método
-                        }
+                // Verificar si ya existe un empleado con el mismo teléfono
+                if (validarTelefonoExistente(campoTelefono.getText().trim())) {
+                    JOptionPane.showMessageDialog(null, "El teléfono ingresado ya está asociado a otro empleado", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return; // Detener la ejecución del método
+                }
 
-                        // Verificar que el DNI no se encuentre vacio
-                        String dni = campoIdentidad.getText().trim();
-                        if (dni.length() != 15) {
-                            validacion++;
-                            mensaje += "Identidad\n";
-                        }
+                // Verificar que el DNI no se encuentre vacio
+                String dni = campoIdentidad.getText().trim();
+                if (dni.length() != 15) {
+                    validacion++;
+                    mensaje += "Identidad\n";
+                }
 
-                        // Verificar el nombre
-                        if (campoNombres.getText().trim().isEmpty()) {
-                            validacion++;
-                            mensaje += "Nombres\n";
-                        }
+                // Verificar el nombre
+                if (campoNombres.getText().trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "Nombres\n";
+                }
 
-                        if (campoApellidos.getText().trim().isEmpty()) {
-                            validacion++;
-                            mensaje += "Apellidos\n";
-                        }
+                if (campoApellidos.getText().trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "Apellidos\n";
+                }
 
-                        // Verificar si se seleccionó un género
-                        if (!femeninoRadioButton.isSelected() && !masculinoRadioButton.isSelected()) {
-                            validacion++;
-                            mensaje += "Género\n";
-                        }
+                // Verificar si se seleccionó un género
+                if (!femeninoRadioButton.isSelected() && !masculinoRadioButton.isSelected()) {
+                    validacion++;
+                    mensaje += "Género\n";
+                }
 
-                        if (campoEdad.getText().trim().isEmpty()) {
-                            validacion++;
-                            mensaje += "Edad\n";
-                        } else {
-                            int edad = Integer.parseInt(campoEdad.getText());
-                            if (edad < 18 || edad > 60) {
-                                JOptionPane.showMessageDialog(null, "La edad debe estar entre 18 y 60 años", "Validación", JOptionPane.ERROR_MESSAGE);
-                                return;
-                            }
-                        }
-
-                        if (campoCorreo.getText().trim().isEmpty()) {
-                            validacion++;
-                            mensaje += "Correo\n";
-                        }
-
-                        if (campoTelefono.getText().trim().isEmpty()) {
-                            validacion++;
-                            mensaje += "Teléfono\n";
-                        }
-
-                        if (campoNombreContacto.getText().trim().isEmpty()) {
-                            validacion++;
-                            mensaje += "Nombre del contacto de emergencia\n";
-                        }
-
-                        if (campoContactoEmergencia.getText().trim().isEmpty()) {
-                            validacion++;
-                            mensaje += "Teléfono del contacto de emergencia\n";
-                        }
-
-                        if (campoDireccion.getText().trim().isEmpty()) {
-                            validacion++;
-                            mensaje += "Dirección\n";
-                        }
-
-                        // Verificar si se seleccionó un tipo de empleado
-                        if (!temporalRadioButton.isSelected() && !permanenteRadioButton.isSelected()) {
-                            validacion++;
-                            mensaje += "Tipo de empleado\n";
-                        }
-
-
-                        // Mostrar mensaje de campos vacíos si es necesario
-                        if (validacion > 0) {
-                            JOptionPane.showMessageDialog(null, mensaje.toString(), "Validación", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-
-                        String nombre = campoNombres.getText().trim();
-                        if (!nombre.isEmpty()) {
-                            if (nombre.length() > 50) {
-                                JOptionPane.showMessageDialog(null, "El nombre debe tener como máximo 50 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
-                                return;
-                            }
-
-                            if (!nombre.matches("[a-zA-Z]{2,}(\\s[a-zA-Z]+)?")) {
-                                JOptionPane.showMessageDialog(null, "El nombre debe tener mínimo 2 letras; y máximo 1 espacio entre palabras.", "Validación", JOptionPane.ERROR_MESSAGE);
-                                return;
-                            }
-                        } else {
-                            JOptionPane.showMessageDialog(null, "El campo de nombre no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-
-                        String apellidos = campoApellidos.getText().trim();
-                        if (!apellidos.isEmpty()) {
-                            if (apellidos.length() > 50) {
-                                JOptionPane.showMessageDialog(null, "Los apellidos deben tener como máximo 50 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
-                                return;
-                            }
-
-                            if (!apellidos.matches("[a-zA-Z]{2,}(\\s[a-zA-Z]+)?")) {
-                                JOptionPane.showMessageDialog(null, "Los apellidos deben tener mínimo 2 letras; y máximo 1 espacio entre palabras.", "Validación", JOptionPane.ERROR_MESSAGE);
-                                return;
-                            }
-                        } else {
-                            JOptionPane.showMessageDialog(null, "El campo de apellidos no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-
-                        String correoElectronico = campoCorreo.getText().trim();
-                        if (!correoElectronico.isEmpty()) {
-                            // Verificar el formato del correo electrónico utilizando una expresión regular
-                            if (!correoElectronico.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
-                                JOptionPane.showMessageDialog(null, "El correo electrónico ingresado no tiene un formato válido", "Validación", JOptionPane.ERROR_MESSAGE);
-                                return;
-                            }
-                        } else {
-                            JOptionPane.showMessageDialog(null, "El campo de correo electrónico no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-
-                        String nombreContacto = campoNombreContacto.getText().trim();
-                        if (!nombreContacto.isEmpty()) {
-                            if (nombreContacto.length() > 50) {
-                                JOptionPane.showMessageDialog(null, "El nombre de contacto debe tener como máximo 50 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
-                                return;
-                            }
-
-                            if (!nombreContacto.matches("[a-zA-Z]{2,}(\\s[a-zA-Z]+)?")) {
-                                JOptionPane.showMessageDialog(null, "El nombre de contacto debe tener mínimo 2 letras; y máximo 1 espacio entre palabras.", "Validación", JOptionPane.ERROR_MESSAGE);
-                                return;
-                            }
-                        } else {
-                            JOptionPane.showMessageDialog(null, "El campo de nombre de contacto no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-
-                        String domicilio = campoDireccion.getText().trim();
-
-                        if (!domicilio.isEmpty()) {
-                            if (domicilio.length() < 2 || domicilio.length() > 200) {
-                                JOptionPane.showMessageDialog(null, "El domicilio debe tener entre 2 y 200 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
-                                return;
-                            }
-                        } else {
-                            JOptionPane.showMessageDialog(null, "El campo de domicilio no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-
-                        String telefono = campoTelefono.getText().trim();
-
-                        if (!telefono.isEmpty()) {
-                            if (telefono.length() != 8) {
-                                JOptionPane.showMessageDialog(null, "El número de teléfono debe tener exactamente 8 dígitos", "Validación", JOptionPane.ERROR_MESSAGE);
-                                return;
-                            }
-
-                            if (!telefono.matches("[2389]\\d{7}")) {
-                                JOptionPane.showMessageDialog(null, "El número de teléfono debe empezar con 2, 3, 8 o 9", "Validación", JOptionPane.ERROR_MESSAGE);
-                                return;
-                            }
-                        } else {
-                            JOptionPane.showMessageDialog(null, "El campo de teléfono no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-
-                        String contactoEmergencia = campoContactoEmergencia.getText().trim();
-
-                        if (!contactoEmergencia.isEmpty()) {
-                            if (contactoEmergencia.length() != 8) {
-                                JOptionPane.showMessageDialog(null, "El número de contacto de emergencia debe tener exactamente 8 dígitos", "Validación", JOptionPane.ERROR_MESSAGE);
-                                return;
-                            }
-
-                            if (!contactoEmergencia.matches("[2389]\\d{7}")) {
-                                JOptionPane.showMessageDialog(null, "El número de contacto de emergencia debe empezar con 2, 3, 8 o 9", "Validación", JOptionPane.ERROR_MESSAGE);
-                                return;
-                            }
-                        } else {
-                            JOptionPane.showMessageDialog(null, "El campo de contacto de emergencia no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-
-                        String identidad = campoIdentidad.getText().trim();
-
-                        if (!identidad.isEmpty()) {
-                            if (identidad.length() != 15) {
-                                JOptionPane.showMessageDialog(null, "La identidad debe tener 15 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
-                                return;
-                            }
-
-                            if (!identidad.matches("\\d{4}-\\d{4}-\\d{5}")) {
-                                JOptionPane.showMessageDialog(null, "La identidad debe tener el formato ####-####-#####", "Validación", JOptionPane.ERROR_MESSAGE);
-                                return;
-                            }
-
-                            String numerosIdentidad = identidad.replace("-", "");
-
-                            Empleado empleado = new Empleado();
-                            boolean esIdentidadValida = empleado.comprobarIdentidad(numerosIdentidad);
-                            if (!esIdentidadValida) {
-                                JOptionPane.showMessageDialog(null, "La identidad ingresada no es válida", "Validación", JOptionPane.ERROR_MESSAGE);
-                                return;
-                            }
-                        } else {
-                            JOptionPane.showMessageDialog(null, "El campo de identidad no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-
-                        GuardarDatos();
-                    } catch (SQLException ex) {
-                        throw new RuntimeException(ex);
+                if (campoEdad.getText().trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "Edad\n";
+                } else {
+                    int edad = Integer.parseInt(campoEdad.getText());
+                    if (edad < 18 || edad > 60) {
+                        JOptionPane.showMessageDialog(null, "La edad debe estar entre 18 y 60 años", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
                     }
                 }
-                ListaEmpleados listaEmpleados = new ListaEmpleados();
-                listaEmpleados.setVisible(true);
-                crearEmpleado.dispose();
+
+                if (campoCorreo.getText().trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "Correo\n";
+                }
+
+                if (campoTelefono.getText().trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "Teléfono\n";
+                }
+
+                if (campoNombreContacto.getText().trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "Nombre del contacto de emergencia\n";
+                }
+
+                if (campoContactoEmergencia.getText().trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "Teléfono del contacto de emergencia\n";
+                }
+
+                if (campoDireccion.getText().trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "Dirección\n";
+                }
+
+                // Verificar si se seleccionó un tipo de empleado
+                if (!temporalRadioButton.isSelected() && !permanenteRadioButton.isSelected()) {
+                    validacion++;
+                    mensaje += "Tipo de empleado\n";
+                }
+
+                // Mostrar mensaje de campos vacíos si es necesario
+                if (validacion > 0) {
+                    JOptionPane.showMessageDialog(null, mensaje.toString(), "Validación", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                String nombre = campoNombres.getText().trim();
+                if (!nombre.isEmpty()) {
+                    if (nombre.length() > 50) {
+                        JOptionPane.showMessageDialog(null, "El nombre de empleado debe tener como máximo 50 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    if (!nombre.matches("[a-zA-ZñÑáéíóúÁÉÍÓÚ]{2,}(\\s[a-zA-ZñÑáéíóúÁÉÍÓÚ]+)?")) {
+                        JOptionPane.showMessageDialog(null, "El nombre de empleado debe tener mínimo 2 letras y máximo 1 espacio entre palabras.", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "El campo de nombre de empleado no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                String apellido = campoApellidos.getText().trim();
+                if (!apellido.isEmpty()) {
+                    if (apellido.length() > 50) {
+                        JOptionPane.showMessageDialog(null, "El apellido de empleado debe tener como máximo 50 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    if (!apellido.matches("[a-zA-ZñÑáéíóúÁÉÍÓÚ]{2,}(\\s[a-zA-ZñÑáéíóúÁÉÍÓÚ]+)?")) {
+                        JOptionPane.showMessageDialog(null, "El apellido de empleado debe tener mínimo 2 letras y máximo 1 espacio entre palabras.", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "El apellido del empleado no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                String correoElectronico = campoCorreo.getText().trim();
+                if (!correoElectronico.isEmpty()) {
+                    // Verificar el formato del correo electrónico utilizando una expresión regular
+                    if (!correoElectronico.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+                        JOptionPane.showMessageDialog(null, "El correo electrónico ingresado no tiene un formato válido", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "El campo de correo electrónico no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                String nombreContacto = campoNombreContacto.getText().trim();
+                if (!nombreContacto.isEmpty()) {
+                    if (nombreContacto.length() > 50) {
+                        JOptionPane.showMessageDialog(null, "El nombre de contacto debe tener como máximo 50 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    if (!nombreContacto.matches("[a-zA-ZñÑáéíóúÁÉÍÓÚ]{2,}(\\s[a-zA-ZñÑáéíóúÁÉÍÓÚ]+)?")) {
+                        JOptionPane.showMessageDialog(null, "El nombre de contacto debe tener mínimo 2 letras y máximo 1 espacio entre palabras.", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "El campo de nombre de contacto no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                String domicilio = campoDireccion.getText().trim();
+                if (!domicilio.isEmpty()) {
+                    if (domicilio.length() < 2 || domicilio.length() > 200) {
+                        JOptionPane.showMessageDialog(null, "El domicilio debe tener entre 2 y 200 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "El campo de domicilio no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                String telefono = campoTelefono.getText().trim();
+                if (!telefono.isEmpty()) {
+                    if (telefono.length() != 8) {
+                        JOptionPane.showMessageDialog(null, "El número de teléfono debe tener exactamente 8 dígitos", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    if (!telefono.matches("[2389]\\d{7}")) {
+                        JOptionPane.showMessageDialog(null, "El número de teléfono debe empezar con 2, 3, 8 o 9", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "El campo de teléfono no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                String contactoEmergencia = campoContactoEmergencia.getText().trim();
+                if (!contactoEmergencia.isEmpty()) {
+                    if (contactoEmergencia.length() != 8) {
+                        JOptionPane.showMessageDialog(null, "El número de contacto de emergencia debe tener exactamente 8 dígitos", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    if (!contactoEmergencia.matches("[2389]\\d{7}")) {
+                        JOptionPane.showMessageDialog(null, "El número de contacto de emergencia debe empezar con 2, 3, 8 o 9", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "El campo de contacto de emergencia no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                String identidad = campoIdentidad.getText().trim();
+                if (!identidad.isEmpty()) {
+                    if (identidad.length() != 15) {
+                        JOptionPane.showMessageDialog(null, "La identidad debe tener 15 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    if (!identidad.matches("\\d{4}-\\d{4}-\\d{5}")) {
+                        JOptionPane.showMessageDialog(null, "La identidad debe tener el formato ####-####-#####", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    String numerosIdentidad = identidad.replace("-", "");
+                    Empleado empleado = new Empleado();
+                    boolean esIdentidadValida = empleado.comprobarIdentidad(numerosIdentidad);
+                    if (!esIdentidadValida) {
+                        JOptionPane.showMessageDialog(null, "La identidad ingresada no es válida", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "El campo de identidad no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                int respuesta = JOptionPane.showOptionDialog(
+                        null,
+                        "¿Desea guardar la información del empleado?",
+                        "Confirmación",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        new Object[]{"Sí", "No"},
+                        "No"
+                );
+
+                if (respuesta == JOptionPane.YES_OPTION) {
+                    GuardarDatos();
+                    ListaEmpleados listaEmpleados = new ListaEmpleados();
+                    listaEmpleados.setVisible(true);
+                    crearEmpleado.dispose();
+                }
             }
         });
     }
 
-    //Consulta insertar
-    public void GuardarDatos() throws SQLException {
+    public void GuardarDatos() {
         sql = new Conexion();
         mysql = sql.conectamysql();
-        PreparedStatement preparedStatement = mysql.prepareStatement("insert into " + Empleado.nombreTabla  + " (Identidad, Nombres, Apellidos, Genero, Edad, Correo, Telefono, NombreContactoDeEmergencia, ContactoDeEmergencia, Direccion, TipoDeEmpleado) values (?,?,?,?,?,?,?,?,?,?,?)");
-        preparedStatement.setString(1,campoIdentidad.getText());
-        preparedStatement.setString(2,campoNombres.getText());
-        preparedStatement.setString(3,campoApellidos.getText());
-        preparedStatement.setString(4,femeninoRadioButton.isSelected()?"Femenino":"Masculino");
-        preparedStatement.setString(5,campoEdad.getText());
-        preparedStatement.setString(6,campoCorreo.getText());
-        preparedStatement.setString(7,campoTelefono.getText());
-        preparedStatement.setString(8,campoNombreContacto.getText());
-        preparedStatement.setString(9, campoContactoEmergencia.getText());
-        preparedStatement.setString(10,campoDireccion.getText());
-        preparedStatement.setString(11,temporalRadioButton.isSelected()?"Temporal":"Permanente");
 
-//        preparedStatement.execute();
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO " + Empleado.nombreTabla + " (Identidad, Nombres, Apellidos, Genero, Edad, Correo, Telefono, NombreContactoDeEmergencia, ContactoDeEmergencia, Direccion, TipoDeEmpleado) VALUES (?,?,?,?,?,?,?,?,?,?,?)")) {
 
-        preparedStatement.executeUpdate();
+            preparedStatement.setString(1, campoIdentidad.getText());
+            preparedStatement.setString(2, campoNombres.getText());
+            preparedStatement.setString(3, campoApellidos.getText());
+            preparedStatement.setString(4, femeninoRadioButton.isSelected() ? "Femenino" : "Masculino");
+            preparedStatement.setString(5, campoEdad.getText());
+            preparedStatement.setString(6, campoCorreo.getText());
+            preparedStatement.setString(7, campoTelefono.getText());
+            preparedStatement.setString(8, campoNombreContacto.getText());
+            preparedStatement.setString(9, campoContactoEmergencia.getText());
+            preparedStatement.setString(10, campoDireccion.getText());
+            preparedStatement.setString(11, temporalRadioButton.isSelected() ? "Temporal" : "Permanente");
+            preparedStatement.executeUpdate();
 
-        // No es necesario cerrar explícitamente la conexión, ya que se cerrará automáticamente al finalizar el bloque try-with-resources
-
-        // Verificar si la ventana ListaCliente ya está abierta
-        boolean listaEmpleadoAbierta = false;
-        Window[] windows = Window.getWindows();
-        for (Window window : windows) {
-            if (window instanceof ListaEmpleados) {
-                listaEmpleadoAbierta = true;
-                break;
-            }
+            String nombreCompleto = campoNombres.getText() + " " + campoApellidos.getText();
+            System.out.println("Empleado " + nombreCompleto + " ha sido registrado exitosamente.");
+            JOptionPane.showMessageDialog(null, "Empleado " + nombreCompleto + " ha sido registrado exitosamente.", "Éxito", JOptionPane.DEFAULT_OPTION);
+        } catch (SQLException e) {
+            String mensajeError = "Error al guardar el empleado: " + e.getMessage();
+            JOptionPane.showMessageDialog(null, "No se pudo realizar el registro del empleado", "Error", JOptionPane.ERROR_MESSAGE);
         }
-
-        // Abrir la ventana ListaCliente solo si no está abierta
-        if (!listaEmpleadoAbierta) {
-            ListaEmpleados empleados = new ListaEmpleados();
-            empleados.setVisible(true);
-        }
-
-        crearEmpleado.dispose();
-
-        // Mostrar mensaje de éxito
-        String nombreCompleto = campoNombres.getText() + " " + campoApellidos.getText();
-
-        // Mensaje personalizado
-        System.out.println("Empleado " + nombreCompleto + " ha sido registrado exitosamente.");
-        JOptionPane.showMessageDialog(null, "Empleado " + nombreCompleto + " ha sido registrado exitosamente.", "Éxito", JOptionPane.DEFAULT_OPTION);
-
-
     }
 
-
-
-    // Método para validar si el teléfono ya está asociado a un empleado en la base de datos
     private boolean validarTelefonoExistente(String telefono) {
         try {
-            // Crear la conexión a la base de datos (usando el objeto 'mysql' y 'sql' definidos en la clase)
+
             mysql = sql.conectamysql();
 
-            // Preparar la consulta SQL
             String query = "SELECT COUNT(*) FROM empleados WHERE Telefono = ?";
             PreparedStatement statement = mysql.prepareStatement(query);
             statement.setString(1, telefono);
 
-            // Ejecutar la consulta
             ResultSet resultSet = statement.executeQuery();
-
-            // Obtener el resultado
             if (resultSet.next()) {
                 int count = resultSet.getInt(1);
-                return count > 0; // Retorna true si el conteo es mayor que cero (existe al menos un empleado con ese teléfono)
+                return count > 0;
             }
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            // Cerrar la conexión a la base de datos
             if (mysql != null) {
                 try {
                     mysql.close();
@@ -731,32 +705,25 @@ public class CrearEmpleado extends JFrame {
                 }
             }
         }
-        return false; // En caso de error, se asume que no existe un empleado con ese teléfono
+        return false;
     }
 
-    // Método para validar si la identidad ya está asociada a un empleado en la base de datos
     private boolean validarIdentidadExistente(String identidad) {
         try {
-            // Crear la conexión a la base de datos (usando el objeto 'mysql' y 'sql' definidos en la clase)
             mysql = sql.conectamysql();
-
-            // Preparar la consulta SQL
             String query = "SELECT COUNT(*) FROM empleados WHERE Identidad = ?";
             PreparedStatement statement = mysql.prepareStatement(query);
             statement.setString(1, identidad);
 
-            // Ejecutar la consulta
             ResultSet resultSet = statement.executeQuery();
 
-            // Obtener el resultado
             if (resultSet.next()) {
                 int count = resultSet.getInt(1);
-                return count > 0; // Retorna true si el conteo es mayor que cero (existe al menos un empleado con esa identidad)
+                return count > 0;
             }
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            // Cerrar la conexión a la base de datos
             if (mysql != null) {
                 try {
                     mysql.close();
@@ -765,13 +732,6 @@ public class CrearEmpleado extends JFrame {
                 }
             }
         }
-
-        return false; // En caso de error, se asume que no existe un empleado con esa identidad
+        return false;
     }
-
-    private void createUIComponents() {
-        // TODO: place custom component creation code here
-    }
-
-
 }

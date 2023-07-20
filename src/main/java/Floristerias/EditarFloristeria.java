@@ -2,6 +2,7 @@ package Floristerias;
 import Objetos.Conexion;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -148,12 +149,11 @@ public class EditarFloristeria extends JFrame {
                     // Verificar si se está ingresando una letra
                     if (Character.isLetter(e.getKeyChar())) {
                         // Verificar si se excede el límite de caracteres
-                        if (trimmedLength >= 50) {
+                        if (trimmedLength >= 100) {
                             e.consume(); // Ignorar la letra
                         } else {
-                            // Verificar si es el primer carácter o el carácter después de un espacio en blanco
-                            if (length == 0 || (caretPosition > 0 && text.charAt(caretPosition - 1) == ' ')) {
-                                // Convertir la letra a mayúscula
+                            // Convertir solo la primera letra a mayúscula
+                            if (caretPosition == 0) {
                                 e.setKeyChar(Character.toUpperCase(e.getKeyChar()));
                             }
                         }
@@ -203,9 +203,22 @@ public class EditarFloristeria extends JFrame {
         botonCancelar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ListaFloristeria listaFloristeria = new ListaFloristeria();
-                listaFloristeria.setVisible(true);
-                actual.dispose();
+                int respuesta = JOptionPane.showOptionDialog(
+                        null,
+                        "¿Desea cancelar la actualización de la flor?",
+                        "Confirmación",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        new Object[]{"Sí", "No"},
+                        "No"
+                );
+
+                if (respuesta == JOptionPane.YES_OPTION) {
+                    ListaFloristeria listaFloristeria = new ListaFloristeria();
+                    listaFloristeria.setVisible(true);
+                    actual.dispose();
+                }
             }
         });
 
@@ -243,21 +256,19 @@ public class EditarFloristeria extends JFrame {
 
                 String nombre = campoNombre.getText().trim();
                 if (!nombre.isEmpty()) {
-                    if (nombre.length() > 50) {
-                        JOptionPane.showMessageDialog(null, "El nombre debe tener como máximo 50 caracteres.", "Validación", JOptionPane.ERROR_MESSAGE);
+                    if (nombre.length() > 100) {
+                        JOptionPane.showMessageDialog(null, "El nombre de la flor debe tener como máximo 100 caracteres.", "Validación", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
 
-                    // Permitir letras, espacios y vocales con tilde en el nombre
-                    if (!nombre.matches("[a-zA-ZáéíóúÁÉÍÓÚüÜ]{2,}(\\s[a-zA-ZáéíóúÁÉÍÓÚüÜ]+\\s*)*")) {
-                        JOptionPane.showMessageDialog(null, "El nombre debe tener mínimo 2 letras y máximo 1 espacio entre palabras.", "Validación", JOptionPane.ERROR_MESSAGE);
+                    if (!nombre.matches("[a-zA-ZñÑ]{2,}(\\s[a-zA-ZñÑ]+\\s*)*")) {
+                        JOptionPane.showMessageDialog(null, "El nombre de la flor debe tener mínimo 2 letras y máximo 1 espacio entre palabras.", "Validación", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
                 } else {
-                    JOptionPane.showMessageDialog(null, "El campo de nombre no puede estar vacío.", "Validación", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "El nombre de la flor no puede estar vacío.", "Validación", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-
 
                 String precioText = campoPrecio.getText().trim();
                 if (precioText.isEmpty()) {
@@ -282,14 +293,51 @@ public class EditarFloristeria extends JFrame {
                     return;
                 }
 
-                guardarFloristeria();
+                int respuesta = JOptionPane.showOptionDialog(
+                        null,
+                        "¿Desea guardar la información de la flor?",
+                        "Confirmación",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        new Object[]{"Sí", "No"},
+                        "No"
+                );
+
+                if (respuesta == JOptionPane.YES_OPTION) {
+                    guardarFloristeria();
+                    ListaFloristeria listaFloristeria = new ListaFloristeria();
+                    listaFloristeria.setVisible(true);
+                    actual.dispose();
+                }
             }
         });
 
         botonCargarImagen.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                UIManager.put("FileChooser.openButtonText", "Cargar");
+                UIManager.put("FileChooser.cancelButtonText", "Cancelar");
+                UIManager.put("FileChooser.lookInLabelText", "Ver en");
+                UIManager.put("FileChooser.fileNameLabelText", "Nombre del archivo");
+                UIManager.put("FileChooser.filesOfTypeLabelText", "Archivos del tipo");
+                UIManager.put("FileChooser.upFolderToolTipText", "Subir un nivel");
+                UIManager.put("FileChooser.homeFolderToolTipText", "Escritorio");
+                UIManager.put("FileChooser.newFolderToolTipText", "Crear nueva carpeta");
+                UIManager.put("FileChooser.listViewButtonToolTipText", "Lista");
+                UIManager.put("FileChooser.newFolderButtonText", "Crear nueva carpeta");
+                UIManager.put("FileChooser.renameFileButtonText", "Renombrar archivo");
+                UIManager.put("FileChooser.deleteFileButtonText", "Eliminar archivo");
+                UIManager.put("FileChooser.filterLabelText", "Tipo de archivo");
+                UIManager.put("FileChooser.detailsViewButtonToolTipText", "Detalles");
+                UIManager.put("FileChooser.fileSizeHeaderText", "Tamaño");
+                UIManager.put("FileChooser.fileDateHeaderText", "Fecha de modificación");
+
                 JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setDialogTitle("Seleccionar imagen"); // Cambiar título del diálogo
+
+                fileChooser.setFileFilter(new FileNameExtensionFilter("Imágenes", "jpg", "jpeg", "png", "bmp", "gif"));
+
                 int seleccion = fileChooser.showOpenDialog(actual);
                 if (seleccion == JFileChooser.APPROVE_OPTION) {
                     File file = fileChooser.getSelectedFile();
@@ -439,9 +487,6 @@ public class EditarFloristeria extends JFrame {
         String proveedorText = comboBoxProveedor.getSelectedItem().toString();
         int idProveedor = Integer.parseInt(proveedorText.split(" - ")[0]);
 
-        int opcion = JOptionPane.showOptionDialog(null, "¿Desea guardar los cambios en la flor?", "Guardar", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
-
-        if (opcion == JOptionPane.YES_OPTION) {
             try (Connection connection = sql.conectamysql();
                  PreparedStatement preparedStatement = connection.prepareStatement("UPDATE floristeria SET imagen = ?, nombre = ?, precio = ?, proveedor_id = ? WHERE id = ?")) {
 
@@ -472,22 +517,11 @@ public class EditarFloristeria extends JFrame {
                 preparedStatement.executeUpdate();
 
                 JOptionPane.showMessageDialog(null, "Flor actualizada exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-
-                // Volver a la lista de floristerías
-                ListaFloristeria listaFloristeria = new ListaFloristeria();
-                listaFloristeria.setVisible(true);
-                actual.dispose();
-
             } catch (SQLException e) {
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Error al guardar la flor", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Error al actualizar la flor", "Error", JOptionPane.ERROR_MESSAGE);
             }
-        } else {
-            // Regresar a la lista de floristerías
-            ListaFloristeria listaFloristeria = new ListaFloristeria();
-            listaFloristeria.setVisible(true);
-            actual.dispose();
-        }
+
     }
 
     private String obtenerExtensionImagen(String imagePath) {
