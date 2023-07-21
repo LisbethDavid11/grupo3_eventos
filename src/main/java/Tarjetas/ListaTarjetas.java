@@ -45,7 +45,7 @@ public class ListaTarjetas extends JFrame {
     private String busqueda = "";
 
     public ListaTarjetas() {
-        super("");
+        super("Listado Tarjetas");
         setSize(850, 505);
         setLocationRelativeTo(null);
         setContentPane(panelPrincipal);

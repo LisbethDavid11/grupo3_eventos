@@ -1,7 +1,6 @@
 package Modelos;
 
 import Objetos.Conexion;
-import Objetos.Material;
 import Objetos.Tarjeta;
 
 import javax.swing.table.AbstractTableModel;
