@@ -6,6 +6,7 @@ public class Material {
     private double precio;
     private String disponible;
     private String descripcion;
+    private boolean exento;
     private int proveedorId;
 
     public static String nombreTabla = "materiales";
@@ -14,19 +15,18 @@ public class Material {
     }
 
     public Object[] toTableRow() {
-        return new Object[] {id, nombre, precio, disponible, descripcion, proveedorId};
+        return new Object[] {id, nombre, precio, disponible, descripcion, exento, proveedorId};
     }
 
-    public Material(int id, String nombre, double precio, String disponible, String descripcion, int proveedorId) {
+    public Material(int id, String nombre, double precio, String disponible, String descripcion, boolean exento, int proveedorId) {
         this.id = id;
         this.nombre = nombre;
         this.precio = precio;
         this.disponible = disponible;
         this.descripcion = descripcion;
+        this.exento = exento;
         this.proveedorId = proveedorId;
     }
-
-    // getters y setters
 
     public int getId() {
         return id;
@@ -68,6 +68,14 @@ public class Material {
         this.descripcion = descripcion;
     }
 
+    public boolean isExento() {
+        return exento;
+    }
+
+    public void setExento(boolean exento) {
+        this.exento = exento;
+    }
+
     public int getProveedorId() {
         return proveedorId;
     }
@@ -75,5 +83,4 @@ public class Material {
     public void setProveedorId(int proveedorId) {
         this.proveedorId = proveedorId;
     }
-
 }

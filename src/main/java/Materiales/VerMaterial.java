@@ -11,9 +11,10 @@ import java.sql.SQLException;
 public class VerMaterial extends JFrame {
     private JPanel panel1;
     private JTextArea etiquetaDescripcion;
-    private JTextField etiquetaNombre, etiquetaPrecio, etiquetaCantidad, etiquetaDisponible, etiquetaProveedor;
+    private JTextField etiquetaNombre, etiquetaPrecio, etiquetaDisponible, etiquetaProveedor, etiquetaExento;
     private JButton volverButton;
     private JLabel lbl0;
+    private JPanel panel2;
     private final VerMaterial actual = this;
     private Conexion sql;
     private Connection mysql;
@@ -21,7 +22,7 @@ public class VerMaterial extends JFrame {
 
     public VerMaterial(int id) {
         super("");
-        setSize(550, 500);
+        setSize(550, 460);
         setLocationRelativeTo(null);
         setContentPane(panel1);
 
@@ -35,10 +36,10 @@ public class VerMaterial extends JFrame {
         etiquetaNombre.setFocusable(false);
         etiquetaPrecio.setEditable(false);
         etiquetaPrecio.setFocusable(false);
-        etiquetaCantidad.setEditable(false);
-        etiquetaCantidad.setFocusable(false);
         etiquetaDisponible.setEditable(false);
         etiquetaDisponible.setFocusable(false);
+        etiquetaExento.setEditable(false);
+        etiquetaExento.setFocusable(false);
         etiquetaDescripcion.setEditable(false);
         etiquetaDescripcion.setFocusable(false);
         etiquetaProveedor.setEditable(false);
@@ -46,12 +47,13 @@ public class VerMaterial extends JFrame {
 
         // Color de fondo del panel
         panel1.setBackground(Color.decode("#F5F5F5"));
+        panel2.setBackground(Color.decode("#F5F5F5"));
 
         // Color de texto para los JTextField
         Color textColor = Color.decode("#212121");
         etiquetaNombre.setForeground(textColor);
         etiquetaPrecio.setForeground(textColor);
-        etiquetaCantidad.setForeground(textColor);
+        etiquetaExento.setForeground(textColor);
         etiquetaDisponible.setForeground(textColor);
         etiquetaDescripcion.setForeground(textColor);
         etiquetaProveedor.setForeground(textColor);
@@ -60,7 +62,7 @@ public class VerMaterial extends JFrame {
         Color textFieldColor = Color.decode("#FFFFFF");
         etiquetaNombre.setBackground(textFieldColor);
         etiquetaPrecio.setBackground(textFieldColor);
-        etiquetaCantidad.setBackground(textFieldColor);
+        etiquetaExento.setBackground(textFieldColor);
         etiquetaDisponible.setBackground(textFieldColor);
         etiquetaDescripcion.setBackground(textFieldColor);
         etiquetaProveedor.setBackground(textFieldColor);
@@ -123,7 +125,8 @@ public class VerMaterial extends JFrame {
             if (resultSet.next()) {
                 etiquetaNombre.setText(resultSet.getString("nombre"));
                 etiquetaPrecio.setText(resultSet.getString("precio"));
-                etiquetaCantidad.setText(resultSet.getString("cantidad_inventario"));
+                String exento = resultSet.getString("exento").equals("1") ? "Si" : "No";
+                etiquetaExento.setText(exento);
                 etiquetaDisponible.setText(resultSet.getString("disponible"));
                 etiquetaDescripcion.setText(resultSet.getString("descripcion"));
                 etiquetaProveedor.setText(resultSet.getString("empresaProveedora") + " (" + resultSet.getString("nombreVendedor") + ")");

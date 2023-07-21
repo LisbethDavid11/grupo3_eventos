@@ -29,6 +29,10 @@ public class EditarMaterial extends JFrame {
     private JLabel lbl2;
     private JLabel lbl3;
     private JLabel lbl4;
+    private JRadioButton radioButtonSiExento;
+    private JRadioButton radioButtonNoExento;
+    private JPanel panel2;
+    private JPanel panel3;
     private String imagePath = "";
     private EditarMaterial actual = this;
     private Conexion sql;
@@ -51,8 +55,17 @@ public class EditarMaterial extends JFrame {
 
         // Color de fondo del panel
         panel.setBackground(Color.decode("#F5F5F5"));
+        panel2.setBackground(Color.decode("#F5F5F5"));
+        panel3.setBackground(Color.decode("#F5F5F5"));
         radioButtonSi.setBackground(Color.decode("#F5F5F5"));
         radioButtonNo.setBackground(Color.decode("#F5F5F5"));
+        radioButtonSiExento.setBackground(Color.decode("#F5F5F5"));
+        radioButtonNoExento.setBackground(Color.decode("#F5F5F5"));
+
+        radioButtonSi.setFocusPainted(false);
+        radioButtonNo.setFocusPainted(false);
+        radioButtonSiExento.setFocusPainted(false);
+        radioButtonNoExento.setFocusPainted(false);
 
         // Color de texto para los JTextField
         Color textColor = Color.decode("#212121");
@@ -101,7 +114,6 @@ public class EditarMaterial extends JFrame {
         lbl3.setForeground(textColor);
         lbl4.setForeground(textColor);
 
-
         // Crea un margen de 15 píxeles desde el borde inferior
         EmptyBorder marginTitulo = new EmptyBorder(15, 0, 15, 0);
         lbl0.setBorder(marginTitulo);
@@ -114,6 +126,10 @@ public class EditarMaterial extends JFrame {
         ButtonGroup buttonGroup = new ButtonGroup();
         buttonGroup.add(radioButtonNo);
         buttonGroup.add(radioButtonSi);
+
+        ButtonGroup buttonGroup2 = new ButtonGroup();
+        buttonGroup2.add(radioButtonNoExento);
+        buttonGroup2.add(radioButtonSiExento);
 
         // Color de texto para el JTextArea
         campoDescripcion.setForeground(textColor);
@@ -265,6 +281,11 @@ public class EditarMaterial extends JFrame {
                     mensaje += "Disponibilidad\n";
                 }
 
+                if (!radioButtonSiExento.isSelected() && !radioButtonNoExento.isSelected()) {
+                    validacion++;
+                    mensaje += "Exento\n";
+                }
+
                 String proveedorText = comboBoxProveedor.getSelectedItem().toString();
                 if (proveedorText.equals("Seleccione un proveedor")) {
                     validacion++;
@@ -379,6 +400,7 @@ public class EditarMaterial extends JFrame {
                 double precio = resultSet.getDouble("precio");
                 String descripcion = resultSet.getString("descripcion");
                 String disponibilidad = resultSet.getString("disponible");
+                String exento = resultSet.getString("exento"); // Agregar esta línea para obtener el valor de "exento".
                 int idProveedor = resultSet.getInt("proveedor_id");
 
                 campoNombre.setText(nombre);
@@ -396,12 +418,19 @@ public class EditarMaterial extends JFrame {
                     radioButtonNo.setSelected(true);
                 }
 
+                if (exento.equals("1")) {
+                    radioButtonSiExento.setSelected(true);
+                } else if (exento.equals("0")) {
+                    radioButtonNoExento.setSelected(true);
+                }
+
                 comboBoxProveedor.setSelectedItem(obtenerProveedorText(idProveedor));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
 
     private String obtenerProveedorText(int idProveedor) {
         try (Connection connection = sql.conectamysql();
@@ -420,7 +449,6 @@ public class EditarMaterial extends JFrame {
         return "";
     }
 
-
     private void guardarMateriales() {
         String nombre = campoNombre.getText().trim();
         String precioText = campoPrecio.getText().replace("L ", "").replace(",", "").replace("_", "");
@@ -429,15 +457,17 @@ public class EditarMaterial extends JFrame {
         String disponibilidad = radioButtonSi.isSelected() ? "Si" : "No";
         String proveedorText = comboBoxProveedor.getSelectedItem().toString();
         int idProveedor = Integer.parseInt(proveedorText.split(" - ")[0]);
+        String exento = radioButtonSi.isSelected() ? "1" : "0";
 
             try (Connection connection = sql.conectamysql();
-                 PreparedStatement preparedStatement = connection.prepareStatement("UPDATE materiales SET nombre = ?, precio = ?, descripcion = ?, disponible = ?, proveedor_id = ? WHERE id = ?")) {
+                 PreparedStatement preparedStatement = connection.prepareStatement("UPDATE materiales SET nombre = ?, precio = ?, descripcion = ?, disponible = ?,exento = ?, proveedor_id = ? WHERE id = ?")) {
                 preparedStatement.setString(1, nombre);
                 preparedStatement.setDouble(2, precio);
                 preparedStatement.setString(3, descripcion);
                 preparedStatement.setString(4, disponibilidad);
-                preparedStatement.setInt(5, idProveedor);
-                preparedStatement.setInt(6, idMaterial);
+                preparedStatement.setString(5, exento);
+                preparedStatement.setInt(6, idProveedor);
+                preparedStatement.setInt(7, idMaterial);
                 preparedStatement.executeUpdate();
 
                 JOptionPane.showMessageDialog(null, "Material actualizado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);

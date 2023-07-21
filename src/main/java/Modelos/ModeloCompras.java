@@ -3,7 +3,9 @@ package Modelos;
 import Objetos.Compra;
 import Objetos.Conexion;
 import Objetos.DetalleCompra;
+import Objetos.Material;
 
+import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -139,7 +141,6 @@ public class ModeloCompras extends AbstractTableModel {
     }
 
     private double calcularISV(Compra compra) {
-        double subTotal = calcularSubTotal(compra);
         double totalISV = 0.0;
 
         // Obtener los detalles de compra asociados a la compra actual
@@ -147,16 +148,19 @@ public class ModeloCompras extends AbstractTableModel {
 
         // Calcular el ISV sumando los montos de los detalles de compra que no están exentos
         for (DetalleCompra detalle : detalles) {
-            if (!detalle.isExento()) {
+            // Obtener el material asociado a este detalle
+            Material material = obtenerMaterialPorId(detalle.getMaterialId());
+
+            if (material != null && !material.isExento()) {
+                // Calcular el monto del ISV para este detalle y agregarlo al total
                 double montoDetalle = detalle.getPrecio() * detalle.getCantidad();
-                totalISV += montoDetalle * 0.15;
+                double isvDetalle = montoDetalle * 0.15;
+                totalISV += isvDetalle;
             }
         }
 
         return totalISV;
     }
-
-
     private double calcularTotal(Compra compra) {
         double subTotal = calcularSubTotal(compra);
         double total = 0.0;
@@ -166,8 +170,10 @@ public class ModeloCompras extends AbstractTableModel {
 
         // Calcular el total sumando los montos de los detalles de compra
         for (DetalleCompra detalle : detalles) {
+            // Obtener el material asociado a este detalle
+            Material material = obtenerMaterialPorId(detalle.getMaterialId());
             double montoDetalle = detalle.getPrecio() * detalle.getCantidad();
-            if (detalle.isExento()) {
+            if (material != null && !material.isExento()) {
                 total += montoDetalle;
             } else {
                 total += montoDetalle * 1.15; // Aplicar el 15% de impuesto sobre ventas (ISV)
@@ -177,6 +183,33 @@ public class ModeloCompras extends AbstractTableModel {
         return total;
     }
 
+
+    public Material obtenerMaterialPorId(int materialId) {
+        Material material = null;
+
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT nombre, exento FROM materiales WHERE id = ?")) {
+
+            preparedStatement.setInt(1, materialId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                String nombreMaterial = resultSet.getString("nombre");
+                boolean exento = resultSet.getBoolean("exento");
+
+                // Aquí utilizamos el constructor apropiado para crear un objeto Material.
+                // Los campos que no se obtienen de la base de datos se inicializan con valores predeterminados.
+                material = new Material(materialId, nombreMaterial, 0, null, null, exento, 0);
+            }
+
+        } catch (SQLException e) {
+            // En caso de error en la conexión o consulta, se muestra un mensaje de error.
+            System.out.println(e.getMessage());
+            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+        }
+
+        return material;
+    }
 
     private List<DetalleCompra> obtenerDetallesCompra(int compraId) {
         List<DetalleCompra> detalles = new ArrayList<>();
@@ -191,9 +224,8 @@ public class ModeloCompras extends AbstractTableModel {
                 int materialId = resultSet.getInt("material_id");
                 int cantidad = resultSet.getInt("cantidad");
                 double precio = resultSet.getDouble("precio");
-                boolean exento = resultSet.getBoolean("exento");
 
-                DetalleCompra detalle = new DetalleCompra(detalleId, compraId, materialId, cantidad, precio, exento);
+                DetalleCompra detalle = new DetalleCompra(detalleId, compraId, materialId, cantidad, precio);
                 detalles.add(detalle);
             }
         } catch (SQLException e) {
@@ -203,4 +235,19 @@ public class ModeloCompras extends AbstractTableModel {
         return detalles;
     }
 
+    private boolean obtenerExentoMaterial(int materialId) {
+        try (Connection mysql = sql.conectamysql();
+             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT exento FROM materiales WHERE id = ?")) {
+            preparedStatement.setInt(1, materialId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                return resultSet.getBoolean("exento");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false; // Por defecto, se asume que no es exento si ocurre un error en la consulta
+    }
 }

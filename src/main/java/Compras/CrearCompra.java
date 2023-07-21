@@ -26,17 +26,14 @@ import java.util.Date;
 import java.util.Properties;
 
 public class CrearCompra extends JFrame {
-    private JPanel panel1, panel2;
+    private JPanel panel1;
     private JTable tablaProductos;
     private DefaultTableModel modeloProductos;
 
     public JButton guardarButton, cancelarButton, limpiarButton, agregarButton;
     public JTextField campoCodigo, campoFecha, campoCantidad, campoPrecio;
     public JComboBox<String> boxProveedor, boxEmpleado, boxMaterial;
-    private JLabel lbl0, lbl1, lbl2, lbl3, lbl4, lbl5, lbl6, lbl7, lbl8, lbl9, lbl10, lbl11;
-    private JCheckBox siCheckBox;
-    private double sumaISVExento = 0.0;
-    private JLabel lbl12;
+    private JLabel lbl0, lbl1, lbl2, lbl3, lbl4, lbl5, lbl6, lbl7, lbl8, lbl9, lbl10, lbl11, lbl12;
     private JPanel panel3;
     private Conexion sql;
     private Connection mysql;
@@ -50,6 +47,8 @@ public class CrearCompra extends JFrame {
     Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
     private JTextField[] campos = { campoCodigo, campoFecha, campoCantidad, campoPrecio };
     private JDatePickerImpl datePicker; // Declare the datePicker variable at the class level
+
+    private double sumaISVExento = 0;
 
     public CrearCompra() {
         super("");
@@ -66,38 +65,19 @@ public class CrearCompra extends JFrame {
         properties.put("text.year", "Año");
 
         JDatePanelImpl datePanel = new JDatePanelImpl(dateModel, properties);
-        datePicker = new JDatePickerImpl(datePanel, new DateLabelFormatter());
+        datePicker = new JDatePickerImpl(datePanel, new SimpleDateFormatter());  // Proporcionar un formateador
 
         Calendar today = Calendar.getInstance();
-        Calendar firstDayOfMonth = Calendar.getInstance();
-        firstDayOfMonth.set(Calendar.DAY_OF_MONTH, 0);
+        Calendar firstDayOfMonth = getFirstDayOfMonth();
 
         dateModel.addChangeListener(e -> {
-            Date selectedDate = dateModel.getValue();
-            if (selectedDate != null) {
-                Calendar selectedCal = Calendar.getInstance();
-                selectedCal.setTime(selectedDate);
-                if (selectedCal.before(firstDayOfMonth) || selectedCal.after(today)) {
-                    JOptionPane.showMessageDialog(null, "La fecha seleccionada está fuera del rango permitido", "Error", JOptionPane.ERROR_MESSAGE);
-                    dateModel.setValue(today.getTime());
-                    selectedDate = today.getTime();
-                }
-            }
-
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd 'de' MMMM yyyy"); // Formato de fecha deseado
-            String formattedDate = (selectedDate != null) ? dateFormat.format(selectedDate) : "";
-            datePicker.getJFormattedTextField().setText(formattedDate);
+            handleDateChange(dateModel, firstDayOfMonth, today);
         });
 
-// Mostrar la fecha inicial en el campo de fecha
-        Date selectedDate = dateModel.getValue();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd 'de' MMMM yyyy"); // Formato de fecha deseado
-        String formattedDate = (selectedDate != null) ? dateFormat.format(selectedDate) : "";
-        datePicker.getJFormattedTextField().setText(formattedDate);
+        // Show initial date in date field
+        handleDateChange(dateModel, firstDayOfMonth, today);
 
         panel3.add(datePicker);
-
-
 
         boxProveedor.addItem("Seleccione un proveedor");
         cargarProveedores();
@@ -109,10 +89,7 @@ public class CrearCompra extends JFrame {
         cargarMateriales();
 
         panel1.setBackground(Color.decode("#F5F5F5"));
-        panel2.setBackground(Color.decode("#F5F5F5"));
         panel3.setBackground(Color.decode("#F5F5F5"));
-        siCheckBox.setBackground(Color.decode("#F5F5F5"));
-        siCheckBox.setFocusPainted(false);
 
         cancelarButton.setForeground(Color.WHITE);
         cancelarButton.setBackground(darkColorRed);
@@ -142,7 +119,6 @@ public class CrearCompra extends JFrame {
         lbl5.setForeground(textColor);
         lbl6.setForeground(textColor);
         lbl7.setForeground(textColor);
-        lbl11.setForeground(textColor);
         lbl0.setBorder(margin);
         lbl0.setFont(fontTitulo);
 
@@ -173,6 +149,7 @@ public class CrearCompra extends JFrame {
 
         tablaProductos.setModel(modeloProductos);
         tablaProductos.getColumnModel().getColumn(6).setCellRenderer(new ButtonRenderer());
+        tablaProductos.getColumnModel().getColumn(6).setCellEditor(new ButtonEditor(new JCheckBox()));
 
         campoPrecio.addKeyListener(new KeyAdapter() {
             @Override
@@ -257,8 +234,6 @@ public class CrearCompra extends JFrame {
         });
 
 
-        tablaProductos.getColumnModel().getColumn(6).setCellRenderer(new ButtonRenderer());
-        tablaProductos.getColumnModel().getColumn(6).setCellEditor(new ButtonEditor(new JCheckBox()));
 
         cancelarButton.addActionListener(new ActionListener() {
             @Override
@@ -381,25 +356,8 @@ public class CrearCompra extends JFrame {
             }
         });
 
-        siCheckBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (siCheckBox.isSelected()) {
-                    campoPrecio.setEnabled(true);
-                } else {
-                    campoPrecio.setEnabled(true);
-                }
-            }
-        });
-
     }
 
-    private class TablaModeloProductos extends DefaultTableModel {
-        @Override
-        public boolean isCellEditable(int row, int column) {
-            return false; // Deshabilitar la edición de celdas en la tabla
-        }
-    }
 
     private void cargarProveedores() {
         try (Connection connection = sql.conectamysql();
@@ -437,7 +395,7 @@ public class CrearCompra extends JFrame {
 
     private void cargarMateriales() {
         try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("SELECT id, nombre, cantidad_inventario FROM materiales");
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT id, nombre FROM materiales");
              ResultSet resultSet = preparedStatement.executeQuery()) {
 
             while (resultSet.next()) {
@@ -522,12 +480,11 @@ public class CrearCompra extends JFrame {
             if (modeloProductos.getValueAt(i, 4).toString().equalsIgnoreCase("Exento")) {
                 exento = true;
             }
-            try (PreparedStatement preparedStatement = mysql.prepareStatement("INSERT INTO detalles_compras (compra_id, material_id, cantidad, precio, exento) VALUES (?, ?, ?, ?, ?)")) {
+            try (PreparedStatement preparedStatement = mysql.prepareStatement("INSERT INTO detalles_compras (compra_id, material_id, cantidad, precio) VALUES (?, ?, ?, ?)")) {
                 preparedStatement.setInt(1, compraId);
                 preparedStatement.setInt(2, materialId);
                 preparedStatement.setInt(3, cantidad);
                 preparedStatement.setDouble(4, precio);
-                preparedStatement.setBoolean(5, exento);
                 preparedStatement.executeUpdate();
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -551,8 +508,6 @@ public class CrearCompra extends JFrame {
             compras.setVisible(true);
         }
     }
-
-
 
     private void actualizarTotales() {
         double sumaSubtotal = 0.0;
@@ -626,6 +581,7 @@ public class CrearCompra extends JFrame {
         campoCantidad.setText("");
         campoPrecio.setText("");
         modeloProductos.setRowCount(0);
+        datePicker.getJFormattedTextField().setText("");
         lbl8.setText("0.00");
         lbl9.setText("0.00");
         lbl10.setText("0.00");
@@ -642,9 +598,33 @@ public class CrearCompra extends JFrame {
         return false;
     }
 
+    public boolean obtenerExentoPorNombre(String nombreMaterial) {
+        boolean exento = false;
+
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT exento FROM materiales WHERE nombre = ?")) {
+
+            preparedStatement.setString(1, nombreMaterial);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                exento = resultSet.getBoolean("exento");
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+        }
+        return exento;
+    }
+
     private void agregarProducto() {
 
         String producto = boxMaterial.getSelectedItem().toString();
+        if (producto.equals("Seleccione un producto")) {
+            mostrarMensajeError("Debe seleccionar un producto válido.");
+            return;
+        }
 
         if (existeProductoEnTabla(producto)) {
             mostrarMensajeError("El producto ya ha sido agregado.");
@@ -652,56 +632,85 @@ public class CrearCompra extends JFrame {
         }
 
         int cantidad = Integer.parseInt(campoCantidad.getText());
-        double precio;
+        double precio = Double.parseDouble(campoPrecio.getText());
+        double subtotal = cantidad * precio;
+        DecimalFormat decimalFormat = new DecimalFormat("#.00");
         String isv;
         String total;
-        if (siCheckBox.isSelected()) {
-            precio = Double.parseDouble(campoPrecio.getText());
-            double subtotal = cantidad * precio;
-            DecimalFormat decimalFormat = new DecimalFormat("#.00");
+
+        boolean exento = obtenerExentoPorNombre(producto);
+
+        if (exento) {
             isv = "Exento";
             total = decimalFormat.format(subtotal);
             sumaISVExento += subtotal;  // Sumar al total de productos exentos
         } else {
-            precio = Double.parseDouble(campoPrecio.getText());
-            double subtotal = cantidad * precio;
             double impuesto = subtotal * 0.15;
             double totalProducto = subtotal + impuesto;
-            DecimalFormat decimalFormat = new DecimalFormat("#.00");
             isv = decimalFormat.format(impuesto);
             total = decimalFormat.format(totalProducto);
         }
-        Object[] fila = { producto, cantidad, precio, cantidad * precio, isv, total, crearBotonEliminar() };
+
+        Object[] fila = { producto, cantidad, precio, subtotal, isv, total, crearBotonEliminar() };
         modeloProductos.addRow(fila);
         campoCantidad.setText("");
         campoPrecio.setText("");
         actualizarTotales();
     }
 
+    public Calendar getFirstDayOfMonth() {
+        Calendar firstDayOfMonth = Calendar.getInstance();
+        firstDayOfMonth.set(Calendar.DAY_OF_MONTH, 1);
+        firstDayOfMonth.set(Calendar.HOUR_OF_DAY, 0);
+        firstDayOfMonth.set(Calendar.MINUTE, 0);
+        firstDayOfMonth.set(Calendar.SECOND, 0);
+        firstDayOfMonth.set(Calendar.MILLISECOND, 0);
+        return firstDayOfMonth;
+    }
 
+    public void handleDateChange(UtilDateModel dateModel, Calendar firstDayOfMonth, Calendar today) {
+        Date selectedDate = dateModel.getValue();
+        if (selectedDate != null && isDateOutOfRange(selectedDate, firstDayOfMonth, today)) {
+            JOptionPane.showMessageDialog(null, "La fecha seleccionada está fuera del rango permitido", "Error", JOptionPane.ERROR_MESSAGE);
+            selectedDate = today.getTime();
+            dateModel.setValue(selectedDate);
+        }
+        setFormattedDate(selectedDate);
+    }
 
-    public class DateLabelFormatter extends JFormattedTextField.AbstractFormatter {
+    public boolean isDateOutOfRange(Date selectedDate, Calendar firstDayOfMonth, Calendar today) {
+        Calendar selectedCal = Calendar.getInstance();
+        selectedCal.setTime(selectedDate);
+        return selectedCal.before(firstDayOfMonth) || selectedCal.after(today);
+    }
 
-        private final String datePattern = "yyyy-MM-dd"; // Cambia el formato de fecha aquí
+    public void setFormattedDate(Date selectedDate) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd 'de' MMMM yyyy"); // Desired date format
+        String formattedDate = (selectedDate != null) ? dateFormat.format(selectedDate) : "";
+        datePicker.getJFormattedTextField().setText(formattedDate);
+    }
+
+    public class SimpleDateFormatter extends JFormattedTextField.AbstractFormatter {
+        private final String datePattern = "yyyy-MM-dd";
         private final SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);
-
 
         @Override
         public Object stringToValue(String text) throws ParseException {
-            return dateFormatter.parseObject(text);
+            return dateFormatter.parse(text);
         }
 
         @Override
         public String valueToString(Object value) throws ParseException {
-            if (value instanceof Date) {
-                Calendar cal = Calendar.getInstance();
-                cal.setTime((Date) value);
-                return dateFormatter.format(cal.getTime());
+            if (value != null) {
+                if (value instanceof Date) {
+                    return dateFormatter.format((Date) value);
+                } else if (value instanceof Calendar) {
+                    return dateFormatter.format(((Calendar) value).getTime());
+                }
             }
-            throw new ParseException("Invalid object type", 0);
+            return "";
         }
     }
-
 
     private void mostrarMensajeError(String mensaje) {
         JOptionPane.showMessageDialog(null, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
@@ -723,6 +732,9 @@ public class CrearCompra extends JFrame {
 
     class ButtonEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
         private JButton button;
+        private int row, col;
+        private JTable table;
+
         public ButtonEditor(JCheckBox checkBox) {
             button = new JButton();
             button.setOpaque(true);
@@ -735,6 +747,9 @@ public class CrearCompra extends JFrame {
 
         public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
             button.setText("X");
+            this.table = table;
+            this.row = row;
+            this.col = column;
             return button;
         }
 
@@ -743,10 +758,17 @@ public class CrearCompra extends JFrame {
         }
 
         public void actionPerformed(ActionEvent e) {
-            JButton boton = (JButton) e.getSource();
-            int filaSeleccionada = tablaProductos.convertRowIndexToModel(tablaProductos.getEditingRow());
-            modeloProductos.removeRow(filaSeleccionada);
-            actualizarTotales();
+            if (table != null) {
+                int modelRow = table.convertRowIndexToModel(row);
+                DefaultTableModel model = (DefaultTableModel) table.getModel();
+
+                // Verificar si el modelo de la tabla tiene la fila que se intenta eliminar
+                if (modelRow >= 0 && modelRow < model.getRowCount()) {
+                    model.removeRow(modelRow);
+                    actualizarTotales();
+                }
+            }
+            fireEditingStopped();
         }
     }
 

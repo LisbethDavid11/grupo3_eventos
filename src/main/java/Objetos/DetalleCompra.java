@@ -6,7 +6,6 @@ public class DetalleCompra {
     private int materialId;
     private int cantidad;
     private double precio;
-    private boolean exento;
 
     public static String nombreTabla = "detalles_compras";
 
@@ -16,36 +15,17 @@ public class DetalleCompra {
     public Object[] toTableRow() {
         return new Object[]{id, compraId, materialId, cantidad, precio};
     }
-    public DetalleCompra(int id, int compraId, int materialId, int cantidad, double precio, boolean exento){
+    public DetalleCompra(int id, int compraId, int materialId, int cantidad, double precio){
         this.id = id;
         this.compraId = compraId;
         this.materialId = materialId;
         this.cantidad = cantidad;
         this.precio = precio;
-        this.exento = exento;
     }
 
     public double calcularSubtotal() {
         return precio * cantidad;
     }
-
-    public double calcularISV() {
-        if (exento) {
-            return 0.0;
-        } else {
-            return calcularSubtotal() * 0.15;
-        }
-    }
-
-    public double calcularTotal() {
-        if (exento) {
-            return calcularSubtotal();
-        } else {
-            return calcularSubtotal() + calcularISV();
-        }
-    }
-
-    // Getters y setters
 
     public int getId() {
         return id;
@@ -85,9 +65,5 @@ public class DetalleCompra {
 
     public void setPrecio(double precio) {
         this.precio = precio;
-    }
-
-    public boolean isExento() {
-        return exento;
     }
 }

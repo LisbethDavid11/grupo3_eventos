@@ -27,6 +27,10 @@ public class CrearMaterial extends JFrame {
     private JLabel lbl2;
     private JLabel lbl3;
     private JLabel lbl4;
+    private JRadioButton radioButtonSiExento;
+    private JRadioButton radioButtonNoExento;
+    private JPanel panel2;
+    private JPanel panel3;
     private String imagePath = "";
     private CrearMaterial actual = this;
     private Conexion sql;
@@ -46,8 +50,16 @@ public class CrearMaterial extends JFrame {
 
         // Color de fondo del panel
         panel.setBackground(Color.decode("#F5F5F5"));
+        panel2.setBackground(Color.decode("#F5F5F5"));
+        panel3.setBackground(Color.decode("#F5F5F5"));
         radioButtonSi.setBackground(Color.decode("#F5F5F5"));
         radioButtonNo.setBackground(Color.decode("#F5F5F5"));
+        radioButtonSiExento.setBackground(Color.decode("#F5F5F5"));
+        radioButtonNoExento.setBackground(Color.decode("#F5F5F5"));
+        radioButtonSi.setFocusPainted(false);
+        radioButtonNo.setFocusPainted(false);
+        radioButtonSiExento.setFocusPainted(false);
+        radioButtonNoExento.setFocusPainted(false);
 
         // Color de texto para los JTextField
         Color textColor = Color.decode("#212121");
@@ -108,13 +120,16 @@ public class CrearMaterial extends JFrame {
         ButtonGroup buttonGroup = new ButtonGroup();
         buttonGroup.add(radioButtonNo);
         buttonGroup.add(radioButtonSi);
+        buttonGroup.clearSelection();
+
+        ButtonGroup buttonGroup2 = new ButtonGroup();
+        buttonGroup2.add(radioButtonNoExento);
+        buttonGroup2.add(radioButtonSiExento);
+        buttonGroup2.clearSelection();
 
         // Color de texto para el JTextArea
         campoDescripcion.setForeground(textColor);
         campoDescripcion.setBackground(new Color(215, 215, 215));
-
-        // No seleccionar ningún botón de radio por defecto
-        buttonGroup.clearSelection();
 
         campoNombre.addKeyListener(new KeyAdapter() {
             @Override
@@ -263,6 +278,11 @@ public class CrearMaterial extends JFrame {
                     mensaje += "Disponibilidad\n";
                 }
 
+                if (!radioButtonSiExento.isSelected() && !radioButtonNoExento.isSelected()) {
+                    validacion++;
+                    mensaje += "Exento\n";
+                }
+
                 String proveedorText = comboBoxProveedor.getSelectedItem().toString();
                 if (proveedorText.equals("Seleccione un proveedor")) {
                     validacion++;
@@ -372,20 +392,24 @@ public class CrearMaterial extends JFrame {
         String disponibilidad = radioButtonSi.isSelected() ? "Si" : "No";
         String proveedorText = comboBoxProveedor.getSelectedItem().toString();
         int idProveedor = Integer.parseInt(proveedorText.split(" - ")[0]);
+        String exento = radioButtonSiExento.isSelected() ? "1" : "0";
 
-            try (Connection connection = sql.conectamysql();
-                 PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO materiales (nombre, precio, descripcion, disponible, proveedor_id) VALUES (?, ?, ?, ?, ?)")) {
-                preparedStatement.setString(1, nombre);
-                preparedStatement.setDouble(2, precio);
-                preparedStatement.setString(3, descripcion);
-                preparedStatement.setString(4, disponibilidad);
-                preparedStatement.setInt(5, idProveedor);
-                preparedStatement.executeUpdate();
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO materiales (nombre, precio, descripcion, disponible, exento, proveedor_id) VALUES (?, ?, ?, ?, ?, ?)")) {
+            preparedStatement.setString(1, nombre);
+            preparedStatement.setDouble(2, precio);
+            preparedStatement.setString(3, descripcion);
+            preparedStatement.setString(4, disponibilidad);
+            preparedStatement.setString(5, exento);
+            preparedStatement.setInt(6, idProveedor);
+            preparedStatement.executeUpdate();
 
-                JOptionPane.showMessageDialog(null, "Material guardado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-            } catch (SQLException e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Error al guardar el material", "Error", JOptionPane.ERROR_MESSAGE);
-            }
+            JOptionPane.showMessageDialog(null, "Material guardado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al guardar el material", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
+
+
 }

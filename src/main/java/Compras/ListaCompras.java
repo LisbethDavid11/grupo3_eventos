@@ -3,6 +3,13 @@ import Modelos.ModeloCompras;
 import Modelos.ModeloDetallesCompras;
 import Objetos.Compra;
 import Objetos.Conexion;
+import Objetos.DetalleCompra;
+import Objetos.Material;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -18,33 +25,19 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.*;
 import java.util.List;
-
-import Objetos.DetalleCompra;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
+import java.util.*;
 public class ListaCompras extends JFrame {
     private JPanel panelPrincipal;
     private JTable listaCompras;
-    private JButton botonAtras,botonAdelante;
+    private JButton botonAtras,botonAdelante, botonCrear, botonImprimir;
     private JTextField campoBusqueda;
     private TextPrompt placeholder = new TextPrompt("Buscar por código de compra, fecha o proveedor ", campoBusqueda);
-    private JButton botonCrear;
-    private JLabel lblPagina;
-    private JButton botonImprimir;
-    private JLabel lbl0;
+    private JLabel lbl0, lblPagina;
     private JComboBox fechaComboBox;
     private List<Compra> compraList;
     private int pagina = 0;
-    private Connection mysql;
     private Conexion sql;
-    private ListaCompras actual = this;
     private String busqueda = "";
 
     public ListaCompras() {
@@ -58,15 +51,38 @@ public class ListaCompras extends JFrame {
         listaCompras.setModel(cargarDatos());
         centrarDatosTabla();
 
+        Color primaryColor = Color.decode("#37474f");
+        Color lightColor = Color.decode("#cfd8dc");
+        Color darkColor = Color.decode("#263238");
+
+        panelPrincipal.setBackground(primaryColor);
+        fechaComboBox.setBackground(primaryColor);
+        fechaComboBox.setForeground(Color.WHITE);
+
+        botonAtras.setBackground(darkColor);
+        botonAtras.setForeground(Color.WHITE);
+        botonAtras.setFocusPainted(false);
+        botonAdelante.setBackground(darkColor);
+        botonAdelante.setForeground(Color.WHITE);
+        botonAdelante.setFocusPainted(false);
+        botonCrear.setBackground(darkColor);
+        botonCrear.setForeground(Color.WHITE);
+        botonCrear.setFocusPainted(false);
+        campoBusqueda.setBackground(darkColor);
+        campoBusqueda.setForeground(Color.WHITE);
+        lblPagina.setForeground(Color.WHITE);
+
+        placeholder.changeAlpha(0.75f);
+        placeholder.setForeground(Color.LIGHT_GRAY);
+        placeholder.setFont(new Font("Nunito", Font.ITALIC, 11));
+
+        Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
+        lbl0.setFont(fontTitulo);
+
         lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
 
-        // Obtén el modelo del JComboBox
         DefaultComboBoxModel<String> comboBoxModel = new DefaultComboBoxModel<>();
-
-        // Agrega la opción "Todos" al modelo del JComboBox
         comboBoxModel.addElement("Todos");
-
-        // Agrega los meses al modelo del JComboBox
         comboBoxModel.addElement("Enero");
         comboBoxModel.addElement("Febrero");
         comboBoxModel.addElement("Marzo");
@@ -80,8 +96,9 @@ public class ListaCompras extends JFrame {
         comboBoxModel.addElement("Noviembre");
         comboBoxModel.addElement("Diciembre");
 
-        // Asigna el modelo al JComboBox
         fechaComboBox.setModel(comboBoxModel);
+
+        botonAtras.setEnabled(false);
 
         botonAdelante.addActionListener(new ActionListener() {
             @Override
@@ -92,10 +109,6 @@ public class ListaCompras extends JFrame {
                     if ((pagina + 1) == getTotalPageCount()) {
                         botonAdelante.setEnabled(false);
                     }
-                } else if ((pagina + 1) == getTotalPageCount()) {
-                    pagina = 0;
-                    botonAtras.setEnabled(false);
-                    botonAdelante.setEnabled(true);
                 }
                 listaCompras.setModel(cargarDatos());
                 centrarDatosTabla();
@@ -112,17 +125,13 @@ public class ListaCompras extends JFrame {
                     if (pagina == 0) {
                         botonAtras.setEnabled(false);
                     }
-                } else if (pagina == 0) {
-                    pagina = getTotalPageCount() - 1;
-                    botonAtras.setEnabled(true);
-                    botonAdelante.setEnabled(false);
                 }
                 listaCompras.setModel(cargarDatos());
                 centrarDatosTabla();
                 lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
-        
+
         campoBusqueda.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
@@ -141,25 +150,9 @@ public class ListaCompras extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String mesSeleccionado = (String) fechaComboBox.getSelectedItem();
-                if (mesSeleccionado.equals("Todos")) {
-                    // Actualiza el modelo de la tabla para mostrar todos los resultados
-                    listaCompras.setModel(cargarDatos());
-                } else {
-                    // Actualiza el modelo de la tabla con el mes seleccionado
-                    actualizarModeloTablaConMesSeleccionado(mesSeleccionado);
-                }
-                centrarDatosTabla();
+                actualizarModeloTablaConMesSeleccionado(mesSeleccionado);
             }
         });
-
-
-        // Colores de la paleta
-        Color primaryColor = Color.decode("#37474f"); // Gris azul oscuro
-        Color lightColor = Color.decode("#cfd8dc"); // Gris azul claro
-        Color darkColor = Color.decode("#263238"); // Gris azul más oscuro
-
-        fechaComboBox.setBackground(primaryColor);
-        fechaComboBox.setForeground(Color.WHITE);
 
         botonAtras.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
@@ -219,35 +212,11 @@ public class ListaCompras extends JFrame {
             }
         });
 
-        // Color de fondo
-        panelPrincipal.setBackground(primaryColor);
 
-        // Color de texto de los botones
-        botonAtras.setForeground(Color.WHITE);
-        botonAdelante.setForeground(Color.WHITE);
-        botonCrear.setForeground(Color.WHITE);
-
-        // Color de fondo de los botones
-        botonAtras.setBackground(darkColor);
-        botonAdelante.setBackground(darkColor);
-        botonCrear.setBackground(darkColor);
-
-        // Color de texto del campo de búsqueda y del label de la página
-        campoBusqueda.setForeground(Color.WHITE);
-        lblPagina.setForeground(Color.WHITE);
-
-        // Color de fondo del campo de búsqueda
-        campoBusqueda.setBackground(darkColor);
-
-        // Color del placeholder del campo de búsqueda
-        placeholder.changeAlpha(0.75f);
-        placeholder.setForeground(Color.LIGHT_GRAY);
-        placeholder.setFont(new Font("Nunito", Font.ITALIC, 11));
-
-        // Crear una fuente con un tamaño de 18 puntos
-        Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
-        lbl0.setFont(fontTitulo);
     }
+
+
+
     private void centrarDatosTabla() {
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
@@ -322,6 +291,97 @@ public class ListaCompras extends JFrame {
         return totalPageCount;
     }
 
+    private double calcularSubtotal(List<DetalleCompra> detalles) {
+        double subtotal = 0.0;
+        for (DetalleCompra detalle : detalles) {
+            Material material = obtenerMaterialPorId(detalle.getMaterialId());
+            if (material != null && !material.isExento()) {
+                subtotal += detalle.getCantidad() * detalle.getPrecio();
+            }
+        }
+        return subtotal;
+    }
+
+    private double calcularISV(List<DetalleCompra> detalles) {
+        double isv = 0.0;
+        for (DetalleCompra detalle : detalles) {
+            Material material = obtenerMaterialPorId(detalle.getMaterialId());
+            if (material != null && !material.isExento()) {
+                isv += detalle.getCantidad() * detalle.getPrecio() * 0.15;
+            }
+        }
+        return isv;
+    }
+
+    private double calcularExento(List<DetalleCompra> detalles) {
+        double exento = 0.0;
+        for (DetalleCompra detalle : detalles) {
+            Material material = obtenerMaterialPorId(detalle.getMaterialId());
+            if (material != null && material.isExento()) {
+                exento += detalle.getCantidad() * detalle.getPrecio();
+            }
+        }
+        return exento;
+    }
+
+    private double calcularTotal(List<DetalleCompra> detalles) {
+        double subtotal = calcularSubtotal(detalles);
+        double isv = calcularISV(detalles);
+        double exento = calcularExento(detalles);
+        return subtotal + isv + exento;
+    }
+
+    public Material obtenerMaterialPorId(int materialId) {
+        Material material = null;
+
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT nombre, exento FROM materiales WHERE id = ?")) {
+
+            preparedStatement.setInt(1, materialId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                String nombreMaterial = resultSet.getString("nombre");
+                boolean exento = resultSet.getBoolean("exento");
+
+                // Aquí utilizamos el constructor apropiado para crear un objeto Material.
+                // Los campos que no se obtienen de la base de datos se inicializan con valores predeterminados.
+                material = new Material(materialId, nombreMaterial, 0, null, null, exento, 0);
+            }
+
+        } catch (SQLException e) {
+            // En caso de error en la conexión o consulta, se muestra un mensaje de error.
+            System.out.println(e.getMessage());
+            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+        }
+
+        return material;
+    }
+
+    public String obtenerNombreMaterial(int materialId, Conexion sql) {
+        String nombreMaterial = "";
+        boolean exento = false; // Variable para indicar si el material es exento
+
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT nombre, exento FROM materiales WHERE id = ?")) {
+            preparedStatement.setInt(1, materialId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                nombreMaterial = resultSet.getString("nombre");
+                exento = resultSet.getBoolean("exento");
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+        }
+
+        if (exento) {
+            nombreMaterial += " (Exento)";
+        }
+
+        return nombreMaterial;
+    }
+
     public void imprimirFactura(int indiceItem) {
         try {
             // Obtener la compra asociada al ítem seleccionado
@@ -355,7 +415,7 @@ public class ListaCompras extends JFrame {
             contentStream.setFont(PDType1Font.HELVETICA, 12);
 
             // Calcular el ancho de las columnas
-            float[] columnWidths = {30, 200, 60, 80, 80};
+            float[] columnWidths = {20, 200, 95, 95, 100};
             float tableHeight = 600;
             float tableWidth = page.getMediaBox().getWidth() - 100;
             float yStart = 650;
@@ -382,7 +442,7 @@ public class ListaCompras extends JFrame {
             // Agregar línea por línea
             Conexion sql = new Conexion();
             ModeloDetallesCompras mdc = new ModeloDetallesCompras(new ArrayList<>(), sql);
-            double subTotal = 0.0;
+
             List<DetalleCompra> detalles = mdc.getDetallesPorCompra(compra.getId());
             for (DetalleCompra detalle : detalles) {
                 if (rowNumber == rowsPerPage) {
@@ -424,13 +484,14 @@ public class ListaCompras extends JFrame {
                 contentStream.showText(String.format("L. %.2f", detalle.getCantidad() * detalle.getPrecio()));
                 contentStream.endText();
 
-                subTotal += detalle.getCantidad() * detalle.getPrecio();
+
                 rowNumber++;
             }
 
-            // Calcular el ISV y el total
-            double isv = subTotal * 0.15;
-            double total = subTotal + isv;
+            double subTotal = calcularSubtotal(detalles);
+            double isv = calcularISV(detalles);
+            double exento = calcularExento(detalles);
+            double total = calcularTotal(detalles);
 
             // Agregar línea de separación
             contentStream.setLineWidth(1f);
@@ -441,34 +502,45 @@ public class ListaCompras extends JFrame {
             // Agregar pie de página
             contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
             contentStream.beginText();
-            contentStream.newLineAtOffset(tableWidth - 200, yPosition - 30);
-            contentStream.showText("Subtotal:");
+            contentStream.newLineAtOffset(tableWidth - 250, yPosition - 30);
+            contentStream.showText("Total antes de Impuestos:");
             contentStream.endText();
             contentStream.beginText();
             contentStream.setFont(PDType1Font.HELVETICA, 12);
-            contentStream.newLineAtOffset(tableWidth - 80, yPosition - 30);
+            contentStream.newLineAtOffset(tableWidth - 50, yPosition - 30);
             contentStream.showText("L. " + String.format("%.2f", subTotal));
             contentStream.endText();
 
             contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
             contentStream.beginText();
-            contentStream.newLineAtOffset(tableWidth - 200, yPosition - 50);
-            contentStream.showText("ISV (15%):");
+            contentStream.newLineAtOffset(tableWidth - 250, yPosition - 50);
+            contentStream.showText("Impuestos sobre ventas (15%):");
             contentStream.endText();
             contentStream.beginText();
             contentStream.setFont(PDType1Font.HELVETICA, 12);
-            contentStream.newLineAtOffset(tableWidth - 80, yPosition - 50);
+            contentStream.newLineAtOffset(tableWidth - 50, yPosition - 50);
             contentStream.showText("L. " + String.format("%.2f", isv));
             contentStream.endText();
 
             contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
             contentStream.beginText();
-            contentStream.newLineAtOffset(tableWidth - 200, yPosition - 70);
+            contentStream.newLineAtOffset(tableWidth - 250, yPosition - 70);
+            contentStream.showText("Exento:");
+            contentStream.endText();
+            contentStream.beginText();
+            contentStream.setFont(PDType1Font.HELVETICA, 12);
+            contentStream.newLineAtOffset(tableWidth - 50, yPosition - 70);
+            contentStream.showText("L. " + String.format("%.2f", exento));
+            contentStream.endText();
+
+            contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
+            contentStream.beginText();
+            contentStream.newLineAtOffset(tableWidth - 250, yPosition - 90);
             contentStream.showText("Total:");
             contentStream.endText();
             contentStream.beginText();
             contentStream.setFont(PDType1Font.HELVETICA, 12);
-            contentStream.newLineAtOffset(tableWidth - 80, yPosition - 70);
+            contentStream.newLineAtOffset(tableWidth - 50, yPosition - 90);
             contentStream.showText("L. " + String.format("%.2f", total));
             contentStream.endText();
 
@@ -525,59 +597,6 @@ public class ListaCompras extends JFrame {
         }
     }
 
-    public String obtenerNombreMaterial(int materialId, Conexion sql) {
-        String nombreMaterial = "";
-        try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("SELECT nombre FROM materiales WHERE id = ?")) {
-            preparedStatement.setInt(1, materialId);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                nombreMaterial = resultSet.getString("nombre");
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
-        }
-        return nombreMaterial;
-    }
-
-    private void actualizarModeloTablaConMesSeleccionado(String mesSeleccionado) {
-        sql = new Conexion();
-        try (Connection mysql = sql.conectamysql();
-             PreparedStatement preparedStatement = mysql.prepareStatement(
-                     "SELECT c.*, p.empresaProveedora, CONCAT(e.Nombres, ' ', e.Apellidos) AS empleadoNombre " +
-                             "FROM compras c " +
-                             "JOIN proveedores p ON c.proveedor_id = p.id " +
-                             "JOIN empleados e ON c.empleado_id = e.id " +
-                             "WHERE MONTH(c.fecha) = ?")) {
-
-            // Obtén el número del mes seleccionado
-            int numeroMes = obtenerNumeroMes(mesSeleccionado);
-
-            // Establece el número del mes en el parámetro de la consulta
-            preparedStatement.setInt(1, numeroMes);
-
-            ResultSet resultSet = preparedStatement.executeQuery();
-            compraList = new ArrayList<>();
-            while (resultSet.next()) {
-                Compra compra = new Compra();
-                compra.setId(resultSet.getInt("id"));
-                compra.setCodigoCompra(resultSet.getString("codigo_compra"));
-                compra.setFecha(resultSet.getString("fecha"));
-                compra.setProveedorId(resultSet.getInt("proveedor_id"));
-                compra.setEmpleadoId(resultSet.getInt("empleado_id"));
-                compraList.add(compra);
-            }
-
-            // Actualiza el modelo de la tabla con los resultados obtenidos
-            listaCompras.setModel(new ModeloCompras(compraList, sql));
-            centrarDatosTabla();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
-            compraList = new ArrayList<>();
-        }
-    }
 
     private int obtenerNumeroMes(String mesSeleccionado) {
         int numeroMes = 0;
@@ -618,10 +637,61 @@ public class ListaCompras extends JFrame {
             case "Diciembre":
                 numeroMes = 12;
                 break;
-            // Agrega los demás meses aquí...
+            case "Todos":
+                numeroMes = 0;
+                break;
+
         }
         return numeroMes;
     }
+    private void actualizarModeloTablaConMesSeleccionado(String mesSeleccionado) {
+        sql = new Conexion();
+        try (Connection mysql = sql.conectamysql()) {
+            PreparedStatement preparedStatement;
+            if (mesSeleccionado.equals("Todos")) {
+                preparedStatement = mysql.prepareStatement(
+                        "SELECT c.*, p.empresaProveedora, CONCAT(e.Nombres, ' ', e.Apellidos) AS empleadoNombre " +
+                                "FROM compras c " +
+                                "JOIN proveedores p ON c.proveedor_id = p.id " +
+                                "JOIN empleados e ON c.empleado_id = e.id " +
+                                "LIMIT ?, 20");
+                preparedStatement.setInt(1, pagina * 20);
+            } else {
+                preparedStatement = mysql.prepareStatement(
+                        "SELECT c.*, p.empresaProveedora, CONCAT(e.Nombres, ' ', e.Apellidos) AS empleadoNombre " +
+                                "FROM compras c " +
+                                "JOIN proveedores p ON c.proveedor_id = p.id " +
+                                "JOIN empleados e ON c.empleado_id = e.id " +
+                                "WHERE MONTH(c.fecha) = ? " +
+                                "LIMIT ?, 20");
+                int numeroMes = obtenerNumeroMes(mesSeleccionado);
+                preparedStatement.setInt(1, numeroMes);
+                preparedStatement.setInt(2, pagina * 20);
+            }
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            compraList = new ArrayList<>();
+            while (resultSet.next()) {
+                Compra compra = new Compra();
+                compra.setId(resultSet.getInt("id"));
+                compra.setCodigoCompra(resultSet.getString("codigo_compra"));
+                compra.setFecha(resultSet.getString("fecha"));
+                compra.setProveedorId(resultSet.getInt("proveedor_id"));
+                compra.setEmpleadoId(resultSet.getInt("empleado_id"));
+                compraList.add(compra);
+            }
+
+            listaCompras.setModel(new ModeloCompras(compraList, sql));
+            centrarDatosTabla();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            compraList = new ArrayList<>();
+        }
+    }
+
+
+
 
     public static void main(String[] args) {
         ListaCompras listaCompras = new ListaCompras();

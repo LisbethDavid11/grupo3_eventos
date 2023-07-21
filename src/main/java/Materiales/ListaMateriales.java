@@ -270,7 +270,6 @@ public class ListaMateriales extends JFrame {
              )
         ) {
 
-
             String disponibilidadSi = siCheckBox.isSelected() ? "Si" : "";
             String disponibilidadNo = noCheckBox.isSelected() ? "No" : "";
             preparedStatement.setString(1, busqueda);
