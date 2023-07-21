@@ -39,7 +39,7 @@ public class CrearTarjeta extends JFrame {
     private Conexion sql;
 
     public CrearTarjeta() {
-        super("");
+        super("Crear datos de tarjetas");
         setSize(600, 590);
         setLocationRelativeTo(null);
         setContentPane(panel);
