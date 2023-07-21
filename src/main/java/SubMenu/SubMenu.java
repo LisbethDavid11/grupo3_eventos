@@ -7,13 +7,15 @@ import Empleados.ListaEmpleados;
 import Floristerias.ListaFloristeria;
 import Materiales.ListaMateriales;
 import Proveedores.ListaProveedores;
+import Tarjetas.ListaTarjetas;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class SubMenu extends JFrame {
-    private JButton proveedoresButton, empleadosButton, clientesButton, floristeriaButton, arreglosButton, materialesButton, comprasButton;
+    private JButton proveedoresButton, empleadosButton, clientesButton, floristeriaButton, arreglosButton, materialesButton, comprasButton,tarjetaButton;
     private JPanel panel, panel2, panel3;
 
     // Instancias de las ventanas
@@ -24,6 +26,8 @@ public class SubMenu extends JFrame {
     private ListaMateriales listaMateriales;
     private ListaProveedores listaProveedores;
     private ListaCompras listaCompras;
+
+    private ListaTarjetas listaTarjetas;
 
     public SubMenu() {
         super("Menú Principal");
@@ -61,6 +65,12 @@ public class SubMenu extends JFrame {
         comprasButton.setBackground(Color.decode("#F44336"));
         comprasButton.setPreferredSize(new Dimension(100, 40)); // Ajustar tamaño
 
+
+        tarjetaButton = new JButton("Tarjetas");
+        tarjetaButton.setBackground(Color.decode("#F44336"));
+        tarjetaButton.setPreferredSize(new Dimension(100, 40)); // Ajustar tamaño
+
+
         panel.add(clientesButton);
         panel.add(empleadosButton);
         panel.add(floristeriaButton);
@@ -68,6 +78,7 @@ public class SubMenu extends JFrame {
         panel.add(materialesButton);
         panel.add(proveedoresButton);
         panel.add(comprasButton);
+        panel.add(tarjetaButton);
 
         // Crea el panel de imagen y lo coloca en el centro
         ImagePanel imagenPanel = new ImagePanel();
@@ -105,6 +116,7 @@ public class SubMenu extends JFrame {
         listaMateriales = new ListaMateriales();
         listaProveedores = new ListaProveedores();
         listaCompras = new ListaCompras();
+        listaTarjetas = new ListaTarjetas();
 
         clientesButton.addActionListener(new ActionListener() {
             @Override
@@ -154,6 +166,14 @@ public class SubMenu extends JFrame {
                 listaCompras.setVisible(true);
             }
         });
+
+        tarjetaButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                listaTarjetas.setVisible(true);
+            }
+        });
+
     }
 
     public static void main(String[] args) {
