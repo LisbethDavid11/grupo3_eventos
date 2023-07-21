@@ -67,7 +67,7 @@ public class SubMenu extends JFrame {
 
 
         tarjetaButton = new JButton("Tarjetas");
-        tarjetaButton.setBackground(Color.decode("#F44336"));
+        tarjetaButton.setBackground(Color.decode("#E81E63"));
         tarjetaButton.setPreferredSize(new Dimension(100, 40)); // Ajustar tamaño
 
 
@@ -105,6 +105,7 @@ public class SubMenu extends JFrame {
         empleadosButton.setForeground(Color.WHITE);
         arreglosButton.setForeground(Color.WHITE);
         comprasButton.setForeground(Color.WHITE);
+        tarjetaButton.setForeground(Color.WHITE);
 
         add(panel3);
 
