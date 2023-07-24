@@ -203,22 +203,9 @@ public class EditarFloristeria extends JFrame {
         botonCancelar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int respuesta = JOptionPane.showOptionDialog(
-                        null,
-                        "¿Desea cancelar la actualización de la flor?",
-                        "Confirmación",
-                        JOptionPane.YES_NO_OPTION,
-                        JOptionPane.QUESTION_MESSAGE,
-                        null,
-                        new Object[]{"Sí", "No"},
-                        "No"
-                );
-
-                if (respuesta == JOptionPane.YES_OPTION) {
-                    ListaFloristeria listaFloristeria = new ListaFloristeria();
-                    listaFloristeria.setVisible(true);
-                    actual.dispose();
-                }
+                ListaFloristeria listaFloristeria = new ListaFloristeria();
+                listaFloristeria.setVisible(true);
+                actual.dispose();
             }
         });
 

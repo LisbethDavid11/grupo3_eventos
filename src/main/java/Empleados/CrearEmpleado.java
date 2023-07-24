@@ -394,22 +394,9 @@ public class CrearEmpleado extends JFrame {
         cancelarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int respuesta = JOptionPane.showOptionDialog(
-                        null,
-                        "¿Desea cancelar el registro del empleado?",
-                        "Confirmación",
-                        JOptionPane.YES_NO_OPTION,
-                        JOptionPane.QUESTION_MESSAGE,
-                        null,
-                        new Object[]{"Sí", "No"},
-                        "No"
-                );
-
-                if (respuesta == JOptionPane.YES_OPTION) {
-                    ListaEmpleados listaEmpleados = new ListaEmpleados();
-                    listaEmpleados.setVisible(true);
-                    crearEmpleado.dispose();
-                }
+                ListaEmpleados listaEmpleados = new ListaEmpleados();
+                listaEmpleados.setVisible(true);
+                crearEmpleado.dispose();
             }
         });
 

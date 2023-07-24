@@ -240,22 +240,9 @@ public class EditarMaterial extends JFrame {
         botonCancelar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int respuesta = JOptionPane.showOptionDialog(
-                        null,
-                        "¿Desea cancelar la actualización del material?",
-                        "Confirmación",
-                        JOptionPane.YES_NO_OPTION,
-                        JOptionPane.QUESTION_MESSAGE,
-                        null,
-                        new Object[]{"Sí", "No"},
-                        "No"
-                );
-
-                if (respuesta == JOptionPane.YES_OPTION) {
-                    ListaMateriales listaMateriales = new ListaMateriales();
-                    listaMateriales.setVisible(true);
-                    actual.dispose();
-                }
+                ListaMateriales listaMateriales = new ListaMateriales();
+                listaMateriales.setVisible(true);
+                actual.dispose();
             }
         });
 

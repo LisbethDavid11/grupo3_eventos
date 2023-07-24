@@ -268,22 +268,10 @@ public class EditarCliente extends  JFrame{
         cancelarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int respuesta = JOptionPane.showOptionDialog(
-                        null,
-                        "¿Desea cancelar la actualización del cliente?",
-                        "Confirmación",
-                        JOptionPane.YES_NO_OPTION,
-                        JOptionPane.QUESTION_MESSAGE,
-                        null,
-                        new Object[]{"Sí", "No"},
-                        "No"
-                );
+                ListaCliente cliente = new ListaCliente();
+                cliente.setVisible(true);
+                actual.dispose();
 
-                if (respuesta == JOptionPane.YES_OPTION) {
-                    ListaCliente cliente = new ListaCliente();
-                    cliente.setVisible(true);
-                    actual.dispose();
-                }
             }
         });
 

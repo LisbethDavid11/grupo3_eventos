@@ -280,22 +280,9 @@ public class CrearCliente extends JFrame{
         botonCancelar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int respuesta = JOptionPane.showOptionDialog(
-                        null,
-                        "¿Desea cancelar el registro del cliente?",
-                        "Confirmación",
-                        JOptionPane.YES_NO_OPTION,
-                        JOptionPane.QUESTION_MESSAGE,
-                        null,
-                        new Object[]{"Sí", "No"},
-                        "No"
-                );
-
-                if (respuesta == JOptionPane.YES_OPTION) {
-                    ListaCliente cliente = new ListaCliente();
-                    cliente.setVisible(true);
-                    actual.dispose();
-                }
+                ListaCliente cliente = new ListaCliente();
+                cliente.setVisible(true);
+                actual.dispose();
             }
         });
 
