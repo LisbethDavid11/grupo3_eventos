@@ -31,6 +31,8 @@ public class EditarFloristeria extends JFrame {
     private EditarFloristeria actual = this;
     private Conexion sql;
     private int idFloristeria;
+    private int panelImgWidth = 200;
+    private int panelImgHeight = 200;
 
     public EditarFloristeria(int idFloristeria) {
         super("");
@@ -40,10 +42,6 @@ public class EditarFloristeria extends JFrame {
 
         this.idFloristeria = idFloristeria;
         sql = new Conexion();
-
-        // Establecer ancho y alto deseados para el panelImg
-        int panelImgWidth = 200;
-        int panelImgHeight = 200;
 
         // Crear una instancia de Dimension con las dimensiones deseadas
         Dimension panelImgSize = new Dimension(panelImgWidth, panelImgHeight);

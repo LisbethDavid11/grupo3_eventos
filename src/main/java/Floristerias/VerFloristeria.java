@@ -2,6 +2,7 @@ package Floristerias;
 
 import Objetos.Conexion;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -20,18 +21,16 @@ public class VerFloristeria extends JFrame {
     private Conexion sql;
     private Connection mysql;
     private int id;
+    private int panelImgWidth = 200;
+    private int panelImgHeight = 200;
 
     public VerFloristeria(int id) {
         super("");
-        setSize(550, 500);
+        setSize(550, 600);
         setLocationRelativeTo(null);
         setContentPane(panel1);
 
         this.id = id;
-
-        // Establecer ancho y alto deseados para el panelImg
-        int panelImgWidth = 200;
-        int panelImgHeight = 200;
 
         // Crear una instancia de Dimension con las dimensiones deseadas
         Dimension panelImgSize = new Dimension(panelImgWidth, panelImgHeight);
@@ -149,8 +148,7 @@ public class VerFloristeria extends JFrame {
                 try {
                     File imagenFile = new File(imagenPath);
                     if (imagenFile.exists()) {
-                        ImageIcon imagenIcono = new ImageIcon(imagenPath);
-                        Image imagenOriginal = imagenIcono.getImage();
+                        Image imagenOriginal = ImageIO.read(imagenFile);
 
                         // Ajusta el tamaño de la imagen para que se ajuste al tamaño predeterminado del panel
                         int anchoPanelPredeterminado = 300;
@@ -169,13 +167,10 @@ public class VerFloristeria extends JFrame {
                         Image imagenEscalada = imagenOriginal.getScaledInstance(anchoEscalado, altoEscalado, Image.SCALE_SMOOTH);
 
                         // Crea un ImageIcon a partir de la imagen escalada
-                        ImageIcon imagenIconoEscalado = new ImageIcon(imagenEscalada);
+                        ImageIcon imagenIcono = new ImageIcon(imagenEscalada);
 
-                        // Establece el tamaño máximo para el ImageIcon
-                        imagenIconoEscalado.setImageObserver(lblImagen);
-
-                        // Actualiza la etiqueta lblImagen con el ImageIcon escalado
-                        lblImagen.setIcon(imagenIconoEscalado);
+                        // Actualiza la etiqueta lblImagen con el ImageIcon
+                        lblImagen.setIcon(imagenIcono);
                     } else {
                         System.out.println("No se encontró la imagen: " + imagenPath);
                     }

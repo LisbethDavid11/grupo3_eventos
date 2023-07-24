@@ -364,10 +364,12 @@ public class CrearArreglo extends JFrame {
                     // Crear un nuevo ImageIcon a partir de la imagen redimensionada
                     ImageIcon scaledIcon = new ImageIcon(resizedImage);
 
+                    // Establecer el nuevo ImageIcon en el JLabel de la imagen
                     imagenLabel.setIcon(scaledIcon);
                 }
             }
         });
+
     }
 
     private void guardarArreglo() {

@@ -34,6 +34,9 @@ public class EditarArreglo extends JFrame {
     private final EditarArreglo actual = this;
     private Conexion sql;
     private Connection mysql;
+    // Establecer ancho y alto deseados para el panelImg
+    private int panelImgWidth = 220;
+    private int panelImgHeight = 220;
     private int id;
 
     public EditarArreglo(int arregloId) {
@@ -45,10 +48,6 @@ public class EditarArreglo extends JFrame {
 
         this.id = arregloId;
         mostrar();
-
-        // Establecer ancho y alto deseados para el panelImg
-        int panelImgWidth = 200;
-        int panelImgHeight = 200;
 
         // Crear una instancia de Dimension con las dimensiones deseadas
         Dimension panelImgSize = new Dimension(panelImgWidth, panelImgHeight);
@@ -400,9 +399,23 @@ public class EditarArreglo extends JFrame {
                         ImageIcon imagenIcono = new ImageIcon(imagenPath);
                         Image imagenOriginal = imagenIcono.getImage();
 
-                        // Ajusta el tamaño de la imagen para que se ajuste al panelImg
-                        Image imagenRedimensionada = imagenOriginal.getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+                        // Calcular la escala para ajustar la imagen al tamaño deseado
+                        double scale = Math.min((double) panelImgWidth / imagenIcono.getIconWidth(), (double) panelImgHeight / imagenIcono.getIconHeight());
+
+                        // Calcular las nuevas dimensiones de la imagen redimensionada
+                        int scaledWidth = (int) (imagenIcono.getIconWidth() * scale);
+                        int scaledHeight = (int) (imagenIcono.getIconHeight() * scale);
+
+                        // Redimensionar la imagen manteniendo su proporción
+                        Image imagenRedimensionada = imagenOriginal.getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH);
                         ImageIcon imagenFinal = new ImageIcon(imagenRedimensionada);
+
+                        // Establecer el tamaño del panel de imagen (panelImg)
+                        Dimension panelImgSize = new Dimension(panelImgWidth, panelImgHeight);
+                        panelImg.setPreferredSize(panelImgSize);
+                        panelImg.setMaximumSize(panelImgSize);
+                        panelImg.setMinimumSize(panelImgSize);
+                        panelImg.setSize(panelImgSize);
 
                         labelImagen.setIcon(imagenFinal);
                         imagePath = imagenPath;

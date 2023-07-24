@@ -2,6 +2,7 @@ package Arreglos;
 
 import Objetos.Conexion;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -12,7 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class VerArreglo extends JFrame {
-    private JPanel panel1, panel2;
+    private JPanel panel1, panelImg;
     private JTextField etiquetaNombre, etiquetaPrecio, etiquetaDisponible;
     private JButton volverButton;
     private JLabel lblImagen, lbl0;
@@ -20,30 +21,27 @@ public class VerArreglo extends JFrame {
     private Conexion sql;
     private Connection mysql;
     private int id;
+    private int panelImgWidth = 220;
+    private int panelImgHeight = 220;
 
     public VerArreglo(int id) {
         super("");
-        setSize(550, 500);
+        setSize(550, 600);
         setLocationRelativeTo(null);
         setContentPane(panel1);
-
         this.id = id;
-
-        // Establecer ancho y alto deseados para el panelImg
-        int panelImgWidth = 200;
-        int panelImgHeight = 200;
 
         // Crear una instancia de Dimension con las dimensiones deseadas
         Dimension panelImgSize = new Dimension(panelImgWidth, panelImgHeight);
 
         // Establecer las dimensiones en el panelImg
-        panel2.setPreferredSize(panelImgSize);
-        panel2.setMaximumSize(panelImgSize);
-        panel2.setMinimumSize(panelImgSize);
-        panel2.setSize(panelImgSize);
+        panelImg.setPreferredSize(panelImgSize);
+        panelImg.setMaximumSize(panelImgSize);
+        panelImg.setMinimumSize(panelImgSize);
+        panelImg.setSize(panelImgSize);
 
         // Configurar el layout del panelImg como GridBagLayout
-        panel2.setLayout(new GridBagLayout());
+        panelImg.setLayout(new GridBagLayout());
 
         // Configurar restricciones de diseño para la etiqueta de imagen
         GridBagConstraints gbc = new GridBagConstraints();
@@ -53,11 +51,11 @@ public class VerArreglo extends JFrame {
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         lblImagen.setHorizontalAlignment(SwingConstants.CENTER);
-        panel2.add(lblImagen, gbc);
+        panelImg.add(lblImagen, gbc);
 
         // Color de fondo del panel
         panel1.setBackground(Color.decode("#F5F5F5"));
-        panel2.setBackground(Color.decode("#F5F5F5"));
+        panelImg.setBackground(Color.decode("#F5F5F5"));
 
         mostrar();
 
@@ -71,7 +69,7 @@ public class VerArreglo extends JFrame {
 
         // Color de fondo del panel
         panel1.setBackground(Color.decode("#F5F5F5"));
-        panel2.setBackground(Color.decode("#F5F5F5"));
+        panelImg.setBackground(Color.decode("#F5F5F5"));
 
         // Color de texto para los JTextField
         Color textColor = Color.decode("#212121");
@@ -149,8 +147,7 @@ public class VerArreglo extends JFrame {
                 try {
                     File imagenFile = new File(imagenPath);
                     if (imagenFile.exists()) {
-                        ImageIcon imagenIcono = new ImageIcon(imagenPath);
-                        Image imagenOriginal = imagenIcono.getImage();
+                        Image imagenOriginal = ImageIO.read(imagenFile);
 
                         // Ajusta el tamaño de la imagen para que se ajuste al tamaño predeterminado del panel
                         int anchoPanelPredeterminado = 300;
@@ -169,7 +166,7 @@ public class VerArreglo extends JFrame {
                         Image imagenEscalada = imagenOriginal.getScaledInstance(anchoEscalado, altoEscalado, Image.SCALE_SMOOTH);
 
                         // Crea un ImageIcon a partir de la imagen escalada
-                        imagenIcono = new ImageIcon(imagenEscalada);
+                        ImageIcon imagenIcono = new ImageIcon(imagenEscalada);
 
                         // Actualiza la etiqueta lblImagen con el ImageIcon
                         lblImagen.setIcon(imagenIcono);
@@ -181,9 +178,11 @@ public class VerArreglo extends JFrame {
                 }
             }
         } catch (SQLException error) {
-            System.out.println(error.getMessage());
+            System.out.println("Error al obtener los datos del arreglo: " + error.getMessage());
         }
     }
+
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
