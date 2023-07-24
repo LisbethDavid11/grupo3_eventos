@@ -6,6 +6,10 @@ public class Tarjeta {
     private double precio;
     private String disponible;
 
+    private String descripcion;
+    private String imagen;
+
+
     public static String nombreTabla = "tarjetas";
 
     public Tarjeta() {
@@ -15,11 +19,13 @@ public class Tarjeta {
         return new Object[] {id,ocasion, precio, disponible};
     }
 
-    public Tarjeta(int id, String ocasion, double precio, String disponible) {
+    public Tarjeta(int id, String ocasion, double precio, String disponible, String descripcion, String imagen) {
         this.id = id;
         this.ocasion = ocasion;
         this.precio = precio;
         this.disponible = disponible;
+        this.descripcion = descripcion;
+        this.imagen = imagen;
     }
 
 // getters y setters
@@ -55,5 +61,21 @@ public class Tarjeta {
 
     public void setDisponible(String disponible) {
         this.disponible = disponible;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public String getImagen() {
+        return imagen;
+    }
+
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
     }
 }

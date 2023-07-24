@@ -288,6 +288,8 @@ public class ListaTarjetas extends JFrame {
                 tarjeta.setOcasion(resultSet.getString("ocasion"));
                 tarjeta.setPrecio(resultSet.getDouble("precio"));
                 tarjeta.setDisponible(resultSet.getString("disponible"));
+                tarjeta.setDescripcion(resultSet.getString("descripcion"));
+                tarjeta.setImagen(resultSet.getString("imagen"));
                 tarjetaList.add(tarjeta);
             }
 

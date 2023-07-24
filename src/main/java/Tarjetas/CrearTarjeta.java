@@ -1,18 +1,31 @@
 package Tarjetas;
 
+import Materiales.EditarMaterial;
+import Modelos.ModeloMateriales;
 import Objetos.Conexion;
+import Objetos.Material;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public class CrearTarjeta extends JFrame {
 
@@ -33,10 +46,19 @@ public class CrearTarjeta extends JFrame {
     private JRadioButton a15DeSeptRadioButton;
     private JButton botonCargarImagen;
     private JButton agregarMaterialButton;
-    private JTable table1;
+    private JTable jtableMateriales;
+    private JPanel jpanelImagen;
+    private JLabel jlabelImagen;
+    private JScrollPane jscrollMateriales;
+    private JButton agregarButton;
+    private JTextField campoBusquedaMateriales;
+    private JButton cancelarButton;
+    private List<Material> materialList;
     private String imagePath = "";
     private CrearTarjeta actual = this;
     private Conexion sql;
+    private String nombreFile;
+    private String urlDestino;
 
     public CrearTarjeta() {
         super("Crear datos de tarjetas");
@@ -48,6 +70,32 @@ public class CrearTarjeta extends JFrame {
         campoDescripcion.setWrapStyleWord(true);
 
         sql = new Conexion();
+
+        // Establecer ancho y alto deseados para el panelImg
+        int panelImgWidth = 100;
+        int panelImgHeight = 100;
+
+        // Crear una instancia de Dimension con las dimensiones deseadas
+        Dimension panelImgSize = new Dimension(panelImgWidth, panelImgHeight);
+
+        // Establecer las dimensiones en el panelImg
+        jpanelImagen.setPreferredSize(panelImgSize);
+        jpanelImagen.setMaximumSize(panelImgSize);
+        jpanelImagen.setMinimumSize(panelImgSize);
+        jpanelImagen.setSize(panelImgSize);
+
+        // Configurar el layout del panelImg como GridBagLayout
+        jpanelImagen.setLayout(new GridBagLayout());
+
+        // Configurar restricciones de diseño para la etiqueta de imagen
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        jlabelImagen.setHorizontalAlignment(SwingConstants.CENTER);
+        jpanelImagen.add(jlabelImagen, gbc);
 
 
         // Color de fondo del panel
@@ -88,6 +136,7 @@ public class CrearTarjeta extends JFrame {
         // Color de fondo de los botones
         botonCancelar.setBackground(darkColorCyan);
         botonGuardar.setBackground(darkColorAqua);
+        botonCargarImagen.setBackground(primaryColorRosado);
 
         botonCancelar.setFocusPainted(false);
         botonGuardar.setFocusPainted(false);
@@ -126,6 +175,27 @@ public class CrearTarjeta extends JFrame {
 
         // No seleccionar ningún botón de radio por defecto
         buttonGroup.clearSelection();
+
+        agregarMaterialButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+               campoBusquedaMateriales.setVisible(true);
+               agregarButton.setVisible(true);
+               cancelarButton.setVisible(true);
+               agregarMaterialButton.setVisible(false);
+               jtableMateriales.setModel(cargarDatosMateriales());
+            }
+        });
+        cancelarButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                campoBusquedaMateriales.setVisible(false);
+                agregarButton.setVisible(false);
+                cancelarButton.setVisible(false);
+                agregarMaterialButton.setVisible(true);
+                jtableMateriales.setModel(cargarDetallesMateriales());
+            }
+        });
 
         campoPrecio.addKeyListener(new KeyAdapter() {
             @Override
@@ -209,6 +279,13 @@ public class CrearTarjeta extends JFrame {
                 );
 
                 if (respuesta == JOptionPane.YES_OPTION) {
+                    try {
+                        File file = new File(urlDestino);
+                        file.delete();
+                    }catch (Exception a){
+
+                    }
+                    eliminarDetallesMaterial();
                     ListaTarjetas listaTarjeta = new ListaTarjetas();
                     listaTarjeta.setVisible(true);
                     actual.dispose();
@@ -289,6 +366,114 @@ public class CrearTarjeta extends JFrame {
                 }
             }
         });
+
+
+
+        botonCargarImagen.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                UIManager.put("FileChooser.openButtonText", "Cargar");
+                UIManager.put("FileChooser.cancelButtonText", "Cancelar");
+                UIManager.put("FileChooser.lookInLabelText", "Ver en");
+                UIManager.put("FileChooser.fileNameLabelText", "Nombre del archivo");
+                UIManager.put("FileChooser.filesOfTypeLabelText", "Archivos del tipo");
+                UIManager.put("FileChooser.upFolderToolTipText", "Subir un nivel");
+                UIManager.put("FileChooser.homeFolderToolTipText", "Escritorio");
+                UIManager.put("FileChooser.newFolderToolTipText", "Crear nueva carpeta");
+                UIManager.put("FileChooser.listViewButtonToolTipText", "Lista");
+                UIManager.put("FileChooser.newFolderButtonText", "Crear nueva carpeta");
+                UIManager.put("FileChooser.renameFileButtonText", "Renombrar archivo");
+                UIManager.put("FileChooser.deleteFileButtonText", "Eliminar archivo");
+                UIManager.put("FileChooser.filterLabelText", "Tipo de archivo");
+                UIManager.put("FileChooser.detailsViewButtonToolTipText", "Detalles");
+                UIManager.put("FileChooser.fileSizeHeaderText", "Tamaño");
+                UIManager.put("FileChooser.fileDateHeaderText", "Fecha de modificación");
+
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setDialogTitle("Seleccionar imagen"); // Cambiar título del diálogo
+
+                fileChooser.setFileFilter(new FileNameExtensionFilter("Imágenes", "jpg", "jpeg", "png", "bmp", "gif"));
+
+                int seleccion = fileChooser.showOpenDialog(actual);
+                if (seleccion == JFileChooser.APPROVE_OPTION) {
+                    File file = fileChooser.getSelectedFile();
+                    imagePath = file.getAbsolutePath();
+
+                    String directorio = "img/tarjetas/";
+
+                    Date fecha = new Date();
+                    SimpleDateFormat formatoFecha = new SimpleDateFormat("yyyyMMdd_HHmmss");
+                    
+                    nombreFile  = formatoFecha.format(fecha)+".jpg" ;
+                    urlDestino = directorio + nombreFile;
+
+                    try {
+                        File finalDirectorio = new File(urlDestino);
+
+                        BufferedImage imagen = ImageIO.read(new File(imagePath));
+
+                        ImageIO.write(imagen, "jpg", finalDirectorio);
+
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+
+
+                    ImageIcon originalIcon = new ImageIcon(imagePath);
+
+                    // Obtener las dimensiones originales de la imagen
+                    int originalWidth = originalIcon.getIconWidth();
+                    int originalHeight = originalIcon.getIconHeight();
+
+                    // Obtener las dimensiones del JPanel
+                    int panelImgWidth = jpanelImagen.getWidth();
+                    int panelImgHeight = jpanelImagen.getHeight();
+
+                    // Calcular la escala para ajustar la imagen al JPanel
+                    double scale = Math.min((double) panelImgWidth / originalWidth, (double) panelImgHeight / originalHeight);
+
+                    // Calcular las nuevas dimensiones de la imagen redimensionada
+                    int scaledWidth = (int) (originalWidth * scale);
+                    int scaledHeight = (int) (originalHeight * scale);
+
+                    // Redimensionar la imagen manteniendo su proporción
+                    Image resizedImage = originalIcon.getImage().getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH);
+
+                    // Crear un nuevo ImageIcon a partir de la imagen redimensionada
+                    ImageIcon scaledIcon = new ImageIcon(resizedImage);
+
+                    jlabelImagen.setIcon(scaledIcon);
+                }
+            }
+        });
+
+        jtableMateriales.setModel(cargarDetallesMateriales());
+        agregarButton.setVisible(false);
+        cancelarButton.setVisible(false);
+        campoBusquedaMateriales.setVisible(false);
+        campoBusquedaMateriales.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                jtableMateriales.setModel(cargarDatosMateriales());
+            }
+        });
+
+        agregarButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (jtableMateriales.getSelectedRow() == -1) {
+                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+
+                guardarDetalleMaterial(materialList.get(jtableMateriales.getSelectedRow()).getId());
+                campoBusquedaMateriales.setVisible(false);
+                agregarButton.setVisible(false);
+                cancelarButton.setVisible(false);
+                agregarMaterialButton.setVisible(true);
+                jtableMateriales.setModel(cargarDetallesMateriales());
+            }
+        });
     }
 
     private void guardarMateriales() {
@@ -318,18 +503,48 @@ public class CrearTarjeta extends JFrame {
             }
         }
 
-
         String disponibilidad = radioButtonSi.isSelected() ? "Si" : "No";
 
-
             try (Connection connection = sql.conectamysql();
-                 PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO tarjetas (ocasion, precio, disponible) VALUES (?, ?, ?)")) {
+                 PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO tarjetas (ocasion, precio, disponible, descripcion,imagen) VALUES (?, ?, ?, ?, ?)")) {
                 preparedStatement.setString(1, ocasion);
                 preparedStatement.setDouble(2, precio);
-                //preparedStatement.setString(3, descripcion);
                 preparedStatement.setString(3, disponibilidad);
-                //preparedStatement.setInt(5, idProveedor);
+                preparedStatement.setString(4, descripcion);
+                preparedStatement.setString(5, nombreFile);
                 preparedStatement.executeUpdate();
+
+                ResultSet resultSet = connection.createStatement().executeQuery("SELECT LAST_INSERT_ID()");
+                int lasId = 0;
+                if (resultSet.next()){
+                    lasId = resultSet.getInt(1);
+                }
+
+                try (Connection mysql = sql.conectamysql();
+                     PreparedStatement preparedStatement2 = mysql.prepareStatement(
+                             "SELECT distinct * FROM tarjetas_detalles "+
+                                     " where id_tarjeta is null"
+                     )
+                ) {
+
+                    ResultSet resultSet2 = preparedStatement2.executeQuery();
+
+
+                    while (resultSet2.next()) {
+                        PreparedStatement prepared = mysql.prepareStatement(
+                                "UPDATE `eventos`.`tarjetas_detalles` SET `id_tarjeta` = ? where id = ?;"
+                        );
+                        prepared.setInt(1,lasId);
+                        prepared.setInt(2,resultSet2.getInt("id"));
+                        prepared.executeUpdate();
+                    }
+
+                } catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                    JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+                    materialList = new ArrayList<>();
+                }
+
 
                 JOptionPane.showMessageDialog(null, "Tarjeta guardado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
             } catch (SQLException e) {
@@ -337,4 +552,113 @@ public class CrearTarjeta extends JFrame {
                 JOptionPane.showMessageDialog(null, "Error al guardar la tarjeta", "Error", JOptionPane.ERROR_MESSAGE);
             }
     }
+
+    private void guardarDetalleMaterial(int id_material) {
+
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO tarjetas_detalles (id_material) VALUES (?)")) {
+            preparedStatement.setInt(1, id_material);
+            preparedStatement.executeUpdate();
+
+            JOptionPane.showMessageDialog(null, "Detalle agregado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al agregar el detalle de la tarjeta", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void eliminarDetallesMaterial() {
+
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement(" Delete from tarjetas_detalles where id_tarjeta is null;")) {
+            preparedStatement.executeUpdate();
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private ModeloMateriales cargarDatosMateriales() {
+        sql = new Conexion();
+        try (Connection mysql = sql.conectamysql();
+             PreparedStatement preparedStatement = mysql.prepareStatement(
+                     "SELECT m.*, p.empresaProveedora " +
+                             "FROM Materiales m " +
+                             "JOIN Proveedores p ON m.proveedor_id = p.id " +
+                             "WHERE (m.nombre LIKE CONCAT('%', ?, '%') OR p.empresaProveedora LIKE CONCAT('%', ?, '%')) "
+             )
+        ) {
+
+
+            preparedStatement.setString(1, campoBusquedaMateriales.getText());
+            preparedStatement.setString(2, campoBusquedaMateriales.getText());
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            materialList = new ArrayList<>();
+
+            while (resultSet.next()) {
+                Material material = new Material();
+                material.setId(resultSet.getInt("id"));
+                material.setNombre(resultSet.getString("nombre"));
+                material.setPrecio(resultSet.getDouble("precio"));
+                material.setDisponible(resultSet.getString("disponible"));
+                material.setDescripcion(resultSet.getString("descripcion"));
+                material.setProveedorId(resultSet.getInt("proveedor_id"));
+                materialList.add(material);
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            materialList = new ArrayList<>();
+        }
+
+        if (jtableMateriales.getColumnCount() > 0) {
+            TableColumn columnId = jtableMateriales.getColumnModel().getColumn(0);
+            columnId.setPreferredWidth(50);
+        }
+
+        return new ModeloMateriales(materialList, sql);
+    }
+
+    private ModeloMateriales cargarDetallesMateriales() {
+        sql = new Conexion();
+        try (Connection mysql = sql.conectamysql();
+             PreparedStatement preparedStatement = mysql.prepareStatement(
+                     "SELECT distinct materiales.* FROM tarjetas_detalles "+
+                     "join materiales on materiales.id = tarjetas_detalles.id_material" +
+                             " where id_tarjeta is null"
+             )
+        ) {
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            materialList = new ArrayList<>();
+
+            while (resultSet.next()) {
+                Material material = new Material();
+                material.setId(resultSet.getInt("id"));
+                material.setNombre(resultSet.getString("nombre"));
+                material.setPrecio(resultSet.getDouble("precio"));
+                material.setDisponible(resultSet.getString("disponible"));
+                material.setDescripcion(resultSet.getString("descripcion"));
+                material.setProveedorId(resultSet.getInt("proveedor_id"));
+                materialList.add(material);
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            materialList = new ArrayList<>();
+        }
+
+        if (jtableMateriales.getColumnCount() > 0) {
+            TableColumn columnId = jtableMateriales.getColumnModel().getColumn(0);
+            columnId.setPreferredWidth(50);
+        }
+
+        return new ModeloMateriales(materialList, sql);
+    }
+
+
 }
