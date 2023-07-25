@@ -1,4 +1,6 @@
 package Compras;
+import Empleados.ListaEmpleados;
+import Empleados.VerEmpleado;
 import Modelos.ModeloCompras;
 import Modelos.ModeloDetallesCompras;
 import Objetos.Compra;
@@ -35,10 +37,12 @@ public class ListaCompras extends JFrame {
     private TextPrompt placeholder = new TextPrompt("Buscar por código de compra, fecha o proveedor ", campoBusqueda);
     private JLabel lbl0, lblPagina;
     private JComboBox fechaComboBox;
+    private JButton botonVer;
     private List<Compra> compraList;
     private int pagina = 0;
     private Conexion sql;
     private String busqueda = "";
+    private ListaCompras actual = this;
 
     public ListaCompras() {
         super("");
@@ -193,6 +197,19 @@ public class ListaCompras extends JFrame {
                 if (frame != null) {
                     frame.dispose(); // Cierra la ventana
                 }
+            }
+        });
+
+        botonVer.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (listaCompras.getSelectedRow() == -1) {
+                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar", "Validación", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                VerCompras compras = new VerCompras(compraList.get(listaCompras.getSelectedRow()).getId());
+                compras.setVisible(true);
+                actual.dispose();
             }
         });
 
