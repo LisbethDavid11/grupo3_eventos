@@ -8,6 +8,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.*;
@@ -35,7 +36,6 @@ public class CrearTarjeta extends JFrame {
     private JLabel lbl0;
     private JLabel lbl2;
     private JLabel lbl4;
-
     private JButton botonCargarImagen;
     private JButton agregarMaterialButton;
     private JTable jtableMateriales;
@@ -49,7 +49,9 @@ public class CrearTarjeta extends JFrame {
     private JPanel jpanelDescripcion;
     private JTextField jtextCatidadTotalMateriales;
     private JTextField jtMaterialTotaldinero;
-    private List<Material> materialList;
+    private JButton botonLimpiar;
+    private JPanel panel2;
+    private List<Material> materialList = new ArrayList<>();
     private String imagePath = "";
     private CrearTarjeta actual = this;
     private Conexion sql;
@@ -106,9 +108,10 @@ public class CrearTarjeta extends JFrame {
         jlabelImagen.setHorizontalAlignment(SwingConstants.CENTER);
         jpanelImagen.add(jlabelImagen, gbc);
 
-
         // Color de fondo del panel
         panel.setBackground(Color.decode("#F5F5F5"));
+        panel2.setBackground(Color.decode("#F5F5F5"));
+        jpanelImagen.setBackground(Color.decode("#F5F5F5"));
         radioButtonSi.setBackground(Color.decode("#F5F5F5"));
         radioButtonNo.setBackground(Color.decode("#F5F5F5"));
 
@@ -143,19 +146,25 @@ public class CrearTarjeta extends JFrame {
         botonGuardar.setForeground(Color.WHITE);
         agregarMaterialButton.setForeground(Color.WHITE);
         botonCargarImagen.setForeground(Color.WHITE);
+        botonLimpiar.setForeground(Color.WHITE);
 
         // Color de fondo de los botones
         botonCancelar.setBackground(darkColorCyan);
         botonGuardar.setBackground(darkColorAqua);
         botonCargarImagen.setBackground(primaryColorRosado);
         agregarMaterialButton.setBackground(darkColorCyan);
+        botonLimpiar.setBackground(darkColorRosado);
 
         botonCancelar.setFocusPainted(false);
         botonGuardar.setFocusPainted(false);
+        botonCargarImagen.setFocusPainted(false);
+        agregarMaterialButton.setFocusPainted(false);
+        botonLimpiar.setFocusPainted(false);
 
         // Aplica el margen al botón
         botonGuardar.setBorder(margin);
         botonCancelar.setBorder(margin);
+        botonLimpiar.setBorder(margin);
 
         lbl0.setForeground(textColor);
         lbl2.setForeground(textColor);
@@ -168,8 +177,6 @@ public class CrearTarjeta extends JFrame {
         // Crear una fuente con un tamaño de 18 puntos
         Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
         lbl0.setFont(fontTitulo);
-
-
 
         ButtonGroup buttonGroup = new ButtonGroup();
         buttonGroup.add(radioButtonNo);
@@ -200,6 +207,29 @@ public class CrearTarjeta extends JFrame {
                 cancelarButton.setVisible(false);
                 agregarMaterialButton.setVisible(true);
                 jtableMateriales.setModel(cargarDetallesMateriales());
+            }
+        });
+
+        botonLimpiar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int respuesta = JOptionPane.showOptionDialog(
+                        null,
+                        "¿Estás seguro de que deseas limpiar la tabla de materiales?",
+                        "Confirmar limpieza",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        new Object[]{"Sí", "No"},
+                        "No"
+                );
+                if (respuesta == JOptionPane.YES_OPTION) {
+                    limpiarTablaMateriales();
+                    eliminarDetallesMaterial();
+
+                    jtextCatidadTotalMateriales.setText("0");
+                    jtMaterialTotaldinero.setText("0.00");
+                }
             }
         });
 
@@ -277,7 +307,6 @@ public class CrearTarjeta extends JFrame {
                     ListaTarjetas listaTarjeta = new ListaTarjetas();
                     listaTarjeta.setVisible(true);
                     actual.dispose();
-
             }
         });
 
@@ -287,7 +316,6 @@ public class CrearTarjeta extends JFrame {
                 int validacion = 0;
                 String mensaje = "Faltó ingresar: \n";
 
-
                 if (campoPrecio.getText().trim().isEmpty()) {
                     validacion++;
                     mensaje += "Precio\n";
@@ -296,6 +324,11 @@ public class CrearTarjeta extends JFrame {
                 if (!radioButtonSi.isSelected() && !radioButtonNo.isSelected()) {
                     validacion++;
                     mensaje += "Disponibilidad\n";
+                }
+
+                if (jcbOcasion.getSelectedIndex() == 0) {
+                    validacion++;
+                    mensaje += "Ocasión\n";
                 }
 
                 if (campoDescripcion.getText().trim().isEmpty()) {
@@ -313,7 +346,6 @@ public class CrearTarjeta extends JFrame {
                     return;
                 }
 
-
                 String precioText = campoPrecio.getText().trim();
                 if (precioText.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Faltó ingresar el precio.", "Validación", JOptionPane.ERROR_MESSAGE);
@@ -330,7 +362,6 @@ public class CrearTarjeta extends JFrame {
                         }
                     }
                 }
-
 
                 if (!campoDescripcion.getText().trim().isEmpty()) {
                     String texto = campoDescripcion.getText().trim();
@@ -359,8 +390,6 @@ public class CrearTarjeta extends JFrame {
                 }
             }
         });
-
-
 
         botonCargarImagen.addActionListener(new ActionListener() {
             @Override
@@ -467,6 +496,7 @@ public class CrearTarjeta extends JFrame {
                 jtableMateriales.setModel(cargarDetallesMateriales());
             }
         });
+
         jlabelImagen.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -553,20 +583,10 @@ public class CrearTarjeta extends JFrame {
         }
     }
 
-    private void eliminarDetallesMaterial() {
-
-        try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement(" Delete from tarjetas_detalles where id_tarjeta is null;")) {
-            preparedStatement.executeUpdate();
-
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
     private ModeloMateriales cargarDatosMateriales() {
         sql = new Conexion();
+        materialList.clear();
+
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement(
                      "SELECT m.*, p.empresaProveedora " +
@@ -575,13 +595,10 @@ public class CrearTarjeta extends JFrame {
                              "WHERE (m.nombre LIKE CONCAT('%', ?, '%') OR p.empresaProveedora LIKE CONCAT('%', ?, '%')) "
              )
         ) {
-
-
             preparedStatement.setString(1, campoBusquedaMateriales.getText());
             preparedStatement.setString(2, campoBusquedaMateriales.getText());
 
             ResultSet resultSet = preparedStatement.executeQuery();
-            materialList = new ArrayList<>();
 
             while (resultSet.next()) {
                 Material material = new Material();
@@ -610,16 +627,17 @@ public class CrearTarjeta extends JFrame {
 
     private ModeloMateriales cargarDetallesMateriales() {
         sql = new Conexion();
+        materialList.clear();
+
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement(
-                     "SELECT distinct materiales.* FROM tarjetas_detalles "+
-                     "join materiales on materiales.id = tarjetas_detalles.id_material" +
+                     "SELECT distinct materiales.* FROM tarjetas_detalles " +
+                             "join materiales on materiales.id = tarjetas_detalles.id_material" +
                              " where id_tarjeta is null"
              )
         ) {
 
             ResultSet resultSet = preparedStatement.executeQuery();
-            materialList = new ArrayList<>();
 
             int cantidaMateriales = 0;
             double precioTotalMateriales = 0.00;
@@ -637,7 +655,7 @@ public class CrearTarjeta extends JFrame {
                 cantidaMateriales += 1;
             }
             jtextCatidadTotalMateriales.setText(String.valueOf(cantidaMateriales));
-            jtMaterialTotaldinero.setText(String.format("%.2f",precioTotalMateriales));
+            jtMaterialTotaldinero.setText(String.format("%.2f", precioTotalMateriales));
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -653,5 +671,18 @@ public class CrearTarjeta extends JFrame {
         return new ModeloMateriales(materialList, sql);
     }
 
+    private void limpiarTablaMateriales() {
+        materialList.clear();
+        DefaultTableModel emptyModel = new DefaultTableModel();
+        jtableMateriales.setModel(emptyModel);
+    }
 
+    private void eliminarDetallesMaterial() {
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM tarjetas_detalles WHERE id_tarjeta IS NULL")) {
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -28,7 +28,7 @@ public class ListaTarjetas extends JFrame {
     private JButton botonAtras;
     private JButton botonAdelante;
     private JTextField campoBusqueda;
-    private TextPrompt placeholder = new TextPrompt("Buscar por ocasión", campoBusqueda);
+    private TextPrompt placeholder = new TextPrompt("Buscar por ocasión o precio", campoBusqueda);
     private JButton botonEditar;
     private JButton botonCrear;
     private JLabel lbltxt;
@@ -265,19 +265,28 @@ public class ListaTarjetas extends JFrame {
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement(
                      "SELECT m.* FROM tarjetas m " +
-                             "WHERE m.ocasion LIKE CONCAT('%', ?, '%') " +
+                             "WHERE (m.ocasion LIKE CONCAT('%', ?, '%') OR m.precio = ? OR m.precio LIKE CONCAT('%', ?, '%')) " +
                              "AND ((? = 'Si' AND m.disponible = 'Si') OR (? = 'No' AND m.disponible = 'No')) " +
                              "LIMIT ?, 20"
              )
         ) {
 
-
             String disponibilidadSi = siCheckBox.isSelected() ? "Si" : "";
             String disponibilidadNo = noCheckBox.isSelected() ? "No" : "";
+            String busquedaOcasionPrecio = busqueda;
+            double precio = 0;
+            try {
+                precio = Double.parseDouble(busqueda);
+            } catch (NumberFormatException ex) {
+                // Si el valor no es numérico, dejarlo como 0
+            }
+
             preparedStatement.setString(1, busqueda);
-            preparedStatement.setString(2, disponibilidadSi);
-            preparedStatement.setString(3, disponibilidadNo);
-            preparedStatement.setInt(4, pagina * 20);
+            preparedStatement.setDouble(2, precio);
+            preparedStatement.setString(3, busqueda);
+            preparedStatement.setString(4, disponibilidadSi);
+            preparedStatement.setString(5, disponibilidadNo);
+            preparedStatement.setInt(6, pagina * 20);
 
             ResultSet resultSet = preparedStatement.executeQuery();
             tarjetaList = new ArrayList<>();
@@ -307,12 +316,10 @@ public class ListaTarjetas extends JFrame {
         return new ModeloTajetas(tarjetaList, sql);
     }
 
-
-
     private int getTotalPageCount() {
         int count = 0;
         try (Connection mysql = sql.conectamysql();
-             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT COUNT(*) AS total FROM tarjetas f WHERE f.ocasion LIKE CONCAT('%', ?, '%')")) {
+             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT COUNT(*) AS total FROM tarjetas  WHERE ocasion LIKE CONCAT('%', ?, '%')")) {
             preparedStatement.setString(1, busqueda);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
@@ -343,7 +350,6 @@ public class ListaTarjetas extends JFrame {
         noCheckBox.setSelected(true);
         actualizarTabla();
     }
-
 
     public static void main(String[] args) {
         ListaTarjetas listaMateriales = new ListaTarjetas();
