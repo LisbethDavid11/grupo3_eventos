@@ -1,6 +1,5 @@
 package Tarjetas;
 
-import Materiales.EditarMaterial;
 import Modelos.ModeloMateriales;
 import Objetos.Conexion;
 import Objetos.Material;
@@ -11,10 +10,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.TableColumn;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -39,11 +35,7 @@ public class CrearTarjeta extends JFrame {
     private JLabel lbl0;
     private JLabel lbl2;
     private JLabel lbl4;
-    private JRadioButton cumpleañosRadioButton;
-    private JRadioButton bodasRadioButton;
-    private JRadioButton bautizoRadioButton;
-    private JRadioButton a14DeFebreroRadioButton;
-    private JRadioButton a15DeSeptRadioButton;
+
     private JButton botonCargarImagen;
     private JButton agregarMaterialButton;
     private JTable jtableMateriales;
@@ -53,16 +45,20 @@ public class CrearTarjeta extends JFrame {
     private JButton agregarButton;
     private JTextField campoBusquedaMateriales;
     private JButton cancelarButton;
+    private JComboBox<String> jcbOcasion;
+    private JPanel jpanelDescripcion;
+    private JTextField jtextCatidadTotalMateriales;
+    private JTextField jtMaterialTotaldinero;
     private List<Material> materialList;
     private String imagePath = "";
     private CrearTarjeta actual = this;
     private Conexion sql;
     private String nombreFile;
-    private String urlDestino;
+    private String urlDestino = "";
 
     public CrearTarjeta() {
         super("Crear datos de tarjetas");
-        setSize(600, 590);
+        setSize(1000, 700);
         setLocationRelativeTo(null);
         setContentPane(panel);
 
@@ -71,9 +67,22 @@ public class CrearTarjeta extends JFrame {
 
         sql = new Conexion();
 
+        // Establecer ancho y alto deseados para el paneldescripcion
+        int panelDesWidth = 80;
+        int panelDesHeight = 100;
+
+        // Crear una instancia de Dimension con las dimensiones deseadas
+        Dimension panelDesSize = new Dimension(panelDesWidth, panelDesHeight);
+
+        // Establecer las dimensiones en el jpanelDescripcion
+        jpanelDescripcion.setPreferredSize(panelDesSize);
+        jpanelDescripcion.setMaximumSize(panelDesSize);
+        jpanelDescripcion.setMinimumSize(panelDesSize);
+        jpanelDescripcion.setSize(panelDesSize);
+
         // Establecer ancho y alto deseados para el panelImg
-        int panelImgWidth = 100;
-        int panelImgHeight = 100;
+        int panelImgWidth = 70;
+        int panelImgHeight = 150;
 
         // Crear una instancia de Dimension con las dimensiones deseadas
         Dimension panelImgSize = new Dimension(panelImgWidth, panelImgHeight);
@@ -132,11 +141,14 @@ public class CrearTarjeta extends JFrame {
         // Color de texto de los botones
         botonCancelar.setForeground(Color.WHITE);
         botonGuardar.setForeground(Color.WHITE);
+        agregarMaterialButton.setForeground(Color.WHITE);
+        botonCargarImagen.setForeground(Color.WHITE);
 
         // Color de fondo de los botones
         botonCancelar.setBackground(darkColorCyan);
         botonGuardar.setBackground(darkColorAqua);
         botonCargarImagen.setBackground(primaryColorRosado);
+        agregarMaterialButton.setBackground(darkColorCyan);
 
         botonCancelar.setFocusPainted(false);
         botonGuardar.setFocusPainted(false);
@@ -157,13 +169,7 @@ public class CrearTarjeta extends JFrame {
         Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
         lbl0.setFont(fontTitulo);
 
-        // Inicializar JRadioButtons
-        ButtonGroup buttonGroupOcasion = new ButtonGroup();
-        buttonGroupOcasion.add(cumpleañosRadioButton);
-        buttonGroupOcasion.add(bautizoRadioButton);
-        buttonGroupOcasion.add(a14DeFebreroRadioButton);
-        buttonGroupOcasion.add(a15DeSeptRadioButton);
-        buttonGroupOcasion.add(bodasRadioButton);
+
 
         ButtonGroup buttonGroup = new ButtonGroup();
         buttonGroup.add(radioButtonNo);
@@ -267,29 +273,11 @@ public class CrearTarjeta extends JFrame {
         botonCancelar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int respuesta = JOptionPane.showOptionDialog(
-                        null,
-                        "¿Desea cancelar el registro de tarjeta?",
-                        "Confirmación",
-                        JOptionPane.YES_NO_OPTION,
-                        JOptionPane.QUESTION_MESSAGE,
-                        null,
-                        new Object[]{"Sí", "No"},
-                        "No"
-                );
 
-                if (respuesta == JOptionPane.YES_OPTION) {
-                    try {
-                        File file = new File(urlDestino);
-                        file.delete();
-                    }catch (Exception a){
-
-                    }
-                    eliminarDetallesMaterial();
                     ListaTarjetas listaTarjeta = new ListaTarjetas();
                     listaTarjeta.setVisible(true);
                     actual.dispose();
-                }
+
             }
         });
 
@@ -313,6 +301,11 @@ public class CrearTarjeta extends JFrame {
                 if (campoDescripcion.getText().trim().isEmpty()) {
                     validacion++;
                     mensaje += "Descripción\n";
+                }
+
+                if (imagePath.isEmpty()) {
+                    validacion++;
+                    mensaje += "Imagen\n";
                 }
 
                 if (validacion > 0) {
@@ -474,6 +467,19 @@ public class CrearTarjeta extends JFrame {
                 jtableMateriales.setModel(cargarDetallesMateriales());
             }
         });
+        jlabelImagen.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+
+                if(urlDestino.equals("")){
+
+                }else {
+                    JOptionPane.showMessageDialog(null, urlDestino);
+                    PreviewImagen imagen = new PreviewImagen(urlDestino);
+                    imagen.setVisible(true);
+                }
+            }
+        });
     }
 
     private void guardarMateriales() {
@@ -482,32 +488,12 @@ public class CrearTarjeta extends JFrame {
         double precio = Double.parseDouble(precioText);
         String descripcion = campoDescripcion.getText().trim();
 
-        JRadioButton[] radioocasiones = {
-                bautizoRadioButton,
-                bodasRadioButton,
-                cumpleañosRadioButton,
-                a14DeFebreroRadioButton,
-                a15DeSeptRadioButton
-        };
-        String[] ocasiones = {
-                "Bautizo",
-                "Boda",
-                "Cumpleaños",
-                "14 de Febrero",
-                "15 de Septiembre"
-        };
-        String ocasion = "";
-        for (int i = 0; i<radioocasiones.length;i++) {
-            if (radioocasiones[i].isSelected()) {
-                ocasion = ocasiones[i];
-            }
-        }
 
         String disponibilidad = radioButtonSi.isSelected() ? "Si" : "No";
 
             try (Connection connection = sql.conectamysql();
                  PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO tarjetas (ocasion, precio, disponible, descripcion,imagen) VALUES (?, ?, ?, ?, ?)")) {
-                preparedStatement.setString(1, ocasion);
+                preparedStatement.setString(1, jcbOcasion.getModel().getSelectedItem().toString());
                 preparedStatement.setDouble(2, precio);
                 preparedStatement.setString(3, disponibilidad);
                 preparedStatement.setString(4, descripcion);
@@ -635,6 +621,9 @@ public class CrearTarjeta extends JFrame {
             ResultSet resultSet = preparedStatement.executeQuery();
             materialList = new ArrayList<>();
 
+            int cantidaMateriales = 0;
+            double precioTotalMateriales = 0.00;
+
             while (resultSet.next()) {
                 Material material = new Material();
                 material.setId(resultSet.getInt("id"));
@@ -643,8 +632,12 @@ public class CrearTarjeta extends JFrame {
                 material.setDisponible(resultSet.getString("disponible"));
                 material.setDescripcion(resultSet.getString("descripcion"));
                 material.setProveedorId(resultSet.getInt("proveedor_id"));
+                precioTotalMateriales += material.getPrecio();
                 materialList.add(material);
+                cantidaMateriales += 1;
             }
+            jtextCatidadTotalMateriales.setText(String.valueOf(cantidaMateriales));
+            jtMaterialTotaldinero.setText(String.format("%.2f",precioTotalMateriales));
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
