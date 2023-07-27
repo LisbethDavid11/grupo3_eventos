@@ -359,23 +359,6 @@ public class EditarMaterial extends JFrame {
 
     }
 
-    private void cargarProveedores() {
-        try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("SELECT id, empresaProveedora, nombreVendedor FROM Proveedores");
-             ResultSet resultSet = preparedStatement.executeQuery()) {
-
-            while (resultSet.next()) {
-                int idProveedor = resultSet.getInt("id");
-                String empresaProveedora = resultSet.getString("empresaProveedora");
-                String nombreVendedor = resultSet.getString("nombreVendedor");
-                String proveedorText = idProveedor + " - " + empresaProveedora + " - " + nombreVendedor;
-                comboBoxProveedor.addItem(proveedorText);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
     private void cargarMaterial() {
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM materiales WHERE id = ?")) {
@@ -387,7 +370,7 @@ public class EditarMaterial extends JFrame {
                 double precio = resultSet.getDouble("precio");
                 String descripcion = resultSet.getString("descripcion");
                 String disponibilidad = resultSet.getString("disponible");
-                String exento = resultSet.getString("exento"); // Agregar esta línea para obtener el valor de "exento".
+                String exento = resultSet.getString("exento");
                 int idProveedor = resultSet.getInt("proveedor_id");
 
                 campoNombre.setText(nombre);
@@ -418,6 +401,33 @@ public class EditarMaterial extends JFrame {
         }
     }
 
+    private void guardarMateriales() {
+        String nombre = campoNombre.getText().trim();
+        String precioText = campoPrecio.getText().replace("L ", "").replace(",", "").replace("_", "");
+        double precio = Double.parseDouble(precioText);
+        String descripcion = campoDescripcion.getText().trim();
+        String disponibilidad = radioButtonSi.isSelected() ? "Si" : "No";
+        String exento = radioButtonSiExento.isSelected() ? "1" : "0"; // Corregido aquí
+        String proveedorText = comboBoxProveedor.getSelectedItem().toString();
+        int idProveedor = Integer.parseInt(proveedorText.split(" - ")[0]);
+
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement("UPDATE materiales SET nombre = ?, precio = ?, descripcion = ?, disponible = ?,exento = ?, proveedor_id = ? WHERE id = ?")) {
+            preparedStatement.setString(1, nombre);
+            preparedStatement.setDouble(2, precio);
+            preparedStatement.setString(3, descripcion);
+            preparedStatement.setString(4, disponibilidad);
+            preparedStatement.setString(5, exento);
+            preparedStatement.setInt(6, idProveedor);
+            preparedStatement.setInt(7, idMaterial);
+            preparedStatement.executeUpdate();
+
+            JOptionPane.showMessageDialog(null, "Material actualizado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al actualizar el material", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
     private String obtenerProveedorText(int idProveedor) {
         try (Connection connection = sql.conectamysql();
@@ -436,31 +446,20 @@ public class EditarMaterial extends JFrame {
         return "";
     }
 
-    private void guardarMateriales() {
-        String nombre = campoNombre.getText().trim();
-        String precioText = campoPrecio.getText().replace("L ", "").replace(",", "").replace("_", "");
-        double precio = Double.parseDouble(precioText);
-        String descripcion = campoDescripcion.getText().trim();
-        String disponibilidad = radioButtonSi.isSelected() ? "Si" : "No";
-        String proveedorText = comboBoxProveedor.getSelectedItem().toString();
-        int idProveedor = Integer.parseInt(proveedorText.split(" - ")[0]);
-        String exento = radioButtonSi.isSelected() ? "1" : "0";
+    private void cargarProveedores() {
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT id, empresaProveedora, nombreVendedor FROM Proveedores");
+             ResultSet resultSet = preparedStatement.executeQuery()) {
 
-            try (Connection connection = sql.conectamysql();
-                 PreparedStatement preparedStatement = connection.prepareStatement("UPDATE materiales SET nombre = ?, precio = ?, descripcion = ?, disponible = ?,exento = ?, proveedor_id = ? WHERE id = ?")) {
-                preparedStatement.setString(1, nombre);
-                preparedStatement.setDouble(2, precio);
-                preparedStatement.setString(3, descripcion);
-                preparedStatement.setString(4, disponibilidad);
-                preparedStatement.setString(5, exento);
-                preparedStatement.setInt(6, idProveedor);
-                preparedStatement.setInt(7, idMaterial);
-                preparedStatement.executeUpdate();
-
-                JOptionPane.showMessageDialog(null, "Material actualizado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-            } catch (SQLException e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Error al actualizar el material", "Error", JOptionPane.ERROR_MESSAGE);
+            while (resultSet.next()) {
+                int idProveedor = resultSet.getInt("id");
+                String empresaProveedora = resultSet.getString("empresaProveedora");
+                String nombreVendedor = resultSet.getString("nombreVendedor");
+                String proveedorText = idProveedor + " - " + empresaProveedora + " - " + nombreVendedor;
+                comboBoxProveedor.addItem(proveedorText);
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
