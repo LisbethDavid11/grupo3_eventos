@@ -76,7 +76,7 @@
           <font name="Arial" size="14" style="1"/>
           <foreground color="-16315129"/>
           <horizontalTextPosition value="0"/>
-          <text value="INGRESAR LOS DATOS DE MANUALIDADES PERSONALIZADAS"/>
+          <text value="INGRESAR LOS DATOS DE LAS MANUALIDADES PERSONALIZADAS"/>
         </properties>
       </component>
       <grid id="1e532" binding="panel3" layout-manager="GridLayoutManager" row-count="1" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">

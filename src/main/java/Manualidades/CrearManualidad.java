@@ -2,8 +2,6 @@ package Manualidades;
 import Modelos.ModeloMateriales;
 import Objetos.Conexion;
 import Objetos.Material;
-import Tarjetas.CrearTarjeta;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;

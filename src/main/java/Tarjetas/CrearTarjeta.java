@@ -1,6 +1,5 @@
 package Tarjetas;
 
-import Compras.CrearCompra;
 import Modelos.ModeloMateriales;
 import Objetos.Conexion;
 import Objetos.Material;
@@ -35,16 +34,15 @@ public class CrearTarjeta extends JFrame {
     private JRadioButton radioButtonNo;
     private JButton botonGuardar;
     private JButton botonCancelar;
-    private JPanel panel;
+    private JPanel jpanelImagen, panel1, panel2, panel3, panel5, panel6;
     private JLabel lbl0;
     private JLabel lbl2;
     private JLabel lbl4;
     private JButton botonCargarImagen;
     private JButton agregarMaterialButton;
     private JTable jtableMateriales;
-    private JPanel jpanelImagen;
     private JLabel jlabelImagen;
-    private JScrollPane jscrollMateriales;
+    private JScrollPane jscrollMateriales, panel4;
     private JButton agregarButton;
     private JTextField campoBusquedaMateriales;
     private JButton cancelarButton;
@@ -53,7 +51,7 @@ public class CrearTarjeta extends JFrame {
     private JLabel jtextCatidadTotalMateriales;
     private JLabel jtMaterialTotaldinero;
     private JButton botonLimpiar;
-    private JPanel panel2;
+    private JPanel panel7;
     private List<Material> materialList = new ArrayList<>();
     private String imagePath = "";
     private CrearTarjeta actual = this;
@@ -62,10 +60,10 @@ public class CrearTarjeta extends JFrame {
     private String urlDestino = "";
 
     public CrearTarjeta() {
-        super("Crear datos de tarjetas");
+        super("");
         setSize(1000, 700);
         setLocationRelativeTo(null);
-        setContentPane(panel);
+        setContentPane(panel1);
 
         campoDescripcion.setLineWrap(true);
         campoDescripcion.setWrapStyleWord(true);
@@ -112,8 +110,14 @@ public class CrearTarjeta extends JFrame {
         jpanelImagen.add(jlabelImagen, gbc);
 
         // Color de fondo del panel
-        panel.setBackground(Color.decode("#F5F5F5"));
+        panel1.setBackground(Color.decode("#F5F5F5"));
         panel2.setBackground(Color.decode("#F5F5F5"));
+        panel3.setBackground(Color.decode("#F5F5F5"));
+        panel4.setBackground(Color.decode("#F5F5F5"));
+        panel5.setBackground(Color.decode("#F5F5F5"));
+        panel6.setBackground(Color.decode("#F5F5F5"));
+        panel7.setBackground(Color.decode("#F5F5F5"));
+        jpanelDescripcion.setBackground(Color.decode("#F5F5F5"));
         jpanelImagen.setBackground(Color.decode("#F5F5F5"));
         radioButtonSi.setBackground(Color.decode("#F5F5F5"));
         radioButtonNo.setBackground(Color.decode("#F5F5F5"));
@@ -147,25 +151,33 @@ public class CrearTarjeta extends JFrame {
         // Color de texto de los botones
         botonCancelar.setForeground(Color.WHITE);
         botonGuardar.setForeground(Color.WHITE);
-        agregarMaterialButton.setForeground(Color.WHITE);
-        botonCargarImagen.setForeground(Color.WHITE);
+        agregarMaterialButton.setForeground(Color.DARK_GRAY);
+        botonCargarImagen.setForeground(Color.DARK_GRAY);
         botonLimpiar.setForeground(Color.WHITE);
+        cancelarButton.setForeground(Color.WHITE);
+        agregarButton.setForeground(Color.WHITE);
 
         // Color de fondo de los botones
         botonCancelar.setBackground(darkColorCyan);
         botonGuardar.setBackground(darkColorAqua);
-        botonCargarImagen.setBackground(primaryColorRosado);
-        agregarMaterialButton.setBackground(darkColorCyan);
+        botonCargarImagen.setBackground(lightColorAqua);
+        agregarMaterialButton.setBackground(lightColorCyan);
         botonLimpiar.setBackground(darkColorRosado);
+        agregarButton.setBackground(darkColorCyan);
+        cancelarButton.setBackground(darkColorRosado);
 
         botonCancelar.setFocusPainted(false);
         botonGuardar.setFocusPainted(false);
         botonCargarImagen.setFocusPainted(false);
         agregarMaterialButton.setFocusPainted(false);
         botonLimpiar.setFocusPainted(false);
+        cancelarButton.setFocusPainted(false);
+        agregarButton.setFocusPainted(false);
 
         // Aplica el margen al botón
         botonGuardar.setBorder(margin);
+        botonCancelar.setBorder(margin);
+        botonLimpiar.setBorder(margin);
         botonCancelar.setBorder(margin);
         botonLimpiar.setBorder(margin);
 
@@ -745,5 +757,11 @@ public class CrearTarjeta extends JFrame {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void main(String[] args) {
+        CrearTarjeta crearTarjeta = new CrearTarjeta();
+        crearTarjeta.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        crearTarjeta.setVisible(true);
     }
 }
