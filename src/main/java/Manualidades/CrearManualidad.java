@@ -2,12 +2,16 @@ package Manualidades;
 import Modelos.ModeloMateriales;
 import Objetos.Conexion;
 import Objetos.Material;
+import Tarjetas.CrearTarjeta;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -512,6 +516,7 @@ public class CrearManualidad extends JFrame {
         });
 
         jtableMateriales.setModel(cargarDetallesMateriales());
+        configurarTablaMateriales();
         agregarButton.setVisible(false);
         cancelarButton.setVisible(false);
         campoBusquedaMateriales.setVisible(false);
@@ -552,6 +557,58 @@ public class CrearManualidad extends JFrame {
                 }
             }
         });
+    }
+
+    private void configurarTablaMateriales() {
+        TableColumnModel columnModel = jtableMateriales.getColumnModel();
+
+        columnModel.getColumn(0).setPreferredWidth(20); // Id
+        columnModel.getColumn(1).setPreferredWidth(200);  // Nombre
+        columnModel.getColumn(2).setPreferredWidth(60); // Precio
+        columnModel.getColumn(3).setPreferredWidth(100); // Proveedor
+        columnModel.getColumn(4).setPreferredWidth(60); // Disponible
+
+        columnModel.getColumn(0).setCellRenderer(new CrearManualidad.CenterAlignedRenderer());
+        columnModel.getColumn(1).setCellRenderer(new CrearManualidad.LeftAlignedRenderer());
+        columnModel.getColumn(2).setCellRenderer(new CrearManualidad.LeftAlignedRenderer());
+        columnModel.getColumn(3).setCellRenderer(new CrearManualidad.LeftAlignedRenderer());
+        columnModel.getColumn(4).setCellRenderer(new CrearManualidad.CenterAlignedRenderer());
+    }
+
+    class LeftAlignedRenderer extends DefaultTableCellRenderer {
+        public LeftAlignedRenderer() {
+            setHorizontalAlignment(LEFT);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            return cell;
+        }
+    }
+
+    class RightAlignedRenderer extends DefaultTableCellRenderer {
+        public RightAlignedRenderer() {
+            setHorizontalAlignment(RIGHT);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            return cell;
+        }
+    }
+
+    class CenterAlignedRenderer extends DefaultTableCellRenderer {
+        public CenterAlignedRenderer() {
+            setHorizontalAlignment(CENTER);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            return cell;
+        }
     }
 
     private void guardarManualidad() {

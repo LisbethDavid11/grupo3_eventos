@@ -1,10 +1,12 @@
 package Materiales;
+import Manualidades.ListaManualidad;
 import Modelos.ModeloMateriales;
 import Objetos.Conexion;
 import Objetos.Material;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -48,7 +50,7 @@ public class ListaMateriales extends JFrame {
         campoBusqueda.setText("");
 
         listaMateriales.setModel(cargarDatos());
-        centrarDatosTabla();
+        configurarTablaMateriales();
         mostrarTodos();
 
         lbltxt.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
@@ -64,7 +66,7 @@ public class ListaMateriales extends JFrame {
                     }
                 }
                 listaMateriales.setModel(cargarDatos());
-                centrarDatosTabla();
+                configurarTablaMateriales();
                 lbltxt.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
@@ -80,7 +82,7 @@ public class ListaMateriales extends JFrame {
                     }
                 }
                 listaMateriales.setModel(cargarDatos());
-                centrarDatosTabla();
+                configurarTablaMateriales();
                 lbltxt.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
@@ -93,7 +95,7 @@ public class ListaMateriales extends JFrame {
                 botonAdelante.setEnabled((pagina + 1) < getTotalPageCount());
                 botonAtras.setEnabled(pagina > 0);
                 listaMateriales.setModel(cargarDatos());
-                centrarDatosTabla();
+                configurarTablaMateriales();
                 lbltxt.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
@@ -248,12 +250,55 @@ public class ListaMateriales extends JFrame {
         lbl0.setFont(fontTitulo);
     }
 
-    private void centrarDatosTabla() {
-        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+    private void configurarTablaMateriales() {
+        TableColumnModel columnModel = listaMateriales.getColumnModel();
 
-        for (int i = 0; i < listaMateriales.getColumnCount(); i++) {
-            listaMateriales.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        columnModel.getColumn(0).setPreferredWidth(30);
+        columnModel.getColumn(1).setPreferredWidth(250);
+        columnModel.getColumn(2).setPreferredWidth(80);
+        columnModel.getColumn(3).setPreferredWidth(200);
+        columnModel.getColumn(4).setPreferredWidth(80);
+
+        columnModel.getColumn(0).setCellRenderer(new ListaMateriales.CenterAlignedRenderer());
+        columnModel.getColumn(1).setCellRenderer(new ListaMateriales.LeftAlignedRenderer());
+        columnModel.getColumn(2).setCellRenderer(new ListaMateriales.LeftAlignedRenderer());
+        columnModel.getColumn(3).setCellRenderer(new ListaMateriales.LeftAlignedRenderer());
+        columnModel.getColumn(4).setCellRenderer(new ListaMateriales.CenterAlignedRenderer());
+    }
+
+    class LeftAlignedRenderer extends DefaultTableCellRenderer {
+        public LeftAlignedRenderer() {
+            setHorizontalAlignment(LEFT);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            return cell;
+        }
+    }
+
+    class RightAlignedRenderer extends DefaultTableCellRenderer {
+        public RightAlignedRenderer() {
+            setHorizontalAlignment(RIGHT);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            return cell;
+        }
+    }
+
+    class CenterAlignedRenderer extends DefaultTableCellRenderer {
+        public CenterAlignedRenderer() {
+            setHorizontalAlignment(CENTER);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            return cell;
         }
     }
 
@@ -333,7 +378,7 @@ public class ListaMateriales extends JFrame {
 
     private void actualizarTabla() {
         listaMateriales.setModel(cargarDatos());
-        centrarDatosTabla();
+        configurarTablaMateriales();
         lbltxt.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
     }
 

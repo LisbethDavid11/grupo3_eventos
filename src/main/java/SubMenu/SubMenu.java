@@ -5,6 +5,7 @@ import Clientes.ListaCliente;
 import Compras.ListaCompras;
 import Empleados.ListaEmpleados;
 import Floristerias.ListaFloristeria;
+import Manualidades.ListaManualidad;
 import Materiales.ListaMateriales;
 import Proveedores.ListaProveedores;
 import Tarjetas.ListaTarjetas;
@@ -15,10 +16,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class SubMenu extends JFrame {
-    private JButton proveedoresButton, empleadosButton, clientesButton, floristeriaButton, arreglosButton, materialesButton, comprasButton,tarjetaButton;
+    private JButton proveedoresButton, empleadosButton, clientesButton, floristeriaButton, arreglosButton, materialesButton, comprasButton,tarjetaButton, manualidadesButton;
     private JPanel panel, panel2, panel3;
-
-    // Instancias de las ventanas
     private ListaCliente listaCliente;
     private ListaEmpleados listaEmpleados;
     private ListaFloristeria listaFloristeria;
@@ -26,12 +25,12 @@ public class SubMenu extends JFrame {
     private ListaMateriales listaMateriales;
     private ListaProveedores listaProveedores;
     private ListaCompras listaCompras;
-
     private ListaTarjetas listaTarjetas;
+    private ListaManualidad listaManualidades;
 
     public SubMenu() {
         super("Menú Principal");
-        setSize(780, 420);
+        setSize(880, 520);
         setLocationRelativeTo(null);
 
         panel = new JPanel(new GridLayout(1, 1)); // Cambia a una sola fila
@@ -65,11 +64,13 @@ public class SubMenu extends JFrame {
         comprasButton.setBackground(Color.decode("#F44336"));
         comprasButton.setPreferredSize(new Dimension(100, 40)); // Ajustar tamaño
 
-
         tarjetaButton = new JButton("Tarjetas");
         tarjetaButton.setBackground(Color.decode("#E81E63"));
         tarjetaButton.setPreferredSize(new Dimension(100, 40)); // Ajustar tamaño
 
+        manualidadesButton = new JButton("Manualidades");
+        manualidadesButton.setBackground(Color.decode("#E81E12"));
+        manualidadesButton.setPreferredSize(new Dimension(100, 40)); // Ajustar tamaño
 
         panel.add(clientesButton);
         panel.add(empleadosButton);
@@ -79,6 +80,7 @@ public class SubMenu extends JFrame {
         panel.add(proveedoresButton);
         panel.add(comprasButton);
         panel.add(tarjetaButton);
+        panel.add(manualidadesButton);
 
         // Crea el panel de imagen y lo coloca en el centro
         ImagePanel imagenPanel = new ImagePanel();
@@ -97,6 +99,8 @@ public class SubMenu extends JFrame {
         empleadosButton.setFocusPainted(false);
         arreglosButton.setFocusPainted(false);
         comprasButton.setFocusPainted(false);
+        tarjetaButton.setFocusPainted(false);
+        manualidadesButton.setFocusPainted(false);
 
         clientesButton.setForeground(Color.WHITE);
         proveedoresButton.setForeground(Color.WHITE);
@@ -106,6 +110,7 @@ public class SubMenu extends JFrame {
         arreglosButton.setForeground(Color.WHITE);
         comprasButton.setForeground(Color.WHITE);
         tarjetaButton.setForeground(Color.WHITE);
+        manualidadesButton.setForeground(Color.WHITE);
 
         add(panel3);
 
@@ -118,6 +123,7 @@ public class SubMenu extends JFrame {
         listaProveedores = new ListaProveedores();
         listaCompras = new ListaCompras();
         listaTarjetas = new ListaTarjetas();
+        listaManualidades = new ListaManualidad();
 
         clientesButton.addActionListener(new ActionListener() {
             @Override
@@ -175,6 +181,12 @@ public class SubMenu extends JFrame {
             }
         });
 
+        manualidadesButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                listaManualidades.setVisible(true);
+            }
+        });
     }
 
     public static void main(String[] args) {

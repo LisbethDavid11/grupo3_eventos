@@ -5,6 +5,7 @@ import Objetos.Conexion;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -47,7 +48,7 @@ public class ListaArreglo extends JFrame {
         campoBusqueda.setText("");
 
         listaArreglos.setModel(cargarDatos());
-        centrarDatosTabla();
+        configurarTablaArreglos();
         mostrarTodos();
 
         lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
@@ -63,7 +64,7 @@ public class ListaArreglo extends JFrame {
                     }
                 }
                 listaArreglos.setModel(cargarDatos());
-                centrarDatosTabla();
+                configurarTablaArreglos();
                 lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
@@ -79,7 +80,7 @@ public class ListaArreglo extends JFrame {
                     }
                 }
                 listaArreglos.setModel(cargarDatos());
-                centrarDatosTabla();
+                configurarTablaArreglos();
                 lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
@@ -92,7 +93,7 @@ public class ListaArreglo extends JFrame {
                 botonAdelante.setEnabled((pagina + 1) < getTotalPageCount());
                 botonAtras.setEnabled(pagina > 0);
                 listaArreglos.setModel(cargarDatos());
-                centrarDatosTabla();
+                configurarTablaArreglos();
                 lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
@@ -202,14 +203,56 @@ public class ListaArreglo extends JFrame {
         lbl0.setFont(fontTitulo);
     }
 
-    private void centrarDatosTabla() {
-        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+    private void configurarTablaArreglos() {
+        TableColumnModel columnModel = listaArreglos.getColumnModel();
 
-        for (int i = 0; i < listaArreglos.getColumnCount(); i++) {
-            listaArreglos.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        columnModel.getColumn(0).setPreferredWidth(30);
+        columnModel.getColumn(1).setPreferredWidth(300);
+        columnModel.getColumn(2).setPreferredWidth(110);
+        columnModel.getColumn(3).setPreferredWidth(110);
+
+        columnModel.getColumn(0).setCellRenderer(new ListaArreglo.CenterAlignedRenderer());
+        columnModel.getColumn(1).setCellRenderer(new ListaArreglo.LeftAlignedRenderer());
+        columnModel.getColumn(2).setCellRenderer(new ListaArreglo.CenterAlignedRenderer());
+        columnModel.getColumn(3).setCellRenderer(new ListaArreglo.CenterAlignedRenderer());
+    }
+
+    class LeftAlignedRenderer extends DefaultTableCellRenderer {
+        public LeftAlignedRenderer() {
+            setHorizontalAlignment(LEFT);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            return cell;
         }
     }
+
+    class RightAlignedRenderer extends DefaultTableCellRenderer {
+        public RightAlignedRenderer() {
+            setHorizontalAlignment(RIGHT);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            return cell;
+        }
+    }
+
+    class CenterAlignedRenderer extends DefaultTableCellRenderer {
+        public CenterAlignedRenderer() {
+            setHorizontalAlignment(CENTER);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            return cell;
+        }
+    }
+
 
     private ModeloArreglo cargarDatos() {
         sql = new Conexion();
@@ -272,7 +315,7 @@ public class ListaArreglo extends JFrame {
 
     private void actualizarTabla() {
         listaArreglos.setModel(cargarDatos());
-        centrarDatosTabla();
+        configurarTablaArreglos();
         lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
     }
 

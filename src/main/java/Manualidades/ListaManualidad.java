@@ -1,4 +1,5 @@
 package Manualidades;
+import Clientes.ListaCliente;
 import Floristerias.ListaFloristeria;
 import Modelos.ModeloManualidad;
 import Objetos.Conexion;
@@ -6,6 +7,7 @@ import Objetos.Manualidad;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -46,7 +48,7 @@ public class ListaManualidad extends JFrame {
         campoBusqueda.setText("");
 
         listaManualidades.setModel(cargarDatos());
-        centrarDatosTabla();
+        configurarTablaManualidades();
 
         lbltxt.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
 
@@ -61,7 +63,7 @@ public class ListaManualidad extends JFrame {
                     }
                 }
                 listaManualidades.setModel(cargarDatos());
-                centrarDatosTabla();
+                configurarTablaManualidades();
                 lbltxt.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
@@ -77,7 +79,7 @@ public class ListaManualidad extends JFrame {
                     }
                 }
                 listaManualidades.setModel(cargarDatos());
-                centrarDatosTabla();
+                configurarTablaManualidades();
                 lbltxt.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
@@ -90,7 +92,7 @@ public class ListaManualidad extends JFrame {
                 botonAdelante.setEnabled((pagina + 1) < getTotalPageCount());
                 botonAtras.setEnabled(pagina > 0);
                 listaManualidades.setModel(cargarDatos());
-                centrarDatosTabla();
+                configurarTablaManualidades();
                 lbltxt.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
@@ -98,9 +100,9 @@ public class ListaManualidad extends JFrame {
         botonCrear.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // CrearManualidad manualidad = new CrearManualidad();
-                // manualidad.setVisible(true);
-                // actual.dispose();
+                CrearManualidad manualidad = new CrearManualidad();
+                manualidad.setVisible(true);
+                actual.dispose();
             }
         });
 
@@ -213,15 +215,57 @@ public class ListaManualidad extends JFrame {
         placeholder.setFont(new Font("Nunito", Font.ITALIC, 11));
     }
 
-    private void centrarDatosTabla() {
-        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+    private void configurarTablaManualidades() {
+        TableColumnModel columnModel = listaManualidades.getColumnModel();
 
-        for (int i = 0; i < listaManualidades.getColumnCount(); i++) {
-            listaManualidades.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        columnModel.getColumn(0).setPreferredWidth(30);
+        columnModel.getColumn(1).setPreferredWidth(110);
+        columnModel.getColumn(2).setPreferredWidth(250);
+        columnModel.getColumn(3).setPreferredWidth(80);
+        columnModel.getColumn(4).setPreferredWidth(80);
+
+        columnModel.getColumn(0).setCellRenderer(new ListaManualidad.CenterAlignedRenderer());
+        columnModel.getColumn(1).setCellRenderer(new ListaManualidad.LeftAlignedRenderer());
+        columnModel.getColumn(2).setCellRenderer(new ListaManualidad.LeftAlignedRenderer());
+        columnModel.getColumn(3).setCellRenderer(new ListaManualidad.LeftAlignedRenderer());
+        columnModel.getColumn(4).setCellRenderer(new ListaManualidad.LeftAlignedRenderer());
+    }
+
+    class LeftAlignedRenderer extends DefaultTableCellRenderer {
+        public LeftAlignedRenderer() {
+            setHorizontalAlignment(LEFT);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            return cell;
         }
     }
 
+    class RightAlignedRenderer extends DefaultTableCellRenderer {
+        public RightAlignedRenderer() {
+            setHorizontalAlignment(RIGHT);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            return cell;
+        }
+    }
+
+    class CenterAlignedRenderer extends DefaultTableCellRenderer {
+        public CenterAlignedRenderer() {
+            setHorizontalAlignment(CENTER);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            return cell;
+        }
+    }
 
     private ModeloManualidad cargarDatos() {
         sql = new Conexion();
@@ -285,7 +329,6 @@ public class ListaManualidad extends JFrame {
 
         return totalPageCount;
     }
-
 
     public static void main(String[] args) {
         ListaManualidad listaManualidad = new ListaManualidad();

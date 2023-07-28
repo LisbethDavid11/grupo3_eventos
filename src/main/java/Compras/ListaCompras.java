@@ -1,6 +1,4 @@
 package Compras;
-import Empleados.ListaEmpleados;
-import Empleados.VerEmpleado;
 import Modelos.ModeloCompras;
 import Modelos.ModeloDetallesCompras;
 import Objetos.Compra;
@@ -15,6 +13,7 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -53,7 +52,7 @@ public class ListaCompras extends JFrame {
 
         compraList = new ArrayList<>();
         listaCompras.setModel(cargarDatos());
-        centrarDatosTabla();
+        configurarTablaCompras();
 
         Color primaryColor = Color.decode("#37474f");
         Color lightColor = Color.decode("#cfd8dc");
@@ -115,7 +114,7 @@ public class ListaCompras extends JFrame {
                     }
                 }
                 listaCompras.setModel(cargarDatos());
-                centrarDatosTabla();
+                configurarTablaCompras();
                 lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
@@ -131,7 +130,7 @@ public class ListaCompras extends JFrame {
                     }
                 }
                 listaCompras.setModel(cargarDatos());
-                centrarDatosTabla();
+                configurarTablaCompras();
                 lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
@@ -144,7 +143,7 @@ public class ListaCompras extends JFrame {
                 botonAdelante.setEnabled((pagina + 1) < getTotalPageCount());
                 botonAtras.setEnabled(pagina > 0);
                 listaCompras.setModel(cargarDatos());
-                centrarDatosTabla();
+                configurarTablaCompras();
                 lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
@@ -228,19 +227,66 @@ public class ListaCompras extends JFrame {
                 }
             }
         });
-
-
     }
 
+    private void configurarTablaCompras() {
+        TableColumnModel columnModel = listaCompras.getColumnModel();
 
+        columnModel.getColumn(0).setPreferredWidth(20);
+        columnModel.getColumn(1).setPreferredWidth(110);
+        columnModel.getColumn(2).setPreferredWidth(170);
+        columnModel.getColumn(3).setPreferredWidth(250);
+        columnModel.getColumn(4).setPreferredWidth(250);
+        columnModel.getColumn(5).setPreferredWidth(80);
+        columnModel.getColumn(6).setPreferredWidth(80);
+        columnModel.getColumn(7).setPreferredWidth(80);
 
-    private void centrarDatosTabla() {
-        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-        for (int i = 0; i < listaCompras.getColumnCount(); i++) {
-            listaCompras.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        columnModel.getColumn(0).setCellRenderer(new CenterAlignedRenderer());
+        columnModel.getColumn(1).setCellRenderer(new CenterAlignedRenderer());
+        columnModel.getColumn(2).setCellRenderer(new LeftAlignedRenderer());
+        columnModel.getColumn(3).setCellRenderer(new LeftAlignedRenderer());
+        columnModel.getColumn(4).setCellRenderer(new LeftAlignedRenderer());
+        columnModel.getColumn(5).setCellRenderer(new LeftAlignedRenderer());
+        columnModel.getColumn(6).setCellRenderer(new LeftAlignedRenderer());
+        columnModel.getColumn(7).setCellRenderer(new LeftAlignedRenderer());
+    }
+
+    class LeftAlignedRenderer extends DefaultTableCellRenderer {
+        public LeftAlignedRenderer() {
+            setHorizontalAlignment(LEFT);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            return cell;
         }
     }
+
+    class RightAlignedRenderer extends DefaultTableCellRenderer {
+        public RightAlignedRenderer() {
+            setHorizontalAlignment(RIGHT);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            return cell;
+        }
+    }
+
+    class CenterAlignedRenderer extends DefaultTableCellRenderer {
+        public CenterAlignedRenderer() {
+            setHorizontalAlignment(CENTER);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            return cell;
+        }
+    }
+
     private ModeloCompras cargarDatos() {
         sql = new Conexion();
         try (Connection mysql = sql.conectamysql();
@@ -699,7 +745,7 @@ public class ListaCompras extends JFrame {
             }
 
             listaCompras.setModel(new ModeloCompras(compraList, sql));
-            centrarDatosTabla();
+            configurarTablaCompras();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");

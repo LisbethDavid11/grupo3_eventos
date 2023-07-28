@@ -5,10 +5,12 @@ import Modelos.ModeloTajetas;
 import Objetos.Conexion;
 import Objetos.Material;
 import Objetos.Tarjeta;
+import Proveedores.ListaProveedores;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -52,7 +54,7 @@ public class ListaTarjetas extends JFrame {
         campoBusqueda.setText("");
 
         listaTarjetas.setModel(cargarDatos());
-        centrarDatosTabla();
+        configurarTablaTarjetas();
         mostrarTodos();
 
         lbltxt.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
@@ -68,7 +70,7 @@ public class ListaTarjetas extends JFrame {
                     }
                 }
                 listaTarjetas.setModel(cargarDatos());
-                centrarDatosTabla();
+                configurarTablaTarjetas();
                 lbltxt.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
@@ -84,7 +86,7 @@ public class ListaTarjetas extends JFrame {
                     }
                 }
                 listaTarjetas.setModel(cargarDatos());
-                centrarDatosTabla();
+                configurarTablaTarjetas();
                 lbltxt.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
@@ -97,7 +99,7 @@ public class ListaTarjetas extends JFrame {
                 botonAdelante.setEnabled((pagina + 1) < getTotalPageCount());
                 botonAtras.setEnabled(pagina > 0);
                 listaTarjetas.setModel(cargarDatos());
-                centrarDatosTabla();
+                configurarTablaTarjetas();
                 lbltxt.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
@@ -123,7 +125,6 @@ public class ListaTarjetas extends JFrame {
                 actualizarTabla();
             }
         });
-
 
         botonCrear.addActionListener(new ActionListener() {
             @Override
@@ -251,12 +252,53 @@ public class ListaTarjetas extends JFrame {
         lbl0.setFont(fontTitulo);
     }
 
-    private void centrarDatosTabla() {
-        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+    private void configurarTablaTarjetas() {
+        TableColumnModel columnModel = listaTarjetas.getColumnModel();
 
-        for (int i = 0; i < listaTarjetas.getColumnCount(); i++) {
-            listaTarjetas.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        columnModel.getColumn(0).setPreferredWidth(20);
+        columnModel.getColumn(1).setPreferredWidth(200);
+        columnModel.getColumn(2).setPreferredWidth(60);
+        columnModel.getColumn(3).setPreferredWidth(60);
+
+        columnModel.getColumn(0).setCellRenderer(new ListaTarjetas.CenterAlignedRenderer());
+        columnModel.getColumn(1).setCellRenderer(new ListaTarjetas.LeftAlignedRenderer());
+        columnModel.getColumn(2).setCellRenderer(new ListaTarjetas.CenterAlignedRenderer());
+        columnModel.getColumn(3).setCellRenderer(new ListaTarjetas.CenterAlignedRenderer());
+    }
+
+    class LeftAlignedRenderer extends DefaultTableCellRenderer {
+        public LeftAlignedRenderer() {
+            setHorizontalAlignment(LEFT);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            return cell;
+        }
+    }
+
+    class RightAlignedRenderer extends DefaultTableCellRenderer {
+        public RightAlignedRenderer() {
+            setHorizontalAlignment(RIGHT);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            return cell;
+        }
+    }
+
+    class CenterAlignedRenderer extends DefaultTableCellRenderer {
+        public CenterAlignedRenderer() {
+            setHorizontalAlignment(CENTER);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            return cell;
         }
     }
 
@@ -341,7 +383,7 @@ public class ListaTarjetas extends JFrame {
 
     private void actualizarTabla() {
         listaTarjetas.setModel(cargarDatos());
-        centrarDatosTabla();
+        configurarTablaTarjetas();
         lbltxt.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
     }
 

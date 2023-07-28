@@ -1,10 +1,12 @@
 package Floristerias;
+import Clientes.ListaCliente;
 import Modelos.ModeloFloristeria;
 import Objetos.Conexion;
 import Objetos.Floristeria;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -45,7 +47,7 @@ public class ListaFloristeria extends JFrame {
         campoBusqueda.setText("");
 
         listaFloristerias.setModel(cargarDatos());
-        centrarDatosTabla();
+        configurarTablaFloristerias();
 
         lbltxt.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
 
@@ -60,7 +62,7 @@ public class ListaFloristeria extends JFrame {
                     }
                 }
                 listaFloristerias.setModel(cargarDatos());
-                centrarDatosTabla();
+                configurarTablaFloristerias();
                 lbltxt.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
@@ -76,7 +78,7 @@ public class ListaFloristeria extends JFrame {
                     }
                 }
                 listaFloristerias.setModel(cargarDatos());
-                centrarDatosTabla();
+                configurarTablaFloristerias();
                 lbltxt.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
@@ -89,7 +91,7 @@ public class ListaFloristeria extends JFrame {
                 botonAdelante.setEnabled((pagina + 1) < getTotalPageCount());
                 botonAtras.setEnabled(pagina > 0);
                 listaFloristerias.setModel(cargarDatos());
-                centrarDatosTabla();
+                configurarTablaFloristerias();
                 lbltxt.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
@@ -212,12 +214,53 @@ public class ListaFloristeria extends JFrame {
         placeholder.setFont(new Font("Nunito", Font.ITALIC, 11));
     }
 
-    private void centrarDatosTabla() {
-        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+    private void configurarTablaFloristerias() {
+        TableColumnModel columnModel = listaFloristerias.getColumnModel();
 
-        for (int i = 0; i < listaFloristerias.getColumnCount(); i++) {
-            listaFloristerias.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        columnModel.getColumn(0).setPreferredWidth(40);
+        columnModel.getColumn(1).setPreferredWidth(250);
+        columnModel.getColumn(2).setPreferredWidth(110);
+        columnModel.getColumn(3).setPreferredWidth(110);
+
+        columnModel.getColumn(0).setCellRenderer(new ListaFloristeria.CenterAlignedRenderer());
+        columnModel.getColumn(1).setCellRenderer(new ListaFloristeria.LeftAlignedRenderer());
+        columnModel.getColumn(2).setCellRenderer(new ListaFloristeria.CenterAlignedRenderer());
+        columnModel.getColumn(3).setCellRenderer(new ListaFloristeria.LeftAlignedRenderer());
+    }
+
+    class LeftAlignedRenderer extends DefaultTableCellRenderer {
+        public LeftAlignedRenderer() {
+            setHorizontalAlignment(LEFT);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            return cell;
+        }
+    }
+
+    class RightAlignedRenderer extends DefaultTableCellRenderer {
+        public RightAlignedRenderer() {
+            setHorizontalAlignment(RIGHT);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            return cell;
+        }
+    }
+
+    class CenterAlignedRenderer extends DefaultTableCellRenderer {
+        public CenterAlignedRenderer() {
+            setHorizontalAlignment(CENTER);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            return cell;
         }
     }
 
@@ -262,7 +305,6 @@ public class ListaFloristeria extends JFrame {
         return new ModeloFloristeria(listaFloristeria, sql);
     }
 
-
     private int getTotalPageCount() {
         int count = 0;
         try (Connection mysql = sql.conectamysql();
@@ -285,7 +327,6 @@ public class ListaFloristeria extends JFrame {
 
         return totalPageCount;
     }
-
     public static void main(String[] args) {
         ListaFloristeria listaFloristeria = new ListaFloristeria();
         listaFloristeria.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

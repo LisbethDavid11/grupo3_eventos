@@ -4,6 +4,7 @@ import Objetos.Conexion;
 import Objetos.Empleado;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -19,7 +20,7 @@ import java.util.List;
 public class ListaEmpleados extends JFrame {
     private JPanel panelPrincipal;
     private JButton botonVer;
-    private JTable listaFacturas;
+    private JTable listaEmpleados;
     private JButton botonAtras;
     private JButton botonAdelante;
     private JTextField campoBusqueda;
@@ -45,8 +46,8 @@ public class ListaEmpleados extends JFrame {
 
         listaEmpleado = new ArrayList<>();
 
-        listaFacturas.setModel(cargarDatos());
-        centrarDatosTabla();
+        listaEmpleados.setModel(cargarDatos());
+        configurarTablaEmpleados();
 
         lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
 
@@ -60,8 +61,8 @@ public class ListaEmpleados extends JFrame {
                         botonAdelante.setEnabled(false);
                     }
                 }
-                listaFacturas.setModel(cargarDatos());
-                centrarDatosTabla();
+                listaEmpleados.setModel(cargarDatos());
+                configurarTablaEmpleados();
                 lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
@@ -76,8 +77,8 @@ public class ListaEmpleados extends JFrame {
                         botonAtras.setEnabled(false);
                     }
                 }
-                listaFacturas.setModel(cargarDatos());
-                centrarDatosTabla();
+                listaEmpleados.setModel(cargarDatos());
+                configurarTablaEmpleados();
                 lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
@@ -89,8 +90,8 @@ public class ListaEmpleados extends JFrame {
                 pagina = 0;
                 botonAdelante.setEnabled((pagina + 1) < getTotalPageCount());
                 botonAtras.setEnabled(pagina > 0);
-                listaFacturas.setModel(cargarDatos());
-                centrarDatosTabla();
+                listaEmpleados.setModel(cargarDatos());
+                configurarTablaEmpleados();
                 lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
@@ -152,11 +153,11 @@ public class ListaEmpleados extends JFrame {
         botonVer.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (listaFacturas.getSelectedRow() == -1) {
+                if (listaEmpleados.getSelectedRow() == -1) {
                     JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar", "Validación", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
-                VerEmpleado empleado = new VerEmpleado(listaEmpleado.get(listaFacturas.getSelectedRow()).getId());
+                VerEmpleado empleado = new VerEmpleado(listaEmpleado.get(listaEmpleados.getSelectedRow()).getId());
                 empleado.setVisible(true);
                 actual.dispose();
             }
@@ -175,16 +176,15 @@ public class ListaEmpleados extends JFrame {
         botonEditar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (listaFacturas.getSelectedRow() == -1) {
+                if (listaEmpleados.getSelectedRow() == -1) {
                     JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar", "Validación", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
-                EditarEmpleado empleado = new EditarEmpleado(listaEmpleado.get(listaFacturas.getSelectedRow()).getId());
+                EditarEmpleado empleado = new EditarEmpleado(listaEmpleado.get(listaEmpleados.getSelectedRow()).getId());
                 empleado.setVisible(true);
                 actual.dispose();
             }
         });
-
 
         // Color de fondo
         panelPrincipal.setBackground(primaryColor);
@@ -220,12 +220,53 @@ public class ListaEmpleados extends JFrame {
         lbl0.setFont(fontTitulo);
     }
 
-    private void centrarDatosTabla() {
-        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+    private void configurarTablaEmpleados() {
+        TableColumnModel columnModel = listaEmpleados.getColumnModel();
 
-        for (int i = 0; i < listaFacturas.getColumnCount(); i++) {
-            listaFacturas.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        columnModel.getColumn(0).setPreferredWidth(40);
+        columnModel.getColumn(1).setPreferredWidth(110);
+        columnModel.getColumn(2).setPreferredWidth(200);
+        columnModel.getColumn(3).setPreferredWidth(110);
+
+        columnModel.getColumn(0).setCellRenderer(new ListaEmpleados.CenterAlignedRenderer());
+        columnModel.getColumn(1).setCellRenderer(new ListaEmpleados.CenterAlignedRenderer());
+        columnModel.getColumn(2).setCellRenderer(new ListaEmpleados.LeftAlignedRenderer());
+        columnModel.getColumn(3).setCellRenderer(new ListaEmpleados.CenterAlignedRenderer());
+    }
+
+    class LeftAlignedRenderer extends DefaultTableCellRenderer {
+        public LeftAlignedRenderer() {
+            setHorizontalAlignment(LEFT);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            return cell;
+        }
+    }
+
+    class RightAlignedRenderer extends DefaultTableCellRenderer {
+        public RightAlignedRenderer() {
+            setHorizontalAlignment(RIGHT);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            return cell;
+        }
+    }
+
+    class CenterAlignedRenderer extends DefaultTableCellRenderer {
+        public CenterAlignedRenderer() {
+            setHorizontalAlignment(CENTER);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            return cell;
         }
     }
 

@@ -17,7 +17,7 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="a40ca" class="javax.swing.JTable" binding="listaFacturas">
+          <component id="a40ca" class="javax.swing.JTable" binding="listaEmpleados">
             <constraints/>
             <properties/>
           </component>

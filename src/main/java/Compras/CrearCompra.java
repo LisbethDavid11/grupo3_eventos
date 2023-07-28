@@ -6,9 +6,7 @@ import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
+import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -158,6 +156,7 @@ public class CrearCompra extends JFrame {
         tablaProductos.setModel(modeloProductos);
         tablaProductos.getColumnModel().getColumn(6).setCellRenderer(new ButtonRenderer());
         tablaProductos.getColumnModel().getColumn(6).setCellEditor(new ButtonEditor(new JCheckBox()));
+        configurarTablaProductos();
 
         campoPrecio.addKeyListener(new KeyAdapter() {
             @Override
@@ -361,9 +360,7 @@ public class CrearCompra extends JFrame {
                 agregarProducto();
             }
         });
-
     }
-
 
     private void cargarProveedores() {
         try (Connection connection = sql.conectamysql();
@@ -496,6 +493,7 @@ public class CrearCompra extends JFrame {
                 e.printStackTrace();
             }
         }
+
         boolean listaCompraAbierta = false;
         Window[] windows = Window.getWindows();
         for (Window window : windows) {
@@ -664,6 +662,60 @@ public class CrearCompra extends JFrame {
         actualizarTotales();
     }
 
+    private void configurarTablaProductos() {
+        TableColumnModel columnModel = tablaProductos.getColumnModel();
+
+        columnModel.getColumn(0).setPreferredWidth(200); // Nombre
+        columnModel.getColumn(1).setPreferredWidth(50);  // Cantidad
+        columnModel.getColumn(2).setPreferredWidth(60); // Precio
+        columnModel.getColumn(3).setPreferredWidth(60); // Sub Total
+        columnModel.getColumn(4).setPreferredWidth(60);  // ISV
+        columnModel.getColumn(5).setPreferredWidth(60); // Total
+
+        columnModel.getColumn(0).setCellRenderer(new CenterAlignedRenderer());
+        columnModel.getColumn(1).setCellRenderer(new LeftAlignedRenderer());
+        columnModel.getColumn(2).setCellRenderer(new LeftAlignedRenderer());
+        columnModel.getColumn(3).setCellRenderer(new LeftAlignedRenderer());
+        columnModel.getColumn(4).setCellRenderer(new LeftAlignedRenderer());
+        columnModel.getColumn(5).setCellRenderer(new LeftAlignedRenderer());
+    }
+
+    class LeftAlignedRenderer extends DefaultTableCellRenderer {
+        public LeftAlignedRenderer() {
+            setHorizontalAlignment(LEFT);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            return cell;
+        }
+    }
+
+    class RightAlignedRenderer extends DefaultTableCellRenderer {
+        public RightAlignedRenderer() {
+            setHorizontalAlignment(RIGHT);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            return cell;
+        }
+    }
+
+    class CenterAlignedRenderer extends DefaultTableCellRenderer {
+        public CenterAlignedRenderer() {
+            setHorizontalAlignment(CENTER);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            return cell;
+        }
+    }
+
     public Calendar getFirstDayOfMonth() {
         Calendar firstDayOfMonth = Calendar.getInstance();
         firstDayOfMonth.set(Calendar.DAY_OF_MONTH, 1);
@@ -770,12 +822,13 @@ public class CrearCompra extends JFrame {
 
                 // Verificar si el modelo de la tabla tiene la fila que se intenta eliminar
                 if (modelRow >= 0 && modelRow < model.getRowCount()) {
+                    fireEditingStopped(); // Mover la llamada a fireEditingStopped() aquí
                     model.removeRow(modelRow);
                     actualizarTotales();
                 }
             }
-            fireEditingStopped();
         }
+
     }
 
     public static void main(String[] args) {

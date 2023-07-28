@@ -1,11 +1,15 @@
 package Proveedores;
 import Empleados.TextPrompt;
+import Materiales.ListaMateriales;
 import Modelos.ModeloProveedores;
 import Objetos.Conexion;
 import Objetos.Proveedor;
+import Tarjetas.ListaTarjetas;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -47,7 +51,7 @@ public class ListaProveedores extends JFrame {
         lbl0.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
 
         listaProveedores.setModel(cargarDatos());
-        centrarDatosTabla();
+        configurarTablaProveedores();
 
         lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
 
@@ -75,7 +79,7 @@ public class ListaProveedores extends JFrame {
                     }
                 }
                 listaProveedores.setModel(cargarDatos());
-                centrarDatosTabla();
+                configurarTablaProveedores();
                 lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
@@ -91,7 +95,7 @@ public class ListaProveedores extends JFrame {
                     }
                 }
                 listaProveedores.setModel(cargarDatos());
-                centrarDatosTabla();
+                configurarTablaProveedores();
                 lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
@@ -104,7 +108,7 @@ public class ListaProveedores extends JFrame {
                 botonAdelante.setEnabled((pagina + 1) < getTotalPageCount());
                 botonAtras.setEnabled(pagina > 0);
                 listaProveedores.setModel(cargarDatos());
-                centrarDatosTabla();
+                configurarTablaProveedores();
                 lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
@@ -167,20 +171,59 @@ public class ListaProveedores extends JFrame {
         placeholder.setFont(new Font("Nunito", Font.ITALIC, 11));
     }
 
-    private void centrarDatosTabla() {
-        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+    private void configurarTablaProveedores() {
+        TableColumnModel columnModel = listaProveedores.getColumnModel();
 
-        TableColumn idColumn = listaProveedores.getColumnModel().getColumn(0); // Obtener la columna de ID
-        int idColumnWidth = idColumn.getWidth();
-        idColumn.setPreferredWidth(idColumnWidth / 16); // Reducir a un octavo el ancho actual de la columna de ID
+        columnModel.getColumn(0).setPreferredWidth(20);
+        columnModel.getColumn(1).setPreferredWidth(200);
+        columnModel.getColumn(2).setPreferredWidth(60);
+        columnModel.getColumn(3).setPreferredWidth(100);
+        columnModel.getColumn(4).setPreferredWidth(170);
+        columnModel.getColumn(5).setPreferredWidth(150);
+        columnModel.getColumn(6).setPreferredWidth(60);
 
-        TableColumn identidadColumn = listaProveedores.getColumnModel().getColumn(1); // Obtener la columna de identidad
-        int identidadColumnWidth = identidadColumn.getWidth();
-        identidadColumn.setPreferredWidth(identidadColumnWidth / 2); // Reducir a la mitad el ancho actual de la columna de identidad
+        columnModel.getColumn(0).setCellRenderer(new ListaProveedores.CenterAlignedRenderer());
+        columnModel.getColumn(1).setCellRenderer(new ListaProveedores.LeftAlignedRenderer());
+        columnModel.getColumn(2).setCellRenderer(new ListaProveedores.CenterAlignedRenderer());
+        columnModel.getColumn(3).setCellRenderer(new ListaProveedores.LeftAlignedRenderer());
+        columnModel.getColumn(4).setCellRenderer(new ListaProveedores.LeftAlignedRenderer());
+        columnModel.getColumn(5).setCellRenderer(new ListaProveedores.LeftAlignedRenderer());
+        columnModel.getColumn(6).setCellRenderer(new ListaProveedores.CenterAlignedRenderer());
+    }
 
-        for (int i = 0; i < listaProveedores.getColumnCount(); i++) {
-            listaProveedores.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+    class LeftAlignedRenderer extends DefaultTableCellRenderer {
+        public LeftAlignedRenderer() {
+            setHorizontalAlignment(LEFT);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            return cell;
+        }
+    }
+
+    class RightAlignedRenderer extends DefaultTableCellRenderer {
+        public RightAlignedRenderer() {
+            setHorizontalAlignment(RIGHT);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            return cell;
+        }
+    }
+
+    class CenterAlignedRenderer extends DefaultTableCellRenderer {
+        public CenterAlignedRenderer() {
+            setHorizontalAlignment(CENTER);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            return cell;
         }
     }
 
