@@ -1,10 +1,7 @@
 package Manualidades;
-
 import Modelos.ModeloMateriales;
 import Objetos.Conexion;
 import Objetos.Material;
-import Manualidades.PreviewImagen;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -26,25 +23,16 @@ import java.util.Date;
 import java.util.List;
 
 public class CrearManualidad extends JFrame {
-
-    private JTextField campoPrecio, campoNombre;
+    private JTextField campoPrecio, campoNombre, campoBusquedaMateriales;
     private JTextArea campoDescripcion;
-    private JButton botonGuardar, botonCancelar, agregarMaterialButton, botonCargarImagen;
-    private JPanel panel;
-    private JLabel lbl0, lbl2, lbl4;
+    private JButton botonGuardar, botonCancelar, agregarMaterialButton, botonCargarImagen, agregarButton, cancelarButton;
+    private JPanel jpanelImagen, panel1, panel2, panel3, panel5, panel6;
     private JTable jtableMateriales;
-    private JPanel jpanelImagen;
-    private JLabel jlabelImagen;
-    private JButton agregarButton;
-    private JTextField campoBusquedaMateriales;
-    private JButton cancelarButton;
+    private JLabel jlabelImagen, jtextCatidadTotalMateriales, jtMaterialTotaldinero, lbl0, lbl2, lbl4;
     private JComboBox<String> jbcTipo;
     private JPanel jpanelDescripcion;
-    private JTextField jtextCatidadTotalMateriales;
-    private JTextField jtMaterialTotaldinero;
     private JButton botonLimpiar;
-    private JPanel panel2;
-    private JScrollPane jscrollMateriales;
+    private JScrollPane jscrollMateriales, panel4;
     private List<Material> materialList = new ArrayList<>();
     private String imagePath = "";
     private CrearManualidad actual = this;
@@ -56,7 +44,7 @@ public class CrearManualidad extends JFrame {
         super("");
         setSize(1000, 700);
         setLocationRelativeTo(null);
-        setContentPane(panel);
+        setContentPane(panel1);
 
         campoDescripcion.setLineWrap(true);
         campoDescripcion.setWrapStyleWord(true);
@@ -103,9 +91,18 @@ public class CrearManualidad extends JFrame {
         jpanelImagen.add(jlabelImagen, gbc);
 
         // Color de fondo del panel
-        panel.setBackground(Color.decode("#F5F5F5"));
+        panel1.setBackground(Color.decode("#F5F5F5"));
         panel2.setBackground(Color.decode("#F5F5F5"));
+        panel3.setBackground(Color.decode("#F5F5F5"));
+        panel4.setBackground(Color.decode("#F5F5F5"));
+        panel5.setBackground(Color.decode("#F5F5F5"));
+        panel6.setBackground(Color.decode("#F5F5F5"));
         jpanelImagen.setBackground(Color.decode("#F5F5F5"));
+
+        Font fontBold = new Font(jtextCatidadTotalMateriales.getFont().getName(), Font.BOLD, jtMaterialTotaldinero.getFont().getSize());
+        jtextCatidadTotalMateriales.setFont(fontBold);
+        jtMaterialTotaldinero.setFont(fontBold);
+
 
         // Color de texto para los JTextField
         Color textColor = Color.decode("#212121");
@@ -136,25 +133,33 @@ public class CrearManualidad extends JFrame {
         // Color de texto de los botones
         botonCancelar.setForeground(Color.WHITE);
         botonGuardar.setForeground(Color.WHITE);
-        agregarMaterialButton.setForeground(Color.WHITE);
-        botonCargarImagen.setForeground(Color.WHITE);
+        agregarMaterialButton.setForeground(Color.DARK_GRAY);
+        botonCargarImagen.setForeground(Color.DARK_GRAY);
         botonLimpiar.setForeground(Color.WHITE);
+        cancelarButton.setForeground(Color.WHITE);
+        agregarButton.setForeground(Color.WHITE);
 
         // Color de fondo de los botones
         botonCancelar.setBackground(darkColorCyan);
         botonGuardar.setBackground(darkColorAqua);
-        botonCargarImagen.setBackground(primaryColorRosado);
-        agregarMaterialButton.setBackground(darkColorCyan);
+        botonCargarImagen.setBackground(lightColorAqua);
+        agregarMaterialButton.setBackground(lightColorCyan);
         botonLimpiar.setBackground(darkColorRosado);
+        agregarButton.setBackground(darkColorCyan);
+        cancelarButton.setBackground(darkColorRosado);
 
         botonCancelar.setFocusPainted(false);
         botonGuardar.setFocusPainted(false);
         botonCargarImagen.setFocusPainted(false);
         agregarMaterialButton.setFocusPainted(false);
         botonLimpiar.setFocusPainted(false);
+        cancelarButton.setFocusPainted(false);
+        agregarButton.setFocusPainted(false);
 
         // Aplica el margen al botón
         botonGuardar.setBorder(margin);
+        botonCancelar.setBorder(margin);
+        botonLimpiar.setBorder(margin);
         botonCancelar.setBorder(margin);
         botonLimpiar.setBorder(margin);
 
@@ -350,6 +355,11 @@ public class CrearManualidad extends JFrame {
                 if (campoDescripcion.getText().trim().isEmpty()) {
                     validacion++;
                     mensaje += "Descripción\n";
+                }
+
+                if (jtableMateriales.getRowCount() == 0) {
+                    validacion++;
+                    mensaje += "Los materiales\n";
                 }
 
                 if (imagePath.isEmpty()) {

@@ -35,6 +35,10 @@ public class CrearCompra extends JFrame {
     public JComboBox<String> boxProveedor, boxEmpleado, boxMaterial;
     private JLabel lbl0, lbl1, lbl2, lbl3, lbl4, lbl5, lbl6, lbl7, lbl8, lbl9, lbl10, lbl11, lbl12;
     private JPanel panel3;
+    private JPanel panel2;
+    private JPanel panel4;
+    private JPanel panel5;
+    private JPanel panel6;
     private Conexion sql;
     private Connection mysql;
     public CrearCompra crearCompra = this;
@@ -52,7 +56,7 @@ public class CrearCompra extends JFrame {
 
     public CrearCompra() {
         super("");
-        setSize(950, 650);
+        setSize(1100, 850);
         setLocationRelativeTo(null);
         setContentPane(panel1);
         sql = new Conexion();
@@ -89,7 +93,11 @@ public class CrearCompra extends JFrame {
         cargarMateriales();
 
         panel1.setBackground(Color.decode("#F5F5F5"));
+        panel2.setBackground(Color.decode("#F5F5F5"));
         panel3.setBackground(Color.decode("#F5F5F5"));
+        panel4.setBackground(Color.decode("#F5F5F5"));
+        panel5.setBackground(Color.decode("#F5F5F5"));
+        panel6.setBackground(Color.decode("#F5F5F5"));
 
         cancelarButton.setForeground(Color.WHITE);
         cancelarButton.setBackground(darkColorRed);

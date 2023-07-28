@@ -47,8 +47,8 @@ public class CrearTarjeta extends JFrame {
     private JButton cancelarButton;
     private JComboBox<String> jcbOcasion;
     private JPanel jpanelDescripcion;
-    private JTextField jtextCatidadTotalMateriales;
-    private JTextField jtMaterialTotaldinero;
+    private JLabel jtextCatidadTotalMateriales;
+    private JLabel jtMaterialTotaldinero;
     private JButton botonLimpiar;
     private JPanel panel2;
     private List<Material> materialList = new ArrayList<>();
@@ -334,6 +334,11 @@ public class CrearTarjeta extends JFrame {
                 if (campoDescripcion.getText().trim().isEmpty()) {
                     validacion++;
                     mensaje += "Descripción\n";
+                }
+
+                if (jtableMateriales.getRowCount() == 0) {
+                    validacion++;
+                    mensaje += "Los materiales\n";
                 }
 
                 if (imagePath.isEmpty()) {

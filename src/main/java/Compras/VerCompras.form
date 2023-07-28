@@ -182,7 +182,7 @@
         <properties>
           <font name="Arial" size="12" style="1"/>
           <foreground color="-16315129"/>
-          <text value="Fecha"/>
+          <text value="Fecha de facturación"/>
         </properties>
       </component>
       <component id="81f6b" class="javax.swing.JTextField" binding="fecha">

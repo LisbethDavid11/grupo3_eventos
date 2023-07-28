@@ -1,13 +1,18 @@
 package Tarjetas;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class PreviewImagen extends JFrame {
     private JPanel panel1;
     private JLabel jlabelImagen;
+    private JButton regresarButton;
+
     public PreviewImagen(String ruta) {
-        super("Crear datos de tarjetas");
+        super("");
         setSize(1000, 700);
         setLocationRelativeTo(null);
         setContentPane(panel1);
@@ -38,13 +43,45 @@ public class PreviewImagen extends JFrame {
         jlabelImagen.setHorizontalAlignment(SwingConstants.CENTER);
         panel1.add(jlabelImagen, gbc);
 
+        // Crear el botón "REGRESAR" y establecer el color de fondo
+        regresarButton = new JButton("REGRESAR");
+        EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
+        Color darkColorRosado = new Color(194, 24, 91); // Rosado oscuro
+        regresarButton.setBackground(darkColorRosado);
+        regresarButton.setForeground(Color.WHITE);
+        regresarButton.setFocusPainted(false);
+        regresarButton.setBorder(margin);
+
+        // Configurar restricciones de diseño para el botón "REGRESAR"
+        GridBagConstraints gbcButton = new GridBagConstraints();
+        gbcButton.gridx = 0;
+        gbcButton.gridy = 1;
+        gbcButton.fill = GridBagConstraints.HORIZONTAL;
+        gbcButton.insets = new Insets(5, 0, 0, 0); // Espacio entre el botón y la imagen
+        panel1.add(regresarButton, gbcButton);
+
+        // Agregar ActionListener al botón "REGRESAR" para cerrar esta ventana y volver a la ventana "CrearManualidades"
+        regresarButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Cerrar la ventana actual
+                dispose();
+
+                // Crear y mostrar la ventana "CrearManualidades"
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        new CrearTarjeta().setVisible(true);
+                    }
+                });
+            }
+        });
 
         ImageIcon originalIcon = new ImageIcon(ruta);
 
         // Obtener las dimensiones originales de la imagen
         int originalWidth = originalIcon.getIconWidth();
         int originalHeight = originalIcon.getIconHeight();
-
 
         // Calcular la escala para ajustar la imagen al JPanel
         double scale = Math.min((double) panelImgWidth / originalWidth, (double) panelImgHeight / originalHeight);
