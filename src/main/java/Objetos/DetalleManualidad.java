@@ -5,6 +5,7 @@ public class DetalleManualidad {
     private int manualidadId;
     private int materialId;
     private int cantidad;
+    private double precio;
 
     public static String nombreTabla = "detalles_manualidades";
 
@@ -15,11 +16,12 @@ public class DetalleManualidad {
         return new Object[]{id, manualidadId, materialId, cantidad};
     }
 
-    public DetalleManualidad(int id, int manualidadId, int materialId, int cantidad){
+    public DetalleManualidad(int id, int manualidadId, int materialId, int cantidad, double precio){
         this.id = id;
         this.manualidadId = manualidadId;
         this.materialId = materialId;
         this.cantidad = cantidad;
+        this.precio = precio;
     }
 
     public int getId() {
@@ -52,5 +54,13 @@ public class DetalleManualidad {
 
     public void setCantidad(int cantidad) {
         this.cantidad = cantidad;
+    }
+
+    public double getPrecio() {
+        return precio;
+    }
+
+    public void setPrecio(double precio) {
+        this.precio = precio;
     }
 }

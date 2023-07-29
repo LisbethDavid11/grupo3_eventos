@@ -66,14 +66,6 @@ public class PreviewImagen extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 // Cerrar la ventana actual
                 dispose();
-
-                // Crear y mostrar la ventana "CrearManualidades"
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        new CrearManualidad().setVisible(true);
-                    }
-                });
             }
         });
 

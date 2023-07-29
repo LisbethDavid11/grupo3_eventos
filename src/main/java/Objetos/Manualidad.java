@@ -8,7 +8,8 @@ public class Manualidad {
     private String nombre;
     private String descripcion;
     private String tipo;
-    private double precio;
+    private double precio_manualidad;
+    private double mano_obra;
 
     public static String nombreTabla = "manualidades";
 
@@ -16,16 +17,17 @@ public class Manualidad {
     }
 
     public Object[] toTableRow() {
-        return new Object[] {id, imagen, nombre, descripcion, tipo, precio};
+        return new Object[] {id, imagen, nombre, descripcion, tipo, precio_manualidad, mano_obra};
     }
 
-    public Manualidad(int id, ImageIcon imagen, String nombre, String descripcion, String tipo, double precio) {
+    public Manualidad(int id, ImageIcon imagen, String nombre, String descripcion, String tipo, double precio_manualidad, double mano_obra) {
         this.id = id;
         this.imagen = imagen;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.tipo = tipo;
-        this.precio = precio;
+        this.precio_manualidad = precio_manualidad;
+        this.mano_obra = mano_obra;
     }
 
     public int getId() {
@@ -68,11 +70,19 @@ public class Manualidad {
         this.tipo = tipo;
     }
 
-    public double getPrecio() {
-        return precio;
+    public double getPrecio_manualidad() {
+        return precio_manualidad;
     }
 
-    public void setPrecio(double precio) {
-        this.precio = precio;
+    public void setPrecio_manualidad(double precio_manualidad) {
+        this.precio_manualidad = precio_manualidad;
+    }
+
+    public double getMano_obra() {
+        return mano_obra;
+    }
+
+    public void setMano_obra(double mano_obra) {
+        this.mano_obra = mano_obra;
     }
 }

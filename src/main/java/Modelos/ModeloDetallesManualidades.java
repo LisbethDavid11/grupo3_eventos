@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ModeloDetallesManualidades extends AbstractTableModel {
-    private final String[] columnas = {"N°", "Manualidad", "Material", "Cantidad"};
+    private final String[] columnas = {"N°", "Manualidad", "Material", "Cantidad", "Precio"};
     private final List<DetalleManualidad> detallesManualidades;
     private final Conexion sql;
 
@@ -32,6 +32,7 @@ public class ModeloDetallesManualidades extends AbstractTableModel {
                 detalle.setManualidadId(resultSet.getInt("manualidad_id"));
                 detalle.setMaterialId(resultSet.getInt("material_id"));
                 detalle.setCantidad(resultSet.getInt("cantidad"));
+                detalle.setPrecio(resultSet.getDouble("precio"));
                 detalles.add(detalle);
             }
 
@@ -75,6 +76,13 @@ public class ModeloDetallesManualidades extends AbstractTableModel {
                 return materialNombre;
             case 3: // Cantidad
                 return detalleManualidad.getCantidad();
+            case 4: // Precio
+                double precio = detalleManualidad.getPrecio();
+                if (precio < 0) {
+                    precio = 0;
+                }
+                String precioFormateado = String.format("L. %,.2f", precio);
+                return precioFormateado;
             default:
                 return null;
         }

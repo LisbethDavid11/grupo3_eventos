@@ -218,11 +218,11 @@ public class ListaManualidad extends JFrame {
     private void configurarTablaManualidades() {
         TableColumnModel columnModel = listaManualidades.getColumnModel();
 
-        columnModel.getColumn(0).setPreferredWidth(30);
-        columnModel.getColumn(1).setPreferredWidth(110);
-        columnModel.getColumn(2).setPreferredWidth(250);
-        columnModel.getColumn(3).setPreferredWidth(80);
-        columnModel.getColumn(4).setPreferredWidth(80);
+        columnModel.getColumn(0).setPreferredWidth(20);
+        columnModel.getColumn(1).setPreferredWidth(250);
+        columnModel.getColumn(2).setPreferredWidth(80);
+        columnModel.getColumn(3).setPreferredWidth(60);
+        columnModel.getColumn(4).setPreferredWidth(60);
 
         columnModel.getColumn(0).setCellRenderer(new ListaManualidad.CenterAlignedRenderer());
         columnModel.getColumn(1).setCellRenderer(new ListaManualidad.LeftAlignedRenderer());
@@ -289,7 +289,8 @@ public class ListaManualidad extends JFrame {
                 manualidad.setNombre(resultSet.getString("nombre"));
                 manualidad.setDescripcion(resultSet.getString("descripcion"));
                 manualidad.setTipo(resultSet.getString("tipo"));
-                manualidad.setPrecio(resultSet.getDouble("precio"));
+                manualidad.setPrecio_manualidad(resultSet.getDouble("precio_manualidad"));
+                manualidad.setMano_obra(resultSet.getDouble("mano_obra"));
                 listaManualidad.add(manualidad);
             }
 

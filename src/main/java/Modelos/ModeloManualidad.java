@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ModeloManualidad extends AbstractTableModel {
-    private final String[] columnas = {"N°", "Nombre de la manualidad", "Descripcion", "Tipo", "Precio"};
+    private final String[] columnas = {"N°", "Nombre de la manualidad", "Tipo", "Precio", "Mano de obra"};
 
     private final List<Manualidad> manualidades;
     private final Conexion sql;
@@ -47,17 +47,22 @@ public class ModeloManualidad extends AbstractTableModel {
                 return rowIndex + 1;
             case 1: // Nombre
                 return manualidad.getNombre();
-            case 2: // Descripcion
-                return manualidad.getDescripcion();
-            case 3: // Tipo
+            case 2: // Tipo
                 return manualidad.getTipo();
-            case 4: // Precio
-                double precio = manualidad.getPrecio();
-                if (precio < 0) {
-                    precio = 0;
+            case 3: // Precio
+                double precio_manualidad = manualidad.getPrecio_manualidad();
+                if (precio_manualidad < 0) {
+                    precio_manualidad = 0;
                 }
-                String precioFormateado = String.format("L. %,.2f", precio);
-                return precioFormateado;
+                String precioManualidadFormateada = String.format("L. %,.2f", precio_manualidad);
+                return precioManualidadFormateada;
+            case 4: // Precio
+                double mano_obra = manualidad.getPrecio_manualidad();
+                if (mano_obra < 0) {
+                    mano_obra = 0;
+                }
+                String manoObraFormateado = String.format("L. %,.2f", mano_obra);
+                return manoObraFormateado;
             default:
                 return null;
         }
