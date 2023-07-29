@@ -1,14 +1,15 @@
 package Objetos;
 
+import javax.swing.*;
+
 public class Tarjeta {
     private int id;
     private String ocasion;
-    private double precio;
-    private String disponible;
-
     private String descripcion;
-    private String imagen;
-
+    private ImageIcon imagen;
+    private String disponible;
+    private double precio_tarjeta;
+    private double mano_obra;
 
     public static String nombreTabla = "tarjetas";
 
@@ -16,20 +17,18 @@ public class Tarjeta {
     }
 
     public Object[] toTableRow() {
-        return new Object[] {id,ocasion, precio, disponible};
+        return new Object[] {id, ocasion, descripcion, imagen, disponible, precio_tarjeta, mano_obra};
     }
 
-    public Tarjeta(int id, String ocasion, double precio, String disponible, String descripcion, String imagen) {
+    public Tarjeta(int id, String ocasion, String descripcion, ImageIcon imagen, String disponible, double precio_tarjeta, double mano_obra) {
         this.id = id;
         this.ocasion = ocasion;
-        this.precio = precio;
-        this.disponible = disponible;
         this.descripcion = descripcion;
         this.imagen = imagen;
+        this.disponible = disponible;
+        this.precio_tarjeta = precio_tarjeta;
+        this.mano_obra = mano_obra;
     }
-
-// getters y setters
-
 
     public int getId() {
         return id;
@@ -47,12 +46,20 @@ public class Tarjeta {
         this.ocasion = ocasion;
     }
 
-    public double getPrecio() {
-        return precio;
+    public String getDescripcion() {
+        return descripcion;
     }
 
-    public void setPrecio(double precio) {
-        this.precio = precio;
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public ImageIcon getImagen() {
+        return imagen;
+    }
+
+    public void setImagen(ImageIcon imagen) {
+        this.imagen = imagen;
     }
 
     public String getDisponible() {
@@ -63,19 +70,19 @@ public class Tarjeta {
         this.disponible = disponible;
     }
 
-    public String getDescripcion() {
-        return descripcion;
+    public double getPrecio_tarjeta() {
+        return precio_tarjeta;
     }
 
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
+    public void setPrecio_tarjeta(double precio_tarjeta) {
+        this.precio_tarjeta = precio_tarjeta;
     }
 
-    public String getImagen() {
-        return imagen;
+    public double getMano_obra() {
+        return mano_obra;
     }
 
-    public void setImagen(String imagen) {
-        this.imagen = imagen;
+    public void setMano_obra(double mano_obra) {
+        this.mano_obra = mano_obra;
     }
 }

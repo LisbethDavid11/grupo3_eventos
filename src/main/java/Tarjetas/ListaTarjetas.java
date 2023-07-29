@@ -1,12 +1,7 @@
 package Tarjetas;
-
-import Modelos.ModeloMateriales;
-import Modelos.ModeloTajetas;
+import Modelos.ModeloTarjetas;
 import Objetos.Conexion;
-import Objetos.Material;
 import Objetos.Tarjeta;
-import Proveedores.ListaProveedores;
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -256,14 +251,16 @@ public class ListaTarjetas extends JFrame {
         TableColumnModel columnModel = listaTarjetas.getColumnModel();
 
         columnModel.getColumn(0).setPreferredWidth(20);
-        columnModel.getColumn(1).setPreferredWidth(200);
-        columnModel.getColumn(2).setPreferredWidth(60);
-        columnModel.getColumn(3).setPreferredWidth(60);
+        columnModel.getColumn(1).setPreferredWidth(250);
+        columnModel.getColumn(2).setPreferredWidth(50);
+        columnModel.getColumn(3).setPreferredWidth(50);
+        columnModel.getColumn(3).setPreferredWidth(50);
 
         columnModel.getColumn(0).setCellRenderer(new ListaTarjetas.CenterAlignedRenderer());
         columnModel.getColumn(1).setCellRenderer(new ListaTarjetas.LeftAlignedRenderer());
         columnModel.getColumn(2).setCellRenderer(new ListaTarjetas.CenterAlignedRenderer());
-        columnModel.getColumn(3).setCellRenderer(new ListaTarjetas.CenterAlignedRenderer());
+        columnModel.getColumn(3).setCellRenderer(new ListaTarjetas.LeftAlignedRenderer());
+        columnModel.getColumn(4).setCellRenderer(new ListaTarjetas.LeftAlignedRenderer());
     }
 
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
@@ -302,12 +299,12 @@ public class ListaTarjetas extends JFrame {
         }
     }
 
-    private ModeloTajetas cargarDatos() {
+    private ModeloTarjetas cargarDatos() {
         sql = new Conexion();
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement(
                      "SELECT m.* FROM tarjetas m " +
-                             "WHERE (m.ocasion LIKE CONCAT('%', ?, '%') OR m.precio = ? OR m.precio LIKE CONCAT('%', ?, '%')) " +
+                             "WHERE (m.ocasion LIKE CONCAT('%', ?, '%') OR m.precio_tarjeta = ? OR m.precio_tarjeta LIKE CONCAT('%', ?, '%')) " +
                              "AND ((? = 'Si' AND m.disponible = 'Si') OR (? = 'No' AND m.disponible = 'No')) " +
                              "LIMIT ?, 20"
              )
@@ -316,15 +313,23 @@ public class ListaTarjetas extends JFrame {
             String disponibilidadSi = siCheckBox.isSelected() ? "Si" : "";
             String disponibilidadNo = noCheckBox.isSelected() ? "No" : "";
             String busquedaOcasionPrecio = busqueda;
-            double precio = 0;
+            double precio_tarjeta = 0;
             try {
-                precio = Double.parseDouble(busqueda);
+                precio_tarjeta = Double.parseDouble(busqueda);
+            } catch (NumberFormatException ex) {
+                // Si el valor no es numérico, dejarlo como 0
+            }
+
+            double mano_obra = 0;
+            try {
+                mano_obra = Double.parseDouble(busqueda);
             } catch (NumberFormatException ex) {
                 // Si el valor no es numérico, dejarlo como 0
             }
 
             preparedStatement.setString(1, busqueda);
-            preparedStatement.setDouble(2, precio);
+            preparedStatement.setDouble(2, precio_tarjeta);
+            preparedStatement.setDouble(2, mano_obra);
             preparedStatement.setString(3, busqueda);
             preparedStatement.setString(4, disponibilidadSi);
             preparedStatement.setString(5, disponibilidadNo);
@@ -337,10 +342,10 @@ public class ListaTarjetas extends JFrame {
                 Tarjeta tarjeta = new Tarjeta();
                 tarjeta.setId(resultSet.getInt("id"));
                 tarjeta.setOcasion(resultSet.getString("ocasion"));
-                tarjeta.setPrecio(resultSet.getDouble("precio"));
+                tarjeta.setPrecio_tarjeta(resultSet.getDouble("precio_tarjeta"));
+                tarjeta.setMano_obra(resultSet.getDouble("mano_obra"));
                 tarjeta.setDisponible(resultSet.getString("disponible"));
                 tarjeta.setDescripcion(resultSet.getString("descripcion"));
-                tarjeta.setImagen(resultSet.getString("imagen"));
                 tarjetaList.add(tarjeta);
             }
 
@@ -355,7 +360,7 @@ public class ListaTarjetas extends JFrame {
             columnId.setPreferredWidth(50);
         }
 
-        return new ModeloTajetas(tarjetaList, sql);
+        return new ModeloTarjetas(tarjetaList, sql);
     }
 
     private int getTotalPageCount() {
