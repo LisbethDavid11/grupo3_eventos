@@ -397,7 +397,7 @@ public class ListaVentas extends JFrame {
             if (resultSet.next()) {
                 String nombreMaterial = resultSet.getString("nombre");
                 boolean exento = resultSet.getBoolean("exento");
-                material = new Material(materialId, nombreMaterial, 0, null, null, exento, 0);
+                material = new Material(materialId, nombreMaterial, 0,0 , null, null, exento, 0);
             }
 
         } catch (SQLException e) {

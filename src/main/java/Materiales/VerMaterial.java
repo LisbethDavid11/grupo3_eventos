@@ -11,10 +11,11 @@ import java.sql.SQLException;
 public class VerMaterial extends JFrame {
     private JPanel panel1;
     private JTextArea etiquetaDescripcion;
-    private JTextField etiquetaNombre, etiquetaPrecio, etiquetaDisponible, etiquetaProveedor, etiquetaExento;
+    private JTextField etiquetaNombre, etiquetaCantidad, etiquetaPrecio, etiquetaDisponible, etiquetaProveedor, etiquetaExento;
     private JButton volverButton;
     private JLabel lbl0;
     private JPanel panel2;
+    private JPanel panel3;
     private final VerMaterial actual = this;
     private Conexion sql;
     private Connection mysql;
@@ -34,6 +35,8 @@ public class VerMaterial extends JFrame {
         // Deshabilitar la edición de los JTextField
         etiquetaNombre.setEditable(false);
         etiquetaNombre.setFocusable(false);
+        etiquetaCantidad.setEditable(false);
+        etiquetaCantidad.setFocusable(false);
         etiquetaPrecio.setEditable(false);
         etiquetaPrecio.setFocusable(false);
         etiquetaDisponible.setEditable(false);
@@ -48,10 +51,12 @@ public class VerMaterial extends JFrame {
         // Color de fondo del panel
         panel1.setBackground(Color.decode("#F5F5F5"));
         panel2.setBackground(Color.decode("#F5F5F5"));
+        panel3.setBackground(Color.decode("#F5F5F5"));
 
         // Color de texto para los JTextField
         Color textColor = Color.decode("#212121");
         etiquetaNombre.setForeground(textColor);
+        etiquetaCantidad.setForeground(textColor);
         etiquetaPrecio.setForeground(textColor);
         etiquetaExento.setForeground(textColor);
         etiquetaDisponible.setForeground(textColor);
@@ -61,6 +66,7 @@ public class VerMaterial extends JFrame {
         // Color de fondo para los JTextField
         Color textFieldColor = Color.decode("#FFFFFF");
         etiquetaNombre.setBackground(textFieldColor);
+        etiquetaCantidad.setBackground(textFieldColor);
         etiquetaPrecio.setBackground(textFieldColor);
         etiquetaExento.setBackground(textFieldColor);
         etiquetaDisponible.setBackground(textFieldColor);
@@ -124,6 +130,7 @@ public class VerMaterial extends JFrame {
 
             if (resultSet.next()) {
                 etiquetaNombre.setText(resultSet.getString("nombre"));
+                etiquetaCantidad.setText(resultSet.getString("cantidad"));
                 etiquetaPrecio.setText(resultSet.getString("precio"));
                 String exento = resultSet.getString("exento").equals("1") ? "Si" : "No";
                 etiquetaExento.setText(exento);
@@ -138,7 +145,7 @@ public class VerMaterial extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            VerMaterial verMaterial = new VerMaterial(1); // Pasa el ID del material que deseas ver
+            VerMaterial verMaterial = new VerMaterial(1);
             verMaterial.setVisible(true);
         });
     }

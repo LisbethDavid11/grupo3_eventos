@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ModeloMateriales extends AbstractTableModel {
-    private final String[] columnas = {"N°", "Nombre", "Precio", "Proveedor", "Disponible"};
+    private final String[] columnas = {"N°", "Nombre", "Cantidad", "Precio","Total", "Proveedor", "Disponible"};
     private final List<Material> materiales;
     private final Conexion sql;
     private final Map<Integer, String> proveedores;
@@ -48,18 +48,25 @@ public class ModeloMateriales extends AbstractTableModel {
                 return rowIndex + 1;
             case 1: // Nombre
                 return material.getNombre();
-            case 2: // Precio
+            case 2: // Nombre
+                return material.getCantidad();
+            case 3: // Precio
                 double precio = material.getPrecio();
                 if (precio < 0) {
                     precio = 0;
                 }
                 String precioFormateado = String.format("L. %,.2f", precio);
                 return precioFormateado;
-            case 3: // Proveedor
+            case 4: // Total (Precio * Cantidad)
+                int cantidad = material.getCantidad();
+                double total = material.getPrecio() * cantidad;
+                String totalFormateado = String.format("L. %,.2f", total);
+                return totalFormateado;
+            case 5: // Proveedor
                 int proveedorId = material.getProveedorId();
                 String proveedorNombre = obtenerNombreProveedor(proveedorId);
                 return proveedorNombre;
-            case 4: // Disponible
+            case 6: // Disponible
                 return material.getDisponible();
             default:
                 return null;

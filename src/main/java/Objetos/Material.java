@@ -3,6 +3,7 @@ package Objetos;
 public class Material {
     private int id;
     private String nombre;
+    private int cantidad;
     private double precio;
     private String disponible;
     private String descripcion;
@@ -15,12 +16,13 @@ public class Material {
     }
 
     public Object[] toTableRow() {
-        return new Object[] {id, nombre, precio, disponible, descripcion, exento, proveedorId};
+        return new Object[] {id, nombre, cantidad, precio, disponible, descripcion, exento, proveedorId};
     }
 
-    public Material(int id, String nombre, double precio, String disponible, String descripcion, boolean exento, int proveedorId) {
+    public Material(int id, String nombre, int cantidad, double precio, String disponible, String descripcion, boolean exento, int proveedorId) {
         this.id = id;
         this.nombre = nombre;
+        this.cantidad = cantidad;
         this.precio = precio;
         this.disponible = disponible;
         this.descripcion = descripcion;
@@ -42,6 +44,14 @@ public class Material {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    public int getCantidad() {
+        return cantidad;
+    }
+
+    public void setCantidad(int cantidad) {
+        this.cantidad = cantidad;
     }
 
     public double getPrecio() {
