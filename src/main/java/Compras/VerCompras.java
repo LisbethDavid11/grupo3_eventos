@@ -121,9 +121,7 @@ public class VerCompras extends JFrame {
 
             if (resultSet.next()) {
                 codigo_compra.setText(resultSet.getString("codigo_compra"));
-
-                // Mostrar la fecha actual
-                Date date = new Date();
+                java.util.Date date = resultSet.getDate("fecha");
                 SimpleDateFormat formatter = new SimpleDateFormat("dd 'de' MMMM, yyyy", new Locale("es", "ES"));
                 fecha.setText(formatter.format(date));
 
