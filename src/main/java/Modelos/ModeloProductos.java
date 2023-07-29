@@ -52,7 +52,7 @@ public class ModeloProductos extends AbstractTableModel {
             case 4: // Total (Precio * Cantidad)
                 int cantidad = material.getCantidad();
                 double total = material.getPrecio() * cantidad;
-                String totalFormateado = String.format("L. %,.2f", total);
+                String totalFormateado = String.format("%,.2f", total);
                 return totalFormateado;
             default:
                 return null;

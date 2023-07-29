@@ -1,6 +1,4 @@
 package Tarjetas;
-import Clientes.ListaCliente;
-import Compras.ListaCompras;
 import Modelos.ModeloMateriales;
 import Modelos.ModeloProductos;
 import Objetos.Conexion;
@@ -8,6 +6,8 @@ import Objetos.Material;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.*;
 import java.awt.*;
@@ -206,6 +206,11 @@ public class CrearTarjeta extends JFrame {
         Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
         lbl0.setFont(fontTitulo);
 
+        Font font10 = new Font(lbl10.getFont().getName(), lbl10.getFont().getStyle(), 16);
+        lbl8.setFont(font10);
+        lbl9.setFont(font10);
+        lbl10.setFont(font10);
+
         ButtonGroup buttonGroup = new ButtonGroup();
         buttonGroup.add(radioButtonNo);
         buttonGroup.add(radioButtonSi);
@@ -255,29 +260,71 @@ public class CrearTarjeta extends JFrame {
                     // Eliminar los detalles temporales
                     materialListTemporal.clear();
 
-                    // Limpiar la tabla
-                    limpiarTablaMateriales();
-
                     // Eliminar los detalles de materiales de la base de datos
                     eliminarDetallesMaterial();
 
-                    // Actualizar la cantidad total de materiales en el campo de texto
-                    jtextCatidadTotalMateriales.setText("0");
+                    // Limpiar la tabla
+                    limpiarTablaMateriales();
 
                     // Actualizar el total de dinero en el campo de texto
                     lbl8.setText("0.00");
 
-                    // Actualizar el modelo de la tabla con los detalles actualizados
-                    jtableMateriales.setModel(cargarDetallesMateriales());
+                    lbl10.setText("0.00");
+
+                    // Crear un nuevo modelo de la tabla con la lista de materiales vacía
+                    ModeloProductos nuevoModelo = new ModeloProductos(new ArrayList<>(), sql);
+
+                    // Establecer el nuevo modelo en la tabla
+                    jtableMateriales.setModel(nuevoModelo);
+
+                    // Actualizar los totales después de limpiar la tabla
+                    calcularTotalTabla();
                 }
             }
         });
+
 
         campoPrecioTarjeta.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
                 char c = e.getKeyChar();
                 String text = campoPrecioTarjeta.getText();
+
+                // Permitir solo dígitos y el carácter de punto decimal
+                if (!Character.isDigit(c) && c != '.') {
+                    e.consume(); // Ignorar cualquier otro carácter
+                    return;
+                }
+
+                // Verificar si se excede el límite de caracteres
+                if (text.length() >= 5 && c != '.' && !text.contains(".")) {
+                    e.consume(); // Ignorar el carácter si se excede el límite de dígitos y no es un punto decimal
+                    return;
+                }
+
+                // Verificar si ya hay un punto decimal y se intenta ingresar otro
+                if (text.contains(".") && c == '.') {
+                    e.consume(); // Ignorar el carácter si ya hay un punto decimal
+                    return;
+                }
+
+                // Verificar la cantidad de dígitos después del punto decimal
+                if (text.contains(".")) {
+                    int dotIndex = text.indexOf(".");
+                    int decimalDigits = text.length() - dotIndex - 1;
+                    if (decimalDigits >= 2) {
+                        e.consume(); // Ignorar el carácter si se excede la cantidad de dígitos después del punto decimal
+                        return;
+                    }
+                }
+            }
+        });
+
+        campoManoObra.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                String text = campoManoObra.getText();
 
                 // Permitir solo dígitos y el carácter de punto decimal
                 if (!Character.isDigit(c) && c != '.') {
@@ -339,6 +386,25 @@ public class CrearTarjeta extends JFrame {
             }
         });
 
+        // Listener para el campoManoObra
+        campoManoObra.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                actualizarLbl8y10();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                actualizarLbl8y10();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                actualizarLbl8y10();
+            }
+        });
+
+
 
         botonCancelar.addActionListener(new ActionListener() {
             @Override
@@ -356,9 +422,9 @@ public class CrearTarjeta extends JFrame {
                 int validacion = 0;
                 String mensaje = "Faltó ingresar: \n";
 
-                if (campoPrecioTarjeta.getText().trim().isEmpty()) {
+                if (imagePath.isEmpty()) {
                     validacion++;
-                    mensaje += "Precio\n";
+                    mensaje += "Imagen\n";
                 }
 
                 if (!radioButtonSi.isSelected() && !radioButtonNo.isSelected()) {
@@ -366,14 +432,24 @@ public class CrearTarjeta extends JFrame {
                     mensaje += "Disponibilidad\n";
                 }
 
+                if (campoDescripcion.getText().trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "Descripción\n";
+                }
+
                 if (jcbOcasion.getSelectedIndex() == 0) {
                     validacion++;
                     mensaje += "Ocasión\n";
                 }
 
-                if (campoDescripcion.getText().trim().isEmpty()) {
+                if (campoPrecioTarjeta.getText().trim().isEmpty()) {
                     validacion++;
-                    mensaje += "Descripción\n";
+                    mensaje += "Precio de la manualidad\n";
+                }
+
+                if (campoManoObra.getText().trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "Mano de obra\n";
                 }
 
                 if (jtableMateriales.getRowCount() == 0) {
@@ -381,17 +457,24 @@ public class CrearTarjeta extends JFrame {
                     mensaje += "Los materiales\n";
                 }
 
-                if (imagePath.isEmpty()) {
-                    validacion++;
-                    mensaje += "Imagen\n";
-                }
-
                 if (validacion > 0) {
                     JOptionPane.showMessageDialog(null, mensaje, "Validación", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
+                if (!campoDescripcion.getText().trim().isEmpty()) {
+                    String texto = campoDescripcion.getText().trim();
+                    int longitud = texto.length();
+
+                    if (longitud < 2 || longitud > 200) {
+                        JOptionPane.showMessageDialog(null, "La descripción debe tener entre 2 y 200 caracteres.", "Validación", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+
                 String precioText = campoPrecioTarjeta.getText().trim();
+// Replace commas with periods to handle decimal separator
+                precioText = precioText.replaceAll(",", ".");
+
                 if (precioText.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Faltó ingresar el precio.", "Validación", JOptionPane.ERROR_MESSAGE);
                     return;
@@ -404,18 +487,42 @@ public class CrearTarjeta extends JFrame {
                         if (precio < 1.00 || precio > 99999.99) {
                             JOptionPane.showMessageDialog(null, "Precio fuera del rango válido (1.00 - 99999.99).", "Validación", JOptionPane.ERROR_MESSAGE);
                             return;
+                        } else {
+                            // Get the value from the JLabel "lbl10" and replace commas with periods
+                            String lbl10Text = lbl10.getText().trim();
+                            lbl10Text = lbl10Text.replaceAll(",", ".");
+                            if (!lbl10Text.isEmpty()) {
+                                double lbl10Value = Double.parseDouble(lbl10Text);
+                                if (precio <= lbl10Value) {
+                                    JOptionPane.showMessageDialog(null, "El precio debe ser mayor que el valor Total despues de gastos de materiales y mano de obra.", "Validación", JOptionPane.ERROR_MESSAGE);
+                                    return;
+                                }
+                            } else {
+                                JOptionPane.showMessageDialog(null, "El valor en lbl10 no es válido.", "Validación", JOptionPane.ERROR_MESSAGE);
+                                return;
+                            }
                         }
                     }
                 }
 
-                if (!campoDescripcion.getText().trim().isEmpty()) {
-                    String texto = campoDescripcion.getText().trim();
-                    int longitud = texto.length();
 
-                    if (longitud < 2 || longitud > 200) {
-                        JOptionPane.showMessageDialog(null, "La descripción debe tener entre 2 y 200 caracteres.", "Validación", JOptionPane.ERROR_MESSAGE);
+                String manoObraText = campoManoObra.getText().trim();
+                if (manoObraText.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Faltó ingresar el precio por mano de obra.", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return;
+                } else {
+                    if (!manoObraText.matches("\\d{1,5}(\\.\\d{1,2})?")) {
+                        JOptionPane.showMessageDialog(null, "Precio por mano de obra inválido. Debe tener el formato correcto (ejemplo: 1234 o 1234.56).", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    } else {
+                        double precio = Double.parseDouble(manoObraText);
+                        if (precio < 1.00 || precio > 99999.99) {
+                            JOptionPane.showMessageDialog(null, "Precio por mano de obra fuera del rango válido (1.00 - 99999.99).", "Validación", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
                     }
                 }
+
                 int respuesta = JOptionPane.showOptionDialog(
                         null,
                         "¿Desea guardar la información de la tarjeta?",
@@ -584,7 +691,8 @@ public class CrearTarjeta extends JFrame {
                         JOptionPane.showMessageDialog(null, "La cantidad no debe ser mayor a la existente en la base de datos", "Validación", JOptionPane.ERROR_MESSAGE);
                     }
                 }
-                //actualizarTotales();
+
+                actualizarLbl8y10();
             }
 
         });
@@ -623,6 +731,18 @@ public class CrearTarjeta extends JFrame {
         }
     }
 
+    class CenterAlignedRenderer extends DefaultTableCellRenderer {
+        public CenterAlignedRenderer() {
+            setHorizontalAlignment(CENTER);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            return cell;
+        }
+    }
+
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
         public LeftAlignedRenderer() {
             setHorizontalAlignment(LEFT);
@@ -635,17 +755,6 @@ public class CrearTarjeta extends JFrame {
         }
     }
 
-    class RightAlignedRenderer extends DefaultTableCellRenderer {
-        public RightAlignedRenderer() {
-            setHorizontalAlignment(RIGHT);
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            return cell;
-        }
-    }
 
     private int obtenerCantidadMaterial() {
         String input = JOptionPane.showInputDialog(this, "Ingrese la cantidad del material:", "Cantidad", JOptionPane.PLAIN_MESSAGE);
@@ -661,8 +770,6 @@ public class CrearTarjeta extends JFrame {
             return 0; // Si el usuario ingresa un valor no numérico, retornamos 0 para que se intente nuevamente
         }
     }
-
-
 
     private int obtenerCantidadExistenteEnBaseDeDatos(int id_material) {
         int cantidadExistente = 0;
@@ -683,26 +790,11 @@ public class CrearTarjeta extends JFrame {
         return cantidadExistente;
     }
 
-
-
-
-    class CenterAlignedRenderer extends DefaultTableCellRenderer {
-        public CenterAlignedRenderer() {
-            setHorizontalAlignment(CENTER);
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            return cell;
-        }
-    }
-
     private void guardarMateriales() {
         String precioTarjetaText = campoPrecioTarjeta.getText().replace("L ", "").replace(",", "").replace("_", "");
         double precio_tarjeta = Double.parseDouble(precioTarjetaText);
 
-        String manoObraText = campoPrecioTarjeta.getText().replace("L ", "").replace(",", "").replace("_", "");
+        String manoObraText = campoManoObra.getText().replace("L ", "").replace(",", "").replace("_", "");
         double mano_obra = Double.parseDouble(manoObraText);
 
         String descripcion = campoDescripcion.getText().trim();
@@ -711,6 +803,7 @@ public class CrearTarjeta extends JFrame {
 
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO tarjetas (ocasion, disponible, descripcion, imagen, precio_tarjeta, mano_obra) VALUES (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+
             preparedStatement.setString(1, jcbOcasion.getModel().getSelectedItem().toString());
             preparedStatement.setString(2, disponibilidad);
             preparedStatement.setString(3, descripcion);
@@ -735,13 +828,33 @@ public class CrearTarjeta extends JFrame {
                 materialList = new ArrayList<>();
             }
 
+            try (PreparedStatement prepared = connection.prepareStatement(
+                    "SELECT * FROM tarjetas_detalles WHERE id_tarjeta = ?")) {
+                prepared.setInt(1, lastId);
+                ResultSet rs = prepared.executeQuery();
+
+                while (rs.next()) {
+                    int id_material = rs.getInt("id_material");
+                    int cantidad_usada = rs.getInt("cantidad");
+
+                    try (PreparedStatement updateStmt = connection.prepareStatement(
+                            "UPDATE materiales SET cantidad = cantidad - ? WHERE id = ?")) {
+                        updateStmt.setInt(1, cantidad_usada);
+                        updateStmt.setInt(2, id_material);
+                        updateStmt.executeUpdate();
+                    }
+                }
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+                JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            }
+
             JOptionPane.showMessageDialog(null, "Tarjeta guardada exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error al guardar la tarjeta", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
 
 
     private void guardarDetalleMaterial(int id_material, int cantidad) {
@@ -811,10 +924,8 @@ public class CrearTarjeta extends JFrame {
                 material.setPrecio(resultSet.getDouble("precio"));
                 double total = resultSet.getDouble("total");
                 precioTotalMateriales += total;
-                // materialList.add(material); // Elimina esta línea para evitar agregar los materiales de la base de datos
             }
 
-            // Aquí añadimos solo los detalles temporales que hayas agregado
             for (Material materialTemporal : materialListTemporal) {
                 precioTotalMateriales += materialTemporal.getPrecio() * materialTemporal.getCantidad();
                 materialList.add(materialTemporal);
@@ -852,162 +963,6 @@ public class CrearTarjeta extends JFrame {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
-
-    private JButton crearBotonEliminar() {
-        JButton botonEliminar = new JButton("Eliminar");
-        botonEliminar.setForeground(Color.WHITE);
-        botonEliminar.setBackground(darkColorRed);
-        botonEliminar.setFocusPainted(false);
-        botonEliminar.setBorder(margin);
-
-        botonEliminar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Object[] options = {"Sí", "No"};
-                int opcion = JOptionPane.showOptionDialog(null, "¿Está seguro que desea eliminar este producto?", "Confirmación", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-                if (opcion == JOptionPane.YES_OPTION) {
-                    JButton boton = (JButton) e.getSource();
-                    int filaSeleccionada = jtableMateriales.convertRowIndexToModel(jtableMateriales.getEditingRow());
-                    modeloProductos.removeRow(filaSeleccionada);
-                    actualizarTotales();
-                }
-            }
-        });
-        return botonEliminar;
-    }
-
-
-
-    private void cancelar() {
-        Object[] options = {"Sí", "No"};
-        int dialogResult = JOptionPane.showOptionDialog(null, "¿Está seguro de que desea cancelar?", "Confirmar cancelación", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-
-        if (dialogResult == JOptionPane.YES_OPTION) {
-            boolean listaCompraAbierta = false;
-            Window[] windows = Window.getWindows();
-            for (Window window : windows) {
-                if (window instanceof ListaCliente) {
-                    listaCompraAbierta = true;
-                    break;
-                }
-            }
-            if (!listaCompraAbierta) {
-                ListaCompras compras = new ListaCompras();
-                compras.setVisible(true);
-            }
-            actual.dispose();
-        }
-    }
-
-    private boolean existeProductoEnTabla(String producto) {
-        for (int i = 0; i < modeloProductos.getRowCount(); i++) {
-            String nombreProducto = (String) modeloProductos.getValueAt(i, 0);
-            if (nombreProducto.equals(producto)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean obtenerExentoPorNombre(String nombreMaterial) {
-        boolean exento = false;
-
-        try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("SELECT exento FROM materiales WHERE nombre = ?")) {
-
-            preparedStatement.setString(1, nombreMaterial);
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next()) {
-                exento = resultSet.getBoolean("exento");
-            }
-
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
-        }
-        return exento;
-    }
-
-
-    private void configurarTablaProductos() {
-        TableColumnModel columnModel = jtableMateriales.getColumnModel();
-
-        columnModel.getColumn(0).setPreferredWidth(200); // Nombre
-        columnModel.getColumn(1).setPreferredWidth(50);  // Cantidad
-        columnModel.getColumn(2).setPreferredWidth(60); // Precio
-        columnModel.getColumn(3).setPreferredWidth(60); // Sub Total
-        columnModel.getColumn(4).setPreferredWidth(60);  // ISV
-        columnModel.getColumn(5).setPreferredWidth(60); // Total
-
-        columnModel.getColumn(0).setCellRenderer(new CrearTarjeta.CenterAlignedRenderer());
-        columnModel.getColumn(1).setCellRenderer(new CrearTarjeta.LeftAlignedRenderer());
-        columnModel.getColumn(2).setCellRenderer(new CrearTarjeta.LeftAlignedRenderer());
-        columnModel.getColumn(3).setCellRenderer(new CrearTarjeta.LeftAlignedRenderer());
-        columnModel.getColumn(4).setCellRenderer(new CrearTarjeta.LeftAlignedRenderer());
-        columnModel.getColumn(5).setCellRenderer(new CrearTarjeta.LeftAlignedRenderer());
-    }
-
-    private void mostrarMensajeError(String mensaje) {
-        JOptionPane.showMessageDialog(null, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
-    }
-
-    class ButtonRenderer extends JButton implements TableCellRenderer {
-        public ButtonRenderer() {
-            setOpaque(true);
-            setForeground(Color.WHITE);
-            setBackground(Color.RED);
-            setFocusPainted(false);
-        }
-
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            setText("X");
-            return this;
-        }
-    }
-
-    class ButtonEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
-        private JButton button;
-        private int row, col;
-        private JTable table;
-
-        public ButtonEditor(JCheckBox checkBox) {
-            button = new JButton();
-            button.setOpaque(true);
-            button.addActionListener(this);
-            button.setForeground(Color.WHITE);
-            button.setBackground(Color.RED);
-            button.setFocusPainted(false);
-            button.setBorder(margin);
-        }
-
-        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-            button.setText("X");
-            this.table = table;
-            this.row = row;
-            this.col = column;
-            return button;
-        }
-
-        public Object getCellEditorValue() {
-            return "X";
-        }
-
-        public void actionPerformed(ActionEvent e) {
-            if (table != null) {
-                int modelRow = table.convertRowIndexToModel(row);
-                DefaultTableModel model = (DefaultTableModel) table.getModel();
-
-                // Verificar si el modelo de la tabla tiene la fila que se intenta eliminar
-                if (modelRow >= 0 && modelRow < model.getRowCount()) {
-                    fireEditingStopped(); // Mover la llamada a fireEditingStopped() aquí
-                    model.removeRow(modelRow);
-                    actualizarTotales();
-                }
-            }
-        }
-
     }
 
     private ModeloMateriales cargarDatosMateriales() {
@@ -1053,46 +1008,72 @@ public class CrearTarjeta extends JFrame {
         return new ModeloMateriales(materialList, sql);
     }
 
-    private void actualizarTotales() {
-        double sumaSubtotal = 0.0;
-        double sumaISV = 0.0;
+    private double calcularTotalTabla() {
         double sumaTotal = 0.0;
 
+        ModeloProductos modeloProductos = (ModeloProductos) jtableMateriales.getModel();
+
+        // Iterar por todas las filas del modelo
         for (int i = 0; i < modeloProductos.getRowCount(); i++) {
             try {
-                double subtotal = Double.parseDouble(modeloProductos.getValueAt(i, 3).toString().replace(",", "."));
-                double isv = Double.parseDouble(modeloProductos.getValueAt(i, 4).toString().replace(",", "."));
-
-                if (!modeloProductos.getValueAt(i, 4).toString().equalsIgnoreCase("Exento")) {
-                    sumaSubtotal += subtotal;
-                    sumaISV += isv;
+                // Obtener el total de la fila y sumarlo al total general
+                Object valorCelda = modeloProductos.getValueAt(i, 4); // Suponiendo que la columna "total" está en el índice 4 (índice basado en 0)
+                if (valorCelda != null) {
+                    String totalStr = valorCelda.toString();
+                    double total = extraerValorNumerico(totalStr);
+                    sumaTotal += total;
                 }
-
-                double total = Double.parseDouble(modeloProductos.getValueAt(i, 5).toString().replace(",", "."));
-                sumaTotal += total;
             } catch (NumberFormatException e) {
-                System.err.println("Invalid number format encountered. Skipping calculation for row " + i);
+                System.err.println("Se encontró un formato de número no válido. Se omite el cálculo para la fila " + i);
+                System.err.println("Valor que causa el error: " + modeloProductos.getValueAt(i, 4));
             }
         }
 
-        // Additional calculation based on "campoManoObra" (assuming campoManoObra is a JTextField that holds the labor cost)
-        try {
-            double manoObra = Double.parseDouble(campoManoObra.getText().replace(",", "."));
-            sumaTotal += manoObra;
-        } catch (NumberFormatException e) {
-            System.err.println("Invalid number format for labor cost. Skipping calculation for labor cost.");
-        }
-
+        // Actualizar el lbl8 con el total calculado
         DecimalFormat decimalFormat = new DecimalFormat("#.00");
-        String sumaSubtotalFormatted = decimalFormat.format(sumaSubtotal);
-        String sumaISVFormatted = decimalFormat.format(sumaISV);
-        String sumaTotalFormatted = decimalFormat.format(sumaTotal);
+        String sumaTotalFormateado = decimalFormat.format(sumaTotal);
+        lbl8.setText(" " + sumaTotalFormateado);
 
-        lbl8.setText(" " + sumaSubtotalFormatted);
-        lbl9.setText(" " + sumaISVFormatted);
-        lbl10.setText(" " + sumaTotalFormatted);
+        return sumaTotal;
     }
 
+    private double extraerValorNumerico(String valor) {
+        // Usar una expresión regular para extraer solo los dígitos y los separadores decimales (puntos y comas)
+        String valorNumerico = valor.replaceAll("[^0-9.,]", "");
+
+        // Reemplazar todas las comas por puntos como separador decimal
+        valorNumerico = valorNumerico.replace(",", ".");
+
+        // Intentar analizar el valor a double
+        try {
+            return Double.parseDouble(valorNumerico);
+        } catch (NumberFormatException e) {
+            // Manejar una excepción si no se puede convertir a double
+            System.err.println("Se encontró un formato de número no válido. No se puede convertir a double: " + valor);
+            return 0.0; // O regresar un valor predeterminado según sea necesario
+        }
+    }
+
+    private void actualizarLbl8y10() {
+        double totalTabla = calcularTotalTabla();
+
+        // Actualizar lbl8 con el total de la tabla
+        lbl8.setText(String.format("%.2f", totalTabla));
+
+        double manoObra = 0.0;
+        try {
+            manoObra = Double.parseDouble(campoManoObra.getText().replace(",", "."));
+        } catch (NumberFormatException e) {
+
+        }
+
+        // Actualizar lbl9 solo con el valor de mano de obra
+        lbl9.setText(String.format("%.2f", manoObra));
+
+        // Calcular el total y actualizar lbl10
+        double total = totalTabla + manoObra;
+        lbl10.setText(String.format("%.2f", total));
+    }
 
     public static void main(String[] args) {
         CrearTarjeta crearTarjeta = new CrearTarjeta();

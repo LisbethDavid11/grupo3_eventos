@@ -610,7 +610,6 @@ public class CrearManualidad extends JFrame {
     }
 
     private void guardarManualidad() {
-
         String precioText = campoPrecio.getText().replace("L ", "").replace(",", "").replace("_", "");
         double precio = Double.parseDouble(precioText);
         String descripcion = campoDescripcion.getText().trim();
@@ -739,6 +738,7 @@ public class CrearManualidad extends JFrame {
                 Material material = new Material();
                 material.setId(resultSet.getInt("id"));
                 material.setNombre(resultSet.getString("nombre"));
+                material.setCantidad(resultSet.getInt("cantidad"));
                 material.setPrecio(resultSet.getDouble("precio"));
                 material.setDisponible(resultSet.getString("disponible"));
                 material.setDescripcion(resultSet.getString("descripcion"));
