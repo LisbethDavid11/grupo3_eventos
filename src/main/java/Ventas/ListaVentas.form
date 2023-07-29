@@ -38,7 +38,7 @@
         <properties>
           <font name="Arial" size="14" style="1"/>
           <foreground color="-1"/>
-          <text value="LISTADO DE COMPRAS"/>
+          <text value="LISTADO DE VENTAS"/>
         </properties>
       </component>
       <component id="d35fc" class="javax.swing.JButton" binding="botonAdelante">

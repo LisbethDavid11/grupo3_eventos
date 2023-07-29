@@ -380,15 +380,17 @@ public class CrearMaterial extends JFrame {
         String proveedorText = comboBoxProveedor.getSelectedItem().toString();
         int idProveedor = Integer.parseInt(proveedorText.split(" - ")[0]);
         String exento = radioButtonSiExento.isSelected() ? "1" : "0";
+        int cantidad = 0;
 
         try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO materiales (nombre, precio, descripcion, disponible, exento, proveedor_id) VALUES (?, ?, ?, ?, ?, ?)")) {
+             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO materiales (nombre, cantidad, precio, descripcion, disponible, exento, proveedor_id) VALUES (?, ?, ?, ?, ?, ?, ?)")) {
             preparedStatement.setString(1, nombre);
-            preparedStatement.setDouble(2, precio);
-            preparedStatement.setString(3, descripcion);
-            preparedStatement.setString(4, disponibilidad);
-            preparedStatement.setString(5, exento);
-            preparedStatement.setInt(6, idProveedor);
+            preparedStatement.setInt(2, cantidad);
+            preparedStatement.setDouble(3, precio);
+            preparedStatement.setString(4, descripcion);
+            preparedStatement.setString(5, disponibilidad);
+            preparedStatement.setString(6, exento);
+            preparedStatement.setInt(7, idProveedor);
             preparedStatement.executeUpdate();
 
             JOptionPane.showMessageDialog(null, "Material guardado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
