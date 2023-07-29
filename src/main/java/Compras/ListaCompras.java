@@ -337,22 +337,7 @@ public class ListaCompras extends JFrame {
         return new ModeloCompras(compraList, sql);
     }
 
-    private int getTotalPageCount() {
-        int count = 0;
-        try (Connection mysql = sql.conectamysql();
-             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT COUNT(*) AS total FROM " + Compra.nombreTabla + " WHERE codigo_compra LIKE CONCAT('%',?,'%')")) {
-            preparedStatement.setString(1, busqueda);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                count = resultSet.getInt("total");
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
-        }
-        int totalPageCount = (int) Math.ceil((double) count / 20);
-        return totalPageCount;
-    }
+
 
     private double calcularSubtotal(List<DetalleCompra> detalles) {
         double subtotal = 0.0;
@@ -407,9 +392,7 @@ public class ListaCompras extends JFrame {
                 String nombreMaterial = resultSet.getString("nombre");
                 boolean exento = resultSet.getBoolean("exento");
 
-                // Aquí utilizamos el constructor apropiado para crear un objeto Material.
-                // Los campos que no se obtienen de la base de datos se inicializan con valores predeterminados.
-                material = new Material(materialId, nombreMaterial, 0, null, null, exento, 0);
+                material = new Material(materialId, nombreMaterial,0, 0, null, null, exento, 0);
             }
 
         } catch (SQLException e) {
@@ -443,6 +426,118 @@ public class ListaCompras extends JFrame {
         }
 
         return nombreMaterial;
+    }
+
+
+
+
+    private int obtenerNumeroMes(String mesSeleccionado) {
+        int numeroMes = 0;
+        switch (mesSeleccionado) {
+            case "Enero":
+                numeroMes = 1;
+                break;
+            case "Febrero":
+                numeroMes = 2;
+                break;
+            case "Marzo":
+                numeroMes = 3;
+                break;
+            case "Abril":
+                numeroMes = 4;
+                break;
+            case "Mayo":
+                numeroMes = 5;
+                break;
+            case "Junio":
+                numeroMes = 6;
+                break;
+            case "Julio":
+                numeroMes = 7;
+                break;
+            case "Agosto":
+                numeroMes = 8;
+                break;
+            case "Septiembre":
+                numeroMes = 9;
+                break;
+            case "Octubre":
+                numeroMes = 10;
+                break;
+            case "Noviembre":
+                numeroMes = 11;
+                break;
+            case "Diciembre":
+                numeroMes = 12;
+                break;
+            case "Todos":
+                numeroMes = 0;
+                break;
+
+        }
+        return numeroMes;
+    }
+    private void actualizarModeloTablaConMesSeleccionado(String mesSeleccionado) {
+        sql = new Conexion();
+        try (Connection mysql = sql.conectamysql()) {
+            PreparedStatement preparedStatement;
+            if (mesSeleccionado.equals("Todos")) {
+                preparedStatement = mysql.prepareStatement(
+                        "SELECT c.*, p.empresaProveedora, CONCAT(e.Nombres, ' ', e.Apellidos) AS empleadoNombre " +
+                                "FROM compras c " +
+                                "JOIN proveedores p ON c.proveedor_id = p.id " +
+                                "JOIN empleados e ON c.empleado_id = e.id " +
+                                "LIMIT ?, 20");
+                preparedStatement.setInt(1, pagina * 20);
+            } else {
+                preparedStatement = mysql.prepareStatement(
+                        "SELECT c.*, p.empresaProveedora, CONCAT(e.Nombres, ' ', e.Apellidos) AS empleadoNombre " +
+                                "FROM compras c " +
+                                "JOIN proveedores p ON c.proveedor_id = p.id " +
+                                "JOIN empleados e ON c.empleado_id = e.id " +
+                                "WHERE MONTH(c.fecha) = ? " +
+                                "LIMIT ?, 20");
+                int numeroMes = obtenerNumeroMes(mesSeleccionado);
+                preparedStatement.setInt(1, numeroMes);
+                preparedStatement.setInt(2, pagina * 20);
+            }
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            compraList = new ArrayList<>();
+            while (resultSet.next()) {
+                Compra compra = new Compra();
+                compra.setId(resultSet.getInt("id"));
+                compra.setCodigoCompra(resultSet.getString("codigo_compra"));
+                compra.setFecha(resultSet.getString("fecha"));
+                compra.setProveedorId(resultSet.getInt("proveedor_id"));
+                compra.setEmpleadoId(resultSet.getInt("empleado_id"));
+                compraList.add(compra);
+            }
+
+            listaCompras.setModel(new ModeloCompras(compraList, sql));
+            configurarTablaCompras();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            compraList = new ArrayList<>();
+        }
+    }
+
+    private int getTotalPageCount() {
+        int count = 0;
+        try (Connection mysql = sql.conectamysql();
+             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT COUNT(*) AS total FROM " + Compra.nombreTabla + " WHERE codigo_compra LIKE CONCAT('%',?,'%')")) {
+            preparedStatement.setString(1, busqueda);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                count = resultSet.getInt("total");
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+        }
+        int totalPageCount = (int) Math.ceil((double) count / 20);
+        return totalPageCount;
     }
 
     public void imprimirFactura(int indiceItem) {
@@ -659,102 +754,6 @@ public class ListaCompras extends JFrame {
             e.printStackTrace();
         }
     }
-
-
-    private int obtenerNumeroMes(String mesSeleccionado) {
-        int numeroMes = 0;
-        switch (mesSeleccionado) {
-            case "Enero":
-                numeroMes = 1;
-                break;
-            case "Febrero":
-                numeroMes = 2;
-                break;
-            case "Marzo":
-                numeroMes = 3;
-                break;
-            case "Abril":
-                numeroMes = 4;
-                break;
-            case "Mayo":
-                numeroMes = 5;
-                break;
-            case "Junio":
-                numeroMes = 6;
-                break;
-            case "Julio":
-                numeroMes = 7;
-                break;
-            case "Agosto":
-                numeroMes = 8;
-                break;
-            case "Septiembre":
-                numeroMes = 9;
-                break;
-            case "Octubre":
-                numeroMes = 10;
-                break;
-            case "Noviembre":
-                numeroMes = 11;
-                break;
-            case "Diciembre":
-                numeroMes = 12;
-                break;
-            case "Todos":
-                numeroMes = 0;
-                break;
-
-        }
-        return numeroMes;
-    }
-    private void actualizarModeloTablaConMesSeleccionado(String mesSeleccionado) {
-        sql = new Conexion();
-        try (Connection mysql = sql.conectamysql()) {
-            PreparedStatement preparedStatement;
-            if (mesSeleccionado.equals("Todos")) {
-                preparedStatement = mysql.prepareStatement(
-                        "SELECT c.*, p.empresaProveedora, CONCAT(e.Nombres, ' ', e.Apellidos) AS empleadoNombre " +
-                                "FROM compras c " +
-                                "JOIN proveedores p ON c.proveedor_id = p.id " +
-                                "JOIN empleados e ON c.empleado_id = e.id " +
-                                "LIMIT ?, 20");
-                preparedStatement.setInt(1, pagina * 20);
-            } else {
-                preparedStatement = mysql.prepareStatement(
-                        "SELECT c.*, p.empresaProveedora, CONCAT(e.Nombres, ' ', e.Apellidos) AS empleadoNombre " +
-                                "FROM compras c " +
-                                "JOIN proveedores p ON c.proveedor_id = p.id " +
-                                "JOIN empleados e ON c.empleado_id = e.id " +
-                                "WHERE MONTH(c.fecha) = ? " +
-                                "LIMIT ?, 20");
-                int numeroMes = obtenerNumeroMes(mesSeleccionado);
-                preparedStatement.setInt(1, numeroMes);
-                preparedStatement.setInt(2, pagina * 20);
-            }
-
-            ResultSet resultSet = preparedStatement.executeQuery();
-            compraList = new ArrayList<>();
-            while (resultSet.next()) {
-                Compra compra = new Compra();
-                compra.setId(resultSet.getInt("id"));
-                compra.setCodigoCompra(resultSet.getString("codigo_compra"));
-                compra.setFecha(resultSet.getString("fecha"));
-                compra.setProveedorId(resultSet.getInt("proveedor_id"));
-                compra.setEmpleadoId(resultSet.getInt("empleado_id"));
-                compraList.add(compra);
-            }
-
-            listaCompras.setModel(new ModeloCompras(compraList, sql));
-            configurarTablaCompras();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
-            compraList = new ArrayList<>();
-        }
-    }
-
-
-
 
     public static void main(String[] args) {
         ListaCompras listaCompras = new ListaCompras();

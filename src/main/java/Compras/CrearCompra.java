@@ -17,10 +17,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Properties;
 
 public class CrearCompra extends JFrame {
@@ -240,6 +242,26 @@ public class CrearCompra extends JFrame {
             }
         });
 
+        // Agrega un ActionListener al JComboBox "boxMaterial"
+        boxMaterial.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Obtener el nombre del producto seleccionado en el JComboBox
+                String nombreProducto = boxMaterial.getSelectedItem().toString();
+
+                // Obtener el precio del producto desde la base de datos
+                double precioProducto = obtenerPrecioProducto(nombreProducto);
+
+                // Formatear el precio con el símbolo punto (.) como separador decimal
+                DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+                DecimalFormat decimalFormat = new DecimalFormat("##,##0.00", symbols);
+                String precioFormateado = decimalFormat.format(precioProducto);
+
+                // Establecer el precio formateado en el JTextField "campoPrecio"
+                campoPrecio.setText(precioFormateado);
+            }
+        });
+
         cancelarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -411,6 +433,30 @@ public class CrearCompra extends JFrame {
         }
     }
 
+    private double obtenerPrecioProducto(String nombreProducto) {
+        double precio = 0.0;
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT precio FROM materiales WHERE nombre = ?")) {
+
+            preparedStatement.setString(1, nombreProducto);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                // Obtener el precio como cadena desde la base de datos
+                String precioStr = resultSet.getString("precio");
+
+                // Reemplazar la coma por el punto en el precio para el formato adecuado
+                precioStr = precioStr.replace(",", ".");
+
+                // Convertir el precio formateado a double
+                precio = Double.parseDouble(precioStr);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return precio;
+    }
+
+
     private JButton crearBotonEliminar() {
         JButton botonEliminar = new JButton("Eliminar");
         botonEliminar.setForeground(Color.WHITE);
@@ -489,6 +535,36 @@ public class CrearCompra extends JFrame {
                 preparedStatement.setInt(3, cantidad);
                 preparedStatement.setDouble(4, precio);
                 preparedStatement.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            // Actualizar la cantidad en la tabla "materiales"
+            int cantidadAnterior = 0;
+            try (PreparedStatement consultaCantidad = mysql.prepareStatement("SELECT cantidad FROM materiales WHERE id = ?")) {
+                consultaCantidad.setInt(1, materialId);
+                ResultSet resultSet = consultaCantidad.executeQuery();
+                if (resultSet.next()) {
+                    cantidadAnterior = resultSet.getInt("cantidad");
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            int nuevaCantidad = cantidadAnterior + cantidad;
+
+            try (PreparedStatement actualizarCantidad = mysql.prepareStatement("UPDATE materiales SET cantidad = ? WHERE id = ?")) {
+                actualizarCantidad.setInt(1, nuevaCantidad);
+                actualizarCantidad.setInt(2, materialId);
+                actualizarCantidad.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            try (PreparedStatement actualizarPrecio = mysql.prepareStatement("UPDATE materiales SET precio = ? WHERE id = ?")) {
+                actualizarPrecio.setDouble(1, precio);
+                actualizarPrecio.setInt(2, materialId);
+                actualizarPrecio.executeUpdate();
             } catch (SQLException e) {
                 e.printStackTrace();
             }

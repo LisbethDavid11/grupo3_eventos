@@ -142,17 +142,12 @@ public class ModeloCompras extends AbstractTableModel {
 
     private double calcularISV(Compra compra) {
         double totalISV = 0.0;
-
-        // Obtener los detalles de compra asociados a la compra actual
         List<DetalleCompra> detalles = obtenerDetallesCompra(compra.getId());
 
-        // Calcular el ISV sumando los montos de los detalles de compra que no están exentos
         for (DetalleCompra detalle : detalles) {
-            // Obtener el material asociado a este detalle
             Material material = obtenerMaterialPorId(detalle.getMaterialId());
 
             if (material != null && !material.isExento()) {
-                // Calcular el monto del ISV para este detalle y agregarlo al total
                 double montoDetalle = detalle.getPrecio() * detalle.getCantidad();
                 double isvDetalle = montoDetalle * 0.15;
                 totalISV += isvDetalle;
@@ -164,6 +159,7 @@ public class ModeloCompras extends AbstractTableModel {
     private double calcularTotal(Compra compra) {
         double subTotal = calcularSubTotal(compra);
         double total = 0.0;
+        double impuesto = 0.15; // Impuesto sobre ventas (ISV) del 15%
 
         // Obtener los detalles de compra asociados a la compra actual
         List<DetalleCompra> detalles = obtenerDetallesCompra(compra.getId());
@@ -173,10 +169,13 @@ public class ModeloCompras extends AbstractTableModel {
             // Obtener el material asociado a este detalle
             Material material = obtenerMaterialPorId(detalle.getMaterialId());
             double montoDetalle = detalle.getPrecio() * detalle.getCantidad();
-            if (material != null && !material.isExento()) {
+
+            if (material != null && material.isExento()) {
+                // Si el material es exento, no se aplica ISV
                 total += montoDetalle;
             } else {
-                total += montoDetalle * 1.15; // Aplicar el 15% de impuesto sobre ventas (ISV)
+                // Si el material no es exento, se aplica el 15% de ISV
+                total += montoDetalle * (1 + impuesto);
             }
         }
 
@@ -199,7 +198,7 @@ public class ModeloCompras extends AbstractTableModel {
 
                 // Aquí utilizamos el constructor apropiado para crear un objeto Material.
                 // Los campos que no se obtienen de la base de datos se inicializan con valores predeterminados.
-                material = new Material(materialId, nombreMaterial, 0, null, null, exento, 0);
+                material = new Material(materialId, nombreMaterial, 0,0, null, null, exento, 0);
             }
 
         } catch (SQLException e) {
