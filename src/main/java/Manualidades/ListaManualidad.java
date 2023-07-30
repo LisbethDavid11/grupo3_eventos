@@ -1,6 +1,4 @@
 package Manualidades;
-import Clientes.ListaCliente;
-import Floristerias.ListaFloristeria;
 import Modelos.ModeloManualidad;
 import Objetos.Conexion;
 import Objetos.Manualidad;

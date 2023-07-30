@@ -57,7 +57,7 @@ public class ModeloManualidad extends AbstractTableModel {
                 String precioManualidadFormateada = String.format("L. %,.2f", precio_manualidad);
                 return precioManualidadFormateada;
             case 4: // Precio
-                double mano_obra = manualidad.getPrecio_manualidad();
+                double mano_obra = manualidad.getMano_obra();
                 if (mano_obra < 0) {
                     mano_obra = 0;
                 }
