@@ -1,14 +1,8 @@
 package Globos;
-
-import Arreglos.CrearArreglo;
-import Arreglos.EditarArreglo;
 import Arreglos.TextPrompt;
-import Arreglos.VerArreglo;
 import Modelos.ModeloGlobo;
-import Objetos.Arreglo;
 import Objetos.Conexion;
 import Objetos.Globo;
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -31,7 +25,7 @@ public class ListaGlobos extends JFrame {
     private JButton botonAtras;
     private JButton botonAdelante;
     private JTextField campoBusqueda;
-    private TextPrompt placeholder = new TextPrompt("Buscar por nombre", campoBusqueda);
+    private TextPrompt placeholder = new TextPrompt("Buscar por forma, color, tamaño o precio", campoBusqueda);
     private JButton botonEditar;
     private JButton botonCrear;
     private JLabel lblPagina;
@@ -237,11 +231,18 @@ public class ListaGlobos extends JFrame {
         sql = new Conexion();
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement(
-                     "SELECT * FROM globos WHERE color LIKE CONCAT('%', ?, '%') LIMIT ?, 20"
+                     "SELECT * FROM globos WHERE " +
+                             "(color LIKE CONCAT('%', ?, '%') OR " +
+                             "tamano LIKE CONCAT('%', ?, '%') OR " +
+                             "forma LIKE CONCAT('%', ?, '%') OR " +
+                             "precio LIKE CONCAT('%', ?, '%')) LIMIT ?, 20"
              )
         ) {
-            preparedStatement.setString(1, busqueda);
-            preparedStatement.setInt(2, pagina * 20);
+            preparedStatement.setString(1, busqueda); // Valor de búsqueda para color
+            preparedStatement.setString(2, busqueda); // Valor de búsqueda para tamaño
+            preparedStatement.setString(3, busqueda); // Valor de búsqueda para forma
+            preparedStatement.setString(4, busqueda); // Valor de búsqueda para precio
+            preparedStatement.setInt(5, pagina * 20);
 
             ResultSet resultSet = preparedStatement.executeQuery();
             listaGlobo = new ArrayList<>(); // No es necesario volver a declarar, solo inicializamos aquí
@@ -296,15 +297,6 @@ public class ListaGlobos extends JFrame {
 
         return totalPageCount;
     }
-
-
-    private void actualizarTabla() {
-        listaGlobos.setModel(cargarDatos());
-        configurarTablaArreglos();
-        lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
-    }
-
-
 
     public static void main(String[] args) {
         ListaGlobos listaGlobos = new ListaGlobos();

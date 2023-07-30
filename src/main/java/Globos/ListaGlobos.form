@@ -38,7 +38,7 @@
         <properties>
           <font name="Arial" size="14" style="1"/>
           <foreground color="-1"/>
-          <text value="LISTADO DE ARREGLOS"/>
+          <text value="LISTADO DE GLOBOS"/>
         </properties>
       </component>
       <component id="b31b5" class="javax.swing.JButton" binding="botonAtras">
