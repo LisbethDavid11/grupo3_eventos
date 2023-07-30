@@ -1103,7 +1103,7 @@ public class CrearManualidad extends JFrame {
     }
 
     private double extraerValorNumerico(String valor) {
-        String valorNumerico = valor.replaceAll(",", "").replace(',', '.');
+        String valorNumerico = valor.replace(',', '.');
         try {
             return Double.parseDouble(valorNumerico);
         } catch (NumberFormatException e) {
@@ -1111,7 +1111,6 @@ public class CrearManualidad extends JFrame {
             return 0.0;
         }
     }
-
 
     private void actualizarLbl8y10() {
         double totalTabla = calcularTotalTabla();
