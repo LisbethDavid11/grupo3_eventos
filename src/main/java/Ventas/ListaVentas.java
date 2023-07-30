@@ -365,6 +365,8 @@ public class ListaVentas extends JFrame {
                 subtotal += detalle.getCantidad() * detalle.getPrecio();
             }
         }
+        // Restar el 15% al subtotal
+        subtotal *= 0.85;
         return subtotal;
     }
 
@@ -414,22 +416,16 @@ public class ListaVentas extends JFrame {
         boolean exento = false; // Variable para indicar si el material es exento
 
         try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("SELECT nombre, exento FROM materiales WHERE id = ?")) {
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT nombre FROM materiales WHERE id = ?")) {
             preparedStatement.setInt(1, materialId);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 nombreMaterial = resultSet.getString("nombre");
-                exento = resultSet.getBoolean("exento");
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
         }
-
-        if (exento) {
-            nombreMaterial += " (Exento)";
-        }
-
         return nombreMaterial;
     }
 
@@ -574,12 +570,12 @@ public class ListaVentas extends JFrame {
 
             contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
             contentStream.beginText();
-            contentStream.newLineAtOffset(tableWidth - 250, yPosition - 90);
-            contentStream.showText("Total:");
+            contentStream.newLineAtOffset(tableWidth - 250, yPosition - 70);
+            contentStream.showText("Total a pagar:");
             contentStream.endText();
             contentStream.beginText();
             contentStream.setFont(PDType1Font.HELVETICA, 12);
-            contentStream.newLineAtOffset(tableWidth - 50, yPosition - 90);
+            contentStream.newLineAtOffset(tableWidth - 50, yPosition - 70);
             contentStream.showText("L. " + String.format("%.2f", total));
             contentStream.endText();
 
@@ -598,7 +594,7 @@ public class ListaVentas extends JFrame {
             String numeroAleatorioFormateado = String.format("%04d", numeroAleatorio);
 
             // Generar el nombre del archivo PDF
-            String nombreArchivo = "Factura " + fechaActual + " " + horaActual + " " + numeroAleatorioFormateado + ".pdf";
+            String nombreArchivo = "Factura de venta N° " + fechaActual + " " + horaActual + " " + numeroAleatorioFormateado + ".pdf";
 
             // Reemplazar los caracteres no válidos en el nombre del archivo
             nombreArchivo = nombreArchivo.replace(":", "-");

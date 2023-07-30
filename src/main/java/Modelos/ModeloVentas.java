@@ -133,6 +133,9 @@ public class ModeloVentas extends AbstractTableModel {
             subTotal += detalle.getPrecio() * detalle.getCantidad();
         }
 
+        // Aplicar el descuento del 15% al subtotal
+        subTotal *= 0.85;
+
         return subTotal;
     }
 
