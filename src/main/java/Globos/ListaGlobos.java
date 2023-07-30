@@ -174,21 +174,21 @@ public class ListaGlobos extends JFrame {
     private void configurarTablaArreglos() {
         TableColumnModel columnModel = listaGlobos.getColumnModel();
 
-        columnModel.getColumn(0).setPreferredWidth(30);
-        columnModel.getColumn(1).setPreferredWidth(110);
-        columnModel.getColumn(2).setPreferredWidth(110);
-        columnModel.getColumn(3).setPreferredWidth(110);
-        columnModel.getColumn(4).setPreferredWidth(110);
-        columnModel.getColumn(5).setPreferredWidth(110);
-        columnModel.getColumn(6).setPreferredWidth(150);
+        columnModel.getColumn(0).setPreferredWidth(20);
+        columnModel.getColumn(1).setPreferredWidth(150);
+        columnModel.getColumn(2).setPreferredWidth(60);
+        columnModel.getColumn(3).setPreferredWidth(150);
+        columnModel.getColumn(4).setPreferredWidth(150);
+        columnModel.getColumn(5).setPreferredWidth(60);
+        columnModel.getColumn(6).setPreferredWidth(60);
 
         columnModel.getColumn(0).setCellRenderer(new CenterAlignedRenderer());
         columnModel.getColumn(1).setCellRenderer(new LeftAlignedRenderer());
-        columnModel.getColumn(2).setCellRenderer(new LeftAlignedRenderer());
+        columnModel.getColumn(2).setCellRenderer(new CenterAlignedRenderer());
         columnModel.getColumn(3).setCellRenderer(new LeftAlignedRenderer());
         columnModel.getColumn(4).setCellRenderer(new LeftAlignedRenderer());
         columnModel.getColumn(5).setCellRenderer(new LeftAlignedRenderer());
-        columnModel.getColumn(6).setCellRenderer(new LeftAlignedRenderer());
+        columnModel.getColumn(6).setCellRenderer(new CenterAlignedRenderer());
     }
 
     class LeftAlignedRenderer extends DefaultTableCellRenderer {

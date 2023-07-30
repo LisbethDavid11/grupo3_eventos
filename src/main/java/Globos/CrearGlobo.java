@@ -139,12 +139,142 @@ public class CrearGlobo extends JFrame {
                     int dotIndex = text.indexOf(".");
                     int decimalDigits = text.length() - dotIndex - 1;
                     if (decimalDigits >= 2) {
-                        e.consume(); // Ignorar el carácter si se excede la cantidad de dígitos después del punto decimal
+                        e.consume();
                         return;
                     }
                 }
             }
         });
+
+        campoColor.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                String text = campoColor.getText();
+                int length = text.length();
+
+                if (length >= 30) {
+                    e.consume();  // Ignorar la tecla si se alcanza la longitud máxima
+                    return;
+                }
+
+                char c = e.getKeyChar();
+                if (Character.isISOControl(c)) {
+                    return;  // Permitir teclas de control como retroceso y eliminar
+                }
+
+                // Convertir la primera letra a mayúscula
+                if (length == 0) {
+                    if (!Character.isLetter(c)) {
+                        e.consume(); // Ignorar el evento si se intenta ingresar un carácter no permitido como primer carácter
+                        return;
+                    }
+                    campoColor.setText(String.valueOf(Character.toUpperCase(c)));
+                    e.consume();  // Ignorar el evento de tecla original para evitar que se agregue la letra dos veces
+                    return;
+                }
+
+                // Verificar si se ingresó un espacio
+                if (c == ' ') {
+                    // Permitir solo un espacio entre palabras
+                    if (length > 0 && text.charAt(length - 1) != ' ') {
+                        return;
+                    } else {
+                        e.consume(); // Ignorar el evento si se intenta agregar más de un espacio consecutivo
+                    }
+                } else {
+                    // Permitir solo letras
+                    if (!Character.isLetter(c)) {
+                        e.consume(); // Ignorar el evento si se ingresa un carácter no permitido
+                    }
+                }
+            }
+        });
+
+        campoForma.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                String text = campoForma.getText();
+                int length = text.length();
+
+                if (length >= 30) {
+                    e.consume();  // Ignorar la tecla si se alcanza la longitud máxima
+                    return;
+                }
+
+                char c = e.getKeyChar();
+                if (Character.isISOControl(c)) {
+                    return;  // Permitir teclas de control como retroceso y eliminar
+                }
+
+                // Convertir la primera letra a mayúscula
+                if (length == 0) {
+                    if (!Character.isLetter(c)) {
+                        e.consume(); // Ignorar el evento si se intenta ingresar un carácter no permitido como primer carácter
+                        return;
+                    }
+                    campoForma.setText(String.valueOf(Character.toUpperCase(c)));
+                    e.consume();  // Ignorar el evento de tecla original para evitar que se agregue la letra dos veces
+                    return;
+                }
+
+                // Verificar si se ingresó un espacio
+                if (c == ' ') {
+                    // Permitir solo un espacio entre palabras
+                    if (length > 0 && text.charAt(length - 1) != ' ') {
+                        return;
+                    } else {
+                        e.consume(); // Ignorar el evento si se intenta agregar más de un espacio consecutivo
+                    }
+                } else {
+                    // Permitir solo letras
+                    if (!Character.isLetter(c)) {
+                        e.consume(); // Ignorar el evento si se ingresa un carácter no permitido
+                    }
+                }
+            }
+        });
+
+        campoTamanio.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                String text = campoTamanio.getText();
+                int length = text.length();
+
+                if (length >= 30) {
+                    e.consume();  // Ignorar la tecla si se alcanza la longitud máxima
+                    return;
+                }
+
+                char c = e.getKeyChar();
+                if (Character.isISOControl(c)) {
+                    return;  // Permitir teclas de control como retroceso y eliminar
+                }
+
+                // Verificar si se ingresó un espacio
+                if (c == ' ') {
+                    // Permitir solo un espacio entre palabras
+                    if (length > 0 && text.charAt(length - 1) != ' ') {
+                        return;
+                    } else {
+                        e.consume(); // Ignorar el evento si se intenta agregar más de un espacio consecutivo
+                    }
+                } else {
+                    // Permitir solo letras, números y asterisco
+                    if (!Character.isLetterOrDigit(c) && c != '*') {
+                        e.consume(); // Ignorar el evento si se ingresa un carácter no permitido
+                        return;
+                    }
+
+                    // Verificar si es el primer carácter y si no es un número
+                    if (length == 0 && !Character.isDigit(c)) {
+                        e.consume(); // Ignorar el evento si no se inicia con un número
+                        return;
+                    }
+                }
+            }
+        });
+
+
 
         campoCantidadPorPaquete.addKeyListener(new KeyAdapter() {
             @Override
@@ -186,8 +316,8 @@ public class CrearGlobo extends JFrame {
                 }
 
                 String newText = text + c;
-                if (newText.length() > 50) {
-                    e.consume();  // Ignorar la tecla si se supera la longitud máxima
+                if (!newText.matches("[a-zA-ZñÑ0-9_-]+")) {
+                    e.consume();  // Ignorar la tecla si se introduce un carácter no permitido
                 }
             }
         });
@@ -212,41 +342,6 @@ public class CrearGlobo extends JFrame {
                     mensaje += "El código del globo\n";
                 }
 
-                if (campoPrecio.getText().trim().isEmpty()) {
-                    validacion++;
-                    mensaje += "El precio\n";
-                }
-
-                if (campoCantidadPorPaquete.getText().trim().isEmpty()) {
-                    validacion++;
-                    mensaje += "La cantidad de globos por paquete\n";
-                }
-
-                if (campoForma.getText().trim().isEmpty()) {
-                    validacion++;
-                    mensaje += "La forma del globo\n";
-                }
-
-                if (campoColor.getText().trim().isEmpty()) {
-                    validacion++;
-                    mensaje += "El color\n";
-                }
-
-                if (campoTamanio.getText().trim().isEmpty()) {
-                    validacion++;
-                    mensaje += "El tamaño\n";
-                }
-
-                if (!radioButtonAire.isSelected() && !radioButtonHelio.isSelected() && !radioButtonAmbos.isSelected()) {
-                    validacion++;
-                    mensaje += "Seleccionar si es para aire, helio o ambos\n";
-                }
-
-                if (!radioButtonSiNecesita.isSelected() && !radioButtonNoNecesita.isSelected()) {
-                    validacion++;
-                    mensaje += "Seleccionar si es necesario el porta globos\n";
-                }
-
                 String tipoEventoText = comboBoxTipoEvento.getSelectedItem().toString();
                 if (tipoEventoText.equals("Seleccione el tipo")) {
                     validacion++;
@@ -259,25 +354,71 @@ public class CrearGlobo extends JFrame {
                     mensaje += "El tipo de material\n";
                 }
 
+                if (campoPrecio.getText().trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "El precio\n";
+                }
+
+                if (campoCantidadPorPaquete.getText().trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "La cantidad de globos por paquete\n";
+                }
+
+                if (!radioButtonAire.isSelected() && !radioButtonHelio.isSelected() && !radioButtonAmbos.isSelected()) {
+                    validacion++;
+                    mensaje += "Seleccionar si es para aire, helio o ambos\n";
+                }
+
+                if (!radioButtonSiNecesita.isSelected() && !radioButtonNoNecesita.isSelected()) {
+                    validacion++;
+                    mensaje += "Seleccionar si es necesario el porta globos\n";
+                }
+
+                if (campoTamanio.getText().trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "El tamaño\n";
+                }
+
+                if (campoColor.getText().trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "El color\n";
+                }
+
+                if (campoForma.getText().trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "La forma del globo\n";
+                }
 
                 if (validacion > 0) {
                     JOptionPane.showMessageDialog(null, mensaje, "Validación", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
-                String nombre = campoCodigo.getText().trim();
-                if (!nombre.isEmpty()) {
-                    if (nombre.length() > 100) {
-                        JOptionPane.showMessageDialog(null, "El nombre debe tener como máximo 100 caracteres.", "Validación", JOptionPane.ERROR_MESSAGE);
+                String codigo = campoCodigo.getText().trim();
+                if (!codigo.isEmpty()) {
+                    if (codigo.length() > 100) {
+                        JOptionPane.showMessageDialog(null, "El código debe tener como máximo 100 caracteres.", "Validación", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
 
-                    if (!nombre.matches("[a-zA-ZñÑ]{2,}(\\s[a-zA-ZñÑ]+\\s*)*")) {
-                        JOptionPane.showMessageDialog(null, "El nombre debe tener mínimo 2 letras y máximo 1 espacio entre palabras.", "Validación", JOptionPane.ERROR_MESSAGE);
+                    if (!codigo.matches("[a-zA-ZñÑ0-9_-]+")) {
+                        JOptionPane.showMessageDialog(null, "El código solo puede contener letras (mayúsculas y minúsculas), números y guiones (bajos, medios y altos).", "Validación", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
                 } else {
-                    JOptionPane.showMessageDialog(null, "El campo de nombre no puede estar vacío.", "Validación", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "El campo de código no puede estar vacío.", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                String evento = comboBoxTipoEvento.getSelectedItem().toString();
+                if (evento.equals("Seleccione el tipo")) {
+                    JOptionPane.showMessageDialog(null, "Debe seleccionar el tipo de evento.", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                String material = comboBoxMaterial.getSelectedItem().toString();
+                if (material.equals("Seleccione el material")) {
+                    JOptionPane.showMessageDialog(null, "Debe seleccionar el tipo de material.", "Validación", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
@@ -298,16 +439,54 @@ public class CrearGlobo extends JFrame {
                     }
                 }
 
-                String evento = comboBoxTipoEvento.getSelectedItem().toString();
-                if (evento.equals("Seleccione el tipo")) {
-                    JOptionPane.showMessageDialog(null, "Debe seleccionar el tipo de evento.", "Validación", JOptionPane.ERROR_MESSAGE);
+                String cantidadText = campoCantidadPorPaquete.getText().trim();
+                if (cantidadText.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Faltó ingresar la cantidad por paquetes de globos.", "Validación", JOptionPane.ERROR_MESSAGE);
                     return;
+                } else {
+                    if (!cantidadText.matches("\\d{1,4}")) {
+                        JOptionPane.showMessageDialog(null, "Cantidad por paquete de globos inválida. Debe contener solo números entre 1 y 9999.", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    } else {
+                        int cantidad = Integer.parseInt(cantidadText);
+                        if (cantidad < 1 || cantidad > 9999) {
+                            JOptionPane.showMessageDialog(null, "Cantidad por paquete de globos fuera del rango válido (1 - 9999).", "Validación", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                    }
                 }
 
-                String material = comboBoxMaterial.getSelectedItem().toString();
-                if (material.equals("Seleccione el material")) {
-                    JOptionPane.showMessageDialog(null, "Debe seleccionar el tipo de material.", "Validación", JOptionPane.ERROR_MESSAGE);
+                String tamanioText = campoTamanio.getText().trim();
+                if (tamanioText.isEmpty() || tamanioText.length() < 2 || tamanioText.length() > 30) {
+                    JOptionPane.showMessageDialog(null, "El tamaño debe tener entre 2 y 30 caracteres y no puede estar vacío.", "Validación", JOptionPane.ERROR_MESSAGE);
                     return;
+                } else {
+                    if (!tamanioText.matches("[\\d\\w]+(\\s[\\d\\w]+)*(\\s\\*\\s[\\d\\w]+(\\s[\\d\\w]+)*)*")) {
+                        JOptionPane.showMessageDialog(null, "Tamaño inválido. Debe comenzar con uno o dos dígitos o letras y puede tener un espacio seguido de un asterisco (*), una x y luego uno o dos dígitos o letras adicionales seguido de una palabra o unidades de medida.", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                }
+
+                String colorText = campoForma.getText().trim();
+                if (colorText.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Faltó ingresar el color.", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return;
+                } else {
+                    if (!colorText.matches("^[A-ZÑ][a-zA-ZñÑ ]*$") || colorText.length() < 2 || colorText.length() > 30) {
+                        JOptionPane.showMessageDialog(null, "Color inválido. Solo puede contener letras y un espacio entre palabras. Además, debe tener entre 2 y 30 caracteres.", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                }
+
+                String formaText = campoForma.getText().trim();
+                if (formaText.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Faltó ingresar la forma.", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return;
+                } else {
+                    if (!formaText.matches("^[A-ZÑ][a-zA-ZñÑ ]*$") || formaText.length() < 2 || formaText.length() > 30) {
+                        JOptionPane.showMessageDialog(null, "Forma inválida. Solo puede contener letras y un espacio entre palabras. Además, debe tener entre 2 y 30 caracteres.", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
                 }
 
                 int respuesta = JOptionPane.showOptionDialog(
