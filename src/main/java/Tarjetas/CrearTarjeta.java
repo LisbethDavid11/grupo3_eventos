@@ -444,7 +444,7 @@ public class CrearTarjeta extends JFrame {
 
                 if (campoPrecioTarjeta.getText().trim().isEmpty()) {
                     validacion++;
-                    mensaje += "Precio de la manualidad\n";
+                    mensaje += "Precio de la tarjeta\n";
                 }
 
                 if (campoManoObra.getText().trim().isEmpty()) {
@@ -681,6 +681,7 @@ public class CrearTarjeta extends JFrame {
 
                                 // Actualizar la tabla con los detalles actualizados
                                 jtableMateriales.setModel(cargarDetallesMateriales());
+                                actualizarLbl8y10();
                             } else {
                                 JOptionPane.showMessageDialog(null, "El material ya está presente en la tabla", "Validación", JOptionPane.ERROR_MESSAGE);
                             }
@@ -691,10 +692,7 @@ public class CrearTarjeta extends JFrame {
                         JOptionPane.showMessageDialog(null, "La cantidad no debe ser mayor a la existente en la base de datos", "Validación", JOptionPane.ERROR_MESSAGE);
                     }
                 }
-
-                actualizarLbl8y10();
             }
-
         });
 
         jlabelImagen.addMouseListener(new MouseAdapter() {
@@ -754,7 +752,6 @@ public class CrearTarjeta extends JFrame {
             return cell;
         }
     }
-
 
     private int obtenerCantidadMaterial() {
         String input = JOptionPane.showInputDialog(this, "Ingrese la cantidad del material:", "Cantidad", JOptionPane.PLAIN_MESSAGE);
@@ -855,7 +852,6 @@ public class CrearTarjeta extends JFrame {
             JOptionPane.showMessageDialog(null, "Error al guardar la tarjeta", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
 
     private void guardarDetalleMaterial(int id_material, int cantidad) {
         int cantidadExistente = obtenerCantidadExistenteEnBaseDeDatos(id_material);
