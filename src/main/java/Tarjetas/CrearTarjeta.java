@@ -860,8 +860,8 @@ public class CrearTarjeta extends JFrame {
     private void guardarDetalleMaterial(int id_material, int cantidad) {
         int cantidadExistente = obtenerCantidadExistenteEnBaseDeDatos(id_material);
 
-        if (cantidadExistente == 0) {
-            JOptionPane.showMessageDialog(null, "No hay suficiente cantidad de material en la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
+        if (cantidad <= 0 || cantidad > cantidadExistente) {
+            JOptionPane.showMessageDialog(null, "La cantidad ingresada no es válida o excede la cantidad disponible en la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -878,6 +878,7 @@ public class CrearTarjeta extends JFrame {
             JOptionPane.showMessageDialog(null, "Error al agregar el detalle de la tarjeta", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+
 
 
     private double obtenerPrecioMaterialDesdeBD(int id_material) {
@@ -1011,35 +1012,69 @@ public class CrearTarjeta extends JFrame {
     private double calcularTotalTabla() {
         double sumaTotal = 0.0;
 
-        ModeloProductos modeloProductos = (ModeloProductos) jtableMateriales.getModel();
+        TableModel modelo = jtableMateriales.getModel();
+        if (modelo instanceof ModeloProductos) {
+            ModeloProductos modeloProductos = (ModeloProductos) modelo;
 
-        // Iterar por todas las filas del modelo
-        for (int i = 0; i < modeloProductos.getRowCount(); i++) {
-            try {
-                // Obtener el total de la fila y sumarlo al total general
-                Object valorCelda = modeloProductos.getValueAt(i, 4); // Suponiendo que la columna "total" está en el índice 4 (índice basado en 0)
-                if (valorCelda != null) {
-                    String totalStr = valorCelda.toString();
-                    double total = extraerValorNumerico(totalStr);
-                    sumaTotal += total;
+            // Iterar por todas las filas del modelo
+            for (int i = 0; i < modeloProductos.getRowCount(); i++) {
+                try {
+                    // Obtener el total de la fila y sumarlo al total general
+                    Object valorCelda = modeloProductos.getValueAt(i, 4); // Suponiendo que la columna "total" está en el índice 4 (índice basado en 0)
+                    if (valorCelda != null) {
+                        String totalStr = valorCelda.toString();
+                        double total = extraerValorNumerico(totalStr);
+                        sumaTotal += total;
+                    }
+                } catch (NumberFormatException e) {
+                    System.err.println("Se encontró un formato de número no válido. Se omite el cálculo para la fila " + i);
+                    System.err.println("Valor que causa el error: " + modeloProductos.getValueAt(i, 4));
                 }
-            } catch (NumberFormatException e) {
-                System.err.println("Se encontró un formato de número no válido. Se omite el cálculo para la fila " + i);
-                System.err.println("Valor que causa el error: " + modeloProductos.getValueAt(i, 4));
             }
-        }
 
-        // Actualizar el lbl8 con el total calculado
-        DecimalFormat decimalFormat = new DecimalFormat("#.00");
-        String sumaTotalFormateado = decimalFormat.format(sumaTotal);
-        lbl8.setText(" " + sumaTotalFormateado);
+            // Actualizar el lbl8 con el total calculado
+            DecimalFormat decimalFormat = new DecimalFormat("#.00");
+            String sumaTotalFormateado = decimalFormat.format(sumaTotal);
+            lbl8.setText(" " + sumaTotalFormateado);
+
+        } else if (modelo instanceof ModeloMateriales) {
+            ModeloMateriales modeloMateriales = (ModeloMateriales) modelo;
+
+            // Iterar por todas las filas del modelo
+            for (int i = 0; i < modeloMateriales.getRowCount(); i++) {
+                try {
+                    // Obtener el total de la fila y sumarlo al total general
+                    Object valorCelda = modeloMateriales.getValueAt(i, 4); // Suponiendo que la columna "total" está en el índice 4 (índice basado en 0)
+                    if (valorCelda != null) {
+                        String totalStr = valorCelda.toString();
+                        double total = extraerValorNumerico(totalStr);
+                        sumaTotal += total;
+                    }
+                } catch (NumberFormatException e) {
+                    System.err.println("Se encontró un formato de número no válido. Se omite el cálculo para la fila " + i);
+                    System.err.println("Valor que causa el error: " + modeloMateriales.getValueAt(i, 4));
+                }
+            }
+
+            // Actualizar el lbl8 con el total calculado
+            DecimalFormat decimalFormat = new DecimalFormat("#.00");
+            String sumaTotalFormateado = decimalFormat.format(sumaTotal);
+            lbl8.setText(" " + sumaTotalFormateado);
+
+        } else {
+            throw new IllegalStateException("Modelo de tabla desconocido: " + modelo.getClass());
+        }
 
         return sumaTotal;
     }
 
+
     private double extraerValorNumerico(String valor) {
-        // Usar una expresión regular para extraer solo los dígitos y los separadores decimales (puntos y comas)
+        // Usar una expresión regular para extraer solo los dígitos, los puntos y las comas
         String valorNumerico = valor.replaceAll("[^0-9.,]", "");
+
+        // Eliminar los puntos (que se utilizan para separar miles)
+        valorNumerico = valorNumerico.replace(".", "");
 
         // Reemplazar todas las comas por puntos como separador decimal
         valorNumerico = valorNumerico.replace(",", ".");
