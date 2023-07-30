@@ -1103,24 +1103,7 @@ public class CrearManualidad extends JFrame {
     }
 
     private double extraerValorNumerico(String valor) {
-        String valorNumerico = valor.replaceAll("[^0-9.,]", "");
-
-        // Comprobar si el último carácter es un número, un punto, o una coma
-        char ultimoCaracter = valorNumerico.charAt(valorNumerico.length() - 1);
-
-        if (Character.isDigit(ultimoCaracter)) {
-            // Si es un número, entonces los puntos son separadores de miles y las comas son decimales
-            valorNumerico = valorNumerico.replace(".", ""); // Elimina los puntos
-            valorNumerico = valorNumerico.replace(",", "."); // Reemplaza las comas por puntos
-        } else if (ultimoCaracter == '.') {
-            // Si es un punto, entonces las comas son separadores de miles y los puntos son decimales
-            valorNumerico = valorNumerico.replace(",", ""); // Elimina las comas
-        } else if (ultimoCaracter == ',') {
-            // Si es una coma, entonces los puntos son separadores de miles y las comas son decimales
-            valorNumerico = valorNumerico.replace(".", ""); // Elimina los puntos
-            valorNumerico = valorNumerico.replace(",", "."); // Reemplaza las comas por puntos
-        }
-
+        String valorNumerico = valor.replaceAll(",", "").replace(',', '.');
         try {
             return Double.parseDouble(valorNumerico);
         } catch (NumberFormatException e) {
@@ -1128,6 +1111,7 @@ public class CrearManualidad extends JFrame {
             return 0.0;
         }
     }
+
 
     private void actualizarLbl8y10() {
         double totalTabla = calcularTotalTabla();
