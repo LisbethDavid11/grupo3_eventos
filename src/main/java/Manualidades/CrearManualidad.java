@@ -1102,24 +1102,30 @@ public class CrearManualidad extends JFrame {
         return sumaTotal;
     }
 
-
     private double extraerValorNumerico(String valor) {
-        // Usar una expresión regular para extraer solo los dígitos, los puntos y las comas
         String valorNumerico = valor.replaceAll("[^0-9.,]", "");
 
-        // Eliminar los puntos (que se utilizan para separar miles)
-        valorNumerico = valorNumerico.replace(".", "");
+        // Comprobar si el último carácter es un número, un punto, o una coma
+        char ultimoCaracter = valorNumerico.charAt(valorNumerico.length() - 1);
 
-        // Reemplazar todas las comas por puntos como separador decimal
-        valorNumerico = valorNumerico.replace(",", ".");
+        if (Character.isDigit(ultimoCaracter)) {
+            // Si es un número, entonces los puntos son separadores de miles y las comas son decimales
+            valorNumerico = valorNumerico.replace(".", ""); // Elimina los puntos
+            valorNumerico = valorNumerico.replace(",", "."); // Reemplaza las comas por puntos
+        } else if (ultimoCaracter == '.') {
+            // Si es un punto, entonces las comas son separadores de miles y los puntos son decimales
+            valorNumerico = valorNumerico.replace(",", ""); // Elimina las comas
+        } else if (ultimoCaracter == ',') {
+            // Si es una coma, entonces los puntos son separadores de miles y las comas son decimales
+            valorNumerico = valorNumerico.replace(".", ""); // Elimina los puntos
+            valorNumerico = valorNumerico.replace(",", "."); // Reemplaza las comas por puntos
+        }
 
-        // Intentar analizar el valor a double
         try {
             return Double.parseDouble(valorNumerico);
         } catch (NumberFormatException e) {
-            // Manejar una excepción si no se puede convertir a double
             System.err.println("Se encontró un formato de número no válido. No se puede convertir a double: " + valor);
-            return 0.0; // O regresar un valor predeterminado según sea necesario
+            return 0.0;
         }
     }
 

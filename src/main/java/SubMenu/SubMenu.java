@@ -5,6 +5,7 @@ import Clientes.ListaCliente;
 import Compras.ListaCompras;
 import Empleados.ListaEmpleados;
 import Floristerias.ListaFloristeria;
+import Globos.ListaGlobos;
 import Manualidades.ListaManualidad;
 import Materiales.ListaMateriales;
 import Proveedores.ListaProveedores;
@@ -16,7 +17,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class SubMenu extends JFrame {
-    private JButton proveedoresButton, empleadosButton, clientesButton, floristeriaButton, arreglosButton, materialesButton, comprasButton,tarjetaButton, manualidadesButton;
+    private JButton proveedoresButton, empleadosButton, clientesButton, floristeriaButton, arreglosButton, materialesButton, comprasButton,tarjetaButton, manualidadesButton, globosButton;
     private JPanel panel, panel2, panel3;
     private ListaCliente listaCliente;
     private ListaEmpleados listaEmpleados;
@@ -27,10 +28,11 @@ public class SubMenu extends JFrame {
     private ListaCompras listaCompras;
     private ListaTarjetas listaTarjetas;
     private ListaManualidad listaManualidades;
+    private ListaGlobos listaGlobos;
 
     public SubMenu() {
         super("Menú Principal");
-        setSize(880, 520);
+        setSize(980, 620);
         setLocationRelativeTo(null);
 
         panel = new JPanel(new GridLayout(1, 1)); // Cambia a una sola fila
@@ -72,6 +74,10 @@ public class SubMenu extends JFrame {
         manualidadesButton.setBackground(Color.decode("#E81E12"));
         manualidadesButton.setPreferredSize(new Dimension(100, 40)); // Ajustar tamaño
 
+        globosButton = new JButton("Globos");
+        globosButton.setBackground(Color.decode("#FFC107"));
+        globosButton.setPreferredSize(new Dimension(100, 40)); // Ajustar tamaño
+
         panel.add(clientesButton);
         panel.add(empleadosButton);
         panel.add(floristeriaButton);
@@ -81,6 +87,7 @@ public class SubMenu extends JFrame {
         panel.add(comprasButton);
         panel.add(tarjetaButton);
         panel.add(manualidadesButton);
+        panel.add(globosButton);
 
         // Crea el panel de imagen y lo coloca en el centro
         ImagePanel imagenPanel = new ImagePanel();
@@ -101,6 +108,7 @@ public class SubMenu extends JFrame {
         comprasButton.setFocusPainted(false);
         tarjetaButton.setFocusPainted(false);
         manualidadesButton.setFocusPainted(false);
+        globosButton.setFocusPainted(false);
 
         clientesButton.setForeground(Color.WHITE);
         proveedoresButton.setForeground(Color.WHITE);
@@ -111,6 +119,7 @@ public class SubMenu extends JFrame {
         comprasButton.setForeground(Color.WHITE);
         tarjetaButton.setForeground(Color.WHITE);
         manualidadesButton.setForeground(Color.WHITE);
+        globosButton.setForeground(Color.WHITE);
 
         add(panel3);
 
@@ -124,6 +133,7 @@ public class SubMenu extends JFrame {
         listaCompras = new ListaCompras();
         listaTarjetas = new ListaTarjetas();
         listaManualidades = new ListaManualidad();
+        listaGlobos = new ListaGlobos();
 
         clientesButton.addActionListener(new ActionListener() {
             @Override
@@ -185,6 +195,13 @@ public class SubMenu extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 listaManualidades.setVisible(true);
+            }
+        });
+
+        globosButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                listaGlobos.setVisible(true);
             }
         });
     }
