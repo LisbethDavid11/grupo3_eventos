@@ -1,4 +1,5 @@
 package Ventas;
+import Compras.CrearCompra;
 import Modelos.ModeloVentas;
 import Modelos.ModeloDetallesVentas;
 import Objetos.*;
@@ -185,19 +186,19 @@ public class ListaVentas extends JFrame {
             }
         });
 
-        /*
         botonCrear.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                CrearCompra crearCompra = new CrearCompra();
-                crearCompra.setVisible(true);
-                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(listaCompras); // Obtén la ventana que contiene la lista de compras
+                CrearVenta crearVenta = new CrearVenta();
+                crearVenta.setVisible(true);
+                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(listaVentas); // Obtén la ventana que contiene la lista de compras
                 if (frame != null) {
                     frame.dispose(); // Cierra la ventana
                 }
             }
         });
 
+        /*
         botonVer.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
