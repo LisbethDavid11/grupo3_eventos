@@ -1065,15 +1065,14 @@ public class CrearTarjeta extends JFrame {
     }
 
     private double extraerValorNumerico(String valor) {
-        String valorNumerico = valor.replaceAll(",", "").replace(',', '.');
-        
+        String valorNumerico = valor.replace(',', '.');
         try {
             return Double.parseDouble(valorNumerico);
         } catch (NumberFormatException e) {
             System.err.println("Se encontró un formato de número no válido. No se puede convertir a double: " + valor);
             return 0.0;
         }
-   }
+    }
 
     private void actualizarLbl8y10() {
         double totalTabla = calcularTotalTabla();
