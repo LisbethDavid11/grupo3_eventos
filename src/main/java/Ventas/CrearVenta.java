@@ -644,14 +644,12 @@ public class CrearVenta extends JFrame {
     }
 
     private void limpiar() {
-        campoCodigo.setText("");
         boxCliente.setSelectedIndex(0);
         boxEmpleado.setSelectedIndex(0);
         boxMaterial.setSelectedIndex(0);
         campoCantidad.setText("");
         campoPrecio.setText("");
         modeloProductos.setRowCount(0);
-        datePicker.getJFormattedTextField().setText("");
         lbl8.setText("0.00");
         lbl9.setText("0.00");
         lbl10.setText("0.00");
