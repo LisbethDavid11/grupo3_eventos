@@ -254,15 +254,13 @@ public class ListaTarjetas extends JFrame {
         columnModel.getColumn(1).setPreferredWidth(250);
         columnModel.getColumn(2).setPreferredWidth(50);
         columnModel.getColumn(3).setPreferredWidth(30);
-        columnModel.getColumn(4).setPreferredWidth(50);
-        columnModel.getColumn(5).setPreferredWidth(50);
+
 
         columnModel.getColumn(0).setCellRenderer(new ListaTarjetas.CenterAlignedRenderer());
         columnModel.getColumn(1).setCellRenderer(new ListaTarjetas.LeftAlignedRenderer());
         columnModel.getColumn(2).setCellRenderer(new ListaTarjetas.CenterAlignedRenderer());
         columnModel.getColumn(3).setCellRenderer(new ListaTarjetas.LeftAlignedRenderer());
-        columnModel.getColumn(4).setCellRenderer(new ListaTarjetas.LeftAlignedRenderer());
-        columnModel.getColumn(5).setCellRenderer(new ListaTarjetas.LeftAlignedRenderer());
+
     }
 
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
