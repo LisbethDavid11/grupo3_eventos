@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ModeloMateriales extends AbstractTableModel {
-    private final String[] columnas = {"N°", "Nombre", "Cantidad", "Precio","Total", "Proveedor", "Disponible"};
+    private final String[] columnas = {"N°", "Nombre", "Proveedor", "Disponible", "Existencia", "Precio", "Total"};
     private final List<Material> materiales;
     private final Conexion sql;
     private final Map<Integer, String> proveedores;
@@ -20,7 +20,6 @@ public class ModeloMateriales extends AbstractTableModel {
         this.materiales = materiales;
         this.sql = sql;
         this.proveedores = new HashMap<>();
-
         cargarProveedores();
     }
 
@@ -48,26 +47,26 @@ public class ModeloMateriales extends AbstractTableModel {
                 return rowIndex + 1;
             case 1: // Nombre
                 return material.getNombre();
-            case 2: // Nombre
+            case 2: // Proveedor
+                int proveedorId = material.getProveedorId();
+                String proveedorNombre = obtenerNombreProveedor(proveedorId);
+                return proveedorNombre;
+            case 3: // Disponible
+                return material.getDisponible();
+            case 4: // Nombre
                 return material.getCantidad();
-            case 3: // Precio
+            case 5: // Precio
                 double precio = material.getPrecio();
                 if (precio < 0) {
                     precio = 0;
                 }
                 String precioFormateado = String.format("L. %,.2f", precio);
                 return precioFormateado;
-            case 4: // Total (Precio * Cantidad)
+            case 6: // Total (Precio * Cantidad)
                 int cantidad = material.getCantidad();
                 double total = material.getPrecio() * cantidad;
                 String totalFormateado = String.format("L. %,.2f", total);
                 return totalFormateado;
-            case 5: // Proveedor
-                int proveedorId = material.getProveedorId();
-                String proveedorNombre = obtenerNombreProveedor(proveedorId);
-                return proveedorNombre;
-            case 6: // Disponible
-                return material.getDisponible();
             default:
                 return null;
         }

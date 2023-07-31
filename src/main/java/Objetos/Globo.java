@@ -11,6 +11,7 @@ public class Globo {
     private String forma;
     private int cantidadPaquete;
     private boolean portaGlobo;
+    private int cantidad;
     private double precio;
 
     public static String nombreTabla = "globos";
@@ -21,13 +22,13 @@ public class Globo {
     public Object[] toTableRow() {
         return new Object[] {
                 id, codigoGlobo, tipo, material, para, tamano, color, forma,
-                cantidadPaquete, portaGlobo, precio
+                cantidadPaquete, portaGlobo, cantidad, precio
         };
     }
 
     public Globo(int id, String codigoGlobo, String tipo, String material,
                  String para, String tamano, String color, String forma,
-                 int cantidadPaquete, boolean portaGlobo, double precio) {
+                 int cantidadPaquete, boolean portaGlobo, int cantidad, double precio) {
         this.id = id;
         this.codigoGlobo = codigoGlobo;
         this.tipo = tipo;
@@ -38,6 +39,7 @@ public class Globo {
         this.forma = forma;
         this.cantidadPaquete = cantidadPaquete;
         this.portaGlobo = portaGlobo;
+        this.cantidad = cantidad;
         this.precio = precio;
     }
 
@@ -119,6 +121,14 @@ public class Globo {
 
     public void setPortaGlobo(boolean portaGlobo) {
         this.portaGlobo = portaGlobo;
+    }
+
+    public int getCantidad() {
+        return cantidad;
+    }
+
+    public void setCantidad(int cantidad) {
+        this.cantidad = cantidad;
     }
 
     public double getPrecio() {

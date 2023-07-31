@@ -254,20 +254,20 @@ public class ListaMateriales extends JFrame {
         TableColumnModel columnModel = listaMateriales.getColumnModel();
 
         columnModel.getColumn(0).setPreferredWidth(30);
-        columnModel.getColumn(1).setPreferredWidth(250);
-        columnModel.getColumn(2).setPreferredWidth(60);
-        columnModel.getColumn(3).setPreferredWidth(60);
-        columnModel.getColumn(4).setPreferredWidth(60);
-        columnModel.getColumn(5).setPreferredWidth(150);
+        columnModel.getColumn(1).setPreferredWidth(220);
+        columnModel.getColumn(2).setPreferredWidth(140);
+        columnModel.getColumn(3).setPreferredWidth(40);
+        columnModel.getColumn(4).setPreferredWidth(50);
+        columnModel.getColumn(5).setPreferredWidth(60);
         columnModel.getColumn(6).setPreferredWidth(60);
 
         columnModel.getColumn(0).setCellRenderer(new ListaMateriales.CenterAlignedRenderer());
         columnModel.getColumn(1).setCellRenderer(new ListaMateriales.LeftAlignedRenderer());
         columnModel.getColumn(2).setCellRenderer(new ListaMateriales.LeftAlignedRenderer());
-        columnModel.getColumn(3).setCellRenderer(new ListaMateriales.LeftAlignedRenderer());
+        columnModel.getColumn(3).setCellRenderer(new ListaMateriales.CenterAlignedRenderer());
         columnModel.getColumn(4).setCellRenderer(new ListaMateriales.LeftAlignedRenderer());
         columnModel.getColumn(5).setCellRenderer(new ListaMateriales.LeftAlignedRenderer());
-        columnModel.getColumn(6).setCellRenderer(new ListaMateriales.CenterAlignedRenderer());
+        columnModel.getColumn(6).setCellRenderer(new ListaMateriales.LeftAlignedRenderer());
     }
 
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
@@ -334,11 +334,11 @@ public class ListaMateriales extends JFrame {
                 Material material = new Material();
                 material.setId(resultSet.getInt("id"));
                 material.setNombre(resultSet.getString("nombre"));
-                material.setCantidad(resultSet.getInt("cantidad"));
-                material.setPrecio(resultSet.getDouble("precio"));
                 material.setDisponible(resultSet.getString("disponible"));
                 material.setDescripcion(resultSet.getString("descripcion"));
                 material.setProveedorId(resultSet.getInt("proveedor_id"));
+                material.setCantidad(resultSet.getInt("cantidad"));
+                material.setPrecio(resultSet.getDouble("precio"));
                 materialList.add(material);
             }
 

@@ -1,24 +1,16 @@
 package Modelos;
-
 import Objetos.Conexion;
 import Objetos.Tarjeta;
-
 import javax.swing.table.AbstractTableModel;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 public class ModeloTarjetas extends AbstractTableModel {
-    private final String[] columnas = {"N°", "Ocasión", "Disponible", "Precio Tarjeta", "Mano de obra"};
+    private final String[] columnas = {"N°", "Ocasión", "Disponible", "Existencia", "Precio", "Total"};
 
     private final List<Tarjeta> tarjetas;
-    private final Conexion sql;
 
     public ModeloTarjetas(List<Tarjeta> tarjetas, Conexion sql) {
         this.tarjetas = tarjetas;
-        this.sql = sql;
     }
 
     @Override
@@ -47,20 +39,20 @@ public class ModeloTarjetas extends AbstractTableModel {
                 return tarjeta.getOcasion();
             case 2: // Disponible
                 return tarjeta.getDisponible();
-            case 3: // Precio Tarjeta
+            case 3: // Cantidad
+                return tarjeta.getCantidad();
+            case 4: // Precio Tarjeta
                 double precioTarjeta = tarjeta.getPrecio_tarjeta();
                 if (precioTarjeta < 0) {
                     precioTarjeta = 0;
                 }
                 String precioTarjetaFormateado = String.format("L. %,.2f", precioTarjeta);
                 return precioTarjetaFormateado;
-            case 4: // Mano de obra
-                double manoObra = tarjeta.getMano_obra();
-                if (manoObra < 0) {
-                    manoObra = 0;
-                }
-                String manoObraFormateada = String.format("L. %,.2f", manoObra);
-                return manoObraFormateada;
+            case 5: // Total (Precio * Cantidad)
+                int cantidad = tarjeta.getCantidad();
+                double total = tarjeta.getPrecio_tarjeta() * cantidad;
+                String totalFormateado = String.format("L. %,.2f", total);
+                return totalFormateado;
             default:
                 return null;
         }

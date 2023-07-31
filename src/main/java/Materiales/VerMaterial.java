@@ -9,13 +9,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class VerMaterial extends JFrame {
-    private JPanel panel1;
+    private JPanel panel1, panel2, panel3, panel4, panel5;
     private JTextArea etiquetaDescripcion;
     private JTextField etiquetaNombre, etiquetaCantidad, etiquetaPrecio, etiquetaDisponible, etiquetaProveedor, etiquetaExento;
     private JButton volverButton;
     private JLabel lbl0;
-    private JPanel panel2;
-    private JPanel panel3;
     private final VerMaterial actual = this;
     private Conexion sql;
     private Connection mysql;
@@ -52,9 +50,29 @@ public class VerMaterial extends JFrame {
         panel1.setBackground(Color.decode("#F5F5F5"));
         panel2.setBackground(Color.decode("#F5F5F5"));
         panel3.setBackground(Color.decode("#F5F5F5"));
+        panel4.setBackground(Color.decode("#F5F5F5"));
+        panel5.setBackground(Color.decode("#F5F5F5"));
+
+        // Aplicamos un borde vacío al JTextField para eliminar el borde
+        etiquetaCantidad.setBorder(BorderFactory.createEmptyBorder());
+        etiquetaNombre.setBorder(BorderFactory.createEmptyBorder());
+        etiquetaProveedor.setBorder(BorderFactory.createEmptyBorder());
+        etiquetaPrecio.setBorder(BorderFactory.createEmptyBorder());
+        etiquetaExento.setBorder(BorderFactory.createEmptyBorder());
+        etiquetaDisponible.setBorder(BorderFactory.createEmptyBorder());
+
+        Font font = new Font("Century Gothic", Font.BOLD, 15);
+        // Aplicamos la fuente personalizada al JTextField
+        etiquetaNombre.setFont(font);
+        etiquetaProveedor.setFont(font);
+        etiquetaCantidad.setFont(font);
+        etiquetaPrecio.setFont(font);
+        etiquetaExento.setFont(font);
+        etiquetaDisponible.setFont(font);
+        etiquetaDescripcion.setFont(font);
 
         // Color de texto para los JTextField
-        Color textColor = Color.decode("#212121");
+        Color textColor = Color.decode("#1976D2");
         etiquetaNombre.setForeground(textColor);
         etiquetaCantidad.setForeground(textColor);
         etiquetaPrecio.setForeground(textColor);
@@ -64,7 +82,7 @@ public class VerMaterial extends JFrame {
         etiquetaProveedor.setForeground(textColor);
 
         // Color de fondo para los JTextField
-        Color textFieldColor = Color.decode("#FFFFFF");
+        Color textFieldColor = Color.decode("#F5F5F5");
         etiquetaNombre.setBackground(textFieldColor);
         etiquetaCantidad.setBackground(textFieldColor);
         etiquetaPrecio.setBackground(textFieldColor);
@@ -130,9 +148,9 @@ public class VerMaterial extends JFrame {
 
             if (resultSet.next()) {
                 etiquetaNombre.setText(resultSet.getString("nombre"));
-                etiquetaCantidad.setText(resultSet.getString("cantidad"));
-                etiquetaPrecio.setText(resultSet.getString("precio"));
-                String exento = resultSet.getString("exento").equals("1") ? "Si" : "No";
+                etiquetaCantidad.setText(resultSet.getString("cantidad") + " unidades");
+                etiquetaPrecio.setText("L. " + resultSet.getString( "precio"));
+                String exento = resultSet.getString("exento").equals("1") ? "Si está exento de ISV" : "No está exento de ISV";
                 etiquetaExento.setText(exento);
                 etiquetaDisponible.setText(resultSet.getString("disponible"));
                 etiquetaDescripcion.setText(resultSet.getString("descripcion"));

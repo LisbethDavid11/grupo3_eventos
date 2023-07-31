@@ -521,9 +521,10 @@ public class CrearGlobo extends JFrame {
         String portaGlobo = radioButtonSiNecesita.isSelected() ? "1" : "0";
         String tipoEvento = comboBoxTipoEvento.getSelectedItem().toString();
         String material = comboBoxMaterial.getSelectedItem().toString();
+        int cantidad = 0;
 
         try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO globos (codigo_globo, tipo, material, para, tamano, color, forma, cantidad_paquete, porta_globo, precio) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO globos (codigo_globo, tipo, material, para, tamano, color, forma, cantidad_paquete, porta_globo, cantidad, precio) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
             preparedStatement.setString(1, codigo);
             preparedStatement.setString(2, tipoEvento);
             preparedStatement.setString(3, material);
@@ -533,7 +534,8 @@ public class CrearGlobo extends JFrame {
             preparedStatement.setString(7, forma);
             preparedStatement.setInt(8, cantidadPorPaquete);
             preparedStatement.setString(9, portaGlobo);
-            preparedStatement.setDouble(10, precio);
+            preparedStatement.setInt(10, cantidad);
+            preparedStatement.setDouble(11, precio);
             preparedStatement.executeUpdate();
 
             JOptionPane.showMessageDialog(null, "Globo guardado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);

@@ -217,15 +217,19 @@ public class ListaFloristeria extends JFrame {
     private void configurarTablaFloristerias() {
         TableColumnModel columnModel = listaFloristerias.getColumnModel();
 
-        columnModel.getColumn(0).setPreferredWidth(40);
+        columnModel.getColumn(0).setPreferredWidth(20);
         columnModel.getColumn(1).setPreferredWidth(250);
         columnModel.getColumn(2).setPreferredWidth(110);
-        columnModel.getColumn(3).setPreferredWidth(110);
+        columnModel.getColumn(3).setPreferredWidth(90);
+        columnModel.getColumn(4).setPreferredWidth(130);
+        columnModel.getColumn(5).setPreferredWidth(130);
 
         columnModel.getColumn(0).setCellRenderer(new ListaFloristeria.CenterAlignedRenderer());
         columnModel.getColumn(1).setCellRenderer(new ListaFloristeria.LeftAlignedRenderer());
-        columnModel.getColumn(2).setCellRenderer(new ListaFloristeria.CenterAlignedRenderer());
+        columnModel.getColumn(2).setCellRenderer(new ListaFloristeria.LeftAlignedRenderer());
         columnModel.getColumn(3).setCellRenderer(new ListaFloristeria.LeftAlignedRenderer());
+        columnModel.getColumn(4).setCellRenderer(new ListaFloristeria.LeftAlignedRenderer());
+        columnModel.getColumn(5).setCellRenderer(new ListaFloristeria.LeftAlignedRenderer());
     }
 
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
@@ -286,6 +290,7 @@ public class ListaFloristeria extends JFrame {
                 Floristeria floristeria = new Floristeria();
                 floristeria.setId(resultSet.getInt("id"));
                 floristeria.setNombre(resultSet.getString("nombre"));
+                floristeria.setCantidad(resultSet.getInt("cantidad"));
                 floristeria.setPrecio(resultSet.getDouble("precio"));
                 floristeria.setProveedorId(resultSet.getInt("proveedor_id"));
                 listaFloristeria.add(floristeria);

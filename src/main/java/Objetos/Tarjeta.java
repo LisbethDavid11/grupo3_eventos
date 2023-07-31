@@ -8,6 +8,7 @@ public class Tarjeta {
     private String descripcion;
     private ImageIcon imagen;
     private String disponible;
+    private int cantidad;
     private double precio_tarjeta;
     private double mano_obra;
 
@@ -17,15 +18,16 @@ public class Tarjeta {
     }
 
     public Object[] toTableRow() {
-        return new Object[] {id, ocasion, descripcion, imagen, disponible, precio_tarjeta, mano_obra};
+        return new Object[] {id, ocasion, descripcion, imagen, disponible, cantidad, precio_tarjeta, mano_obra};
     }
 
-    public Tarjeta(int id, String ocasion, String descripcion, ImageIcon imagen, String disponible, double precio_tarjeta, double mano_obra) {
+    public Tarjeta(int id, String ocasion, String descripcion, ImageIcon imagen, String disponible, int cantidad, double precio_tarjeta, double mano_obra) {
         this.id = id;
         this.ocasion = ocasion;
         this.descripcion = descripcion;
         this.imagen = imagen;
         this.disponible = disponible;
+        this.cantidad = cantidad;
         this.precio_tarjeta = precio_tarjeta;
         this.mano_obra = mano_obra;
     }
@@ -68,6 +70,14 @@ public class Tarjeta {
 
     public void setDisponible(String disponible) {
         this.disponible = disponible;
+    }
+
+    public int getCantidad() {
+        return cantidad;
+    }
+
+    public void setCantidad(int cantidad) {
+        this.cantidad = cantidad;
     }
 
     public double getPrecio_tarjeta() {

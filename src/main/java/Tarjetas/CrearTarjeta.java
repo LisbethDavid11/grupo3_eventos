@@ -790,23 +790,22 @@ public class CrearTarjeta extends JFrame {
     private void guardarMateriales() {
         String precioTarjetaText = campoPrecioTarjeta.getText().replace("L ", "").replace(",", "").replace("_", "");
         double precio_tarjeta = Double.parseDouble(precioTarjetaText);
-
         String manoObraText = campoManoObra.getText().replace("L ", "").replace(",", "").replace("_", "");
         double mano_obra = Double.parseDouble(manoObraText);
-
         String descripcion = campoDescripcion.getText().trim();
-
         String disponibilidad = radioButtonSi.isSelected() ? "Si" : "No";
+        int cantidad = 0;
 
         try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO tarjetas (ocasion, disponible, descripcion, imagen, precio_tarjeta, mano_obra) VALUES (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO tarjetas (ocasion, disponible, descripcion, imagen, cantidad, precio_tarjeta, mano_obra) VALUES (?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
 
             preparedStatement.setString(1, jcbOcasion.getModel().getSelectedItem().toString());
             preparedStatement.setString(2, disponibilidad);
             preparedStatement.setString(3, descripcion);
             preparedStatement.setString(4, nombreFile); // Reemplaza "nombreFile" con el nombre de archivo de la imagen.
-            preparedStatement.setDouble(5, precio_tarjeta);
-            preparedStatement.setDouble(6, mano_obra);
+            preparedStatement.setInt(5, cantidad);
+            preparedStatement.setDouble(6, precio_tarjeta);
+            preparedStatement.setDouble(7, mano_obra);
             preparedStatement.executeUpdate();
 
             ResultSet resultSet = preparedStatement.getGeneratedKeys();

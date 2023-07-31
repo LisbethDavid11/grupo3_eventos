@@ -381,9 +381,10 @@ public class CrearFloristeria extends JFrame {
         double precio = Double.parseDouble(precioText);
         String proveedorText = comboBoxProveedor.getSelectedItem().toString();
         int idProveedor = Integer.parseInt(proveedorText.split(" - ")[0]);
+        int cantidad = 0;
 
             try (Connection connection = sql.conectamysql();
-                 PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO floristeria (imagen, nombre, precio, proveedor_id) VALUES (?, ?, ?, ?)")) {
+                 PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO floristeria (imagen, nombre, cantidad, precio, proveedor_id) VALUES (?, ?, ?, ?, ?)")) {
 
                 // Generar el nombre de la imagen
                 SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH-mm-ss");
@@ -406,8 +407,9 @@ public class CrearFloristeria extends JFrame {
 
                 preparedStatement.setString(1, rutaImagen);
                 preparedStatement.setString(2, nombre);
-                preparedStatement.setDouble(3, precio);
-                preparedStatement.setInt(4, idProveedor);
+                preparedStatement.setInt(3, cantidad);
+                preparedStatement.setDouble(4, precio);
+                preparedStatement.setInt(5, idProveedor);
                 preparedStatement.executeUpdate();
 
                 JOptionPane.showMessageDialog(null, "Flor guardada exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);

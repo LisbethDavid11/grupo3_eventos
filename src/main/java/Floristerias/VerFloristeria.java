@@ -13,8 +13,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class VerFloristeria extends JFrame {
-    private JPanel panel1, panel2;
-    private JTextField etiquetaNombre, etiquetaPrecio, etiquetaProveedor;
+    private JPanel panel1, panel2, panel3, panel4, panel5;
+    private JTextField etiquetaNombre, etiquetaCantidad ,etiquetaPrecio, etiquetaProveedor;
     private JButton volverButton;
     private JLabel lblImagen, lbl0;
     private final VerFloristeria actual = this;
@@ -26,7 +26,7 @@ public class VerFloristeria extends JFrame {
 
     public VerFloristeria(int id) {
         super("");
-        setSize(550, 600);
+        setSize(550, 550);
         setLocationRelativeTo(null);
         setContentPane(panel1);
 
@@ -53,34 +53,50 @@ public class VerFloristeria extends JFrame {
         gbc.weighty = 1.0;
         lblImagen.setHorizontalAlignment(SwingConstants.CENTER);
         panel2.add(lblImagen, gbc);
-
-        // Color de fondo del panel
-        panel1.setBackground(Color.decode("#F5F5F5"));
-        panel2.setBackground(Color.decode("#F5F5F5"));
-
         mostrar();
 
         // Deshabilitar la edición de los JTextField
         etiquetaNombre.setEditable(false);
         etiquetaNombre.setFocusable(false);
-        etiquetaPrecio.setEditable(false);
-        etiquetaPrecio.setFocusable(false);
         etiquetaProveedor.setEditable(false);
         etiquetaProveedor.setFocusable(false);
+        etiquetaCantidad.setEditable(false);
+        etiquetaCantidad.setFocusable(false);
+        etiquetaPrecio.setEditable(false);
+        etiquetaPrecio.setFocusable(false);
+
+        // Aplicamos un borde vacío al JTextField para eliminar el borde
+        etiquetaCantidad.setBorder(BorderFactory.createEmptyBorder());
+        etiquetaNombre.setBorder(BorderFactory.createEmptyBorder());
+        etiquetaProveedor.setBorder(BorderFactory.createEmptyBorder());
+        etiquetaPrecio.setBorder(BorderFactory.createEmptyBorder());
+
+        Font font = new Font("Century Gothic", Font.BOLD, 15);
+
+        // Aplicamos la fuente personalizada al JTextField
+        etiquetaNombre.setFont(font);
+        etiquetaProveedor.setFont(font);
+        etiquetaCantidad.setFont(font);
+        etiquetaPrecio.setFont(font);
 
         // Color de fondo del panel
         panel1.setBackground(Color.decode("#F5F5F5"));
         panel2.setBackground(Color.decode("#F5F5F5"));
+        panel3.setBackground(Color.decode("#F5F5F5"));
+        panel4.setBackground(Color.decode("#F5F5F5"));
+        panel5.setBackground(Color.decode("#F5F5F5"));
 
         // Color de texto para los JTextField
-        Color textColor = Color.decode("#212121");
+        Color textColor = Color.decode("#1976D2");
         etiquetaNombre.setForeground(textColor);
+        etiquetaCantidad.setForeground(textColor);
         etiquetaPrecio.setForeground(textColor);
         etiquetaProveedor.setForeground(textColor);
 
         // Color de fondo para los JTextField
-        Color textFieldColor = Color.decode("#FFFFFF");
+        Color textFieldColor = Color.decode("#F5F5F5");
         etiquetaNombre.setBackground(textFieldColor);
+        etiquetaCantidad.setBackground(textFieldColor);
         etiquetaPrecio.setBackground(textFieldColor);
         etiquetaProveedor.setBackground(textFieldColor);
 
@@ -139,7 +155,8 @@ public class VerFloristeria extends JFrame {
 
             if (resultSet.next()) {
                 etiquetaNombre.setText(resultSet.getString("nombre"));
-                etiquetaPrecio.setText(resultSet.getString("precio"));
+                etiquetaCantidad.setText(resultSet.getString("cantidad") + " unidades");
+                etiquetaPrecio.setText("L. " + resultSet.getString( "precio"));
                 etiquetaProveedor.setText(resultSet.getString("empresaProveedora") + " (" + resultSet.getString("nombreVendedor") + ")");
 
                 String imagenNombre = resultSet.getString("imagen");
@@ -182,7 +199,6 @@ public class VerFloristeria extends JFrame {
             System.out.println(error.getMessage());
         }
     }
-
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {

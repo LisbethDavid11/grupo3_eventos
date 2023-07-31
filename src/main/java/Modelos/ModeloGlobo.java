@@ -1,14 +1,12 @@
 package Modelos;
-
 import Objetos.Conexion;
 import Objetos.Globo;
-
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
 
 public class ModeloGlobo extends AbstractTableModel {
 
-    private final String[] columnas = {"N°","Tamaño", "Material", "Color", "Forma", "Precio", "Cantidad por Paquete"};
+    private final String[] columnas = {"N°","Tamaño", "Material", "Color", "Existencia", "Precio", "Total"};
 
     private final List<Globo> globos;
     private final Conexion sql;
@@ -46,8 +44,8 @@ public class ModeloGlobo extends AbstractTableModel {
                 return globo.getMaterial();
             case 3: // Color
                 return globo.getColor();
-            case 4: // Forma
-                return globo.getForma();
+            case 4: // Nombre
+                return globo.getCantidad();
             case 5: // Precio
                 double precio = globo.getPrecio();
                 if (precio < 0) {
@@ -55,8 +53,11 @@ public class ModeloGlobo extends AbstractTableModel {
                 }
                 String precioFormateado = String.format("L. %,.2f", precio);
                 return precioFormateado;
-            case 6: // Cantidad por Paquete
-                return globo.getCantidadPaquete();
+            case 6: // Total (Precio * Cantidad)
+                int cantidad = globo.getCantidad();
+                double total = globo.getPrecio() * cantidad;
+                String totalFormateado = String.format("L. %,.2f", total);
+                return totalFormateado;
             default:
                 return null;
         }
