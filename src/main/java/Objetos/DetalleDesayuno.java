@@ -4,6 +4,11 @@ public class DetalleDesayuno {
     private int id;
     private int desayunoId;
     private int productoId;
+
+    private int materialId;
+    private int floristeriaId;
+    private int globoId;
+    private int tarjetaId;
     private int cantidad;
     private double precio;
 
