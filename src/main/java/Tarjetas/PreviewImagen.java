@@ -60,7 +60,7 @@ public class PreviewImagen extends JFrame {
         gbcButton.insets = new Insets(5, 0, 0, 0); // Espacio entre el botón y la imagen
         panel1.add(regresarButton, gbcButton);
 
-        // Agregar ActionListener al botón "REGRESAR" para cerrar esta ventana y volver a la ventana "CrearManualidades"
+        // Agregar ActionListener al botón "REGRESAR" para cerrar esta ventana y volver a la ventana "CrearTarjetas"
         regresarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

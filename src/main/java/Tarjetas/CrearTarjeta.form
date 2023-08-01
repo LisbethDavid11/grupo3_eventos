@@ -44,7 +44,7 @@
             </constraints>
             <properties>
               <font name="Arial" size="12" style="1"/>
-              <icon value="IconosBotones/cancelarpp.png"/>
+              <icon value="IconosBotones/limpiarDatos.png"/>
               <text value="LIMPIAR DATOS DE MATERIALES"/>
             </properties>
           </component>
