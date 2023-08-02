@@ -1,10 +1,10 @@
 package Materiales;
-import Manualidades.ListaManualidad;
-import Modelos.ModeloMateriales;
+import Modelos.ModeloMaterial;
 import Objetos.Conexion;
 import Objetos.Material;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
@@ -26,22 +26,26 @@ public class ListaMateriales extends JFrame {
     private JButton botonAtras;
     private JButton botonAdelante;
     private JTextField campoBusqueda;
-    private TextPrompt placeholder = new TextPrompt("Buscar por nombre de material o de empresa proveedora", campoBusqueda);
+    private TextPrompt placeholder = new TextPrompt(" Buscar por nombre de material o de empresa proveedora", campoBusqueda);
     private JButton botonEditar;
     private JButton botonCrear;
-    private JLabel lbltxt;
-    private JLabel lbl0;
+    private JLabel lblPagina, lbl0, lblD;
     private JCheckBox noCheckBox;
     private JCheckBox siCheckBox;
-    private JLabel lblD;
-    private ImageIcon imagen;
+    private JPanel panelA;
+    private JPanel panelB;
+    private JPanel panelTitulo;
     private List<Material> materialList;
     private int pagina = 0;
     private Connection mysql;
     private Conexion sql;
     private ListaMateriales actual = this;
     private String busqueda = "";
-
+    Font fontTitulo = new Font("Century Gothic", Font.BOLD, 17);
+    Font font = new Font("Century Gothic", Font.BOLD, 11);
+    Color primaryColor = Color.decode("#37474f"); // Gris azul oscuro
+    Color lightColor = Color.decode("#cfd8dc"); // Gris azul claro
+    Color darkColor = Color.decode("#263238"); // Gris azul más oscuro
     public ListaMateriales() {
         super("");
         setSize(850, 505);
@@ -53,7 +57,24 @@ public class ListaMateriales extends JFrame {
         configurarTablaMateriales();
         mostrarTodos();
 
-        lbltxt.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+        lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+
+        botonAtras.setEnabled(false);
+        botonAtras.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (pagina > 0) {
+                    pagina--;
+                    botonAdelante.setEnabled(true);
+                    if (pagina == 0) {
+                        botonAtras.setEnabled(false);
+                    }
+                }
+                listaMateriales.setModel(cargarDatos());
+                configurarTablaMateriales();
+                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+            }
+        });
 
         botonAdelante.addActionListener(new ActionListener() {
             @Override
@@ -67,23 +88,7 @@ public class ListaMateriales extends JFrame {
                 }
                 listaMateriales.setModel(cargarDatos());
                 configurarTablaMateriales();
-                lbltxt.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
-            }
-        });
-
-        botonAtras.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (pagina > 0) {
-                    pagina--;
-                    botonAdelante.setEnabled(true);
-                    if (pagina == 0) {
-                        botonAtras.setEnabled(false);
-                    }
-                }
-                listaMateriales.setModel(cargarDatos());
-                configurarTablaMateriales();
-                lbltxt.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
 
@@ -96,7 +101,7 @@ public class ListaMateriales extends JFrame {
                 botonAtras.setEnabled(pagina > 0);
                 listaMateriales.setModel(cargarDatos());
                 configurarTablaMateriales();
-                lbltxt.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
 
@@ -121,7 +126,6 @@ public class ListaMateriales extends JFrame {
                 actualizarTabla();
             }
         });
-
 
         botonCrear.addActionListener(new ActionListener() {
             @Override
@@ -158,106 +162,63 @@ public class ListaMateriales extends JFrame {
             }
         });
 
-        // Colores de la paleta
-        Color primaryColor = Color.decode("#37474f"); // Gris azul oscuro
-        Color lightColor = Color.decode("#cfd8dc"); // Gris azul claro
-        Color darkColor = Color.decode("#263238"); // Gris azul más oscuro
-        
-        botonVer.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                botonVer.setBackground(lightColor);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                botonVer.setBackground(darkColor);
-            }
-        });
+        JTableHeader header = listaMateriales.getTableHeader();
+        header.setForeground(Color.WHITE);
 
-        botonAtras.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                botonAtras.setBackground(lightColor);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                botonAtras.setBackground(darkColor);
-            }
-        });
+        int campoBusquedaHeight = 35;
+        campoBusqueda.setPreferredSize(new Dimension(campoBusqueda.getPreferredSize().width, campoBusquedaHeight));
 
-        botonAdelante.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                botonAdelante.setBackground(lightColor);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                botonAdelante.setBackground(darkColor);
-            }
-        });
-
-        botonCrear.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                botonCrear.setBackground(lightColor);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                botonCrear.setBackground(darkColor);
-            }
-        });
-
-        botonEditar.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                botonEditar.setBackground(lightColor);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                botonEditar.setBackground(darkColor);
-            }
-        });
-
-        // Color de fondo
         panelPrincipal.setBackground(primaryColor);
+        panelTitulo.setBackground(primaryColor);
+        panelA.setBackground(primaryColor);
+        panelB.setBackground(primaryColor);
+        header.setBackground(darkColor);
+        botonCrear.setBackground(darkColor);
+        botonEditar.setBackground(darkColor);
+        botonAdelante.setBackground(darkColor);
+        botonAtras.setBackground(darkColor);
+        botonVer.setBackground(darkColor);
+        campoBusqueda.setBackground(darkColor);
+        siCheckBox.setBackground(primaryColor);
+        noCheckBox.setBackground(primaryColor);
 
-        // Color de texto de los botones
+        placeholder.setForeground(Color.WHITE);
         botonVer.setForeground(Color.WHITE);
         botonAtras.setForeground(Color.WHITE);
         botonAdelante.setForeground(Color.WHITE);
         botonCrear.setForeground(Color.WHITE);
         botonEditar.setForeground(Color.WHITE);
-
-        // Color de fondo de los botones
-        botonVer.setBackground(darkColor);
-        botonAtras.setBackground(darkColor);
-        botonAdelante.setBackground(darkColor);
-        botonCrear.setBackground(darkColor);
-        botonEditar.setBackground(darkColor);
-
-        // Color de texto del campo de búsqueda y del label de la página
         campoBusqueda.setForeground(Color.WHITE);
-        lbltxt.setForeground(Color.WHITE);
+        lblPagina.setForeground(Color.WHITE);
+        siCheckBox.setForeground(Color.WHITE);
+        noCheckBox.setForeground(Color.WHITE);
         lblD.setForeground(Color.WHITE);
 
-        noCheckBox.setBackground(primaryColor);
-        noCheckBox.setForeground(Color.WHITE);
-        noCheckBox.setFocusPainted(false);
-        siCheckBox.setBackground(primaryColor);
-        siCheckBox.setForeground(Color.WHITE);
-        siCheckBox.setFocusPainted(false);
-
-        // Color de fondo del campo de búsqueda
-        campoBusqueda.setBackground(darkColor);
-
-        // Color del placeholder del campo de búsqueda
-        placeholder.changeAlpha(0.75f);
-        placeholder.setForeground(Color.LIGHT_GRAY);
-        placeholder.setFont(new Font("Nunito", Font.ITALIC, 11));
-
-        // Crear una fuente con un tamaño de 18 puntos
-        Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
+        campoBusqueda.setFont(font);
+        botonAdelante.setFont(font);
+        botonVer.setFont(font);
+        botonEditar.setFont(font);
+        botonAtras.setFont(font);
+        botonCrear.setFont(font);
+        placeholder.setFont(font);
         lbl0.setFont(fontTitulo);
+        lblPagina.setFont(font);
+
+        botonAdelante.setFocusable(false);
+        botonAtras.setFocusable(false);
+        botonAtras.setFocusable(false);
+        botonEditar.setFocusable(false);
+        botonVer.setFocusable(false);
     }
 
     private void configurarTablaMateriales() {
         TableColumnModel columnModel = listaMateriales.getColumnModel();
 
-        columnModel.getColumn(0).setPreferredWidth(30);
-        columnModel.getColumn(1).setPreferredWidth(220);
-        columnModel.getColumn(2).setPreferredWidth(140);
-        columnModel.getColumn(3).setPreferredWidth(40);
-        columnModel.getColumn(4).setPreferredWidth(50);
+        columnModel.getColumn(0).setPreferredWidth(20);
+        columnModel.getColumn(1).setPreferredWidth(200);
+        columnModel.getColumn(2).setPreferredWidth(130);
+        columnModel.getColumn(3).setPreferredWidth(50);
+        columnModel.getColumn(4).setPreferredWidth(80);
         columnModel.getColumn(5).setPreferredWidth(60);
         columnModel.getColumn(6).setPreferredWidth(60);
 
@@ -306,7 +267,7 @@ public class ListaMateriales extends JFrame {
         }
     }
 
-    private ModeloMateriales cargarDatos() {
+    private ModeloMaterial cargarDatos() {
         sql = new Conexion();
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement(
@@ -353,7 +314,7 @@ public class ListaMateriales extends JFrame {
             columnId.setPreferredWidth(50);
         }
 
-        return new ModeloMateriales(materialList, sql);
+        return new ModeloMaterial(materialList, sql);
     }
 
     private int getTotalPageCount() {
@@ -382,7 +343,7 @@ public class ListaMateriales extends JFrame {
     private void actualizarTabla() {
         listaMateriales.setModel(cargarDatos());
         configurarTablaMateriales();
-        lbltxt.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+        lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
     }
 
     private void mostrarTodos() {
@@ -390,7 +351,6 @@ public class ListaMateriales extends JFrame {
         noCheckBox.setSelected(true);
         actualizarTabla();
     }
-
 
     public static void main(String[] args) {
         ListaMateriales listaMateriales = new ListaMateriales();

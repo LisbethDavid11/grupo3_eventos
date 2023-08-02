@@ -1,24 +1,24 @@
 package Modelos;
 
 import Objetos.Conexion;
-import Objetos.DetalleDesayuno;
+import Objetos.DesayunoDetalle;
 import javax.swing.table.AbstractTableModel;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ModeloDetallesDesayuno extends AbstractTableModel {
+public class ModeloDesayunoDetalle extends AbstractTableModel {
     private final String[] columnas = {"N°", "Desayuno", "Material", "Globo", "Tarjeta", "Floristeria", "Cantidad", "Precio"};
-    private final List<DetalleDesayuno> detallesDesayuno;
+    private final List<DesayunoDetalle> detallesDesayuno;
     private final Conexion sql;
 
-    public ModeloDetallesDesayuno(List<DetalleDesayuno> detallesDesayuno, Conexion sql) {
+    public ModeloDesayunoDetalle(List<DesayunoDetalle> detallesDesayuno, Conexion sql) {
         this.detallesDesayuno = detallesDesayuno;
         this.sql = sql;
     }
 
-    public List<DetalleDesayuno> getDetallesPorDesayuno(int desayunoId) {
-        List<DetalleDesayuno> detalles = new ArrayList<>();
+    public List<DesayunoDetalle> getDetallesPorDesayuno(int desayunoId) {
+        List<DesayunoDetalle> detalles = new ArrayList<>();
 
         try {
             String query = "SELECT * FROM detalles_desayunos WHERE desayuno_id = ?";
@@ -27,7 +27,7 @@ public class ModeloDetallesDesayuno extends AbstractTableModel {
             ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
-                DetalleDesayuno detalle = new DetalleDesayuno();
+                DesayunoDetalle detalle = new DesayunoDetalle();
                 detalle.setId(resultSet.getInt("id"));
                 detalle.setDesayunoId(resultSet.getInt("desayuno_id"));
                 // detalle.setMaterialId(resultSet.getInt("material_id"));
@@ -66,7 +66,7 @@ public class ModeloDetallesDesayuno extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        DetalleDesayuno detalleDesayuno = detallesDesayuno.get(rowIndex);
+        DesayunoDetalle detalleDesayuno = detallesDesayuno.get(rowIndex);
 
         switch (columnIndex) {
             case 0: // N°

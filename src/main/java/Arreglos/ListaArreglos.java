@@ -4,6 +4,7 @@ import Objetos.Arreglo;
 import Objetos.Conexion;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
@@ -18,29 +19,28 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ListaArreglo extends JFrame {
-    private JPanel panelPrincipal;
-    private JButton botonVer;
+public class ListaArreglos extends JFrame {
+    private JPanel panelPrincipal, panelTitulo;
+    private JButton botonAdelante, botonAtras, botonVer, botonEditar, botonCrear;
     private JTable listaArreglos;
-    private JButton botonAtras;
-    private JButton botonAdelante;
     private JTextField campoBusqueda;
-    private TextPrompt placeholder = new TextPrompt("Buscar por nombre", campoBusqueda);
-    private JButton botonEditar;
-    private JButton botonCrear;
-    private JLabel lblPagina;
-    private JCheckBox noCheckBox;
-    private JCheckBox siCheckBox;
-    private JLabel lblD;
-    private JLabel lbl0;
+    private TextPrompt placeholder = new TextPrompt(" Buscar por nombre del arreglo", campoBusqueda);
+    private JLabel lblDisponibilidad, lblTitulo, lblPagina;
+    private JCheckBox noCheckBox, siCheckBox;
+    private JPanel panelA;
+    private JPanel panelB;
     private List<Arreglo> listaArreglo;
     private int pagina = 0;
-    private Connection mysql;
     private Conexion sql;
-    private ListaArreglo actual = this;
+    private ListaArreglos actual = this;
     private String busqueda = "";
+    Font fontTitulo = new Font("Century Gothic", Font.BOLD, 17);
+    Font font = new Font("Century Gothic", Font.BOLD, 11);
+    Color primaryColor = Color.decode("#37474f"); // Gris azul oscuro
+    Color lightColor = Color.decode("#cfd8dc"); // Gris azul claro
+    Color darkColor = Color.decode("#263238"); // Gris azul más oscuro
 
-    public ListaArreglo() {
+    public ListaArreglos() {
         super("");
         setSize(850, 505);
         setLocationRelativeTo(null);
@@ -53,22 +53,7 @@ public class ListaArreglo extends JFrame {
 
         lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
 
-        botonAdelante.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if ((pagina + 1) < getTotalPageCount()) {
-                    pagina++;
-                    botonAtras.setEnabled(true);
-                    if ((pagina + 1) == getTotalPageCount()) {
-                        botonAdelante.setEnabled(false);
-                    }
-                }
-                listaArreglos.setModel(cargarDatos());
-                configurarTablaArreglos();
-                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
-            }
-        });
-
+        botonAtras.setEnabled(false);
         botonAtras.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -77,6 +62,22 @@ public class ListaArreglo extends JFrame {
                     botonAdelante.setEnabled(true);
                     if (pagina == 0) {
                         botonAtras.setEnabled(false);
+                    }
+                }
+                listaArreglos.setModel(cargarDatos());
+                configurarTablaArreglos();
+                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+            }
+        });
+
+        botonAdelante.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if ((pagina + 1) < getTotalPageCount()) {
+                    pagina++;
+                    botonAtras.setEnabled(true);
+                    if ((pagina + 1) == getTotalPageCount()) {
+                        botonAdelante.setEnabled(false);
                     }
                 }
                 listaArreglos.setModel(cargarDatos());
@@ -102,7 +103,6 @@ public class ListaArreglo extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (!siCheckBox.isSelected() && !noCheckBox.isSelected()) {
-
                     siCheckBox.setSelected(true);
                 }
                 actualizarTabla();
@@ -113,7 +113,6 @@ public class ListaArreglo extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (!siCheckBox.isSelected() && !noCheckBox.isSelected()) {
-
                     noCheckBox.setSelected(true);
                 }
                 actualizarTabla();
@@ -155,66 +154,77 @@ public class ListaArreglo extends JFrame {
             }
         });
 
-        // Colores de la paleta
-        Color primaryColor = Color.decode("#37474f"); // Gris azul oscuro
-        Color lightColor = Color.decode("#cfd8dc"); // Gris azul claro
-        Color darkColor = Color.decode("#263238"); // Gris azul más oscuro
+        JTableHeader header = listaArreglos.getTableHeader();
+        header.setForeground(Color.WHITE);
 
-        // Color de fondo
+        int campoBusquedaHeight = 35;
+        campoBusqueda.setPreferredSize(new Dimension(campoBusqueda.getPreferredSize().width, campoBusquedaHeight));
+
         panelPrincipal.setBackground(primaryColor);
+        panelTitulo.setBackground(primaryColor);
+        panelA.setBackground(primaryColor);
+        panelB.setBackground(primaryColor);
+        campoBusqueda.setBackground(darkColor);
+        noCheckBox.setBackground(primaryColor);
+        siCheckBox.setBackground(primaryColor);
+        botonAdelante.setBackground(darkColor);
+        botonAtras.setBackground(darkColor);
+        botonVer.setBackground(darkColor);
+        botonEditar.setBackground(darkColor);
+        botonCrear.setBackground(darkColor);
+        header.setBackground(darkColor);
 
-        // Color de texto de los botones
-        botonVer.setForeground(Color.WHITE);
-        botonAtras.setForeground(Color.WHITE);
         botonAdelante.setForeground(Color.WHITE);
+        botonAtras.setForeground(Color.WHITE);
+        botonVer.setForeground(Color.WHITE);
         botonCrear.setForeground(Color.WHITE);
         botonEditar.setForeground(Color.WHITE);
-
-        // Color de fondo de los botones
-        botonVer.setBackground(darkColor);
-        botonAtras.setBackground(darkColor);
-        botonAdelante.setBackground(darkColor);
-        botonCrear.setBackground(darkColor);
-        botonEditar.setBackground(darkColor);
-
-        // Color de texto del campo de búsqueda y del label de la página
         campoBusqueda.setForeground(Color.WHITE);
-        lblPagina.setForeground(Color.WHITE);
-
-        // Color de fondo del campo de búsqueda
-        campoBusqueda.setBackground(darkColor);
-
-        lblD.setForeground(Color.WHITE);
-
-        noCheckBox.setBackground(primaryColor);
+        placeholder.setForeground(Color.WHITE);
         noCheckBox.setForeground(Color.WHITE);
-        noCheckBox.setFocusPainted(false);
-        siCheckBox.setBackground(primaryColor);
         siCheckBox.setForeground(Color.WHITE);
+        lblPagina.setForeground(Color.WHITE);
+        lblDisponibilidad.setForeground(Color.WHITE);
+
+        campoBusqueda.setFont(font);
+        botonAdelante.setFont(font);
+        botonAtras.setFont(font);
+        botonVer.setFont(font);
+        botonCrear.setFont(font);
+        botonEditar.setFont(font);
+        noCheckBox.setFont(font);
+        siCheckBox.setFont(font);
+        placeholder.setFont(font);
+        lblDisponibilidad.setFont(font);
+        lblPagina.setFont(font);
+        lblTitulo.setFont(fontTitulo);
+
+        noCheckBox.setFocusPainted(false);
         siCheckBox.setFocusPainted(false);
-
-        // Color del placeholder del campo de búsqueda
-        placeholder.changeAlpha(0.75f);
-        placeholder.setForeground(Color.LIGHT_GRAY);
-        placeholder.setFont(new Font("Nunito", Font.ITALIC, 11));
-
-        // Crear una fuente con un tamaño de 18 puntos
-        Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
-        lbl0.setFont(fontTitulo);
+        botonAdelante.setFocusable(false);
+        botonAtras.setFocusable(false);
+        botonCrear.setFocusable(false);
+        botonVer.setFocusable(false);
+        botonEditar.setFocusable(false);
+        noCheckBox.setFocusable(false);
+        siCheckBox.setFocusable(false);
     }
 
     private void configurarTablaArreglos() {
         TableColumnModel columnModel = listaArreglos.getColumnModel();
-
-        columnModel.getColumn(0).setPreferredWidth(30);
+        columnModel.getColumn(0).setPreferredWidth(20);
         columnModel.getColumn(1).setPreferredWidth(300);
         columnModel.getColumn(2).setPreferredWidth(110);
         columnModel.getColumn(3).setPreferredWidth(110);
 
-        columnModel.getColumn(0).setCellRenderer(new ListaArreglo.CenterAlignedRenderer());
-        columnModel.getColumn(1).setCellRenderer(new ListaArreglo.LeftAlignedRenderer());
-        columnModel.getColumn(2).setCellRenderer(new ListaArreglo.CenterAlignedRenderer());
-        columnModel.getColumn(3).setCellRenderer(new ListaArreglo.CenterAlignedRenderer());
+        columnModel.getColumn(0).setCellRenderer(new ListaArreglos.CenterAlignedRenderer());
+        columnModel.getColumn(1).setCellRenderer(new ListaArreglos.LeftAlignedRenderer());
+        columnModel.getColumn(3).setCellRenderer(new ListaArreglos.CenterAlignedRenderer());
+        columnModel.getColumn(3).setCellRenderer(new ListaArreglos.CenterAlignedRenderer());
+    }
+
+    private void createUIComponents() {
+        // TODO: place custom component creation code here
     }
 
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
@@ -253,7 +263,6 @@ public class ListaArreglo extends JFrame {
         }
     }
 
-
     private ModeloArreglo cargarDatos() {
         sql = new Conexion();
         try (Connection mysql = sql.conectamysql();
@@ -289,11 +298,10 @@ public class ListaArreglo extends JFrame {
         return new ModeloArreglo(listaArreglo, sql);
     }
 
-
     private int getTotalPageCount() {
         int count = 0;
         try (Connection mysql = sql.conectamysql();
-             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT COUNT(*) AS total FROM Materiales f WHERE f.nombre LIKE CONCAT('%', ?, '%')")) {
+             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT COUNT(*) AS total FROM arreglos f WHERE f.nombre LIKE CONCAT('%', ?, '%')")) {
             preparedStatement.setString(1, busqueda);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
@@ -304,13 +312,12 @@ public class ListaArreglo extends JFrame {
             JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
         }
 
-        int totalPageCount = count / 20;
+            int totalPageCount = count / 20;
+            if (count % 20 > 0) {
+                totalPageCount++;
+            }
 
-        if (count % 20 > 0) {
-            totalPageCount++;
-        }
-
-        return totalPageCount;
+            return totalPageCount;
     }
 
     private void actualizarTabla() {
@@ -326,7 +333,7 @@ public class ListaArreglo extends JFrame {
     }
 
     public static void main(String[] args) {
-        ListaArreglo listaArreglo = new ListaArreglo();
+        ListaArreglos listaArreglo = new ListaArreglos();
         listaArreglo.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         listaArreglo.setVisible(true);
     }

@@ -1,5 +1,5 @@
 package Compras;
-import Clientes.ListaCliente;
+import Clientes.ListaClientes;
 import Objetos.Conexion;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
@@ -573,7 +573,7 @@ public class CrearCompra extends JFrame {
         boolean listaCompraAbierta = false;
         Window[] windows = Window.getWindows();
         for (Window window : windows) {
-            if (window instanceof ListaCliente) {
+            if (window instanceof ListaClientes) {
                 listaCompraAbierta = true;
                 break;
             }
@@ -640,7 +640,7 @@ public class CrearCompra extends JFrame {
             boolean listaCompraAbierta = false;
             Window[] windows = Window.getWindows();
             for (Window window : windows) {
-                if (window instanceof ListaCliente) {
+                if (window instanceof ListaClientes) {
                     listaCompraAbierta = true;
                     break;
                 }

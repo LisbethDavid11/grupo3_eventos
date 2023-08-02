@@ -1,10 +1,11 @@
 package Clientes;
-import Empleados.TextPrompt;
-import Modelos.ModeloClientes;
+import Arreglos.TextPrompt;
+import Modelos.ModeloCliente;
 import Objetos.Cliente;
 import Objetos.Conexion;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -18,26 +19,27 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ListaCliente extends JFrame {
-    private JPanel panelPrincipal;
-    private JButton botonVer;
+public class ListaClientes extends JFrame {
+    private JPanel panelPrincipal, panelTitulo;
+    private JButton botonCrear, botonVer, botonEditar, botonAtras, botonAdelante;
     private JTable listaClientes;
-    private JButton botonAtras;
-    private JButton botonAdelante;
     private JTextField campoBusqueda;
-    Empleados.TextPrompt placeholder = new TextPrompt("Buscar por identidad, nombres y apellidos", campoBusqueda);
-    private JButton botonEditar;
-    private JButton botonCrear;
-    private JLabel lblPagina;
-    private JLabel lbl0;
+    private TextPrompt placeholder = new TextPrompt(" Buscar por identidad, nombres ó apellidos del cliente",campoBusqueda);
+    private JLabel lblPagina, lbl0;
+    private JPanel panelA;
+    private JPanel panelB;
     private List<Cliente> listaCliente;
     private int pagina = 0;
     private Connection mysql;
     private Conexion sql;
-    private ListaCliente actual = this;
+    private ListaClientes actual = this;
     private String busqueda = "";
-
-    public ListaCliente() {
+    Font fontTitulo = new Font("Century Gothic", Font.BOLD, 17);
+    Font font = new Font("Century Gothic", Font.BOLD, 11);
+    Color primaryColor = Color.decode("#37474f"); // Gris azul oscuro
+    Color lightColor = Color.decode("#cfd8dc"); // Gris azul claro
+    Color darkColor = Color.decode("#263238"); // Gris azul más oscuro
+    public ListaClientes() {
         super("");
         setSize(850, 505);
         setLocationRelativeTo(null);
@@ -49,22 +51,7 @@ public class ListaCliente extends JFrame {
 
         lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
 
-        botonAdelante.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if ((pagina + 1) < getTotalPageCount()) {
-                    pagina++;
-                    botonAtras.setEnabled(true);
-                    if ((pagina + 1) == getTotalPageCount()) {
-                        botonAdelante.setEnabled(false);
-                    }
-                }
-                listaClientes.setModel(cargarDatos());
-                configurarTablaClientes();
-                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
-            }
-        });
-
+        botonAtras.setEnabled(false);
         botonAtras.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -81,6 +68,21 @@ public class ListaCliente extends JFrame {
             }
         });
 
+        botonAdelante.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if ((pagina + 1) < getTotalPageCount()) {
+                    pagina++;
+                    botonAtras.setEnabled(true);
+                    if ((pagina + 1) == getTotalPageCount()) {
+                        botonAdelante.setEnabled(false);
+                    }
+                }
+                listaClientes.setModel(cargarDatos());
+                configurarTablaClientes();
+                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+            }
+        });
 
         campoBusqueda.addKeyListener(new KeyAdapter() {
             @Override
@@ -130,59 +132,65 @@ public class ListaCliente extends JFrame {
             }
         });
 
-        // Colores de la paleta
-        Color primaryColor = Color.decode("#37474f"); // Gris azul oscuro
-        Color lightColor = Color.decode("#cfd8dc"); // Gris azul claro
-        Color darkColor = Color.decode("#263238"); // Gris azul más oscuro
+        // Establecer color de fondo para el encabezado
+        JTableHeader header = listaClientes.getTableHeader();
+        header.setForeground(Color.WHITE);
 
-        // Color de fondo
+        int campoBusquedaHeight = 35;
+        campoBusqueda.setPreferredSize(new Dimension(campoBusqueda.getPreferredSize().width, campoBusquedaHeight));
+
         panelPrincipal.setBackground(primaryColor);
+        panelTitulo.setBackground(primaryColor);
+        panelA.setBackground(primaryColor);
+        panelB.setBackground(primaryColor);
+        campoBusqueda.setBackground(darkColor);
+        botonAdelante.setBackground(darkColor);
+        botonAtras.setBackground(darkColor);
+        botonVer.setBackground(darkColor);
+        botonEditar.setBackground(darkColor);
+        botonCrear.setBackground(darkColor);
+        header.setBackground(darkColor);
 
-        // Color de texto de los botones
-        botonVer.setForeground(Color.WHITE);
-        botonAtras.setForeground(Color.WHITE);
         botonAdelante.setForeground(Color.WHITE);
+        botonAtras.setForeground(Color.WHITE);
+        botonVer.setForeground(Color.WHITE);
         botonCrear.setForeground(Color.WHITE);
         botonEditar.setForeground(Color.WHITE);
-
-        // Color de fondo de los botones
-        botonVer.setBackground(darkColor);
-        botonAtras.setBackground(darkColor);
-        botonAdelante.setBackground(darkColor);
-        botonCrear.setBackground(darkColor);
-        botonEditar.setBackground(darkColor);
-
-        // Color de texto del campo de búsqueda y del label de la página
         campoBusqueda.setForeground(Color.WHITE);
+        placeholder.setForeground(Color.WHITE);
         lblPagina.setForeground(Color.WHITE);
 
-        // Color de fondo del campo de búsqueda
-        campoBusqueda.setBackground(darkColor);
-
-        // Color del placeholder del campo de búsqueda
-        placeholder.changeAlpha(0.75f);
-        placeholder.setForeground(Color.LIGHT_GRAY);
-        placeholder.setFont(new Font("Nunito", Font.ITALIC, 11));
-
-        // Crear una fuente con un tamaño de 18 puntos
-        Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
+        campoBusqueda.setFont(font);
+        botonAdelante.setFont(font);
+        botonAtras.setFont(font);
+        botonVer.setFont(font);
+        botonCrear.setFont(font);
+        botonEditar.setFont(font);
+        placeholder.setFont(font);
+        lblPagina.setFont(font);
         lbl0.setFont(fontTitulo);
+
+        botonAdelante.setFocusable(false);
+        botonAtras.setFocusable(false);
+        botonCrear.setFocusable(false);
+        botonVer.setFocusable(false);
+        botonEditar.setFocusable(false);
     }
 
     private void configurarTablaClientes() {
         TableColumnModel columnModel = listaClientes.getColumnModel();
 
-        columnModel.getColumn(0).setPreferredWidth(40);
+        columnModel.getColumn(0).setPreferredWidth(20);
         columnModel.getColumn(1).setPreferredWidth(110);
         columnModel.getColumn(2).setPreferredWidth(200);
         columnModel.getColumn(3).setPreferredWidth(110);
         columnModel.getColumn(4).setPreferredWidth(110);
 
-        columnModel.getColumn(0).setCellRenderer(new ListaCliente.CenterAlignedRenderer());
-        columnModel.getColumn(1).setCellRenderer(new ListaCliente.CenterAlignedRenderer());
-        columnModel.getColumn(2).setCellRenderer(new ListaCliente.LeftAlignedRenderer());
-        columnModel.getColumn(3).setCellRenderer(new ListaCliente.CenterAlignedRenderer());
-        columnModel.getColumn(4).setCellRenderer(new ListaCliente.CenterAlignedRenderer());
+        columnModel.getColumn(0).setCellRenderer(new ListaClientes.CenterAlignedRenderer());
+        columnModel.getColumn(1).setCellRenderer(new ListaClientes.CenterAlignedRenderer());
+        columnModel.getColumn(2).setCellRenderer(new ListaClientes.LeftAlignedRenderer());
+        columnModel.getColumn(3).setCellRenderer(new ListaClientes.CenterAlignedRenderer());
+        columnModel.getColumn(4).setCellRenderer(new ListaClientes.CenterAlignedRenderer());
     }
 
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
@@ -221,7 +229,7 @@ public class ListaCliente extends JFrame {
         }
     }
 
-    private ModeloClientes cargarDatos() {
+    private ModeloCliente cargarDatos() {
         sql = new Conexion();
         mysql = sql.conectamysql();
         try {
@@ -250,8 +258,7 @@ public class ListaCliente extends JFrame {
             JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos","Error", JOptionPane.ERROR_MESSAGE);
             listaCliente = new ArrayList<>();
         }
-
-        return new ModeloClientes(listaCliente);
+        return new ModeloCliente(listaCliente);
     }
 
     private int getTotalPageCount() {
@@ -277,7 +284,7 @@ public class ListaCliente extends JFrame {
     }
 
     public static void main(String[] args) {
-        ListaCliente listaCliente = new ListaCliente();
+        ListaClientes listaCliente = new ListaClientes();
         listaCliente.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         listaCliente.setVisible(true);
     }

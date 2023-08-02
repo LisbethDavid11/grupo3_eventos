@@ -39,24 +39,24 @@ public class ModeloGlobo extends AbstractTableModel {
             case 0: // N°
                 return rowIndex + 1;
             case 1: // Tamaño
-                return globo.getTamano();
+                return "  " + globo.getTamano();
             case 2: // Material
-                return globo.getMaterial();
+                return "  " + globo.getMaterial();
             case 3: // Color
-                return globo.getColor();
+                return "  " + globo.getColor();
             case 4: // Nombre
-                return globo.getCantidad();
+                return "  " + globo.getCantidad() + " unidades";
             case 5: // Precio
                 double precio = globo.getPrecio();
                 if (precio < 0) {
                     precio = 0;
                 }
-                String precioFormateado = String.format("L. %,.2f", precio);
+                String precioFormateado = String.format("  L. %,.2f", precio);
                 return precioFormateado;
             case 6: // Total (Precio * Cantidad)
                 int cantidad = globo.getCantidad();
                 double total = globo.getPrecio() * cantidad;
-                String totalFormateado = String.format("L. %,.2f", total);
+                String totalFormateado = String.format("  L. %,.2f", total);
                 return totalFormateado;
             default:
                 return null;

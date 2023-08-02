@@ -1,30 +1,27 @@
 package Objetos;
 
-public class DetalleCompra {
+public class ManualidadDetalle {
     private int id;
-    private int compraId;
+    private int manualidadId;
     private int materialId;
     private int cantidad;
     private double precio;
 
-    public static String nombreTabla = "detalles_compras";
+    public static String nombreTabla = "detalles_manualidades";
 
-    public DetalleCompra() {
+    public ManualidadDetalle() {
     }
 
     public Object[] toTableRow() {
-        return new Object[]{id, compraId, materialId, cantidad, precio};
+        return new Object[]{id, manualidadId, materialId, cantidad};
     }
-    public DetalleCompra(int id, int compraId, int materialId, int cantidad, double precio){
+
+    public ManualidadDetalle(int id, int manualidadId, int materialId, int cantidad, double precio){
         this.id = id;
-        this.compraId = compraId;
+        this.manualidadId = manualidadId;
         this.materialId = materialId;
         this.cantidad = cantidad;
         this.precio = precio;
-    }
-
-    public double calcularSubtotal() {
-        return precio * cantidad;
     }
 
     public int getId() {
@@ -35,12 +32,12 @@ public class DetalleCompra {
         this.id = id;
     }
 
-    public int getCompraId() {
-        return compraId;
+    public int getManualidadId() {
+        return manualidadId;
     }
 
-    public void setCompraId(int compraId) {
-        this.compraId = compraId;
+    public void setManualidadId(int manualidadId) {
+        this.manualidadId = manualidadId;
     }
 
     public int getMaterialId() {

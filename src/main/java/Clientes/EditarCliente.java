@@ -268,7 +268,7 @@ public class EditarCliente extends  JFrame{
         cancelarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ListaCliente cliente = new ListaCliente();
+                ListaClientes cliente = new ListaClientes();
                 cliente.setVisible(true);
                 actual.dispose();
 
@@ -430,7 +430,7 @@ public class EditarCliente extends  JFrame{
 
                 if (respuesta == JOptionPane.YES_OPTION) {
                     guardar();
-                    ListaCliente listaClientes = new ListaCliente();
+                    ListaClientes listaClientes = new ListaClientes();
                     listaClientes.setVisible(true);
                     actual.dispose();
                 }

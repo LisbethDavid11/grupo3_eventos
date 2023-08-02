@@ -1,5 +1,4 @@
 package Compras;
-import Arreglos.ListaArreglo;
 import Objetos.Conexion;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -12,9 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
 
 public class VerCompras extends JFrame {

@@ -1,7 +1,7 @@
 package Modelos;
 
 import Objetos.Conexion;
-import Objetos.DetalleVenta;
+import Objetos.VentaDetalle;
 import Objetos.Venta;
 
 import javax.swing.table.AbstractTableModel;
@@ -14,14 +14,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ModeloVentas extends AbstractTableModel {
+public class ModeloVenta extends AbstractTableModel {
     private final String[] columnas = {"N°", "Código", "Fecha", "Cliente", "Empleado", "Sub Total", "ISV", "Total"};
     private final List<Venta> ventas;
     private final Conexion sql;
     private final Map<Integer, String> clientes;
     private final Map<Integer, String> empleados;
 
-    public ModeloVentas(List<Venta> ventas, Conexion sql) {
+    public ModeloVenta(List<Venta> ventas, Conexion sql) {
         this.ventas = ventas;
         this.sql = sql;
         this.clientes = new HashMap<>();
@@ -52,35 +52,27 @@ public class ModeloVentas extends AbstractTableModel {
         switch (columnIndex) {
             case 0: // N°
                 return rowIndex + 1;
-
             case 1: // Código
-                return venta.getCodigoVenta();
-
+                return "  " + venta.getCodigoVenta();
             case 2: // Fecha
-                return venta.getFecha();
-
+                return "  " + venta.getFecha();
             case 3: // Cliente
                 int clienteId = venta.getClienteId();
                 String clienteNombre = obtenerNombreCliente(clienteId);
-                return clienteNombre;
-
+                return "  " + clienteNombre;
             case 4: // Empleado
                 int empleadoId = venta.getEmpleadoId();
                 String empleadoNombre = obtenerNombreEmpleado(empleadoId);
-                return empleadoNombre;
-
+                return "  " + empleadoNombre;
             case 5: // Sub Total
                 double subTotal = calcularSubTotal(venta);
-                return String.format("L. %.2f", subTotal);
-
+                return String.format("  L. %.2f", subTotal);
             case 6: // ISV
                 double isv = calcularISV(venta);
-                return String.format("L. %.2f", isv);
-
+                return String.format("  L. %.2f", isv);
             case 7: // Total
                 double total = calcularTotal(venta);
-                return String.format("L. %.2f", total);
-
+                return String.format("  L. %.2f", total);
             default:
                 return null;
         }
@@ -126,10 +118,10 @@ public class ModeloVentas extends AbstractTableModel {
         double subTotal = 0.0;
 
         // Obtener los detalles de venta asociados a la venta actual
-        List<DetalleVenta> detalles = obtenerDetallesVenta(venta.getId());
+        List<VentaDetalle> detalles = obtenerDetallesVenta(venta.getId());
 
         // Calcular el subtotal sumando el subtotal de cada detalle de venta
-        for (DetalleVenta detalle : detalles) {
+        for (VentaDetalle detalle : detalles) {
             subTotal += detalle.getPrecio() * detalle.getCantidad();
         }
 
@@ -143,10 +135,10 @@ public class ModeloVentas extends AbstractTableModel {
         double totalISV = 0.0;
 
         // Obtener los detalles de venta asociados a la venta actual
-        List<DetalleVenta> detalles = obtenerDetallesVenta(venta.getId());
+        List<VentaDetalle> detalles = obtenerDetallesVenta(venta.getId());
 
         // Calcular el ISV sumando los montos de los detalles de venta
-        for (DetalleVenta detalle : detalles) {
+        for (VentaDetalle detalle : detalles) {
             // Calcular el monto del ISV para este detalle y agregarlo al total
             double montoDetalle = detalle.getPrecio() * detalle.getCantidad();
             double isvDetalle = montoDetalle * 0.15;
@@ -169,8 +161,8 @@ public class ModeloVentas extends AbstractTableModel {
 
 
 
-    private List<DetalleVenta> obtenerDetallesVenta(int ventaId) {
-        List<DetalleVenta> detalles = new ArrayList<>();
+    private List<VentaDetalle> obtenerDetallesVenta(int ventaId) {
+        List<VentaDetalle> detalles = new ArrayList<>();
 
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement("SELECT * FROM detalles_ventas WHERE venta_id = ?")) {
@@ -183,7 +175,7 @@ public class ModeloVentas extends AbstractTableModel {
                 int cantidad = resultSet.getInt("cantidad");
                 double precio = resultSet.getDouble("precio");
 
-                DetalleVenta detalle = new DetalleVenta(detalleId, ventaId, materialId, cantidad, precio);
+                VentaDetalle detalle = new VentaDetalle(detalleId, ventaId, materialId, cantidad, precio);
                 detalles.add(detalle);
             }
         } catch (SQLException e) {

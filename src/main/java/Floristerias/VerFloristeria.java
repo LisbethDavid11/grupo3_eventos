@@ -138,7 +138,7 @@ public class VerFloristeria extends JFrame {
         });
 
         volverButton.addActionListener(e -> {
-            ListaFloristeria listaFloristeria = new ListaFloristeria();
+            ListaFloristerias listaFloristeria = new ListaFloristerias();
             listaFloristeria.setVisible(true);
             actual.dispose();
         });

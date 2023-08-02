@@ -1,41 +1,39 @@
 package Modelos;
 
 import Objetos.Conexion;
-import Objetos.DetalleTarjeta;
-
+import Objetos.CompraDetalle;
 import javax.swing.table.AbstractTableModel;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ModeloDetallesTarjetas extends AbstractTableModel {
-    private final String[] columnas = {"N°", "Tarjeta", "Material", "Cantidad", "Precio"};
-    private final List<DetalleTarjeta> detallesTarjetas;
+public class ModeloCompraDetalle extends AbstractTableModel {
+    private final String[] columnas = {"N°", "Compra", "Material", "Cantidad", "Precio", "Total"};
+    private final List<CompraDetalle> detallesCompras;
     private final Conexion sql;
 
-    public ModeloDetallesTarjetas(List<DetalleTarjeta> detallesTarjetas, Conexion sql) {
-        this.detallesTarjetas = detallesTarjetas;
+    public ModeloCompraDetalle(List<CompraDetalle> detallesCompras, Conexion sql) {
+        this.detallesCompras = detallesCompras;
         this.sql = sql;
     }
 
-    public List<DetalleTarjeta> getDetallesPorTarjeta(int tarjetaId) {
-        List<DetalleTarjeta> detalles = new ArrayList<>();
+    public List<CompraDetalle> getDetallesPorCompra(int compraId) {
+        List<CompraDetalle> detalles = new ArrayList<>();
 
         try {
-            String query = "SELECT * FROM tarjetas_detalles WHERE id_tarjeta = ?";
+            String query = "SELECT * FROM detalles_compras WHERE compra_id = ?";
             PreparedStatement statement = sql.conectamysql().prepareStatement(query);
-            statement.setInt(1, tarjetaId);
+            statement.setInt(1, compraId);
             ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
-                DetalleTarjeta detalle = new DetalleTarjeta();
+                CompraDetalle detalle = new CompraDetalle();
                 detalle.setId(resultSet.getInt("id"));
-                detalle.setIdMaterial(resultSet.getInt("id_material"));
-                detalle.setIdTarjeta(resultSet.getInt("id_tarjeta"));
+                detalle.setCompraId(resultSet.getInt("compra_id"));
+                detalle.setMaterialId(resultSet.getInt("material_id"));
                 detalle.setCantidad(resultSet.getInt("cantidad"));
                 detalle.setPrecio(resultSet.getDouble("precio"));
+                // Remove this line: detalle.setTotal(resultSet.getDouble("total"));
                 detalles.add(detalle);
             }
 
@@ -49,9 +47,10 @@ public class ModeloDetallesTarjetas extends AbstractTableModel {
         return detalles;
     }
 
+
     @Override
     public int getRowCount() {
-        return detallesTarjetas.size();
+        return detallesCompras.size();
     }
 
     @Override
@@ -66,31 +65,27 @@ public class ModeloDetallesTarjetas extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        DetalleTarjeta detalleTarjeta = detallesTarjetas.get(rowIndex);
+        CompraDetalle detalleCompra = detallesCompras.get(rowIndex);
 
         switch (columnIndex) {
             case 0: // N°
                 return rowIndex + 1;
-            case 1: // Tarjeta
-                return detalleTarjeta.getIdTarjeta();
+            case 1: // Compra
+                return detalleCompra.getCompraId();
             case 2: // Material
-                int materialId = detalleTarjeta.getIdMaterial();
+                int materialId = detalleCompra.getMaterialId();
                 String materialNombre = obtenerNombreMaterial(materialId);
                 return materialNombre;
             case 3: // Cantidad
-                return detalleTarjeta.getCantidad();
+                return detalleCompra.getCantidad();
             case 4: // Precio
-                double precio = detalleTarjeta.getPrecio();
-                if (precio < 0) {
-                    precio = 0;
-                }
-                String precioFormateado = String.format("L. %,.2f", precio);
-                return precioFormateado;
+                return detalleCompra.getPrecio();
+            case 5: // Total
+                return detalleCompra.getCantidad() * detalleCompra.getPrecio();
             default:
                 return null;
         }
     }
-
     private String obtenerNombreMaterial(int materialId) {
         String nombreMaterial = "";
         try {
@@ -112,4 +107,6 @@ public class ModeloDetallesTarjetas extends AbstractTableModel {
 
         return nombreMaterial;
     }
+
+
 }

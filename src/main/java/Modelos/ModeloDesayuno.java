@@ -49,24 +49,24 @@ public class ModeloDesayuno extends AbstractTableModel {
             case 0: // N°
                 return rowIndex + 1;
             case 1: // Nombre
-                return desayuno.getNombre();
+                return "   " + desayuno.getNombre();
             case 2: // ID del Proveedor
                 int proveedorId = desayuno.getProveedor_id();
                 String proveedorNombre = obtenerNombreProveedor(proveedorId);
-                return proveedorNombre;
+                return "   " + proveedorNombre;
             case 3: // Precio del Desayuno
                 double precio = desayuno.getPrecio_desayuno();
                 if (precio < 0) {
                     precio = 0;
                 }
-                String precioFormateado = String.format("L. %,.2f", precio);
+                String precioFormateado = String.format("  L. %,.2f", precio);
                 return precioFormateado;
             case 4: // Mano de Obra
                 double mano_obra = desayuno.getMano_obra();
                 if (mano_obra < 0) {
                     mano_obra = 0;
                 }
-                String manoObraFormateado = String.format("L. %,.2f", mano_obra);
+                String manoObraFormateado = String.format("  L. %,.2f", mano_obra);
                 return manoObraFormateado;
             default:
                 return null;

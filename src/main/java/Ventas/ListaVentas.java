@@ -1,7 +1,6 @@
 package Ventas;
-import Compras.CrearCompra;
-import Modelos.ModeloVentas;
-import Modelos.ModeloDetallesVentas;
+import Modelos.ModeloVenta;
+import Modelos.ModeloVentaDetalle;
 import Objetos.*;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -11,6 +10,7 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
@@ -32,15 +32,24 @@ public class ListaVentas extends JFrame {
     private JTable listaVentas;
     private JButton botonAtras,botonAdelante, botonCrear, botonImprimir;
     private JTextField campoBusqueda;
-    private TextPrompt placeholder = new TextPrompt("Buscar por código de venta, fecha o cliente ", campoBusqueda);
+    private TextPrompt placeholder = new TextPrompt(" Buscar por código de venta, fecha ó nombre de cliente", campoBusqueda);
     private JLabel lbl0, lblPagina;
     private JComboBox fechaComboBox;
     private JButton botonVer;
+    private JPanel panelB;
+    private JPanel panelA;
+    private JPanel panelTitulo;
     private List<Venta> ventaList;
     private int pagina = 0;
     private Conexion sql;
     private String busqueda = "";
     private ListaVentas actual = this;
+
+    Font fontTitulo = new Font("Century Gothic", Font.BOLD, 17);
+    Font font = new Font("Century Gothic", Font.BOLD, 11);
+    Color primaryColor = Color.decode("#37474f"); // Gris azul oscuro
+    Color lightColor = Color.decode("#cfd8dc"); // Gris azul claro
+    Color darkColor = Color.decode("#263238"); // Gris azul más oscuro
 
     public ListaVentas() {
         super("");
@@ -52,34 +61,6 @@ public class ListaVentas extends JFrame {
         ventaList = new ArrayList<>();
         listaVentas.setModel(cargarDatos());
         configurarTablaVentas();
-
-        Color primaryColor = Color.decode("#37474f");
-        Color lightColor = Color.decode("#cfd8dc");
-        Color darkColor = Color.decode("#263238");
-
-        panelPrincipal.setBackground(primaryColor);
-        fechaComboBox.setBackground(primaryColor);
-        fechaComboBox.setForeground(Color.WHITE);
-
-        botonAtras.setBackground(darkColor);
-        botonAtras.setForeground(Color.WHITE);
-        botonAtras.setFocusPainted(false);
-        botonAdelante.setBackground(darkColor);
-        botonAdelante.setForeground(Color.WHITE);
-        botonAdelante.setFocusPainted(false);
-        botonCrear.setBackground(darkColor);
-        botonCrear.setForeground(Color.WHITE);
-        botonCrear.setFocusPainted(false);
-        campoBusqueda.setBackground(darkColor);
-        campoBusqueda.setForeground(Color.WHITE);
-        lblPagina.setForeground(Color.WHITE);
-
-        placeholder.changeAlpha(0.75f);
-        placeholder.setForeground(Color.LIGHT_GRAY);
-        placeholder.setFont(new Font("Nunito", Font.ITALIC, 11));
-
-        Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
-        lbl0.setFont(fontTitulo);
 
         lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
 
@@ -101,6 +82,21 @@ public class ListaVentas extends JFrame {
         fechaComboBox.setModel(comboBoxModel);
 
         botonAtras.setEnabled(false);
+        botonAtras.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (pagina > 0) {
+                    pagina--;
+                    botonAdelante.setEnabled(true);
+                    if (pagina == 0) {
+                        botonAtras.setEnabled(false);
+                    }
+                }
+                listaVentas.setModel(cargarDatos());
+                configurarTablaVentas();
+                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+            }
+        });
 
         botonAdelante.addActionListener(new ActionListener() {
             @Override
@@ -110,22 +106,6 @@ public class ListaVentas extends JFrame {
                     botonAtras.setEnabled(true);
                     if ((pagina + 1) == getTotalPageCount()) {
                         botonAdelante.setEnabled(false);
-                    }
-                }
-                listaVentas.setModel(cargarDatos());
-                configurarTablaVentas();
-                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
-            }
-        });
-
-        botonAtras.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (pagina > 0) {
-                    pagina--;
-                    botonAdelante.setEnabled(true);
-                    if (pagina == 0) {
-                        botonAtras.setEnabled(false);
                     }
                 }
                 listaVentas.setModel(cargarDatos());
@@ -144,45 +124,6 @@ public class ListaVentas extends JFrame {
                 listaVentas.setModel(cargarDatos());
                 configurarTablaVentas();
                 lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
-            }
-        });
-
-        // Agrega el ActionListener al JComboBox
-        fechaComboBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String mesSeleccionado = (String) fechaComboBox.getSelectedItem();
-                actualizarModeloTablaConMesSeleccionado(mesSeleccionado);
-            }
-        });
-
-        botonAtras.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                botonAtras.setBackground(lightColor);
-            }
-
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                botonAtras.setBackground(darkColor);
-            }
-        });
-
-        botonAdelante.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                botonAdelante.setBackground(lightColor);
-            }
-
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                botonAdelante.setBackground(darkColor);
-            }
-        });
-
-        botonCrear.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                botonCrear.setBackground(lightColor);
-            }
-
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                botonCrear.setBackground(darkColor);
             }
         });
 
@@ -229,16 +170,66 @@ public class ListaVentas extends JFrame {
                 }
             }
         });
+
+        JTableHeader header = listaVentas.getTableHeader();
+        header.setForeground(Color.WHITE);
+
+        int campoBusquedaHeight = 35;
+        campoBusqueda.setPreferredSize(new Dimension(campoBusqueda.getPreferredSize().width, campoBusquedaHeight));
+
+        int fechasHeight = 35;
+        fechaComboBox.setPreferredSize(new Dimension(fechaComboBox.getPreferredSize().width, fechasHeight));
+
+        panelPrincipal.setBackground(primaryColor);
+        panelTitulo.setBackground(primaryColor);
+        panelA.setBackground(primaryColor);
+        panelB.setBackground(primaryColor);
+        header.setBackground(darkColor);
+        botonImprimir.setBackground(darkColor);
+        botonCrear.setBackground(darkColor);
+        botonAdelante.setBackground(darkColor);
+        botonAtras.setBackground(darkColor);
+        botonVer.setBackground(darkColor);
+        fechaComboBox.setBackground(darkColor);
+        campoBusqueda.setBackground(darkColor);
+
+        placeholder.setForeground(Color.WHITE);
+        fechaComboBox.setForeground(Color.WHITE);
+        botonImprimir.setForeground(Color.WHITE);
+        botonVer.setForeground(Color.WHITE);
+        botonAtras.setForeground(Color.WHITE);
+        botonAdelante.setForeground(Color.WHITE);
+        botonCrear.setForeground(Color.WHITE);
+        campoBusqueda.setForeground(Color.WHITE);
+        lblPagina.setForeground(Color.WHITE);
+
+        campoBusqueda.setFont(font);
+        botonAdelante.setFont(font);
+        botonVer.setFont(font);
+        botonAtras.setFont(font);
+        botonCrear.setFont(font);
+        botonImprimir.setFont(font);
+        fechaComboBox.setFont(font);
+        placeholder.setFont(font);
+        lbl0.setFont(fontTitulo);
+        lblPagina.setFont(font);
+
+        botonAdelante.setFocusable(false);
+        botonAtras.setFocusable(false);
+        botonCrear.setFocusable(false);
+        botonVer.setFocusable(false);
+        botonImprimir.setFocusable(false);
+        fechaComboBox.setFocusable(false);
     }
 
     private void configurarTablaVentas() {
         TableColumnModel columnModel = listaVentas.getColumnModel();
 
         columnModel.getColumn(0).setPreferredWidth(20);
-        columnModel.getColumn(1).setPreferredWidth(110);
-        columnModel.getColumn(2).setPreferredWidth(170);
-        columnModel.getColumn(3).setPreferredWidth(250);
-        columnModel.getColumn(4).setPreferredWidth(250);
+        columnModel.getColumn(1).setPreferredWidth(120);
+        columnModel.getColumn(2).setPreferredWidth(150);
+        columnModel.getColumn(3).setPreferredWidth(230);
+        columnModel.getColumn(4).setPreferredWidth(230);
         columnModel.getColumn(5).setPreferredWidth(80);
         columnModel.getColumn(6).setPreferredWidth(80);
         columnModel.getColumn(7).setPreferredWidth(80);
@@ -289,7 +280,7 @@ public class ListaVentas extends JFrame {
         }
     }
 
-    private ModeloVentas cargarDatos() {
+    private ModeloVenta cargarDatos() {
         sql = new Conexion();
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement(
@@ -336,7 +327,7 @@ public class ListaVentas extends JFrame {
             TableColumn columnId = listaVentas.getColumnModel().getColumn(0);
             columnId.setPreferredWidth(50);
         }
-        return new ModeloVentas(ventaList, sql);
+        return new ModeloVenta(ventaList, sql);
     }
 
 
@@ -358,9 +349,9 @@ public class ListaVentas extends JFrame {
         return totalPageCount;
     }
 
-    private double calcularSubtotal(List<DetalleVenta> detalles) {
+    private double calcularSubtotal(List<VentaDetalle> detalles) {
         double subtotal = 0.0;
-        for (DetalleVenta detalle : detalles) {
+        for (VentaDetalle detalle : detalles) {
             Material producto = obtenerMaterialPorId(detalle.getMaterialId());
             if (producto != null) {
                 subtotal += detalle.getCantidad() * detalle.getPrecio();
@@ -371,9 +362,9 @@ public class ListaVentas extends JFrame {
         return subtotal;
     }
 
-    private double calcularISV(List<DetalleVenta> detalles) {
+    private double calcularISV(List<VentaDetalle> detalles) {
         double isv = 0.0;
-        for (DetalleVenta detalle : detalles) {
+        for (VentaDetalle detalle : detalles) {
             Material producto = obtenerMaterialPorId(detalle.getMaterialId());
             if (producto != null) {
                 isv += detalle.getCantidad() * detalle.getPrecio() * 0.15;
@@ -382,7 +373,7 @@ public class ListaVentas extends JFrame {
         return isv;
     }
 
-    private double calcularTotal(List<DetalleVenta> detalles) {
+    private double calcularTotal(List<VentaDetalle> detalles) {
         double subtotal = calcularSubtotal(detalles);
         double isv = calcularISV(detalles);
         return subtotal + isv;
@@ -489,10 +480,10 @@ public class ListaVentas extends JFrame {
 
             // Agregar línea por línea
             Conexion sql = new Conexion();
-            ModeloDetallesVentas mdc = new ModeloDetallesVentas(new ArrayList<>(), sql);
+            ModeloVentaDetalle mdc = new ModeloVentaDetalle(new ArrayList<>(), sql);
 
-            List<DetalleVenta> detalles = mdc.getDetallesPorVenta(venta.getId());
-            for (DetalleVenta detalle : detalles) {
+            List<VentaDetalle> detalles = mdc.getDetallesPorVenta(venta.getId());
+            for (VentaDetalle detalle : detalles) {
                 if (rowNumber == rowsPerPage) {
                     contentStream.endText();
                     contentStream.close();
@@ -717,7 +708,7 @@ public class ListaVentas extends JFrame {
                 ventaList.add(venta);
             }
 
-            listaVentas.setModel(new ModeloVentas(ventaList, sql));
+            listaVentas.setModel(new ModeloVenta(ventaList, sql));
             configurarTablaVentas();
         } catch (SQLException e) {
             System.out.println(e.getMessage());

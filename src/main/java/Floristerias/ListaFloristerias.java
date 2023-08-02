@@ -1,10 +1,10 @@
 package Floristerias;
-import Clientes.ListaCliente;
 import Modelos.ModeloFloristeria;
 import Objetos.Conexion;
 import Objetos.Floristeria;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
@@ -19,29 +19,27 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ListaFloristeria extends JFrame {
-    private JPanel panelPrincipal;
-    private JButton botonVer;
+public class ListaFloristerias extends JFrame {
+    private JPanel panelPrincipal, panelTitulo, panelA, panelB;
+    private JButton botonVer, botonCrear, botonEditar, botonAdelante, botonAtras;
     private JTable listaFloristerias;
-    private JButton botonAtras;
-    private JButton botonAdelante;
     private JTextField campoBusqueda;
-    private TextPrompt placeholder = new TextPrompt("Buscar por nombre de la flor o de la empresa proveedora", campoBusqueda);
-    private JButton botonEditar;
-    private JButton botonCrear;
-    private JLabel lbltxt;
-    private JLabel lbl0;
-    private ImageIcon imagen;
+    private TextPrompt placeholder = new TextPrompt(" Buscar por nombre de la flor ó de la empresa proveedora", campoBusqueda);
+    private JLabel lblPagina, lbl0;
     private List<Floristeria> listaFloristeria;
     private int pagina = 0;
     private Connection mysql;
     private Conexion sql;
-    private ListaFloristeria actual = this;
+    private ListaFloristerias actual = this;
     private String busqueda = "";
-
-    public ListaFloristeria() {
+    Font fontTitulo = new Font("Century Gothic", Font.BOLD, 17);
+    Font font = new Font("Century Gothic", Font.BOLD, 11);
+    Color primaryColor = Color.decode("#37474f"); // Gris azul oscuro
+    Color lightColor = Color.decode("#cfd8dc"); // Gris azul claro
+    Color darkColor = Color.decode("#263238"); // Gris azul más oscuro
+    public ListaFloristerias() {
         super("");
-        setSize(850, 510);
+        setSize(850, 505);
         setLocationRelativeTo(null);
         setContentPane(panelPrincipal);
         campoBusqueda.setText("");
@@ -49,7 +47,24 @@ public class ListaFloristeria extends JFrame {
         listaFloristerias.setModel(cargarDatos());
         configurarTablaFloristerias();
 
-        lbltxt.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+        lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+
+        botonAtras.setEnabled(false);
+        botonAtras.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (pagina > 0) {
+                    pagina--;
+                    botonAdelante.setEnabled(true);
+                    if (pagina == 0) {
+                        botonAtras.setEnabled(false);
+                    }
+                }
+                listaFloristerias.setModel(cargarDatos());
+                configurarTablaFloristerias();
+                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+            }
+        });
 
         botonAdelante.addActionListener(new ActionListener() {
             @Override
@@ -63,23 +78,7 @@ public class ListaFloristeria extends JFrame {
                 }
                 listaFloristerias.setModel(cargarDatos());
                 configurarTablaFloristerias();
-                lbltxt.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
-            }
-        });
-
-        botonAtras.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (pagina > 0) {
-                    pagina--;
-                    botonAdelante.setEnabled(true);
-                    if (pagina == 0) {
-                        botonAtras.setEnabled(false);
-                    }
-                }
-                listaFloristerias.setModel(cargarDatos());
-                configurarTablaFloristerias();
-                lbltxt.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
 
@@ -92,7 +91,7 @@ public class ListaFloristeria extends JFrame {
                 botonAtras.setEnabled(pagina > 0);
                 listaFloristerias.setModel(cargarDatos());
                 configurarTablaFloristerias();
-                lbltxt.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
 
@@ -131,87 +130,48 @@ public class ListaFloristeria extends JFrame {
             }
         });
 
-        // Colores de la paleta
-        Color primaryColor = Color.decode("#37474f"); // Gris azul oscuro
-        Color lightColor = Color.decode("#cfd8dc"); // Gris azul claro
-        Color darkColor = Color.decode("#263238"); // Gris azul más oscuro
+        JTableHeader header = listaFloristerias.getTableHeader();
+        header.setForeground(Color.WHITE);
 
-        Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
-        lbl0.setFont(fontTitulo);
+        int campoBusquedaHeight = 35;
+        campoBusqueda.setPreferredSize(new Dimension(campoBusqueda.getPreferredSize().width, campoBusquedaHeight));
 
-        botonVer.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                botonVer.setBackground(lightColor);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                botonVer.setBackground(darkColor);
-            }
-        });
-
-        botonAtras.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                botonAtras.setBackground(lightColor);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                botonAtras.setBackground(darkColor);
-            }
-        });
-
-        botonAdelante.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                botonAdelante.setBackground(lightColor);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                botonAdelante.setBackground(darkColor);
-            }
-        });
-
-        botonCrear.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                botonCrear.setBackground(lightColor);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                botonCrear.setBackground(darkColor);
-            }
-        });
-
-        botonEditar.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                botonEditar.setBackground(lightColor);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                botonEditar.setBackground(darkColor);
-            }
-        });
-
-        // Color de fondo
         panelPrincipal.setBackground(primaryColor);
+        panelTitulo.setBackground(primaryColor);
+        panelA.setBackground(primaryColor);
+        panelB.setBackground(primaryColor);
+        header.setBackground(darkColor);
+        botonCrear.setBackground(darkColor);
+        botonEditar.setBackground(darkColor);
+        botonAdelante.setBackground(darkColor);
+        botonAtras.setBackground(darkColor);
+        botonVer.setBackground(darkColor);
+        campoBusqueda.setBackground(darkColor);
 
-        // Color de texto de los botones
+        placeholder.setForeground(Color.WHITE);
         botonVer.setForeground(Color.WHITE);
         botonAtras.setForeground(Color.WHITE);
         botonAdelante.setForeground(Color.WHITE);
         botonCrear.setForeground(Color.WHITE);
         botonEditar.setForeground(Color.WHITE);
-
-        // Color de fondo de los botones
-        botonVer.setBackground(darkColor);
-        botonAtras.setBackground(darkColor);
-        botonAdelante.setBackground(darkColor);
-        botonCrear.setBackground(darkColor);
-        botonEditar.setBackground(darkColor);
-
-        // Color de texto del campo de búsqueda y del label de la página
         campoBusqueda.setForeground(Color.WHITE);
-        lbltxt.setForeground(Color.WHITE);
+        lblPagina.setForeground(Color.WHITE);
 
-        // Color de fondo del campo de búsqueda
-        campoBusqueda.setBackground(darkColor);
+        campoBusqueda.setFont(font);
+        botonAdelante.setFont(font);
+        botonVer.setFont(font);
+        botonEditar.setFont(font);
+        botonAtras.setFont(font);
+        botonCrear.setFont(font);
+        placeholder.setFont(font);
+        lbl0.setFont(fontTitulo);
+        lblPagina.setFont(font);
 
-        // Color del placeholder del campo de búsqueda
-        placeholder.changeAlpha(0.75f);
-        placeholder.setForeground(Color.LIGHT_GRAY);
-        placeholder.setFont(new Font("Nunito", Font.ITALIC, 11));
+        botonAdelante.setFocusable(false);
+        botonAtras.setFocusable(false);
+        botonAtras.setFocusable(false);
+        botonEditar.setFocusable(false);
+        botonVer.setFocusable(false);
     }
 
     private void configurarTablaFloristerias() {
@@ -224,12 +184,12 @@ public class ListaFloristeria extends JFrame {
         columnModel.getColumn(4).setPreferredWidth(130);
         columnModel.getColumn(5).setPreferredWidth(130);
 
-        columnModel.getColumn(0).setCellRenderer(new ListaFloristeria.CenterAlignedRenderer());
-        columnModel.getColumn(1).setCellRenderer(new ListaFloristeria.LeftAlignedRenderer());
-        columnModel.getColumn(2).setCellRenderer(new ListaFloristeria.LeftAlignedRenderer());
-        columnModel.getColumn(3).setCellRenderer(new ListaFloristeria.LeftAlignedRenderer());
-        columnModel.getColumn(4).setCellRenderer(new ListaFloristeria.LeftAlignedRenderer());
-        columnModel.getColumn(5).setCellRenderer(new ListaFloristeria.LeftAlignedRenderer());
+        columnModel.getColumn(0).setCellRenderer(new ListaFloristerias.CenterAlignedRenderer());
+        columnModel.getColumn(1).setCellRenderer(new ListaFloristerias.LeftAlignedRenderer());
+        columnModel.getColumn(2).setCellRenderer(new ListaFloristerias.LeftAlignedRenderer());
+        columnModel.getColumn(3).setCellRenderer(new ListaFloristerias.LeftAlignedRenderer());
+        columnModel.getColumn(4).setCellRenderer(new ListaFloristerias.LeftAlignedRenderer());
+        columnModel.getColumn(5).setCellRenderer(new ListaFloristerias.LeftAlignedRenderer());
     }
 
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
@@ -332,8 +292,9 @@ public class ListaFloristeria extends JFrame {
 
         return totalPageCount;
     }
+
     public static void main(String[] args) {
-        ListaFloristeria listaFloristeria = new ListaFloristeria();
+        ListaFloristerias listaFloristeria = new ListaFloristerias();
         listaFloristeria.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         listaFloristeria.setVisible(true);
     }

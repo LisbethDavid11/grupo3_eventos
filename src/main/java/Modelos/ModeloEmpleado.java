@@ -47,11 +47,16 @@ public class ModeloEmpleado extends AbstractTableModel {
             case 1:
                 return empleado.getIdentidad();
             case 2:
-                return empleado.getNombres() + " " + empleado.getApellidos();
+                return "   " + empleado.getNombres() + " " + empleado.getApellidos();
             case 3:
-                return empleado.getTelefono();
+                return formatearTelefono(empleado.getTelefono());
             default:
                 return null;
         }
     }
+
+    private String formatearTelefono(String telefono) {
+        return telefono.substring(0, 4) + "-" + telefono.substring(4, 8);
+    }
+
 }

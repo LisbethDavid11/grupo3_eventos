@@ -5,10 +5,10 @@ import Objetos.Cliente;
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
 
-public class ModeloClientes extends AbstractTableModel {
+public class ModeloCliente extends AbstractTableModel {
     private final String[] columnas = {"N°", "Identidad", "Nombre Completo", "Teléfono", "Tipo"};
     private final List<Cliente> clientes;
-    public ModeloClientes(List<Cliente> clientes) {
+    public ModeloCliente(List<Cliente> clientes) {
         this.clientes = clientes;
     }
 
@@ -45,13 +45,17 @@ public class ModeloClientes extends AbstractTableModel {
             case 1:
                 return cliente.getIdentidad();
             case 2:
-                return cliente.getNombre() + " " + cliente.getApellido();
+                return "   " + cliente.getNombre() + " " + cliente.getApellido();
             case 3:
-                return cliente.getTelefono();
+                return formatearTelefono(cliente.getTelefono());
             case 4:
                 return cliente.getTipo_cliente();
             default:
                 return null;
         }
+    }
+
+    private String formatearTelefono(String telefono) {
+        return telefono.substring(0, 4) + "-" + telefono.substring(4, 8);
     }
 }

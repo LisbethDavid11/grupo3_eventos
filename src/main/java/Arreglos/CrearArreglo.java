@@ -212,7 +212,7 @@ public class CrearArreglo extends JFrame {
         botonCancelar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ListaArreglo listaArreglo = new ListaArreglo();
+                ListaArreglos listaArreglo = new ListaArreglos();
                 listaArreglo.setVisible(true);
                 actual.dispose();
             }
@@ -305,7 +305,7 @@ public class CrearArreglo extends JFrame {
 
                 if (respuesta == JOptionPane.YES_OPTION) {
                     guardarArreglo();
-                    ListaArreglo listaArreglo = new ListaArreglo();
+                    ListaArreglos listaArreglo = new ListaArreglos();
                     listaArreglo.setVisible(true);
                     actual.dispose();
                 }

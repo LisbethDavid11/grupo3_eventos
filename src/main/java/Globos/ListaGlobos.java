@@ -5,6 +5,7 @@ import Objetos.Conexion;
 import Objetos.Globo;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
@@ -25,18 +26,27 @@ public class ListaGlobos extends JFrame {
     private JButton botonAtras;
     private JButton botonAdelante;
     private JTextField campoBusqueda;
-    private TextPrompt placeholder = new TextPrompt("Buscar por forma, color, tamaño o precio", campoBusqueda);
+    private TextPrompt placeholder = new TextPrompt(" Buscar por forma, color, tamaño ó precio", campoBusqueda);
     private JButton botonEditar;
     private JButton botonCrear;
     private JLabel lblPagina;
     private JLabel lbl0;
     private JTable listaGlobos;
+    private JPanel panelTitulo;
+    private JPanel panelA;
+    private JPanel panelB;
     private List<Globo> listaGlobo;
     private int pagina = 0;
     private Connection mysql;
     private Conexion sql;
     private ListaGlobos actual = this;
     private String busqueda = "";
+
+    Font fontTitulo = new Font("Century Gothic", Font.BOLD, 17);
+    Font font = new Font("Century Gothic", Font.BOLD, 11);
+    Color primaryColor = Color.decode("#37474f"); // Gris azul oscuro
+    Color lightColor = Color.decode("#cfd8dc"); // Gris azul claro
+    Color darkColor = Color.decode("#263238"); // Gris azul más oscuro
 
     public ListaGlobos() {
         super("");
@@ -50,22 +60,7 @@ public class ListaGlobos extends JFrame {
 
         lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
 
-        botonAdelante.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if ((pagina + 1) < getTotalPageCount()) {
-                    pagina++;
-                    botonAtras.setEnabled(true);
-                    if ((pagina + 1) == getTotalPageCount()) {
-                        botonAdelante.setEnabled(false);
-                    }
-                }
-                listaGlobos.setModel(cargarDatos());
-                configurarTablaArreglos();
-                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
-            }
-        });
-
+        botonAtras.setEnabled(false);
         botonAtras.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -74,6 +69,22 @@ public class ListaGlobos extends JFrame {
                     botonAdelante.setEnabled(true);
                     if (pagina == 0) {
                         botonAtras.setEnabled(false);
+                    }
+                }
+                listaGlobos.setModel(cargarDatos());
+                configurarTablaArreglos();
+                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+            }
+        });
+
+        botonAdelante.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if ((pagina + 1) < getTotalPageCount()) {
+                    pagina++;
+                    botonAtras.setEnabled(true);
+                    if ((pagina + 1) == getTotalPageCount()) {
+                        botonAdelante.setEnabled(false);
                     }
                 }
                 listaGlobos.setModel(cargarDatos());
@@ -131,54 +142,57 @@ public class ListaGlobos extends JFrame {
             }
         });
          */
+        JTableHeader header = listaGlobos.getTableHeader();
+        header.setForeground(Color.WHITE);
 
-        // Colores de la paleta
-        Color primaryColor = Color.decode("#37474f"); // Gris azul oscuro
-        Color lightColor = Color.decode("#cfd8dc"); // Gris azul claro
-        Color darkColor = Color.decode("#263238"); // Gris azul más oscuro
+        int campoBusquedaHeight = 35;
+        campoBusqueda.setPreferredSize(new Dimension(campoBusqueda.getPreferredSize().width, campoBusquedaHeight));
 
-        // Color de fondo
         panelPrincipal.setBackground(primaryColor);
+        panelTitulo.setBackground(primaryColor);
+        panelA.setBackground(primaryColor);
+        panelB.setBackground(primaryColor);
+        header.setBackground(darkColor);
+        botonCrear.setBackground(darkColor);
+        botonEditar.setBackground(darkColor);
+        botonAdelante.setBackground(darkColor);
+        botonAtras.setBackground(darkColor);
+        botonVer.setBackground(darkColor);
+        campoBusqueda.setBackground(darkColor);
 
-        // Color de texto de los botones
+        placeholder.setForeground(Color.WHITE);
         botonVer.setForeground(Color.WHITE);
         botonAtras.setForeground(Color.WHITE);
         botonAdelante.setForeground(Color.WHITE);
         botonCrear.setForeground(Color.WHITE);
         botonEditar.setForeground(Color.WHITE);
-
-        // Color de fondo de los botones
-        botonVer.setBackground(darkColor);
-        botonAtras.setBackground(darkColor);
-        botonAdelante.setBackground(darkColor);
-        botonCrear.setBackground(darkColor);
-        botonEditar.setBackground(darkColor);
-
-        // Color de texto del campo de búsqueda y del label de la página
         campoBusqueda.setForeground(Color.WHITE);
         lblPagina.setForeground(Color.WHITE);
 
-        // Color de fondo del campo de búsqueda
-        campoBusqueda.setBackground(darkColor);
-
-        // Color del placeholder del campo de búsqueda
-        placeholder.changeAlpha(0.75f);
-        placeholder.setForeground(Color.LIGHT_GRAY);
-        placeholder.setFont(new Font("Nunito", Font.ITALIC, 11));
-
-        // Crear una fuente con un tamaño de 18 puntos
-        Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
+        campoBusqueda.setFont(font);
+        botonAdelante.setFont(font);
+        botonVer.setFont(font);
+        botonEditar.setFont(font);
+        botonAtras.setFont(font);
+        botonCrear.setFont(font);
+        placeholder.setFont(font);
         lbl0.setFont(fontTitulo);
+        lblPagina.setFont(font);
+
+        botonAdelante.setFocusable(false);
+        botonAtras.setFocusable(false);
+        botonCrear.setFocusable(false);
+        botonVer.setFocusable(false);
     }
 
     private void configurarTablaArreglos() {
         TableColumnModel columnModel = listaGlobos.getColumnModel();
 
         columnModel.getColumn(0).setPreferredWidth(20);
-        columnModel.getColumn(1).setPreferredWidth(150);
-        columnModel.getColumn(2).setPreferredWidth(150);
-        columnModel.getColumn(3).setPreferredWidth(150);
-        columnModel.getColumn(4).setPreferredWidth(50);
+        columnModel.getColumn(1).setPreferredWidth(140);
+        columnModel.getColumn(2).setPreferredWidth(140);
+        columnModel.getColumn(3).setPreferredWidth(140);
+        columnModel.getColumn(4).setPreferredWidth(60);
         columnModel.getColumn(5).setPreferredWidth(60);
         columnModel.getColumn(6).setPreferredWidth(60);
 

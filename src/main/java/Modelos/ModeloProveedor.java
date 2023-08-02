@@ -5,13 +5,13 @@ import Objetos.Proveedor;
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
 
-public class ModeloProveedores extends AbstractTableModel {
+public class ModeloProveedor extends AbstractTableModel {
     private final String[] columnas = {
-            "N°", "Empresa Proveedora", "Teléfono","RTN", "Correo", "Nombre Vendedor", "Teléfono Vendedor"
+            "N°", "Empresa Proveedora", "Teléfono","RTN", "Nombre Vendedor", "Teléfono Vendedor"
     };
     private final List<Proveedor> proveedores;
 
-    public ModeloProveedores(List<Proveedor> proveedores) {
+    public ModeloProveedor(List<Proveedor> proveedores) {
         this.proveedores = proveedores;
     }
 
@@ -46,19 +46,25 @@ public class ModeloProveedores extends AbstractTableModel {
             case 0:
                 return rowIndex + 1;
             case 1:
-                return proveedor.getEmpresaProveedora();
+                return "  " + proveedor.getEmpresaProveedora();
             case 2:
-                return proveedor.getTelefono();
+                return formatearTelefono(proveedor.getTelefono());
             case 3:
                 return proveedor.getRtn();
             case 4:
-                return proveedor.getCorreo();
+                return "  " + proveedor.getNombreVendedor();
             case 5:
-                return proveedor.getNombreVendedor();
-            case 6:
-                return proveedor.getTelefonoVendedor();
+                return formatearTelefonoProveedor(proveedor.getTelefonoVendedor());
             default:
                 return null;
         }
+    }
+
+    private String formatearTelefono(String telefono) {
+        return telefono.substring(0, 4) + "-" + telefono.substring(4, 8);
+    }
+
+    private String formatearTelefonoProveedor(String telefonoVendedor) {
+        return telefonoVendedor.substring(0, 4) + "-" + telefonoVendedor.substring(4, 8);
     }
 }

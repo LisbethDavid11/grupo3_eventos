@@ -1,6 +1,6 @@
 package Manualidades;
-import Modelos.ModeloMateriales;
-import Modelos.ModeloProductos;
+import Modelos.ModeloMaterial;
+import Modelos.ModeloProducto;
 import Objetos.Conexion;
 import Objetos.Material;
 import javax.imageio.ImageIO;
@@ -259,7 +259,7 @@ public class CrearManualidad extends JFrame {
                     lbl10.setText("0.00");
 
                     // Crear un nuevo modelo de la tabla con la lista de materiales vacía
-                    ModeloProductos nuevoModelo = new ModeloProductos(new ArrayList<>(), sql);
+                    ModeloProducto nuevoModelo = new ModeloProducto(new ArrayList<>(), sql);
 
                     // Establecer el nuevo modelo en la tabla
                     jtableMateriales.setModel(nuevoModelo);
@@ -432,7 +432,7 @@ public class CrearManualidad extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                    ListaManualidad listaManualidad = new ListaManualidad();
+                    ListaManualidades listaManualidad = new ListaManualidades();
                     listaManualidad.setVisible(true);
                     actual.dispose();
             }
@@ -574,7 +574,7 @@ public class CrearManualidad extends JFrame {
 
                 if (respuesta == JOptionPane.YES_OPTION) {
                     guardarManualidades();
-                    ListaManualidad listaManualidad = new ListaManualidad();
+                    ListaManualidades listaManualidad = new ListaManualidades();
                     listaManualidad.setVisible(true);
                     actual.dispose();
                 }
@@ -935,7 +935,7 @@ public class CrearManualidad extends JFrame {
     }
 
 
-    private ModeloProductos cargarDetallesMateriales() {
+    private ModeloProducto cargarDetallesMateriales() {
         sql = new Conexion();
         materialList.clear(); // Limpiar la lista antes de agregar los materiales
 
@@ -982,7 +982,7 @@ public class CrearManualidad extends JFrame {
         // Configurar el ancho de las columnas y alineaciones de las celdas
         configurarTablaMateriales();
 
-        return new ModeloProductos(materialList, sql);
+        return new ModeloProducto(materialList, sql);
     }
 
     private void limpiarTablaMateriales() {
@@ -1000,7 +1000,7 @@ public class CrearManualidad extends JFrame {
         }
     }
 
-    private ModeloMateriales cargarDatosMateriales() {
+    private ModeloMaterial cargarDatosMateriales() {
         sql = new Conexion();
         materialList.clear();
 
@@ -1040,15 +1040,15 @@ public class CrearManualidad extends JFrame {
             columnId.setPreferredWidth(50);
         }
 
-        return new ModeloMateriales(materialList, sql);
+        return new ModeloMaterial(materialList, sql);
     }
 
     private double calcularTotalTabla() {
         double sumaTotal = 0.0;
 
         TableModel modelo = jtableMateriales.getModel();
-        if (modelo instanceof ModeloProductos) {
-            ModeloProductos modeloProductos = (ModeloProductos) modelo;
+        if (modelo instanceof ModeloProducto) {
+            ModeloProducto modeloProductos = (ModeloProducto) modelo;
 
             // Iterar por todas las filas del modelo
             for (int i = 0; i < modeloProductos.getRowCount(); i++) {
@@ -1071,8 +1071,8 @@ public class CrearManualidad extends JFrame {
             String sumaTotalFormateado = decimalFormat.format(sumaTotal);
             lbl8.setText(" " + sumaTotalFormateado);
 
-        } else if (modelo instanceof ModeloMateriales) {
-            ModeloMateriales modeloMateriales = (ModeloMateriales) modelo;
+        } else if (modelo instanceof ModeloMaterial) {
+            ModeloMaterial modeloMateriales = (ModeloMaterial) modelo;
 
             // Iterar por todas las filas del modelo
             for (int i = 0; i < modeloMateriales.getRowCount(); i++) {

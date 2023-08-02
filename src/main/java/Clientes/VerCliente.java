@@ -122,7 +122,7 @@ public class VerCliente extends JFrame {
         volverButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ListaCliente indexCliente = new ListaCliente();
+                ListaClientes indexCliente = new ListaClientes();
                 indexCliente.setVisible(true);
                 actual.dispose();
             }

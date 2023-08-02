@@ -1,24 +1,23 @@
 package Objetos;
 
-public class DetalleVenta {
+public class CompraDetalle {
     private int id;
-    private int ventaId;
+    private int compraId;
     private int materialId;
     private int cantidad;
     private double precio;
 
-    public static String nombreTabla = "detalles_ventas";
+    public static String nombreTabla = "detalles_compras";
 
-    public DetalleVenta() {
+    public CompraDetalle() {
     }
 
     public Object[] toTableRow() {
-        return new Object[]{id, ventaId, materialId, cantidad, precio};
+        return new Object[]{id, compraId, materialId, cantidad, precio};
     }
-
-    public DetalleVenta(int id, int ventaId, int materialId, int cantidad, double precio) {
+    public CompraDetalle(int id, int compraId, int materialId, int cantidad, double precio){
         this.id = id;
-        this.ventaId = ventaId;
+        this.compraId = compraId;
         this.materialId = materialId;
         this.cantidad = cantidad;
         this.precio = precio;
@@ -28,8 +27,6 @@ public class DetalleVenta {
         return precio * cantidad;
     }
 
-    // getters y setters
-
     public int getId() {
         return id;
     }
@@ -38,12 +35,12 @@ public class DetalleVenta {
         this.id = id;
     }
 
-    public int getVentaId() {
-        return ventaId;
+    public int getCompraId() {
+        return compraId;
     }
 
-    public void setVentaId(int ventaId) {
-        this.ventaId = ventaId;
+    public void setCompraId(int compraId) {
+        this.compraId = compraId;
     }
 
     public int getMaterialId() {

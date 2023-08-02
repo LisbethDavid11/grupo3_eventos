@@ -201,7 +201,7 @@ public class EditarFloristeria extends JFrame {
         botonCancelar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ListaFloristeria listaFloristeria = new ListaFloristeria();
+                ListaFloristerias listaFloristeria = new ListaFloristerias();
                 listaFloristeria.setVisible(true);
                 actual.dispose();
             }
@@ -291,7 +291,7 @@ public class EditarFloristeria extends JFrame {
 
                 if (respuesta == JOptionPane.YES_OPTION) {
                     guardarFloristeria();
-                    ListaFloristeria listaFloristeria = new ListaFloristeria();
+                    ListaFloristerias listaFloristeria = new ListaFloristerias();
                     listaFloristeria.setVisible(true);
                     actual.dispose();
                 }

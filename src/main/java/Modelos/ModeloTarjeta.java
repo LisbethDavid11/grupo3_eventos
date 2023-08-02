@@ -4,12 +4,12 @@ import Objetos.Tarjeta;
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
 
-public class ModeloTarjetas extends AbstractTableModel {
+public class ModeloTarjeta extends AbstractTableModel {
     private final String[] columnas = {"N°", "Ocasión", "Disponible", "Precio"};
 
     private final List<Tarjeta> tarjetas;
 
-    public ModeloTarjetas(List<Tarjeta> tarjetas, Conexion sql) {
+    public ModeloTarjeta(List<Tarjeta> tarjetas, Conexion sql) {
         this.tarjetas = tarjetas;
     }
 
@@ -36,7 +36,7 @@ public class ModeloTarjetas extends AbstractTableModel {
             case 0: // N°
                 return rowIndex + 1;
             case 1: // Ocasión
-                return tarjeta.getOcasion();
+                return "   " + tarjeta.getOcasion();
             case 2: // Disponible
                 return tarjeta.getDisponible();
             case 3: // Precio Tarjeta
@@ -44,7 +44,7 @@ public class ModeloTarjetas extends AbstractTableModel {
                 if (precioTarjeta < 0) {
                     precioTarjeta = 0;
                 }
-                String precioTarjetaFormateado = String.format("L. %,.2f", precioTarjeta);
+                String precioTarjetaFormateado = String.format("  L. %,.2f", precioTarjeta);
                 return precioTarjetaFormateado;
             default:
                 return null;

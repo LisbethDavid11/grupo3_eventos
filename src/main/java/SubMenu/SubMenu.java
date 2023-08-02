@@ -1,12 +1,12 @@
 package SubMenu;
 
-import Arreglos.ListaArreglo;
-import Clientes.ListaCliente;
+import Arreglos.ListaArreglos;
+import Clientes.ListaClientes;
 import Compras.ListaCompras;
 import Empleados.ListaEmpleados;
-import Floristerias.ListaFloristeria;
+import Floristerias.ListaFloristerias;
 import Globos.ListaGlobos;
-import Manualidades.ListaManualidad;
+import Manualidades.ListaManualidades;
 import Materiales.ListaMateriales;
 import Proveedores.ListaProveedores;
 import Tarjetas.ListaTarjetas;
@@ -19,15 +19,15 @@ import java.awt.event.ActionListener;
 public class SubMenu extends JFrame {
     private JButton proveedoresButton, empleadosButton, clientesButton, floristeriaButton, arreglosButton, materialesButton, comprasButton,tarjetaButton, manualidadesButton, globosButton;
     private JPanel panel, panel2, panel3;
-    private ListaCliente listaCliente;
+    private ListaClientes listaCliente;
     private ListaEmpleados listaEmpleados;
-    private ListaFloristeria listaFloristeria;
-    private ListaArreglo listaArreglo;
+    private ListaFloristerias listaFloristeria;
+    private ListaArreglos listaArreglo;
     private ListaMateriales listaMateriales;
     private ListaProveedores listaProveedores;
     private ListaCompras listaCompras;
     private ListaTarjetas listaTarjetas;
-    private ListaManualidad listaManualidades;
+    private ListaManualidades listaManualidades;
     private ListaGlobos listaGlobos;
 
     public SubMenu() {
@@ -124,15 +124,15 @@ public class SubMenu extends JFrame {
         add(panel3);
 
         // Crear instancias de las ventanas
-        listaCliente = new ListaCliente();
+        listaCliente = new ListaClientes();
         listaEmpleados = new ListaEmpleados();
-        listaFloristeria = new ListaFloristeria();
-        listaArreglo = new ListaArreglo();
+        listaFloristeria = new ListaFloristerias();
+        listaArreglo = new ListaArreglos();
         listaMateriales = new ListaMateriales();
         listaProveedores = new ListaProveedores();
         listaCompras = new ListaCompras();
         listaTarjetas = new ListaTarjetas();
-        listaManualidades = new ListaManualidad();
+        listaManualidades = new ListaManualidades();
         listaGlobos = new ListaGlobos();
 
         clientesButton.addActionListener(new ActionListener() {

@@ -1,35 +1,35 @@
 package Modelos;
 
 import Objetos.Conexion;
-import Objetos.DetalleVenta;
+import Objetos.ManualidadDetalle;
 import javax.swing.table.AbstractTableModel;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ModeloDetallesVentas extends AbstractTableModel {
-    private final String[] columnas = {"N°", "Venta", "Producto", "Cantidad", "Precio", "Total"};
-    private final List<DetalleVenta> detallesVentas;
+public class ModeloManualidadDetalle extends AbstractTableModel {
+    private final String[] columnas = {"N°", "Manualidad", "Material", "Cantidad", "Precio"};
+    private final List<ManualidadDetalle> detallesManualidades;
     private final Conexion sql;
 
-    public ModeloDetallesVentas(List<DetalleVenta> detallesVentas, Conexion sql) {
-        this.detallesVentas = detallesVentas;
+    public ModeloManualidadDetalle(List<ManualidadDetalle> detallesManualidades, Conexion sql) {
+        this.detallesManualidades = detallesManualidades;
         this.sql = sql;
     }
 
-    public List<DetalleVenta> getDetallesPorVenta(int ventaId) {
-        List<DetalleVenta> detalles = new ArrayList<>();
+    public List<ManualidadDetalle> getDetallesPorManualidad(int manualidadId) {
+        List<ManualidadDetalle> detalles = new ArrayList<>();
 
         try {
-            String query = "SELECT * FROM detalles_ventas WHERE venta_id = ?";
+            String query = "SELECT * FROM detalles_manualidades WHERE manualidad_id = ?";
             PreparedStatement statement = sql.conectamysql().prepareStatement(query);
-            statement.setInt(1, ventaId);
+            statement.setInt(1, manualidadId);
             ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
-                DetalleVenta detalle = new DetalleVenta();
+                ManualidadDetalle detalle = new ManualidadDetalle();
                 detalle.setId(resultSet.getInt("id"));
-                detalle.setVentaId(resultSet.getInt("venta_id"));
+                detalle.setManualidadId(resultSet.getInt("manualidad_id"));
                 detalle.setMaterialId(resultSet.getInt("material_id"));
                 detalle.setCantidad(resultSet.getInt("cantidad"));
                 detalle.setPrecio(resultSet.getDouble("precio"));
@@ -48,7 +48,7 @@ public class ModeloDetallesVentas extends AbstractTableModel {
 
     @Override
     public int getRowCount() {
-        return detallesVentas.size();
+        return detallesManualidades.size();
     }
 
     @Override
@@ -63,30 +63,33 @@ public class ModeloDetallesVentas extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        DetalleVenta detalleVenta = detallesVentas.get(rowIndex);
+        ManualidadDetalle detalleManualidad = detallesManualidades.get(rowIndex);
 
         switch (columnIndex) {
             case 0: // N°
                 return rowIndex + 1;
-            case 1: // Venta
-                return detalleVenta.getVentaId();
-            case 2: // Producto
-                int materialId = detalleVenta.getMaterialId();
-                String productoNombre = obtenerNombreProducto(materialId);
-                return productoNombre;
+            case 1: // Manualidad
+                return detalleManualidad.getManualidadId();
+            case 2: // Material
+                int materialId = detalleManualidad.getMaterialId();
+                String materialNombre = obtenerNombreMaterial(materialId);
+                return materialNombre;
             case 3: // Cantidad
-                return detalleVenta.getCantidad();
+                return detalleManualidad.getCantidad();
             case 4: // Precio
-                return detalleVenta.getPrecio();
-            case 5: // Total
-                return detalleVenta.getCantidad() * detalleVenta.getPrecio();
+                double precio = detalleManualidad.getPrecio();
+                if (precio < 0) {
+                    precio = 0;
+                }
+                String precioFormateado = String.format("L. %,.2f", precio);
+                return precioFormateado;
             default:
                 return null;
         }
     }
 
-    private String obtenerNombreProducto(int materialId) {
-        String nombreProducto = "";
+    private String obtenerNombreMaterial(int materialId) {
+        String nombreMaterial = "";
         try {
             String query = "SELECT nombre FROM materiales WHERE id = ?";
             PreparedStatement statement = sql.conectamysql().prepareStatement(query);
@@ -94,7 +97,7 @@ public class ModeloDetallesVentas extends AbstractTableModel {
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
-                nombreProducto = resultSet.getString("nombre");
+                nombreMaterial = resultSet.getString("nombre");
             }
 
             resultSet.close();
@@ -104,6 +107,6 @@ public class ModeloDetallesVentas extends AbstractTableModel {
             e.printStackTrace();
         }
 
-        return nombreProducto;
+        return nombreMaterial;
     }
 }

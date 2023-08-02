@@ -2,7 +2,7 @@ package Modelos;
 
 import Objetos.Compra;
 import Objetos.Conexion;
-import Objetos.DetalleCompra;
+import Objetos.CompraDetalle;
 import Objetos.Material;
 
 import javax.swing.*;
@@ -16,14 +16,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
-public class ModeloCompras extends AbstractTableModel {
+public class ModeloCompra extends AbstractTableModel {
     private final String[] columnas = {"N°", "Código", "Fecha", "Proveedor", "Empleado", "Sub Total", "ISV", "Total"};
     private final List<Compra> compras;
     private final Conexion sql;
     private final Map<Integer, String> proveedores;
     private final Map<Integer, String> empleados;
 
-    public ModeloCompras(List<Compra> compras, Conexion sql) {
+    public ModeloCompra(List<Compra> compras, Conexion sql) {
         this.compras = compras;
         this.sql = sql;
         this.proveedores = new HashMap<>();
@@ -56,32 +56,32 @@ public class ModeloCompras extends AbstractTableModel {
                 return rowIndex + 1;
 
             case 1: // Código
-                return compra.getCodigoCompra();
+                return "   " + compra.getCodigoCompra();
 
             case 2: // Fecha
-                return compra.getFecha();
+                return "   " + compra.getFecha();
 
             case 3: // Proveedor
                 int proveedorId = compra.getProveedorId();
                 String proveedorNombre = obtenerNombreProveedor(proveedorId);
-                return proveedorNombre;
+                return "   " + proveedorNombre;
 
             case 4: // Empleado
                 int empleadoId = compra.getEmpleadoId();
                 String empleadoNombre = obtenerNombreEmpleado(empleadoId);
-                return empleadoNombre;
+                return "   " + empleadoNombre;
 
             case 5: // Sub Total
                 double subTotal = calcularSubTotal(compra);
-                return String.format("L. %.2f", subTotal);
+                return String.format("  L. %.2f", subTotal);
 
             case 6: // ISV
                 double isv = calcularISV(compra);
-                return String.format("L. %.2f", isv);
+                return String.format("  L. %.2f", isv);
 
             case 7: // Total
                 double total = calcularTotal(compra);
-                return String.format("L. %.2f", total);
+                return String.format("  L. %.2f", total);
 
             default:
                 return null;
@@ -130,10 +130,10 @@ public class ModeloCompras extends AbstractTableModel {
         double subTotal = 0;
 
         // Obtener los detalles de compra asociados a la compra actual
-        List<DetalleCompra> detalles = obtenerDetallesCompra(compra.getId());
+        List<CompraDetalle> detalles = obtenerDetallesCompra(compra.getId());
 
         // Calcular el subtotal sumando los subtotales de cada detalle de compra
-        for (DetalleCompra detalle : detalles) {
+        for (CompraDetalle detalle : detalles) {
             subTotal += detalle.getPrecio() * detalle.getCantidad();
         }
 
@@ -142,9 +142,9 @@ public class ModeloCompras extends AbstractTableModel {
 
     private double calcularISV(Compra compra) {
         double totalISV = 0.0;
-        List<DetalleCompra> detalles = obtenerDetallesCompra(compra.getId());
+        List<CompraDetalle> detalles = obtenerDetallesCompra(compra.getId());
 
-        for (DetalleCompra detalle : detalles) {
+        for (CompraDetalle detalle : detalles) {
             Material material = obtenerMaterialPorId(detalle.getMaterialId());
 
             if (material != null && !material.isExento()) {
@@ -162,10 +162,10 @@ public class ModeloCompras extends AbstractTableModel {
         double impuesto = 0.15; // Impuesto sobre ventas (ISV) del 15%
 
         // Obtener los detalles de compra asociados a la compra actual
-        List<DetalleCompra> detalles = obtenerDetallesCompra(compra.getId());
+        List<CompraDetalle> detalles = obtenerDetallesCompra(compra.getId());
 
         // Calcular el total sumando los montos de los detalles de compra
-        for (DetalleCompra detalle : detalles) {
+        for (CompraDetalle detalle : detalles) {
             // Obtener el material asociado a este detalle
             Material material = obtenerMaterialPorId(detalle.getMaterialId());
             double montoDetalle = detalle.getPrecio() * detalle.getCantidad();
@@ -210,8 +210,8 @@ public class ModeloCompras extends AbstractTableModel {
         return material;
     }
 
-    private List<DetalleCompra> obtenerDetallesCompra(int compraId) {
-        List<DetalleCompra> detalles = new ArrayList<>();
+    private List<CompraDetalle> obtenerDetallesCompra(int compraId) {
+        List<CompraDetalle> detalles = new ArrayList<>();
 
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement("SELECT * FROM detalles_compras WHERE compra_id = ?")) {
@@ -224,7 +224,7 @@ public class ModeloCompras extends AbstractTableModel {
                 int cantidad = resultSet.getInt("cantidad");
                 double precio = resultSet.getDouble("precio");
 
-                DetalleCompra detalle = new DetalleCompra(detalleId, compraId, materialId, cantidad, precio);
+                CompraDetalle detalle = new CompraDetalle(detalleId, compraId, materialId, cantidad, precio);
                 detalles.add(detalle);
             }
         } catch (SQLException e) {

@@ -6,12 +6,12 @@ import Objetos.Material;
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
 
-public class ModeloProductos extends AbstractTableModel {
+public class ModeloProducto extends AbstractTableModel {
     private final String[] columnas = {"N°", "Nombre", "Cantidad", "Precio", "Total"};
     private final List<Material> materiales;
     private final Conexion sql;
 
-    public ModeloProductos(List<Material> materiales, Conexion sql) {
+    public ModeloProducto(List<Material> materiales, Conexion sql) {
         this.materiales = materiales;
         this.sql = sql;
     }

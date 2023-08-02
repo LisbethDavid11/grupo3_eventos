@@ -121,7 +121,7 @@ public class VerArreglo extends JFrame {
         });
 
         volverButton.addActionListener(e -> {
-            ListaArreglo listaArreglos = new ListaArreglo();
+            ListaArreglos listaArreglos = new ListaArreglos();
             listaArreglos.setVisible(true);
             actual.dispose();
         });

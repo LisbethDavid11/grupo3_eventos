@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ModeloFloristeria extends AbstractTableModel {
-    private final String[] columnas = {"N°", "Nombre de la flor", "Proveedor", "Existencia", "Precio", "Total"};
+    private final String[] columnas = {"N°", "Nombre de la Flor", "Proveedor", "Existencia", "Precio", "Total"};
     private final List<Floristeria> floristerias;
     private final Conexion sql;
     private final Map<Integer, String> proveedores;
@@ -46,23 +46,23 @@ public class ModeloFloristeria extends AbstractTableModel {
             case 0: // N°
                 return rowIndex + 1;
             case 1: // Nombre
-                return floristeria.getNombre();
+                return "   " + floristeria.getNombre();
             case 2: // Proveedor
                 int proveedorId = floristeria.getProveedorId();
                 String proveedorNombre = obtenerNombreProveedor(proveedorId);
-                return proveedorNombre;
+                return "   " + proveedorNombre;
             case 3: // Cantidad
-                return floristeria.getCantidad();
+                return "   " + floristeria.getCantidad() +" unidades";
             case 4: // Precio
                 double precio = floristeria.getPrecio();
                 if (precio < 0) {
                     precio = 0;
                 }
-                String precioFormateado = String.format("L. %,.2f", precio);
+                String precioFormateado = String.format("  L. %,.2f", precio);
                 return precioFormateado;
             case 5: // Total
                 double total = floristeria.getPrecio() * floristeria.getCantidad();
-                String totalFormateado = String.format("L. %,.2f", total);
+                String totalFormateado = String.format("  L. %,.2f", total);
                 return totalFormateado;
             default:
                 return null;

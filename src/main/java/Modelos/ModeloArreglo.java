@@ -18,7 +18,7 @@ import java.util.List;
 
 public class ModeloArreglo extends AbstractTableModel {
 
-    private final String[] columnas = {"N°", "Nombre del arreglo", "Precio", "Disponible"};
+    private final String[] columnas = {"N°", "Nombre del Arreglo", "Precio", "Disponible"};
 
     private final List<Arreglo> arreglos;
     private final Conexion sql;
@@ -59,13 +59,13 @@ public class ModeloArreglo extends AbstractTableModel {
             case 0: // N°
                 return rowIndex + 1;
             case 1: // Nombre
-                return arreglo.getNombre();
+                return "   " + arreglo.getNombre();
             case 2: // Precio
                 double precio = arreglo.getPrecio();
                 if (precio < 0) {
                     precio = 0;
                 }
-                String precioFormateado = String.format("L. %,.2f", precio);
+                String precioFormateado = String.format("   L. %,.2f", precio);
                 return precioFormateado;
             case 3: // Disponible
                 return arreglo.getDisponible();

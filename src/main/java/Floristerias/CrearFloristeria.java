@@ -1,5 +1,4 @@
 package Floristerias;
-import Arreglos.ListaArreglo;
 import Objetos.Conexion;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -202,7 +201,7 @@ public class CrearFloristeria extends JFrame {
         botonCancelar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ListaFloristeria listaFloristeria = new ListaFloristeria();
+                ListaFloristerias listaFloristeria = new ListaFloristerias();
                 listaFloristeria.setVisible(true);
                 actual.dispose();
             }
@@ -292,7 +291,7 @@ public class CrearFloristeria extends JFrame {
 
                 if (respuesta == JOptionPane.YES_OPTION) {
                     guardarFloristeria();
-                    ListaFloristeria listaFloristeria = new ListaFloristeria();
+                    ListaFloristerias listaFloristeria = new ListaFloristerias();
                     listaFloristeria.setVisible(true);
                     actual.dispose();
                 }

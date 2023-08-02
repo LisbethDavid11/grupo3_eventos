@@ -1,6 +1,6 @@
 package Objetos;
 
-public class DetalleDesayuno {
+public class DesayunoDetalle {
     private int id;
     private int desayunoId;
     private int productoId;
@@ -14,14 +14,14 @@ public class DetalleDesayuno {
 
     public static String nombreTabla = "detalles_desayunos";
 
-    public DetalleDesayuno() {
+    public DesayunoDetalle() {
     }
 
     public Object[] toTableRow() {
         return new Object[]{id, desayunoId, productoId, cantidad, precio};
     }
 
-    public DetalleDesayuno(int id, int desayunoId, int productoId, int cantidad, double precio){
+    public DesayunoDetalle(int id, int desayunoId, int productoId, int cantidad, double precio){
         this.id = id;
         this.desayunoId = desayunoId;
         this.productoId = productoId;

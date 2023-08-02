@@ -1,14 +1,12 @@
 package Proveedores;
 import Empleados.TextPrompt;
-import Materiales.ListaMateriales;
-import Modelos.ModeloProveedores;
+import Modelos.ModeloProveedor;
 import Objetos.Conexion;
 import Objetos.Proveedor;
-import Tarjetas.ListaTarjetas;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableColumn;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -34,6 +32,9 @@ public class ListaProveedores extends JFrame {
     private JButton botonCrear;
     private JLabel lblPagina;
     private JLabel lbl0;
+    private JPanel panelA;
+    private JPanel panelTitulo;
+    private JPanel panelB;
     private List<Proveedor> listaProveedor;
     private int pagina = 0;
     private Connection mysql;
@@ -41,30 +42,38 @@ public class ListaProveedores extends JFrame {
     private ListaProveedores actual = this;
     private String busqueda = "";
 
+    Font fontTitulo = new Font("Century Gothic", Font.BOLD, 17);
+    Font font = new Font("Century Gothic", Font.BOLD, 11);
+    Color primaryColor = Color.decode("#37474f"); // Gris azul oscuro
+    Color lightColor = Color.decode("#cfd8dc"); // Gris azul claro
+    Color darkColor = Color.decode("#263238"); // Gris azul más oscuro
+
     public ListaProveedores() {
         super("Lista Proveedores");
-        setSize(860, 520);
+        setSize(850, 505);
         setLocationRelativeTo(null);
         setContentPane(panelPrincipal);
         campoBusqueda.setText("");
-
-        lbl0.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
 
         listaProveedores.setModel(cargarDatos());
         configurarTablaProveedores();
 
         lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
 
-        botonEditar.addActionListener(new ActionListener() {
+        botonAtras.setEnabled(false);
+        botonAtras.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (listaProveedores.getSelectedRow() == -1) {
-                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.ERROR_MESSAGE);
-                    return;
+                if (pagina > 0) {
+                    pagina--;
+                    botonAdelante.setEnabled(true);
+                    if (pagina == 0) {
+                        botonAtras.setEnabled(false);
+                    }
                 }
-                EditarProveedores proveedores = new EditarProveedores(listaProveedor.get(listaProveedores.getSelectedRow()).getId());
-                proveedores.setVisible(true);
-                actual.dispose();
+                listaProveedores.setModel(cargarDatos());
+                configurarTablaProveedores();
+                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
 
@@ -76,22 +85,6 @@ public class ListaProveedores extends JFrame {
                     botonAtras.setEnabled(true);
                     if ((pagina + 1) == getTotalPageCount()) {
                         botonAdelante.setEnabled(false);
-                    }
-                }
-                listaProveedores.setModel(cargarDatos());
-                configurarTablaProveedores();
-                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
-            }
-        });
-
-        botonAtras.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (pagina > 0) {
-                    pagina--;
-                    botonAdelante.setEnabled(true);
-                    if (pagina == 0) {
-                        botonAtras.setEnabled(false);
                     }
                 }
                 listaProveedores.setModel(cargarDatos());
@@ -121,7 +114,21 @@ public class ListaProveedores extends JFrame {
                 actual.dispose();
             }
         });
-                 botonVer.addActionListener(new ActionListener() {
+
+        botonEditar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (listaProveedores.getSelectedRow() == -1) {
+                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                EditarProveedores proveedores = new EditarProveedores(listaProveedor.get(listaProveedores.getSelectedRow()).getId());
+                proveedores.setVisible(true);
+                actual.dispose();
+            }
+        });
+
+        botonVer.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (listaProveedores.getSelectedRow() == -1) {
@@ -134,41 +141,47 @@ public class ListaProveedores extends JFrame {
             }
         });
 
+        JTableHeader header = listaProveedores.getTableHeader();
+        header.setForeground(Color.WHITE);
 
+        int campoBusquedaHeight = 35;
+        campoBusqueda.setPreferredSize(new Dimension(campoBusqueda.getPreferredSize().width, campoBusquedaHeight));
 
-        // Colores de la paleta
-        Color primaryColor = Color.decode("#37474f"); // Gris azul oscuro
-        Color lightColor = Color.decode("#cfd8dc"); // Gris azul claro
-        Color darkColor = Color.decode("#263238"); // Gris azul más oscuro
-
-        // Color de fondo
         panelPrincipal.setBackground(primaryColor);
+        panelTitulo.setBackground(primaryColor);
+        panelA.setBackground(primaryColor);
+        panelTitulo.setBackground(primaryColor);
+        header.setBackground(darkColor);
+        botonCrear.setBackground(darkColor);
+        botonEditar.setBackground(darkColor);
+        botonAdelante.setBackground(darkColor);
+        botonAtras.setBackground(darkColor);
+        botonVer.setBackground(darkColor);
+        campoBusqueda.setBackground(darkColor);
 
-        // Color de texto de los botones
+        placeholder.setForeground(Color.WHITE);
         botonVer.setForeground(Color.WHITE);
         botonAtras.setForeground(Color.WHITE);
         botonAdelante.setForeground(Color.WHITE);
         botonCrear.setForeground(Color.WHITE);
         botonEditar.setForeground(Color.WHITE);
-
-        // Color de fondo de los botones
-        botonVer.setBackground(darkColor);
-        botonAtras.setBackground(darkColor);
-        botonAdelante.setBackground(darkColor);
-        botonCrear.setBackground(darkColor);
-        botonEditar.setBackground(darkColor);
-
-        // Color de texto del campo de búsqueda y del label de la página
         campoBusqueda.setForeground(Color.WHITE);
         lblPagina.setForeground(Color.WHITE);
 
-        // Color de fondo del campo de búsqueda
-        campoBusqueda.setBackground(darkColor);
+        campoBusqueda.setFont(font);
+        botonAdelante.setFont(font);
+        botonVer.setFont(font);
+        botonEditar.setFont(font);
+        botonAtras.setFont(font);
+        botonCrear.setFont(font);
+        placeholder.setFont(font);
+        lbl0.setFont(fontTitulo);
+        lblPagina.setFont(font);
 
-        // Color del placeholder del campo de búsqueda
-        placeholder.changeAlpha(0.75f);
-        placeholder.setForeground(Color.LIGHT_GRAY);
-        placeholder.setFont(new Font("Nunito", Font.ITALIC, 11));
+        botonAdelante.setFocusable(false);
+        botonAtras.setFocusable(false);
+        botonCrear.setFocusable(false);
+        botonVer.setFocusable(false);
     }
 
     private void configurarTablaProveedores() {
@@ -178,17 +191,15 @@ public class ListaProveedores extends JFrame {
         columnModel.getColumn(1).setPreferredWidth(200);
         columnModel.getColumn(2).setPreferredWidth(60);
         columnModel.getColumn(3).setPreferredWidth(100);
-        columnModel.getColumn(4).setPreferredWidth(170);
-        columnModel.getColumn(5).setPreferredWidth(150);
-        columnModel.getColumn(6).setPreferredWidth(60);
+        columnModel.getColumn(4).setPreferredWidth(150);
+        columnModel.getColumn(5).setPreferredWidth(60);
 
         columnModel.getColumn(0).setCellRenderer(new ListaProveedores.CenterAlignedRenderer());
         columnModel.getColumn(1).setCellRenderer(new ListaProveedores.LeftAlignedRenderer());
         columnModel.getColumn(2).setCellRenderer(new ListaProveedores.CenterAlignedRenderer());
-        columnModel.getColumn(3).setCellRenderer(new ListaProveedores.LeftAlignedRenderer());
+        columnModel.getColumn(3).setCellRenderer(new ListaProveedores.CenterAlignedRenderer());
         columnModel.getColumn(4).setCellRenderer(new ListaProveedores.LeftAlignedRenderer());
-        columnModel.getColumn(5).setCellRenderer(new ListaProveedores.LeftAlignedRenderer());
-        columnModel.getColumn(6).setCellRenderer(new ListaProveedores.CenterAlignedRenderer());
+        columnModel.getColumn(5).setCellRenderer(new ListaProveedores.CenterAlignedRenderer());
     }
 
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
@@ -227,7 +238,7 @@ public class ListaProveedores extends JFrame {
         }
     }
 
-    private ModeloProveedores cargarDatos() {
+    private ModeloProveedor cargarDatos() {
         sql = new Conexion();
         mysql = sql.conectamysql();
         try {
@@ -257,7 +268,7 @@ public class ListaProveedores extends JFrame {
             listaProveedor = new ArrayList<>();
         }
 
-        return new ModeloProveedores(listaProveedor);
+        return new ModeloProveedor(listaProveedor);
     }
 
     private int getTotalPageCount() {
