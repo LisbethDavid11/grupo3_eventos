@@ -17,12 +17,11 @@ import java.io.IOException;
 import java.sql.*;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.Date;
 import java.util.List;
 
 public class CrearDesayuno extends JFrame {
-
     private JTextField campoPrecioDesayuno, campoManoObra, campoNombre;
     private JTextArea campoDescripcion;
     private JButton botonGuardar;
@@ -35,39 +34,70 @@ public class CrearDesayuno extends JFrame {
     private JButton agregarMaterialButton, agregarGloboButton, agregarTarjetasButton, agregarFloresButton;
     private JTable jtableMateriales;
     private JLabel jlabelImagen;
-    private JScrollPane jscrollMateriales, panel4;
+    private JScrollPane panel4;
     private JButton agregarButton;
     private JTextField campoBusquedaMateriales;
     private JButton cancelarButton;
-    private JComboBox<String> jcbProveedores;
+    private JComboBox<ProveedorDesayuno> jcbProveedores;
     private JPanel jpanelDescripcion;
     private JLabel jtextCatidadTotalMateriales;
     private JLabel lbl8;
     private JButton botonLimpiar;
     private JLabel lbl9;
     private JLabel lbl10;
-    private List<Material> materialList = new ArrayList<>();
-    private List<Material> materialListTemporal = new ArrayList<>();
-    private List<Floristeria> floristeriaList = new ArrayList<>();
-    private List<Floristeria> floristeriaListTemporal = new ArrayList<>();
-    private List<Tarjeta> tarjetaList = new ArrayList<>();
-    private List<Tarjeta> tarjetaListTemporal = new ArrayList<>();
-    private List<Globo> globoList = new ArrayList<>();
-    private List<Globo> globolListTemporal = new ArrayList<>();
+    private int selectTabla = 1;
+
+    private List<PoliProducto> productosListTemporal = new ArrayList<>();
+    private List<PoliMaterial> materialList = new ArrayList<>();
+    private List<PoliMaterial> materialListTemporal = new ArrayList<>();
+    private List<PoliFlor> floristeriaList = new ArrayList<>();
+    private List<PoliFlor> floristeriaListTemporal = new ArrayList<>();
+    private List<PoliTarjeta> tarjetaList = new ArrayList<>();
+    private List<PoliTarjeta> tarjetaListTemporal = new ArrayList<>();
+    private List<PoliGlobo> globoList = new ArrayList<>();
+    private List<PoliGlobo> globolListTemporal = new ArrayList<>();
+
+    private Map<String,String> tiposDescripcion = new HashMap<>();
+    private Map<String,String> tiposTablas = new HashMap<>();
     private String imagePath = "";
     private CrearDesayuno actual = this;
     private Conexion sql;
     private String nombreFile;
     private String urlDestino = "";
     private DefaultTableModel modeloProductos;
+    Font fontTitulo = new Font("Century Gothic", Font.BOLD, 17);
+    Font font = new Font("Century Gothic", Font.BOLD, 17);
+    Font font2 = new Font("Century Gothic", Font.BOLD, 11);
 
-    Color textColor = Color.decode("#212121");
-    Color darkColorCyan = new Color(0, 150, 136);
+    // Colores para el botón "Cyan"
+    Color primaryColorCyan = new Color(0, 188, 212); // Cyan primario
+    Color lightColorCyan = new Color(77, 208, 225); // Cyan claro
+    Color darkColorCyan = new Color(0, 151, 167); // Cyan oscuro
+
+    // Colores para el botón "Aqua"
+    Color primaryColorAqua = new Color(0, 150, 136); // Aqua primario
+    Color lightColorAqua = new Color(77, 182, 172); // Aqua claro
+    Color darkColorAqua = new Color(0, 121, 107); // Aqua oscuro
+
+    // Colores para el botón "Rosado"
+    Color primaryColorRosado = new Color(233, 30, 99); // Rosado primario
+    Color lightColorRosado = new Color(240, 98, 146); // Rosado claro
+    Color darkColorRosado = new Color(194, 24, 91); // Rosado oscuro
+
+    // Colores para el botón "Amber"
+    Color primaryColorAmber = new Color(255, 193, 7); // Amber primario
+    Color lightColorAmber = new Color(255, 213, 79); // Amber claro
+    Color darkColorAmber = new Color(255, 160, 0); // Amber oscuro
+
+    // Colores para el botón "Verde lima"
+    Color primaryColorVerdeLima = new Color(205, 220, 57); // Verde lima primario
+    Color lightColorVerdeLima = new Color(220, 237, 200); // Verde lima claro
+    Color darkColorVerdeLima = new Color(139, 195, 74); // Verde lima oscuro
+
     Color darkColorPink = new Color(233, 30, 99);
     Color darkColorRed = new Color(244, 67, 54);
     Color darkColorBlue = new Color(33, 150, 243);
     EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
-    Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
 
     public CrearDesayuno() {
         super("");
@@ -78,7 +108,18 @@ public class CrearDesayuno extends JFrame {
         campoDescripcion.setLineWrap(true);
         campoDescripcion.setWrapStyleWord(true);
 
-        jcbProveedores.addItem("Seleccione un proveedor"); // Agregar mensaje inicial
+        tiposDescripcion.put("F","floristeria");
+        tiposDescripcion.put("T","tarjeta");
+        tiposDescripcion.put("G","globo");
+        tiposDescripcion.put("M","material");
+
+        tiposTablas.put("F","floristeria");
+        tiposTablas.put("T","tarjetas");
+        tiposTablas.put("G","globos");
+        tiposTablas.put("M","materiales");
+
+
+        jcbProveedores.addItem(new ProveedorDesayuno(0,"","")); // Agregar mensaje inicial
         cargarProveedores();
 
         // Establecer ancho y alto deseados para el paneldescripcion
@@ -127,12 +168,15 @@ public class CrearDesayuno extends JFrame {
         panel4.setBackground(Color.decode("#F5F5F5"));
         panel5.setBackground(Color.decode("#F5F5F5"));
         panel6.setBackground(Color.decode("#F5F5F5"));
-        // panel7.setBackground(Color.decode("#F5F5F5"));
+        panel7.setBackground(Color.decode("#F5F5F5"));
         jpanelDescripcion.setBackground(Color.decode("#F5F5F5"));
         jpanelImagen.setBackground(Color.decode("#F5F5F5"));
 
         DefaultTableModel modeloProductos = new DefaultTableModel();
 
+        JTableHeader header = jtableMateriales.getTableHeader();
+        header.setForeground(Color.WHITE);
+        header.setBackground(darkColorCyan);
 
         // Color de texto para los JTextField
         Color textColor = Color.decode("#212121");
@@ -141,21 +185,6 @@ public class CrearDesayuno extends JFrame {
         ImageIcon cancelIcon = new ImageIcon("cancel_icon_white.png");
         ImageIcon saveIcon = new ImageIcon("save_icon_white.png");
         ImageIcon updateIcon = new ImageIcon("update_icon_white.png");
-
-        // Colores para el botón "Cyan"
-        Color primaryColorCyan = new Color(0, 188, 212); // Cyan primario
-        Color lightColorCyan = new Color(77, 208, 225); // Cyan claro
-        Color darkColorCyan = new Color(0, 151, 167); // Cyan oscuro
-
-        // Colores para el botón "Aqua"
-        Color primaryColorAqua = new Color(0, 150, 136); // Aqua primario
-        Color lightColorAqua = new Color(77, 182, 172); // Aqua claro
-        Color darkColorAqua = new Color(0, 121, 107); // Aqua oscuro
-
-        // Colores para el botón "Rosado"
-        Color primaryColorRosado = new Color(233, 30, 99); // Rosado primario
-        Color lightColorRosado = new Color(240, 98, 146); // Rosado claro
-        Color darkColorRosado = new Color(194, 24, 91); // Rosado oscuro
 
         // Crea un margen de 10 píxeles desde el borde inferior
         EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
@@ -175,11 +204,11 @@ public class CrearDesayuno extends JFrame {
         // Color de fondo de los botones
         botonCancelar.setBackground(darkColorCyan);
         botonGuardar.setBackground(darkColorAqua);
-        botonCargarImagen.setBackground(lightColorAqua);
-        agregarMaterialButton.setBackground(lightColorCyan);
-        agregarFloresButton.setBackground(lightColorRosado);
-        agregarGloboButton.setBackground(lightColorAqua);
-        agregarTarjetasButton.setBackground(primaryColorCyan);
+        botonCargarImagen.setBackground(lightColorVerdeLima);
+        agregarMaterialButton.setBackground(lightColorAmber);
+        agregarFloresButton.setBackground(lightColorAqua);
+        agregarGloboButton.setBackground(lightColorCyan);
+        agregarTarjetasButton.setBackground(lightColorRosado);
         botonLimpiar.setBackground(darkColorRosado);
         agregarButton.setBackground(darkColorCyan);
         cancelarButton.setBackground(darkColorRosado);
@@ -210,14 +239,10 @@ public class CrearDesayuno extends JFrame {
         EmptyBorder marginTitulo = new EmptyBorder(15, 0, 15, 0);
         lbl0.setBorder(marginTitulo);
 
-        // Crear una fuente con un tamaño de 18 puntos
-        Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
         lbl0.setFont(fontTitulo);
-
-        Font font10 = new Font(lbl10.getFont().getName(), lbl10.getFont().getStyle(), 16);
-        lbl8.setFont(font10);
-        lbl9.setFont(font10);
-        lbl10.setFont(font10);
+        lbl8.setFont(font);
+        lbl9.setFont(font);
+        lbl10.setFont(font);
 
         // Color de texto para el JTextArea
         campoDescripcion.setForeground(textColor);
@@ -233,7 +258,7 @@ public class CrearDesayuno extends JFrame {
                 agregarFloresButton.setVisible(false);
                 agregarGloboButton.setVisible(false);
                 agregarTarjetasButton.setVisible(false);
-               jtableMateriales.setModel(cargarDatosMateriales());
+               jtableMateriales.setModel(cargarDatosMaterial());
             }
         });
 
@@ -261,7 +286,7 @@ public class CrearDesayuno extends JFrame {
                 agregarFloresButton.setVisible(false);
                 agregarGloboButton.setVisible(false);
                 agregarTarjetasButton.setVisible(false);
-                jtableMateriales.setModel(cargarDatosGlobos());
+                jtableMateriales.setModel(cargarDatosGlobo());
             }
         });
 
@@ -275,7 +300,7 @@ public class CrearDesayuno extends JFrame {
                 agregarFloresButton.setVisible(false);
                 agregarGloboButton.setVisible(false);
                 agregarTarjetasButton.setVisible(false);
-                jtableMateriales.setModel(cargarDatosTarjetas());
+                jtableMateriales.setModel(cargarDatosTarjeta());
             }
         });
 
@@ -290,6 +315,7 @@ public class CrearDesayuno extends JFrame {
                 agregarGloboButton.setVisible(true);
                 agregarTarjetasButton.setVisible(true);
                 jtableMateriales.setModel(cargarDetallesMateriales());
+                actualizarLbl8y10();
             }
         });
 
@@ -322,7 +348,7 @@ public class CrearDesayuno extends JFrame {
                     lbl10.setText("0.00");
 
                     // Crear un nuevo modelo de la tabla con la lista de materiales vacía
-                    ModeloProducto nuevoModelo = new ModeloProducto(new ArrayList<>(), sql);
+                    PoliModeloProducto nuevoModelo = new PoliModeloProducto(new ArrayList<>());
 
                     // Establecer el nuevo modelo en la tabla
                     jtableMateriales.setModel(nuevoModelo);
@@ -721,6 +747,7 @@ public class CrearDesayuno extends JFrame {
         });
 
         jtableMateriales.setModel(cargarDetallesMateriales());
+        actualizarLbl8y10();
         configurarTablaMateriales();
         agregarButton.setVisible(false);
         cancelarButton.setVisible(false);
@@ -728,13 +755,20 @@ public class CrearDesayuno extends JFrame {
         campoBusquedaMateriales.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
-                jtableMateriales.setModel(cargarDatosMateriales());
+                jtableMateriales.setModel(cargarDatosMaterial());
             }
         });
 
         agregarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
+                Map<Integer,List> listas = new HashMap<>();
+                listas.put(2,floristeriaList);
+                listas.put(3,materialList);
+                listas.put(4,globoList);
+                listas.put(5,tarjetaList);
+
                 if (jtableMateriales.getSelectedRow() == -1) {
                     JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar", "Validación", JOptionPane.WARNING_MESSAGE);
                     return;
@@ -743,55 +777,71 @@ public class CrearDesayuno extends JFrame {
                 // Obtener la cantidad del material que deseas agregar (por ejemplo, mediante un cuadro de diálogo)
                 int cantidadMaterial = obtenerCantidadMaterial();
 
-                // Verificar que la cantidad sea válida y no se haya cancelado el cuadro de diálogo
-                if (cantidadMaterial >= 1) {
-                    // Verificar que la cantidad no sea mayor a la existente en la base de datos
-                    int id_material = materialList.get(jtableMateriales.getSelectedRow()).getId();
-                    int cantidadExistente = obtenerCantidadExistenteEnBaseDeDatos(id_material);
-                    if (cantidadMaterial <= cantidadExistente) {
-                        // Verificar que el precio sea mayor o igual a 1
-                        double precioMaterial = materialList.get(jtableMateriales.getSelectedRow()).getPrecio();
-                        if (precioMaterial >= 1) {
-                            // Verificar si el material ya está presente en la lista temporal
-                            boolean materialDuplicado = false;
-                            for (Material materialTemporal : materialListTemporal) {
-                                if (materialTemporal.getId() == id_material) {
-                                    materialDuplicado = true;
-                                    break;
-                                }
-                            }
+                // Verifica si la cantidad es válida (por ejemplo, mayor que cero) antes de continuar
+                if (cantidadMaterial <= 0) {
+                    return;
+                }
 
-                            if (!materialDuplicado) {
-                                // Llamar al método guardarDetalleMaterial con los dos argumentos
-                                guardarDetalleMaterial(id_material, cantidadMaterial);
+                // Verificar que el material ya está presente en la lista temporal
+                PoliProducto l = (PoliProducto) listas.get(selectTabla).get(jtableMateriales.getSelectedRow());
+                String id_material = "";
+                int id_materialEntero = 0;
 
-                                // Crear el material temporal y agregarlo a la lista temporal
-                                Material materialTemporal = new Material();
-                                materialTemporal.setId(id_material);
-                                materialTemporal.setNombre(materialList.get(jtableMateriales.getSelectedRow()).getNombre());
-                                materialTemporal.setCantidad(cantidadMaterial);
-                                materialTemporal.setPrecio(precioMaterial);
-                                materialListTemporal.add(materialTemporal);
 
-                                campoBusquedaMateriales.setVisible(false);
-                                agregarButton.setVisible(false);
-                                cancelarButton.setVisible(false);
-                                agregarMaterialButton.setVisible(true);
-                                agregarFloresButton.setVisible(true);
-                                agregarGloboButton.setVisible(true);
-                                agregarTarjetasButton.setVisible(true);
-                                // Actualizar la tabla con los detalles actualizados
-                                jtableMateriales.setModel(cargarDetallesMateriales());
-                                actualizarLbl8y10();
-                            } else {
-                                JOptionPane.showMessageDialog(null, "El material ya está presente en la tabla", "Validación", JOptionPane.ERROR_MESSAGE);
-                            }
-                        } else {
-                            JOptionPane.showMessageDialog(null, "El precio debe ser mayor o igual a 1", "Validación", JOptionPane.ERROR_MESSAGE);
+
+                boolean materialDuplicado = false;
+
+                if ( l instanceof PoliFlor p){
+                    id_materialEntero = p.getID();
+                    id_material = "F-"+p.getID();
+
+                }else  if ( l instanceof PoliMaterial p){
+                    id_materialEntero = p.getID();
+                    id_material = "M-"+p.getID();
+
+                }else  if ( l instanceof PoliGlobo p){
+                    id_materialEntero = p.getID();
+                    id_material = "G-"+p.getID();
+
+                }else  if ( l instanceof PoliTarjeta p){
+                    id_materialEntero = p.getID();
+                    id_material = "T-"+p.getID();
+                }
+
+                for (PoliProducto materialTemporal : productosListTemporal) {
+                    String id = materialTemporal.getTipo()+"-"+materialTemporal.getID();
+                        if ( id.equals(id_material)) {
+                            materialDuplicado = true;
+                            break;
                         }
-                    } else {
-                        JOptionPane.showMessageDialog(null, "La cantidad no debe ser mayor a la existente en la base de datos", "Validación", JOptionPane.ERROR_MESSAGE);
-                    }
+                }
+
+
+                if (!materialDuplicado) {
+                    // Llamar al método guardarDetalleDesayuno con los tres argumentos
+                    guardarDetalleDesayuno(id_materialEntero, cantidadMaterial, l.getTipo());
+
+                    // Crear el material temporal y agregarlo a la lista temporal
+                    PoliProductosGeneral materialTemporal = new PoliMaterial();
+                    materialTemporal.setID(id_materialEntero);
+                    materialTemporal.setNombre( l.getNombre());
+                    materialTemporal.setCantidad(cantidadMaterial);
+                    materialTemporal.setPrecio(l.getPrecio());
+                    materialTemporal.setTipo(l.getTipo());
+                    productosListTemporal.add(materialTemporal);
+
+                    campoBusquedaMateriales.setVisible(false);
+                    agregarButton.setVisible(false);
+                    cancelarButton.setVisible(false);
+                    agregarMaterialButton.setVisible(true);
+                    agregarFloresButton.setVisible(true);
+                    agregarGloboButton.setVisible(true);
+                    agregarTarjetasButton.setVisible(true);
+                    // Actualizar la tabla con los detalles actualizados
+                    jtableMateriales.setModel(cargarDetallesMateriales());
+                    actualizarLbl8y10();
+                } else {
+                    JOptionPane.showMessageDialog(null, "El material ya está presente en la tabla", "Validación", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -852,40 +902,6 @@ public class CrearDesayuno extends JFrame {
         }
     }
 
-    private int obtenerCantidadMaterial() {
-        String input = JOptionPane.showInputDialog(this, "Ingrese la cantidad del material:", "Cantidad", JOptionPane.PLAIN_MESSAGE);
-        if (input == null || input.isEmpty()) {
-            return 0; // Si el usuario cancela el cuadro de diálogo o no ingresa un valor, retornamos 0
-        }
-
-        try {
-            int cantidad = Integer.parseInt(input);
-            return cantidad;
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Ingrese un valor numérico válido.", "Error", JOptionPane.ERROR_MESSAGE);
-            return 0; // Si el usuario ingresa un valor no numérico, retornamos 0 para que se intente nuevamente
-        }
-    }
-
-    private int obtenerCantidadExistenteEnBaseDeDatos(int id_material) {
-        int cantidadExistente = 0;
-
-        try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("SELECT cantidad FROM materiales WHERE id = ?")) {
-            preparedStatement.setInt(1, id_material);
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next()) {
-                cantidadExistente = resultSet.getInt("cantidad");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al obtener la cantidad del material desde la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-
-        return cantidadExistente;
-    }
-
     private void guardarManualidades() {
         String nombre = campoNombre.getText().trim();
 
@@ -897,15 +913,15 @@ public class CrearDesayuno extends JFrame {
 
         String descripcion = campoDescripcion.getText().trim();
 
-        String tipo = jcbProveedores.getModel().getSelectedItem().toString();
+        ProveedorDesayuno tipo = (ProveedorDesayuno) jcbProveedores.getModel().getSelectedItem();
 
         try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO manualidades (imagen, nombre, descripcion, tipo, precio_manualidad, mano_obra) VALUES (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO desayunos (imagen, nombre, descripcion, proveedor_id, precio_desayuno, mano_obra) VALUES (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
 
             preparedStatement.setString(1, nombreFile); // Reemplaza "nombreFile" con el nombre de archivo de la imagen.
             preparedStatement.setString(2, nombre);
             preparedStatement.setString(3, descripcion);
-            preparedStatement.setString(4, tipo);
+            preparedStatement.setInt(4, tipo.getIdProveedor());
             preparedStatement.setDouble(5, precio_manualidad);
             preparedStatement.setDouble(6, mano_obra);
             preparedStatement.executeUpdate();
@@ -917,7 +933,7 @@ public class CrearDesayuno extends JFrame {
             }
 
             try (PreparedStatement prepared = connection.prepareStatement(
-                    "UPDATE detalles_manualidades SET manualidad_id = ? WHERE manualidad_id IS NULL")) {
+                    "UPDATE detalles_desayunos SET desayuno_id = ? WHERE desayuno_id IS NULL")) {
                 prepared.setInt(1, lastId);
                 prepared.executeUpdate();
             } catch (SQLException e) {
@@ -926,7 +942,7 @@ public class CrearDesayuno extends JFrame {
                 materialList = new ArrayList<>();
             }
 
-            try (PreparedStatement prepared = connection.prepareStatement(
+           /* try (PreparedStatement prepared = connection.prepareStatement(
                     "SELECT * FROM detalles_manualidades WHERE manualidad_id = ?")) {
                 prepared.setInt(1, lastId);
                 ResultSet rs = prepared.executeQuery();
@@ -946,27 +962,21 @@ public class CrearDesayuno extends JFrame {
                 System.out.println(e.getMessage());
                 JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
             }
-
-            JOptionPane.showMessageDialog(null, "Manualidad guardada exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            */
+            JOptionPane.showMessageDialog(null, "Desayuno guardado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al guardar la manualidad", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error al guardar el desayuno", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    private void guardarDetalleMaterial(int id_material, int cantidad) {
-        int cantidadExistente = obtenerCantidadExistenteEnBaseDeDatos(id_material);
-
-        if (cantidad <= 0 || cantidad > cantidadExistente) {
-            JOptionPane.showMessageDialog(null, "La cantidad ingresada no es válida o excede la cantidad disponible en la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
+    private void guardarDetalleDesayuno(int id_material, int cantidad, String tipo) {
         try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO detalles_manualidades (material_id, cantidad, precio) VALUES (?, ?, ?)")) {
-            preparedStatement.setInt(1, id_material);
-            preparedStatement.setInt(2, cantidad);
-            preparedStatement.setDouble(3, obtenerPrecioMaterialDesdeBD(id_material)); // Obtener el precio del material desde la base de datos
+             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO detalles_desayunos (tipo_detalle, detalle_id, cantidad,precio) VALUES (?, ?, ?, ?)")) {
+            preparedStatement.setString(1, tiposDescripcion.get(tipo));
+            preparedStatement.setInt(2, id_material);
+            preparedStatement.setInt(3, cantidad);
+            preparedStatement.setDouble(4, obtenerPrecioMaterialDesdeBD(id_material,tipo)); // Obtener el precio del material desde la base de datos
             preparedStatement.executeUpdate();
 
             JOptionPane.showMessageDialog(null, "Detalle agregado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
@@ -976,16 +986,16 @@ public class CrearDesayuno extends JFrame {
         }
     }
 
-    private double obtenerPrecioMaterialDesdeBD(int id_material) {
+    private double obtenerPrecioMaterialDesdeBD(int id_material, String tipo) {
         double precio = 0.0;
 
         try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("SELECT precio FROM Materiales WHERE id = ?")) {
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT "+(tipo.equals("T")?"precio_tarjeta":"precio")+" FROM "+tiposTablas.get(tipo)+" WHERE id = ?")) {
             preparedStatement.setInt(1, id_material);
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
-                precio = resultSet.getDouble("precio");
+                precio = resultSet.getDouble(tipo.equals("T")?"precio_tarjeta":"precio");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -994,8 +1004,6 @@ public class CrearDesayuno extends JFrame {
 
         return precio;
     }
-
-
 
     private void limpiarTablaMateriales() {
         materialList.clear();
@@ -1016,57 +1024,30 @@ public class CrearDesayuno extends JFrame {
         double sumaTotal = 0.0;
 
         TableModel modelo = jtableMateriales.getModel();
-        if (modelo instanceof ModeloProducto) {
-            ModeloProducto modeloProductos = (ModeloProducto) modelo;
 
-            // Iterar por todas las filas del modelo
-            for (int i = 0; i < modeloProductos.getRowCount(); i++) {
-                try {
-                    // Obtener el total de la fila y sumarlo al total general
-                    Object valorCelda = modeloProductos.getValueAt(i, 4); // Suponiendo que la columna "total" está en el índice 4 (índice basado en 0)
-                    if (valorCelda != null) {
-                        String totalStr = valorCelda.toString();
-                        double total = extraerValorNumerico(totalStr);
-                        sumaTotal += total;
-                    }
-                } catch (NumberFormatException e) {
-                    System.err.println("Se encontró un formato de número no válido. Se omite el cálculo para la fila " + i);
-                    System.err.println("Valor que causa el error: " + modeloProductos.getValueAt(i, 4));
+        PoliModeloProducto modeloProductos = (PoliModeloProducto) modelo;
+
+
+        // Iterar por todas las filas del modelo
+        for (int i = 0; i < modeloProductos.getRowCount(); i++) {
+            try {
+                // Obtener el total de la fila y sumarlo al total general
+                Object valorCelda = modeloProductos.getValueAt(i, 4); // Suponiendo que la columna "total" está en el índice 4 (índice basado en 0)
+                if (valorCelda != null) {
+                    String totalStr = valorCelda.toString();
+                    double total = extraerValorNumerico(totalStr);
+                    sumaTotal += total;
                 }
+            } catch (NumberFormatException e) {
+                System.err.println("Se encontró un formato de número no válido. Se omite el cálculo para la fila " + i);
+                System.err.println("Valor que causa el error: " + modeloProductos.getValueAt(i, 4));
             }
-
-            // Actualizar el lbl8 con el total calculado
-            DecimalFormat decimalFormat = new DecimalFormat("#.00");
-            String sumaTotalFormateado = decimalFormat.format(sumaTotal);
-            lbl8.setText(" " + sumaTotalFormateado);
-
-        } else if (modelo instanceof ModeloMaterial) {
-            ModeloMaterial modeloMateriales = (ModeloMaterial) modelo;
-
-            // Iterar por todas las filas del modelo
-            for (int i = 0; i < modeloMateriales.getRowCount(); i++) {
-                try {
-                    // Obtener el total de la fila y sumarlo al total general
-                    Object valorCelda = modeloMateriales.getValueAt(i, 4); // Suponiendo que la columna "total" está en el índice 4 (índice basado en 0)
-                    if (valorCelda != null) {
-                        String totalStr = valorCelda.toString();
-                        double total = extraerValorNumerico(totalStr);
-                        sumaTotal += total;
-                    }
-                } catch (NumberFormatException e) {
-                    System.err.println("Se encontró un formato de número no válido. Se omite el cálculo para la fila " + i);
-                    System.err.println("Valor que causa el error: " + modeloMateriales.getValueAt(i, 4));
-                }
-            }
-
-            // Actualizar el lbl8 con el total calculado
-            DecimalFormat decimalFormat = new DecimalFormat("#.00");
-            String sumaTotalFormateado = decimalFormat.format(sumaTotal);
-            lbl8.setText(" " + sumaTotalFormateado);
-
-        } else {
-            throw new IllegalStateException("Modelo de tabla desconocido: " + modelo.getClass());
         }
+
+        // Actualizar el lbl8 con el total calculado
+        DecimalFormat decimalFormat = new DecimalFormat("#.00");
+        String sumaTotalFormateado = decimalFormat.format(sumaTotal);
+        lbl8.setText(" " + sumaTotalFormateado);
 
         return sumaTotal;
     }
@@ -1102,16 +1083,34 @@ public class CrearDesayuno extends JFrame {
         lbl10.setText(String.format("%.2f", total));
     }
 
-    private ModeloProducto cargarDetallesMateriales() {
+    private PoliModeloProducto cargarDetallesMateriales() {
         sql = new Conexion();
-        materialList.clear(); // Limpiar la lista antes de agregar los materiales
+        productosListTemporal.clear(); // Limpiar la lista antes de agregar los materiales
+        selectTabla = 1;
 
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement(
-                     "SELECT materiales.id, materiales.nombre, materiales.cantidad, materiales.precio, materiales.cantidad * materiales.precio AS total " +
-                             "FROM tarjetas_detalles " +
-                             "JOIN materiales ON materiales.id = tarjetas_detalles.id_material " +
-                             "WHERE id_tarjeta IS NULL"
+                     "SELECT detalles_desayunos.*,'F' AS 'tipo', floristeria.nombre AS 'nombre', (detalles_desayunos.cantidad * detalles_desayunos.precio) AS 'total' FROM detalles_desayunos "+
+                     " JOIN floristeria ON floristeria.id = detalles_desayunos.detalle_id "+
+                     " WHERE detalles_desayunos.desayuno_id IS NULL AND detalles_desayunos.tipo_detalle = 'floristeria' "+
+
+                     " UNION "+
+
+                     " SELECT detalles_desayunos.*,'T' AS 'tipo',tarjetas.descripcion AS 'nombre', (detalles_desayunos.cantidad * detalles_desayunos.precio) AS 'total' FROM detalles_desayunos "+
+                     " JOIN tarjetas ON tarjetas.id = detalles_desayunos.detalle_id "+
+                     " WHERE detalles_desayunos.desayuno_id IS NULL AND detalles_desayunos.tipo_detalle = 'tarjeta' "+
+
+                     " UNION "+
+
+                     " SELECT detalles_desayunos.*,'G' AS 'tipo',globos.codigo_globo AS 'nombre', (detalles_desayunos.cantidad * detalles_desayunos.precio) AS 'total' FROM detalles_desayunos "+
+                     " JOIN globos ON globos.id = detalles_desayunos.detalle_id "+
+                     " WHERE detalles_desayunos.desayuno_id IS NULL AND detalles_desayunos.tipo_detalle = 'globo' "+
+
+                     " UNION "+
+
+                     " SELECT detalles_desayunos.*,'M' AS 'tipo',materiales.nombre AS 'nombre', (detalles_desayunos.cantidad * detalles_desayunos.precio) AS 'total' FROM detalles_desayunos "+
+                     " JOIN materiales ON materiales.id = detalles_desayunos.detalle_id "+
+                     " WHERE detalles_desayunos.desayuno_id IS NULL AND detalles_desayunos.tipo_detalle = 'material';"
              )
         ) {
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -1119,24 +1118,24 @@ public class CrearDesayuno extends JFrame {
             double precioTotalMateriales = 0.00;
 
             while (resultSet.next()) {
-                Material material = new Material();
-                material.setId(resultSet.getInt("id"));
+                PoliProductosGeneral material = new PoliProductosGeneral();
+                material.setIdDetalle(resultSet.getInt("id"));
+                material.setID(resultSet.getInt("detalle_id"));
                 material.setNombre(resultSet.getString("nombre"));
                 material.setCantidad(resultSet.getInt("cantidad"));
                 material.setPrecio(resultSet.getDouble("precio"));
+                material.setTipo(resultSet.getString("tipo"));
                 double total = resultSet.getDouble("total");
                 precioTotalMateriales += total;
+                productosListTemporal.add(material);
             }
 
-            for (Material materialTemporal : materialListTemporal) {
-                precioTotalMateriales += materialTemporal.getPrecio() * materialTemporal.getCantidad();
-                materialList.add(materialTemporal);
-            }
+
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
-            materialList = new ArrayList<>();
+            productosListTemporal = new ArrayList<>();
         }
 
         // Configurar la tabla para mostrar los encabezados de las columnas
@@ -1149,55 +1148,13 @@ public class CrearDesayuno extends JFrame {
         // Configurar el ancho de las columnas y alineaciones de las celdas
         configurarTablaMateriales();
 
-        return new ModeloProducto(materialList, sql);
+        return new PoliModeloProducto(productosListTemporal);
     }
 
-    private ModeloMaterial cargarDatosMateriales() {
-        sql = new Conexion();
-        materialList.clear();
-
-        try (Connection mysql = sql.conectamysql();
-             PreparedStatement preparedStatement = mysql.prepareStatement(
-                     "SELECT m.*, p.empresaProveedora " +
-                             "FROM materiales m " +
-                             "JOIN Proveedores p ON m.proveedor_id = p.id " +
-                             "WHERE (m.nombre LIKE CONCAT('%', ?, '%') OR p.empresaProveedora LIKE CONCAT('%', ?, '%')) "
-             )
-        ) {
-            preparedStatement.setString(1, campoBusquedaMateriales.getText());
-            preparedStatement.setString(2, campoBusquedaMateriales.getText());
-
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            while (resultSet.next()) {
-                Material material = new Material();
-                material.setId(resultSet.getInt("id"));
-                material.setNombre(resultSet.getString("nombre"));
-                material.setCantidad(resultSet.getInt("cantidad"));
-                material.setPrecio(resultSet.getDouble("precio"));
-                material.setDisponible(resultSet.getString("disponible"));
-                material.setDescripcion(resultSet.getString("descripcion"));
-                material.setProveedorId(resultSet.getInt("proveedor_id"));
-                materialList.add(material);
-            }
-
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
-            materialList = new ArrayList<>();
-        }
-
-        if (jtableMateriales.getColumnCount() > 0) {
-            TableColumn columnId = jtableMateriales.getColumnModel().getColumn(0);
-            columnId.setPreferredWidth(50);
-        }
-        return new ModeloMaterial(materialList, sql);
-    }
-
-    private ModeloFloristeria cargarDatosFloristeria() {
+    private PoliModeloFlor cargarDatosFloristeria() {
         sql = new Conexion();
         floristeriaList.clear();
-
+        selectTabla = 2;
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement(
                      "SELECT f.*, p.empresaProveedora " +
@@ -1212,12 +1169,12 @@ public class CrearDesayuno extends JFrame {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
-                Floristeria floristeria = new Floristeria();
-                floristeria.setId(resultSet.getInt("id"));
+                PoliFlor floristeria = new PoliFlor();
+                floristeria.setID(resultSet.getInt("id"));
                 floristeria.setNombre(resultSet.getString("nombre"));
                 floristeria.setCantidad(resultSet.getInt("cantidad"));
                 floristeria.setPrecio(resultSet.getDouble("precio"));
-                floristeria.setProveedorId(resultSet.getInt("proveedor_id"));
+                floristeria.setTipo("F");
                 floristeriaList.add(floristeria);
             }
 
@@ -1231,39 +1188,64 @@ public class CrearDesayuno extends JFrame {
             TableColumn columnId = jtableMateriales.getColumnModel().getColumn(0);
             columnId.setPreferredWidth(50);
         }
-        return new ModeloFloristeria(floristeriaList, sql);
+        configurarTablaMateriales();
+        return new PoliModeloFlor(floristeriaList, sql);
     }
 
-    private ModeloGlobo cargarDatosGlobos() {
+    private PoliModeloMaterial cargarDatosMaterial() {
         sql = new Conexion();
-        globoList.clear();
-
+        materialList.clear();
+        selectTabla = 3;
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement(
-                     "SELECT * FROM globos " +
-                             "WHERE tipo LIKE CONCAT('%', ?, '%') OR para LIKE CONCAT('%', ?, '%')"
+                     "SELECT * FROM materiales WHERE nombre LIKE CONCAT('%', ?, '%')"
              )
         ) {
             preparedStatement.setString(1, campoBusquedaMateriales.getText());
-            preparedStatement.setString(2, campoBusquedaMateriales.getText());
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
-                Globo globos = new Globo();
-                globos.setId(resultSet.getInt("id"));
-                globos.setCodigoGlobo(resultSet.getString("codigo_globo"));
-                globos.setTipo(resultSet.getString("tipo"));
-                globos.setMaterial(resultSet.getString("material"));
-                globos.setPara(resultSet.getString("para"));
-                globos.setTamano(resultSet.getString("tamano"));
-                globos.setColor(resultSet.getString("color"));
-                globos.setForma(resultSet.getString("forma"));
-                globos.setCantidadPaquete(resultSet.getInt("cantidad_paquete"));
-                globos.setPortaGlobo(resultSet.getBoolean("porta_globo"));
-                globos.setCantidad(resultSet.getInt("cantidad"));
-                globos.setPrecio(resultSet.getDouble("precio"));
-                globoList.add(globos);
+                PoliMaterial material = new PoliMaterial();
+                material.setID(resultSet.getInt("id"));
+                material.setNombre(resultSet.getString("nombre"));
+                material.setCantidad(resultSet.getInt("cantidad"));
+                material.setPrecio(resultSet.getDouble("precio"));
+                material.setTipo("M");
+                materialList.add(material);
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            materialList = new ArrayList<>();
+        }
+
+        configurarTablaMateriales();
+        return new PoliModeloMaterial(materialList, sql);
+    }
+
+    private PoliModeloGlobo cargarDatosGlobo() {
+        sql = new Conexion();
+        globoList.clear();
+        selectTabla = 4;
+        try (Connection mysql = sql.conectamysql();
+             PreparedStatement preparedStatement = mysql.prepareStatement(
+                     "SELECT * FROM globos WHERE codigo_globo LIKE CONCAT('%', ?, '%')"
+             )
+        ) {
+            preparedStatement.setString(1, campoBusquedaMateriales.getText());
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                PoliGlobo globo = new PoliGlobo();
+                globo.setID(resultSet.getInt("id"));
+                globo.setNombre(resultSet.getString("codigo_globo"));
+                globo.setCantidad(resultSet.getInt("cantidad"));
+                globo.setPrecio(resultSet.getDouble("precio"));
+                globo.setTipo("G");
+                globoList.add(globo);
             }
 
         } catch (SQLException e) {
@@ -1272,38 +1254,32 @@ public class CrearDesayuno extends JFrame {
             globoList = new ArrayList<>();
         }
 
-        if (jtableMateriales.getColumnCount() > 0) {
-            TableColumn columnId = jtableMateriales.getColumnModel().getColumn(0);
-            columnId.setPreferredWidth(50);
-        }
-        return new ModeloGlobo(globoList, sql);
+        configurarTablaMateriales();
+        return new PoliModeloGlobo(globoList, sql);
     }
 
-    private ModeloTarjeta cargarDatosTarjetas() {
+    private PoliModeloTarjeta cargarDatosTarjeta() {
         sql = new Conexion();
         tarjetaList.clear();
-
+        selectTabla = 5;
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement(
-                     "SELECT * FROM tarjetas " +
-                             "WHERE ocasion LIKE CONCAT('%', ?, '%') OR disponible LIKE CONCAT('%', ?, '%')"
+                     "SELECT * FROM tarjetas WHERE ocasion LIKE CONCAT('%', ?, '%')"
              )
         ) {
             preparedStatement.setString(1, campoBusquedaMateriales.getText());
-            preparedStatement.setString(2, campoBusquedaMateriales.getText());
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
-                Tarjeta tarjetas = new Tarjeta();
-                tarjetas.setId(resultSet.getInt("id"));
-                tarjetas.setOcasion(resultSet.getString("ocasion"));
-                tarjetas.setDisponible(resultSet.getString("disponible"));
-                tarjetas.setDescripcion(resultSet.getString("descripcion"));
-                tarjetas.setCantidad(resultSet.getInt("cantidad"));
-                tarjetas.setPrecio_tarjeta(resultSet.getDouble("precio_tarjeta"));
-                tarjetas.setMano_obra(resultSet.getDouble("mano_obra"));
-                tarjetaList.add(tarjetas);
+                PoliTarjeta tarjeta = new PoliTarjeta();
+                tarjeta.setID(resultSet.getInt("id"));
+                tarjeta.setNombre(resultSet.getString("descripcion"));
+                tarjeta.setOcasion(resultSet.getString("ocasion"));
+                tarjeta.setCantidad(resultSet.getInt("cantidad"));
+                tarjeta.setPrecio(resultSet.getDouble("precio_tarjeta"));
+                tarjeta.setTipo("T");
+                tarjetaList.add(tarjeta);
             }
 
         } catch (SQLException e) {
@@ -1312,11 +1288,26 @@ public class CrearDesayuno extends JFrame {
             tarjetaList = new ArrayList<>();
         }
 
-        if (jtableMateriales.getColumnCount() > 0) {
-            TableColumn columnId = jtableMateriales.getColumnModel().getColumn(0);
-            columnId.setPreferredWidth(50);
+        configurarTablaMateriales();
+        return new PoliModeloTarjeta(tarjetaList, sql);
+    }
+
+    private int obtenerCantidadMaterial() {
+        int cantidadMaterial = -1;
+
+        try {
+            String input = JOptionPane.showInputDialog(null, "Ingrese la cantidad de material:", "Cantidad de Material", JOptionPane.PLAIN_MESSAGE);
+            cantidadMaterial = Integer.parseInt(input);
+
+            if (cantidadMaterial < 1) {
+                JOptionPane.showMessageDialog(null, "La cantidad debe ser mayor o igual a 1", "Error", JOptionPane.ERROR_MESSAGE);
+                cantidadMaterial = -1; // Si la cantidad no es válida, establecemos el valor a -1
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "La cantidad debe ser un número válido", "Error", JOptionPane.ERROR_MESSAGE);
         }
-        return new ModeloTarjeta(tarjetaList, sql);
+
+        return cantidadMaterial;
     }
 
     private void cargarProveedores() {
@@ -1325,11 +1316,9 @@ public class CrearDesayuno extends JFrame {
              ResultSet resultSet = preparedStatement.executeQuery()) {
 
             while (resultSet.next()) {
-                int idProveedor = resultSet.getInt("id");
-                String empresaProveedora = resultSet.getString("empresaProveedora");
-                String nombreVendedor = resultSet.getString("nombreVendedor");
-                String proveedorText = idProveedor + " - " + empresaProveedora + " - " + nombreVendedor;
-                jcbProveedores.addItem(proveedorText);
+                ProveedorDesayuno proveedorDesayuno = new ProveedorDesayuno(resultSet.getInt("id"),resultSet.getString("empresaProveedora"),resultSet.getString("nombreVendedor"));
+
+                jcbProveedores.addItem(proveedorDesayuno);
             }
         } catch (SQLException e) {
             e.printStackTrace();
