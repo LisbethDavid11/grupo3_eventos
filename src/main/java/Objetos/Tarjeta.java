@@ -1,12 +1,14 @@
 package Objetos;
 
 import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Tarjeta {
     private int id;
     private String ocasion;
     private String descripcion;
-    private ImageIcon imagen;
+    private String imagen;
     private String disponible;
     private int cantidad;
     private double precio_tarjeta;
@@ -14,14 +16,17 @@ public class Tarjeta {
 
     public static String nombreTabla = "tarjetas";
 
+    private List<TarjetaDetalle> detalles;
+
     public Tarjeta() {
+        this.detalles = new ArrayList<>();
     }
 
     public Object[] toTableRow() {
         return new Object[] {id, ocasion, descripcion, imagen, disponible, cantidad, precio_tarjeta, mano_obra};
     }
 
-    public Tarjeta(int id, String ocasion, String descripcion, ImageIcon imagen, String disponible, int cantidad, double precio_tarjeta, double mano_obra) {
+    public Tarjeta(int id, String ocasion, String descripcion, String imagen, String disponible, int cantidad, double precio_tarjeta, double mano_obra) {
         this.id = id;
         this.ocasion = ocasion;
         this.descripcion = descripcion;
@@ -30,6 +35,7 @@ public class Tarjeta {
         this.cantidad = cantidad;
         this.precio_tarjeta = precio_tarjeta;
         this.mano_obra = mano_obra;
+        this.detalles = new ArrayList<>();
     }
 
     public int getId() {
@@ -56,11 +62,11 @@ public class Tarjeta {
         this.descripcion = descripcion;
     }
 
-    public ImageIcon getImagen() {
+    public String getImagen() {
         return imagen;
     }
 
-    public void setImagen(ImageIcon imagen) {
+    public void setImagen(String imagen) {
         this.imagen = imagen;
     }
 
@@ -94,5 +100,17 @@ public class Tarjeta {
 
     public void setMano_obra(double mano_obra) {
         this.mano_obra = mano_obra;
+    }
+
+    public List<TarjetaDetalle> getDetalles() {
+        return detalles;
+    }
+
+    public void setDetalles(List<TarjetaDetalle> detalles) {
+        this.detalles = detalles;
+    }
+
+    public void addDetalles(TarjetaDetalle detalles) {
+        this.detalles.add(detalles);
     }
 }

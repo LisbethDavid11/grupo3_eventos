@@ -2,6 +2,8 @@ package Tarjetas;
 import Modelos.ModeloTarjeta;
 import Objetos.Conexion;
 import Objetos.Tarjeta;
+import Objetos.TarjetaDetalle;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
@@ -151,15 +153,15 @@ public class ListaTarjetas extends JFrame {
             }
         });*/
 
-       /* botonEditar.addActionListener(new ActionListener() {
+       botonEditar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (listaMateriales.getSelectedRow() == -1) {
+                if (listaTarjetas.getSelectedRow() == -1) {
                     JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
                     return;
                 }
-                EditarMaterial material = new EditarMaterial(materialList.get(listaMateriales.getSelectedRow()).getId());
-                material.setVisible(true);
+                EditarTarjeta editarTarjeta = new EditarTarjeta(tarjetaList.get(listaTarjetas.getSelectedRow()));
+                editarTarjeta.setVisible(true);
                 actual.dispose();
             }
         });
@@ -317,13 +319,34 @@ public class ListaTarjetas extends JFrame {
                 Tarjeta tarjeta = new Tarjeta();
                 tarjeta.setId(resultSet.getInt("id"));
                 tarjeta.setOcasion(resultSet.getString("ocasion"));
+                tarjeta.setImagen(resultSet.getString("imagen"));
                 tarjeta.setCantidad(resultSet.getInt("cantidad"));
                 tarjeta.setPrecio_tarjeta(resultSet.getDouble("precio_tarjeta"));
                 tarjeta.setMano_obra(resultSet.getDouble("mano_obra"));
                 tarjeta.setDisponible(resultSet.getString("disponible"));
                 tarjeta.setDescripcion(resultSet.getString("descripcion"));
+
+
+                PreparedStatement preparedS = mysql.prepareStatement(
+                        "SELECT * FROM eventos.tarjetas_detalles where id_tarjeta = ?;"
+                );
+                preparedS.setInt(1, tarjeta.getId());
+                ResultSet resultS = preparedS.executeQuery();
+
+                while (resultS.next()) {
+                    TarjetaDetalle tarjetaDetalle = new TarjetaDetalle();
+                    tarjetaDetalle.setId(resultS.getInt("id"));
+                    tarjetaDetalle.setIdMaterial(resultS.getInt("id_material"));
+                    tarjetaDetalle.setIdTarjeta(resultS.getInt("id_tarjeta"));
+                    tarjetaDetalle.setCantidad(resultS.getInt("cantidad"));
+                    tarjetaDetalle.setPrecio(resultS.getDouble("precio"));
+                    tarjeta.addDetalles(tarjetaDetalle);
+                }
+
                 tarjetaList.add(tarjeta);
             }
+
+
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
