@@ -3,6 +3,7 @@ package SubMenu;
 import Arreglos.ListaArreglos;
 import Clientes.ListaClientes;
 import Compras.ListaCompras;
+import Desayunos.ListaDesayunos;
 import Empleados.ListaEmpleados;
 import Floristerias.ListaFloristerias;
 import Globos.ListaGlobos;
@@ -17,7 +18,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class SubMenu extends JFrame {
-    private JButton proveedoresButton, empleadosButton, clientesButton, floristeriaButton, arreglosButton, materialesButton, comprasButton,tarjetaButton, manualidadesButton, globosButton;
+    private JButton proveedoresButton, empleadosButton, clientesButton, floristeriaButton, arreglosButton, materialesButton, comprasButton,tarjetaButton, manualidadesButton, globosButton, desayunosButton;
     private JPanel panel, panel2, panel3;
     private ListaClientes listaCliente;
     private ListaEmpleados listaEmpleados;
@@ -29,6 +30,7 @@ public class SubMenu extends JFrame {
     private ListaTarjetas listaTarjetas;
     private ListaManualidades listaManualidades;
     private ListaGlobos listaGlobos;
+    private ListaDesayunos listaDesayunos;
 
     public SubMenu() {
         super("Menú Principal");
@@ -78,6 +80,10 @@ public class SubMenu extends JFrame {
         globosButton.setBackground(Color.decode("#FFC107"));
         globosButton.setPreferredSize(new Dimension(100, 40)); // Ajustar tamaño
 
+        desayunosButton = new JButton("Desayunos");
+        desayunosButton.setBackground(Color.decode("#F44336"));
+        desayunosButton.setPreferredSize(new Dimension(100, 40)); // Ajustar tamaño
+
         panel.add(clientesButton);
         panel.add(empleadosButton);
         panel.add(floristeriaButton);
@@ -88,6 +94,7 @@ public class SubMenu extends JFrame {
         panel.add(tarjetaButton);
         panel.add(manualidadesButton);
         panel.add(globosButton);
+        panel.add(desayunosButton);
 
         // Crea el panel de imagen y lo coloca en el centro
         ImagePanel imagenPanel = new ImagePanel();
@@ -109,6 +116,7 @@ public class SubMenu extends JFrame {
         tarjetaButton.setFocusPainted(false);
         manualidadesButton.setFocusPainted(false);
         globosButton.setFocusPainted(false);
+        desayunosButton.setFocusPainted(false);
 
         clientesButton.setForeground(Color.WHITE);
         proveedoresButton.setForeground(Color.WHITE);
@@ -120,6 +128,7 @@ public class SubMenu extends JFrame {
         tarjetaButton.setForeground(Color.WHITE);
         manualidadesButton.setForeground(Color.WHITE);
         globosButton.setForeground(Color.WHITE);
+        desayunosButton.setForeground(Color.WHITE);
 
         add(panel3);
 
@@ -134,6 +143,7 @@ public class SubMenu extends JFrame {
         listaTarjetas = new ListaTarjetas();
         listaManualidades = new ListaManualidades();
         listaGlobos = new ListaGlobos();
+        listaDesayunos = new ListaDesayunos();
 
         clientesButton.addActionListener(new ActionListener() {
             @Override
@@ -202,6 +212,13 @@ public class SubMenu extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 listaGlobos.setVisible(true);
+            }
+        });
+
+        desayunosButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                listaDesayunos.setVisible(true);
             }
         });
     }
