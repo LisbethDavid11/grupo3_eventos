@@ -107,6 +107,7 @@ public class CrearDesayuno extends JFrame {
         sql = new Conexion();
         campoDescripcion.setLineWrap(true);
         campoDescripcion.setWrapStyleWord(true);
+        configurarTablaMateriales();
 
         tiposDescripcion.put("F","floristeria");
         tiposDescripcion.put("T","tarjeta");
@@ -322,42 +323,74 @@ public class CrearDesayuno extends JFrame {
         botonLimpiar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int respuesta = JOptionPane.showOptionDialog(
+                JButton btnYes = new JButton("Sí");
+                JButton btnNo = new JButton("No");
+
+                // Personaliza los botones aquí
+                btnYes.setBackground(darkColorAqua);
+                btnNo.setBackground(darkColorPink);
+
+                // Personaliza los fondos de los botones aquí
+                btnYes.setForeground(Color.WHITE);
+                btnNo.setForeground(Color.WHITE);
+
+                // Elimina el foco
+                btnYes.setFocusPainted(false);
+                btnNo.setFocusPainted(false);
+
+                // Crea un JOptionPane
+                JOptionPane optionPane = new JOptionPane(
+                        "¿Estás seguro de que deseas limpiar la tabla de detalles?",
+                        JOptionPane.DEFAULT_OPTION,
+                        JOptionPane.DEFAULT_OPTION,
                         null,
-                        "¿Estás seguro de que deseas limpiar la tabla de materiales?",
-                        "Confirmar limpieza",
-                        JOptionPane.YES_NO_OPTION,
-                        JOptionPane.QUESTION_MESSAGE,
-                        null,
-                        new Object[]{"Sí", "No"},
-                        "No"
+                        new Object[]{}, // no options
+                        null
                 );
-                if (respuesta == JOptionPane.YES_OPTION) {
-                    // Eliminar los detalles temporales
-                    materialListTemporal.clear();
 
-                    // Eliminar los detalles de materiales de la base de datos
-                    eliminarDetallesMaterial();
+                // Crea un JDialog
+                JDialog dialog = optionPane.createDialog("Limpiar");
 
-                    // Limpiar la tabla
-                    limpiarTablaMateriales();
+                // Añade ActionListener a los botones
+                btnYes.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // Acciones para el botón Sí
+                        materialListTemporal.clear();
+                        eliminarDetallesMaterial();
+                        limpiarTablaMateriales();
+                        lbl8.setText("0.00");
+                        lbl10.setText("0.00");
 
-                    // Actualizar el total de dinero en el campo de texto
-                    lbl8.setText("0.00");
+                        PoliModeloProducto nuevoModelo = new PoliModeloProducto(new ArrayList<>());
+                        jtableMateriales.setModel(nuevoModelo);
+                        configurarTablaMateriales();
 
-                    lbl10.setText("0.00");
+                        calcularTotalTabla();
+                        actualizarLbl8y10();
 
-                    // Crear un nuevo modelo de la tabla con la lista de materiales vacía
-                    PoliModeloProducto nuevoModelo = new PoliModeloProducto(new ArrayList<>());
+                        // Luego cierra el diálogo
+                        dialog.dispose();
+                    }
+                });
 
-                    // Establecer el nuevo modelo en la tabla
-                    jtableMateriales.setModel(nuevoModelo);
+                btnNo.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // Acciones para el botón No
+                        // No se hace nada, sólo se cierra el diálogo
+                        dialog.dispose();
+                    }
+                });
 
-                    // Actualizar los totales después de limpiar la tabla
-                    calcularTotalTabla();
-                }
+                // Añade los botones al JOptionPane
+                optionPane.setOptions(new Object[]{btnYes, btnNo});
+
+                // Muestra el diálogo
+                dialog.setVisible(true);
             }
         });
+
 
         campoNombre.addKeyListener(new KeyAdapter() {
             @Override
@@ -565,7 +598,7 @@ public class CrearDesayuno extends JFrame {
 
                 if (jtableMateriales.getRowCount() == 0) {
                     validacion++;
-                    mensaje += "Los materiales\n";
+                    mensaje += "La lista de productos\n";
                 }
 
                 if (validacion > 0) {
@@ -649,23 +682,64 @@ public class CrearDesayuno extends JFrame {
                     }
                 }
 
-                int respuesta = JOptionPane.showOptionDialog(
-                        null,
+                JButton btnSave = new JButton("Sí");
+                JButton btnCancel = new JButton("No");
+
+                // Personaliza los botones aquí
+                btnSave.setBackground(darkColorAqua);
+                btnCancel.setBackground(darkColorPink);
+
+                // Personaliza los fondos de los botones aquí
+                btnSave.setForeground(Color.WHITE);
+                btnCancel.setForeground(Color.WHITE);
+
+                // Elimina el foco
+                btnSave.setFocusPainted(false);
+                btnCancel.setFocusPainted(false);
+
+                // Crea un JOptionPane
+                JOptionPane optionPane = new JOptionPane(
                         "¿Desea guardar la información del desayuno sorpresa?",
-                        "Confirmación",
-                        JOptionPane.YES_NO_OPTION,
                         JOptionPane.QUESTION_MESSAGE,
+                        JOptionPane.DEFAULT_OPTION,
                         null,
-                        new Object[]{"Sí", "No"},
-                        "No"
+                        new Object[]{}, // no options
+                        null
                 );
 
-                if (respuesta == JOptionPane.YES_OPTION) {
-                    guardarManualidades();
-                    ListaDesayunos listaDesayuno = new ListaDesayunos();
-                    listaDesayuno.setVisible(true);
-                    actual.dispose();
-                }
+                // Crea un JDialog
+                JDialog dialog = optionPane.createDialog("Guardar");
+
+                // Añade ActionListener a los botones
+                btnSave.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // Acciones para el botón Sí
+                        guardarManualidades();
+                        ListaDesayunos listaDesayuno = new ListaDesayunos();
+                        listaDesayuno.setVisible(true);
+                        actual.dispose();
+
+                        // Luego cierra el diálogo
+                        dialog.dispose();
+                    }
+                });
+
+                btnCancel.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // Acciones para el botón No
+                        // No se hace nada, sólo se cierra el diálogo
+                        dialog.dispose();
+                    }
+                });
+
+                // Añade los botones al JOptionPane
+                optionPane.setOptions(new Object[]{btnSave, btnCancel});
+
+                // Muestra el diálogo
+                dialog.setVisible(true);
+
             }
         });
 
@@ -770,7 +844,40 @@ public class CrearDesayuno extends JFrame {
                 listas.put(5,tarjetaList);
 
                 if (jtableMateriales.getSelectedRow() == -1) {
-                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar", "Validación", JOptionPane.WARNING_MESSAGE);
+                    // Crea un botón personalizado
+                    JButton btnOK = new JButton("OK");
+                    btnOK.setBackground(darkColorAqua);
+                    btnOK.setForeground(Color.WHITE);
+                    btnOK.setFocusPainted(false);
+
+                    // Crea un JOptionPane
+                    JOptionPane optionPane = new JOptionPane(
+                            "Seleccione una fila para continuar",
+                            JOptionPane.DEFAULT_OPTION,
+                            JOptionPane.DEFAULT_OPTION,
+                            null,
+                            new Object[]{}, // no options
+                            null
+                    );
+
+                    // Añade el botón al JOptionPane
+                    optionPane.setOptions(new Object[]{btnOK});
+
+                    // Crea un JDialog y muestra el JOptionPane
+                    JDialog dialog = optionPane.createDialog("Seleccionar");
+
+                    // Añade un ActionListener al botón
+                    btnOK.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            // Cuando se hace clic en el botón, simplemente se cierra el diálogo
+                            dialog.dispose();
+                        }
+                    });
+
+                    // Muestra el diálogo
+                    dialog.setVisible(true);
+
                     return;
                 }
 
@@ -786,8 +893,6 @@ public class CrearDesayuno extends JFrame {
                 PoliProducto l = (PoliProducto) listas.get(selectTabla).get(jtableMateriales.getSelectedRow());
                 String id_material = "";
                 int id_materialEntero = 0;
-
-
 
                 boolean materialDuplicado = false;
 
@@ -839,9 +944,43 @@ public class CrearDesayuno extends JFrame {
                     agregarTarjetasButton.setVisible(true);
                     // Actualizar la tabla con los detalles actualizados
                     jtableMateriales.setModel(cargarDetallesMateriales());
+                    configurarTablaMateriales();
                     actualizarLbl8y10();
                 } else {
-                    JOptionPane.showMessageDialog(null, "El material ya está presente en la tabla", "Validación", JOptionPane.ERROR_MESSAGE);
+                    // Crea un botón personalizado
+                    JButton btnOK = new JButton("OK");
+                    btnOK.setBackground(darkColorAqua);
+                    btnOK.setForeground(Color.WHITE);
+                    btnOK.setFocusPainted(false);
+
+                    // Crea un JOptionPane
+                    JOptionPane optionPane = new JOptionPane(
+                            "El detalle, ya está presente en la tabla",
+                            JOptionPane.DEFAULT_OPTION,
+                            JOptionPane.DEFAULT_OPTION,
+                            null,
+                            new Object[]{}, // no options
+                            null
+                    );
+
+                    // Añade el botón al JOptionPane
+                    optionPane.setOptions(new Object[]{btnOK});
+
+                    // Crea un JDialog y muestra el JOptionPane
+                    JDialog dialog = optionPane.createDialog("Validación");
+
+                    // Añade un ActionListener al botón
+                    btnOK.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            // Cuando se hace clic en el botón, simplemente se cierra el diálogo
+                            dialog.dispose();
+                        }
+                    });
+
+                    // Muestra el diálogo
+                    dialog.setVisible(true);
+
                 }
             }
         });
@@ -914,7 +1053,6 @@ public class CrearDesayuno extends JFrame {
         String descripcion = campoDescripcion.getText().trim();
 
         ProveedorDesayuno tipo = (ProveedorDesayuno) jcbProveedores.getModel().getSelectedItem();
-
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO desayunos (imagen, nombre, descripcion, proveedor_id, precio_desayuno, mano_obra) VALUES (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
 
@@ -1022,11 +1160,8 @@ public class CrearDesayuno extends JFrame {
 
     private double calcularTotalTabla() {
         double sumaTotal = 0.0;
-
         TableModel modelo = jtableMateriales.getModel();
-
         PoliModeloProducto modeloProductos = (PoliModeloProducto) modelo;
-
 
         // Iterar por todas las filas del modelo
         for (int i = 0; i < modeloProductos.getRowCount(); i++) {
@@ -1184,12 +1319,10 @@ public class CrearDesayuno extends JFrame {
             floristeriaList = new ArrayList<>();
         }
 
-        if (jtableMateriales.getColumnCount() > 0) {
-            TableColumn columnId = jtableMateriales.getColumnModel().getColumn(0);
-            columnId.setPreferredWidth(50);
-        }
+        PoliModeloFlor modeloFlor = new PoliModeloFlor(floristeriaList, sql);
+        jtableMateriales.setModel(modeloFlor);
         configurarTablaMateriales();
-        return new PoliModeloFlor(floristeriaList, sql);
+        return modeloFlor;
     }
 
     private PoliModeloMaterial cargarDatosMaterial() {
@@ -1221,8 +1354,10 @@ public class CrearDesayuno extends JFrame {
             materialList = new ArrayList<>();
         }
 
+        PoliModeloMaterial modeloMaterial = new PoliModeloMaterial(materialList, sql);
+        jtableMateriales.setModel(modeloMaterial);
         configurarTablaMateriales();
-        return new PoliModeloMaterial(materialList, sql);
+        return modeloMaterial;
     }
 
     private PoliModeloGlobo cargarDatosGlobo() {
@@ -1254,8 +1389,10 @@ public class CrearDesayuno extends JFrame {
             globoList = new ArrayList<>();
         }
 
+        PoliModeloGlobo modeloGlobo = new PoliModeloGlobo(globoList, sql);
+        jtableMateriales.setModel(modeloGlobo);
         configurarTablaMateriales();
-        return new PoliModeloGlobo(globoList, sql);
+        return modeloGlobo;
     }
 
     private PoliModeloTarjeta cargarDatosTarjeta() {
@@ -1288,27 +1425,103 @@ public class CrearDesayuno extends JFrame {
             tarjetaList = new ArrayList<>();
         }
 
+        PoliModeloTarjeta modeloTarjeta = new PoliModeloTarjeta(tarjetaList, sql);
+        jtableMateriales.setModel(modeloTarjeta);
         configurarTablaMateriales();
-        return new PoliModeloTarjeta(tarjetaList, sql);
+        return modeloTarjeta;
     }
 
     private int obtenerCantidadMaterial() {
-        int cantidadMaterial = -1;
+        final int[] cantidadMaterial = new int[] {-1};
 
-        try {
-            String input = JOptionPane.showInputDialog(null, "Ingrese la cantidad de material:", "Cantidad de Material", JOptionPane.PLAIN_MESSAGE);
-            cantidadMaterial = Integer.parseInt(input);
+        JTextField field = new JTextField();
 
-            if (cantidadMaterial < 1) {
-                JOptionPane.showMessageDialog(null, "La cantidad debe ser mayor o igual a 1", "Error", JOptionPane.ERROR_MESSAGE);
-                cantidadMaterial = -1; // Si la cantidad no es válida, establecemos el valor a -1
+        JButton btnOK = new JButton("Aceptar");
+        btnOK.setBackground(darkColorAqua);
+        btnOK.setForeground(Color.WHITE);
+        btnOK.setFocusPainted(false);
+
+        JButton btnCancel = new JButton("Cancelar");
+        btnCancel.setBackground(darkColorPink);
+        btnCancel.setForeground(Color.WHITE);
+        btnCancel.setFocusPainted(false);
+
+        Object[] message = {
+                "Ingrese la cantidad del detalle seleccionado:", field
+        };
+
+        Object[] options = {btnOK, btnCancel};
+
+        JOptionPane optionPane = new JOptionPane(
+                message,
+                JOptionPane.PLAIN_MESSAGE,
+                JOptionPane.DEFAULT_OPTION,
+                null,
+                options,
+                btnOK // default option is btnOK
+        );
+
+        JDialog dialog = optionPane.createDialog("Cantidad");
+
+        btnOK.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    cantidadMaterial[0] = Integer.parseInt(field.getText());
+
+                    if (cantidadMaterial[0] < 1) {
+                        showErrorDialog("La cantidad debe ser mayor o igual a 1");
+                        cantidadMaterial[0] = -1;
+                    }
+
+                    dialog.dispose();
+                } catch (NumberFormatException ex) {
+                    showErrorDialog("La cantidad debe ser un número válido");
+                }
             }
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(null, "La cantidad debe ser un número válido", "Error", JOptionPane.ERROR_MESSAGE);
-        }
+        });
 
-        return cantidadMaterial;
+        btnCancel.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose();
+            }
+        });
+
+        dialog.setVisible(true);
+
+        return cantidadMaterial[0];
     }
+
+    private void showErrorDialog(String message) {
+        JButton btnOK = new JButton("Aceptar");
+        btnOK.setBackground(darkColorAqua);
+        btnOK.setForeground(Color.WHITE);
+        btnOK.setFocusPainted(false);
+
+        JOptionPane optionPane = new JOptionPane(
+                message,
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.DEFAULT_OPTION,
+                null,
+                new Object[]{},
+                null
+        );
+
+        optionPane.setOptions(new Object[]{btnOK});
+
+        JDialog dialog = optionPane.createDialog("Error");
+
+        btnOK.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose();
+            }
+        });
+
+        dialog.setVisible(true);
+    }
+
 
     private void cargarProveedores() {
         try (Connection connection = sql.conectamysql();
