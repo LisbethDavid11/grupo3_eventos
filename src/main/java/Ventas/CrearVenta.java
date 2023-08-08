@@ -1,4 +1,5 @@
 package Ventas;
+import Clientes.CrearCliente;
 import Clientes.ListaClientes;
 import Objetos.Conexion;
 import org.jdatepicker.impl.JDatePickerImpl;
@@ -36,6 +37,8 @@ public class CrearVenta extends JFrame {
     private JPanel panel4;
     private JPanel panel5;
     private JPanel panel6;
+    private JButton botonCrear;
+    private JPanel panelCliente;
     private Conexion sql;
     private Connection mysql;
     public CrearVenta crearVenta = this;
@@ -362,6 +365,19 @@ public class CrearVenta extends JFrame {
                 agregarProducto();
             }
         });
+
+        botonCrear.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                CrearCliente cliente = new CrearCliente();
+                cliente.setVisible(true);
+                crearVenta.dispose();
+            }
+        });
+
+        botonCrear.setBackground(darkColorBlue);
+        botonCrear.setForeground(Color.WHITE);
+        botonCrear.setFocusable(false);
     }
 
     private void cargarClientes() {

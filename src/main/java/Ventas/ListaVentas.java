@@ -1,4 +1,5 @@
 package Ventas;
+import Modelos.ModeloCompra;
 import Modelos.ModeloVenta;
 import Modelos.ModeloVentaDetalle;
 import Objetos.*;
@@ -62,7 +63,8 @@ public class ListaVentas extends JFrame {
         listaVentas.setModel(cargarDatos());
         configurarTablaVentas();
 
-        lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+        String mesSeleccionado = (String) fechaComboBox.getSelectedItem();
+        lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount(mesSeleccionado));
 
         DefaultComboBoxModel<String> comboBoxModel = new DefaultComboBoxModel<>();
         comboBoxModel.addElement("Todos");
@@ -94,23 +96,23 @@ public class ListaVentas extends JFrame {
                 }
                 listaVentas.setModel(cargarDatos());
                 configurarTablaVentas();
-                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount(mesSeleccionado));
             }
         });
 
         botonAdelante.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if ((pagina + 1) < getTotalPageCount()) {
+                if ((pagina + 1) < getTotalPageCount(mesSeleccionado)) {
                     pagina++;
                     botonAtras.setEnabled(true);
-                    if ((pagina + 1) == getTotalPageCount()) {
+                    if ((pagina + 1) == getTotalPageCount(mesSeleccionado)) {
                         botonAdelante.setEnabled(false);
                     }
                 }
                 listaVentas.setModel(cargarDatos());
                 configurarTablaVentas();
-                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount(mesSeleccionado));
             }
         });
 
@@ -119,11 +121,11 @@ public class ListaVentas extends JFrame {
             public void keyReleased(KeyEvent e) {
                 busqueda = campoBusqueda.getText();
                 pagina = 0;
-                botonAdelante.setEnabled((pagina + 1) < getTotalPageCount());
+                botonAdelante.setEnabled((pagina + 1) < getTotalPageCount(mesSeleccionado));
                 botonAtras.setEnabled(pagina > 0);
                 listaVentas.setModel(cargarDatos());
                 configurarTablaVentas();
-                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount(mesSeleccionado));
             }
         });
 
@@ -220,6 +222,14 @@ public class ListaVentas extends JFrame {
         botonVer.setFocusable(false);
         botonImprimir.setFocusable(false);
         fechaComboBox.setFocusable(false);
+
+        fechaComboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String mesSeleccionado = (String) fechaComboBox.getSelectedItem();
+                actualizarModeloTablaConMesSeleccionado(mesSeleccionado);
+            }
+        });
     }
 
     private void configurarTablaVentas() {
@@ -284,20 +294,20 @@ public class ListaVentas extends JFrame {
         sql = new Conexion();
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement(
-                     "SELECT v.*, CONCAT(c.nombre, ' ', c.apellido) AS nombres, CONCAT(e.Nombres, ' ', e.Apellidos) AS empleadoNombre " +
-                             "FROM ventas v " +
-                             "JOIN clientes c ON v.cliente_id = c.id " +
-                             "JOIN empleados e ON v.empleado_id = e.id " +
-                             "WHERE v.codigo_venta LIKE CONCAT('%', ?, '%') " +
-                             "OR DATE_FORMAT(v.fecha, '%d de %M %Y') LIKE CONCAT('%', ?, '%') " +
-                             "OR CONCAT(c.nombre, ' ', c.apellido) LIKE CONCAT('%', ?, '%') " +
+                     "SELECT c.*, p.nombre, CONCAT(e.nombres, ' ', e.apellidos) AS apellido " +
+                             "FROM ventas c " +
+                             "JOIN clientes p ON c.cliente_id = p.id " +
+                             "JOIN empleados e ON c.empleado_id = e.id " +
+                             "WHERE c.codigo_venta LIKE CONCAT('%', ?, '%') " +
+                             "OR DATE_FORMAT(c.fecha, '%d de %M %Y') LIKE CONCAT('%', ?, '%') " +
+                             "OR p.nombre LIKE CONCAT('%', ?, '%') " +
                              "LIMIT ?, 20")) {
 
             SimpleDateFormat formatoFecha = new SimpleDateFormat("dd 'de' MMMM yyyy", new Locale("es"));
 
             preparedStatement.setString(1, busqueda);  // Búsqueda por código de venta
             preparedStatement.setString(2, busqueda);  // Búsqueda por fecha de la venta
-            preparedStatement.setString(3, busqueda);  // Búsqueda por nombre del cliente
+            preparedStatement.setString(3, busqueda);  // Búsqueda por nombre o apellido del cliente
             preparedStatement.setInt(4, pagina * 20);
 
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -306,8 +316,7 @@ public class ListaVentas extends JFrame {
                 Venta venta = new Venta();
                 venta.setId(resultSet.getInt("id"));
                 venta.setCodigoVenta(resultSet.getString("codigo_venta"));
-
-                Date fecha = resultSet.getDate("fecha");
+                java.util.Date fecha = resultSet.getDate("fecha");
                 if (fecha != null) {
                     venta.setFecha(formatoFecha.format(fecha));
                 } else {
@@ -330,13 +339,137 @@ public class ListaVentas extends JFrame {
         return new ModeloVenta(ventaList, sql);
     }
 
+    private int obtenerNumeroMes(String mesSeleccionado) {
+        int numeroMes = 0;
+        switch (mesSeleccionado) {
+            case "Enero":
+                numeroMes = 1;
+                break;
+            case "Febrero":
+                numeroMes = 2;
+                break;
+            case "Marzo":
+                numeroMes = 3;
+                break;
+            case "Abril":
+                numeroMes = 4;
+                break;
+            case "Mayo":
+                numeroMes = 5;
+                break;
+            case "Junio":
+                numeroMes = 6;
+                break;
+            case "Julio":
+                numeroMes = 7;
+                break;
+            case "Agosto":
+                numeroMes = 8;
+                break;
+            case "Septiembre":
+                numeroMes = 9;
+                break;
+            case "Octubre":
+                numeroMes = 10;
+                break;
+            case "Noviembre":
+                numeroMes = 11;
+                break;
+            case "Diciembre":
+                numeroMes = 12;
+                break;
+            case "Todos":
+                numeroMes = 0;
+                break;
+        }
+        return numeroMes;
+    }
 
+    private void actualizarModeloTablaConMesSeleccionado(String mesSeleccionado) {
+        sql = new Conexion();
+        try (Connection mysql = sql.conectamysql()) {
+            String query = "SELECT c.*, p.nombre, CONCAT(e.Nombres, ' ', e.Apellidos) AS apellido " +
+                    "FROM ventas c " +
+                    "JOIN clientes p ON c.cliente_id = p.id " +
+                    "JOIN empleados e ON c.empleado_id = e.id ";
 
-    private int getTotalPageCount() {
+            boolean hasMesFilter = mesSeleccionado != null && !mesSeleccionado.equals("Todos");
+            boolean hasBusquedaFilter = busqueda != null && !busqueda.isEmpty();
+
+            if (hasMesFilter || hasBusquedaFilter) {
+                query += "WHERE ";
+            }
+
+            if (hasMesFilter) {
+                query += "MONTH(c.fecha) = ? ";
+            }
+
+            if (hasMesFilter && hasBusquedaFilter) {
+                query += "AND ";
+            }
+
+            if (hasBusquedaFilter) {
+                query += "(c.codigo_venta LIKE CONCAT('%', ?, '%') OR p.nombre LIKE CONCAT('%', ?, '%')) ";
+            }
+
+            query += "LIMIT ?, 20";
+
+            PreparedStatement preparedStatement = mysql.prepareStatement(query);
+
+            int parameterIndex = 1;
+
+            if (hasMesFilter) {
+                int numeroMes = obtenerNumeroMes(mesSeleccionado);
+                preparedStatement.setInt(parameterIndex, numeroMes);
+                parameterIndex++;
+            }
+
+            if (hasBusquedaFilter) {
+                preparedStatement.setString(parameterIndex, busqueda);
+                preparedStatement.setString(parameterIndex + 1, busqueda);
+                parameterIndex += 2;
+            }
+
+            preparedStatement.setInt(parameterIndex, pagina * 20);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            ventaList = new ArrayList<>();
+            while (resultSet.next()) {
+                Venta venta = new Venta();
+                venta.setId(resultSet.getInt("id"));
+                venta.setCodigoVenta(resultSet.getString("codigo_venta"));
+                venta.setFecha(resultSet.getString("fecha"));
+                venta.setClienteId(resultSet.getInt("cliente_id"));
+                venta.setEmpleadoId(resultSet.getInt("empleado_id"));
+                ventaList.add(venta);
+            }
+            listaVentas.setModel(new ModeloVenta(ventaList, sql));
+            configurarTablaVentas();
+            lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount(mesSeleccionado));
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            ventaList = new ArrayList<>();
+        }
+    }
+
+    private int getTotalPageCount(String mesSeleccionado) {
         int count = 0;
-        try (Connection mysql = sql.conectamysql();
-             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT COUNT(*) AS total FROM " + Venta.nombreTabla + " WHERE codigo_venta LIKE CONCAT('%',?,'%')")) {
-            preparedStatement.setString(1, busqueda);
+        try (Connection mysql = sql.conectamysql()) {
+            String query = "SELECT COUNT(*) AS total FROM " + Venta.nombreTabla;
+            if (mesSeleccionado != null && !mesSeleccionado.equals("Todos")) {
+                query += " WHERE MONTH(fecha) = ? AND codigo_venta LIKE CONCAT('%', ?, '%')";
+            } else {
+                query += " WHERE codigo_venta LIKE CONCAT('%', ?, '%')";
+            }
+            PreparedStatement preparedStatement = mysql.prepareStatement(query);
+            if (mesSeleccionado != null && !mesSeleccionado.equals("Todos")) {
+                int numeroMes = obtenerNumeroMes(mesSeleccionado);
+                preparedStatement.setInt(1, numeroMes);
+                preparedStatement.setString(2, busqueda);
+            } else {
+                preparedStatement.setString(1, busqueda);
+            }
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 count = resultSet.getInt("total");
@@ -624,98 +757,6 @@ public class ListaVentas extends JFrame {
         }
     }
 
-
-    private int obtenerNumeroMes(String mesSeleccionado) {
-        int numeroMes = 0;
-        switch (mesSeleccionado) {
-            case "Enero":
-                numeroMes = 1;
-                break;
-            case "Febrero":
-                numeroMes = 2;
-                break;
-            case "Marzo":
-                numeroMes = 3;
-                break;
-            case "Abril":
-                numeroMes = 4;
-                break;
-            case "Mayo":
-                numeroMes = 5;
-                break;
-            case "Junio":
-                numeroMes = 6;
-                break;
-            case "Julio":
-                numeroMes = 7;
-                break;
-            case "Agosto":
-                numeroMes = 8;
-                break;
-            case "Septiembre":
-                numeroMes = 9;
-                break;
-            case "Octubre":
-                numeroMes = 10;
-                break;
-            case "Noviembre":
-                numeroMes = 11;
-                break;
-            case "Diciembre":
-                numeroMes = 12;
-                break;
-            case "Todos":
-                numeroMes = 0;
-                break;
-
-        }
-        return numeroMes;
-    }
-    private void actualizarModeloTablaConMesSeleccionado(String mesSeleccionado) {
-        sql = new Conexion();
-        try (Connection mysql = sql.conectamysql()) {
-            PreparedStatement preparedStatement;
-            if (mesSeleccionado.equals("Todos")) {
-                preparedStatement = mysql.prepareStatement(
-                        "SELECT v.*, p.nombre, CONCAT(e.nombres, ' ', e.apellidos) AS empleadoNombre " +
-                                "FROM ventas v " +
-                                "JOIN clientes p ON v.cliente_id = p.id " +
-                                "JOIN empleados e ON v.empleado_id = e.id " +
-                                "LIMIT ?, 20");
-                preparedStatement.setInt(1, pagina * 20);
-            } else {
-                preparedStatement = mysql.prepareStatement(
-                        "SELECT v.*, p.nombre, CONCAT(e.nombres, ' ', e.apellidos) AS empleadoNombre " +
-                                "FROM ventas v " +
-                                "JOIN clientes p ON v.cliente_id = p.id " +
-                                "JOIN empleados e ON v.empleado_id = e.id " +
-                                "WHERE MONTH(v.fecha) = ? " +
-                                "LIMIT ?, 20");
-                int numeroMes = obtenerNumeroMes(mesSeleccionado);
-                preparedStatement.setInt(1, numeroMes);
-                preparedStatement.setInt(2, pagina * 20);
-            }
-
-            ResultSet resultSet = preparedStatement.executeQuery();
-            ventaList = new ArrayList<>();
-            while (resultSet.next()) {
-                Venta venta = new Venta();
-                venta.setId(resultSet.getInt("id"));
-                venta.setCodigoVenta(resultSet.getString("codigo_venta"));
-                venta.setFecha(resultSet.getString("fecha"));
-                venta.setClienteId(resultSet.getInt("cliente_id"));
-                venta.setEmpleadoId(resultSet.getInt("empleado_id"));
-                ventaList.add(venta);
-            }
-
-            listaVentas.setModel(new ModeloVenta(ventaList, sql));
-            configurarTablaVentas();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
-            ventaList = new ArrayList<>();
-        }
-    }
 
     public static void main(String[] args) {
         ListaVentas listaVentas = new ListaVentas();
