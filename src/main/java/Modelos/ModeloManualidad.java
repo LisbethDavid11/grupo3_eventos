@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ModeloManualidad extends AbstractTableModel {
-    private final String[] columnas = {"N°", "Nombre de la Manualidad", "Tipo", "Precio", "Mano de obra"};
+    private final String[] columnas = {"N°", "Nombre de la Manualidad", "Ocasión", "Precio", "Mano de obra"};
 
     private final List<Manualidad> manualidades;
     private final Conexion sql;

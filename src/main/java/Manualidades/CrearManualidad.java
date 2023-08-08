@@ -461,7 +461,7 @@ public class CrearManualidad extends JFrame {
 
                 if (jcbTipo.getSelectedIndex() == 0) {
                     validacion++;
-                    mensaje += "Tipo de manualidad\n";
+                    mensaje += "Ocasión\n";
                 }
 
                 if (campoPrecioManualidad.getText().trim().isEmpty()) {
@@ -532,7 +532,7 @@ public class CrearManualidad extends JFrame {
                             if (!lbl10Text.isEmpty()) {
                                 double lbl10Value = Double.parseDouble(lbl10Text);
                                 if (precio <= lbl10Value) {
-                                    JOptionPane.showMessageDialog(null, "El precio debe ser mayor que el valor Total despues de gastos de materiales y mano de obra.", "Validación", JOptionPane.ERROR_MESSAGE);
+                                    JOptionPane.showMessageDialog(null, "El precio debe ser mayor que el valor total después de gastos de materiales y mano de obra.", "Validación", JOptionPane.ERROR_MESSAGE);
                                     return;
                                 }
                             } else {
@@ -542,7 +542,6 @@ public class CrearManualidad extends JFrame {
                         }
                     }
                 }
-
 
                 String manoObraText = campoManoObra.getText().trim();
                 if (manoObraText.isEmpty()) {

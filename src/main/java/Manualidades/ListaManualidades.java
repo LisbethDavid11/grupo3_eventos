@@ -26,7 +26,7 @@ public class ListaManualidades extends JFrame {
     private JButton botonAtras;
     private JButton botonAdelante;
     private JTextField campoBusqueda;
-    private TextPrompt placeholder = new TextPrompt(" Buscar por nombre de la manualidad", campoBusqueda);
+    private TextPrompt placeholder = new TextPrompt(" Buscar por nombre u ocasión de la manualidad", campoBusqueda);
     private JButton botonEditar;
     private JButton botonCrear;
     private JLabel lblPagina;
@@ -237,15 +237,19 @@ public class ListaManualidades extends JFrame {
     private ModeloManualidad cargarDatos() {
         sql = new Conexion();
         try (Connection mysql = sql.conectamysql();
+
+
              PreparedStatement preparedStatement = mysql.prepareStatement(
                      "SELECT m.* " +
                              "FROM manualidades m " +
                              "WHERE m.nombre LIKE CONCAT('%', ?, '%') " +
+                             "OR m.tipo LIKE CONCAT('%', ?, '%') " +
                              "LIMIT ?, 20"
              )
         ){
             preparedStatement.setString(1, busqueda);
-            preparedStatement.setInt(2, pagina * 20);
+            preparedStatement.setString(2, busqueda);
+            preparedStatement.setInt(3, pagina * 20);
 
             ResultSet resultSet = preparedStatement.executeQuery();
             listaManualidad = new ArrayList<>();
