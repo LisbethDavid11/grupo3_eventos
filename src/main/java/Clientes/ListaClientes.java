@@ -97,10 +97,11 @@ public class ListaClientes extends JFrame {
             }
         });
 
+
         botonCrear.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                CrearCliente cliente = new CrearCliente();
+                CrearCliente cliente = new CrearCliente(actual); // Pasa la referencia a ListaClientes
                 cliente.setVisible(true);
                 actual.dispose();
             }

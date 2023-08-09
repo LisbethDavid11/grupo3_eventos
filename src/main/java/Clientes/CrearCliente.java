@@ -1,6 +1,8 @@
 package Clientes;
 import Objetos.Cliente;
 import Objetos.Conexion;
+import Ventas.CrearVenta;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.DefaultFormatterFactory;
@@ -42,13 +44,15 @@ public class CrearCliente extends JFrame{
     Color lightColor = Color.decode("#37474f"); // Gris azul claro
     Color darkColor = Color.decode("#000a12"); // Gris azul más oscuro
     Color textColor = Color.WHITE; // Texto blanco
+    private JFrame ventanaAnterior;
 
-    public CrearCliente() {
+    public CrearCliente(JFrame ventanaAnterior) {
         super("");
         setSize(600,480);
         setLocationRelativeTo(null);
         setContentPane(panel);
         sql = new Conexion();
+        this.ventanaAnterior = ventanaAnterior;
 
         campoDomicilio.setLineWrap(true);
         campoDomicilio.setWrapStyleWord(true);
@@ -280,8 +284,7 @@ public class CrearCliente extends JFrame{
         botonCancelar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ListaClientes cliente = new ListaClientes();
-                cliente.setVisible(true);
+                ventanaAnterior.setVisible(true); // Muestra la ventana anterior
                 actual.dispose();
             }
         });
@@ -437,9 +440,15 @@ public class CrearCliente extends JFrame{
 
                 if (respuesta == JOptionPane.YES_OPTION) {
                     guardar();
-                    ListaClientes listaClientes = new ListaClientes();
-                    listaClientes.setVisible(true);
-                    crearCliente.dispose();
+
+                    // Verifica si la ventana anterior es CrearVenta y actualiza los clientes
+                    if (ventanaAnterior instanceof CrearVenta) {
+                        CrearVenta ventanaVenta = (CrearVenta) ventanaAnterior;
+                        ventanaVenta.cargarClientes(); // Llama al método para cargar los clientes en CrearVenta
+                    }
+
+                    ventanaAnterior.setVisible(true); // Muestra la ventana anterior
+                    actual.dispose(); // Cierra la ventana CrearCliente
                 }
             }
         });

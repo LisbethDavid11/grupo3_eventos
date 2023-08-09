@@ -369,7 +369,7 @@ public class CrearVenta extends JFrame {
         botonCrear.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                CrearCliente cliente = new CrearCliente();
+                CrearCliente cliente = new CrearCliente(crearVenta); // Pasa la referencia a CrearVenta
                 cliente.setVisible(true);
                 crearVenta.dispose();
             }
@@ -380,7 +380,7 @@ public class CrearVenta extends JFrame {
         botonCrear.setFocusable(false);
     }
 
-    private void cargarClientes() {
+    public void cargarClientes() {
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement("SELECT id, nombre, apellido FROM clientes");
              ResultSet resultSet = preparedStatement.executeQuery()) {

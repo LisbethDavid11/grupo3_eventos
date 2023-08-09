@@ -11,6 +11,7 @@ import Manualidades.ListaManualidades;
 import Materiales.ListaMateriales;
 import Proveedores.ListaProveedores;
 import Tarjetas.ListaTarjetas;
+import Ventas.ListaVentas;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,7 +19,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class SubMenu extends JFrame {
-    private JButton proveedoresButton, empleadosButton, clientesButton, floristeriaButton, arreglosButton, materialesButton, comprasButton,tarjetaButton, manualidadesButton, globosButton, desayunosButton;
+    private JButton proveedoresButton, empleadosButton, clientesButton, floristeriaButton, arreglosButton, materialesButton, comprasButton,tarjetaButton, manualidadesButton, globosButton, desayunosButton, ventasButton;
     private JPanel panel, panel2, panel3;
     private ListaClientes listaCliente;
     private ListaEmpleados listaEmpleados;
@@ -31,10 +32,11 @@ public class SubMenu extends JFrame {
     private ListaManualidades listaManualidades;
     private ListaGlobos listaGlobos;
     private ListaDesayunos listaDesayunos;
+    private ListaVentas listaVentas;
 
     public SubMenu() {
         super("Menú Principal");
-        setSize(980, 620);
+        setSize(1100, 620);
         setLocationRelativeTo(null);
 
         panel = new JPanel(new GridLayout(1, 1)); // Cambia a una sola fila
@@ -77,12 +79,16 @@ public class SubMenu extends JFrame {
         manualidadesButton.setPreferredSize(new Dimension(100, 40)); // Ajustar tamaño
 
         globosButton = new JButton("Globos");
-        globosButton.setBackground(Color.decode("#FFC107"));
+        globosButton.setBackground(Color.decode("#4CAF50"));
         globosButton.setPreferredSize(new Dimension(100, 40)); // Ajustar tamaño
 
         desayunosButton = new JButton("Desayunos");
-        desayunosButton.setBackground(Color.decode("#F44336"));
+        desayunosButton.setBackground(Color.decode("#FFC107"));
         desayunosButton.setPreferredSize(new Dimension(100, 40)); // Ajustar tamaño
+
+        ventasButton = new JButton("Ventas");
+        ventasButton.setBackground(Color.decode("#795548"));
+        ventasButton.setPreferredSize(new Dimension(100, 40)); // Ajustar tamaño
 
         panel.add(clientesButton);
         panel.add(empleadosButton);
@@ -95,6 +101,7 @@ public class SubMenu extends JFrame {
         panel.add(manualidadesButton);
         panel.add(globosButton);
         panel.add(desayunosButton);
+        panel.add(ventasButton);
 
         // Crea el panel de imagen y lo coloca en el centro
         ImagePanel imagenPanel = new ImagePanel();
@@ -117,6 +124,7 @@ public class SubMenu extends JFrame {
         manualidadesButton.setFocusPainted(false);
         globosButton.setFocusPainted(false);
         desayunosButton.setFocusPainted(false);
+        ventasButton.setFocusPainted(false);
 
         clientesButton.setForeground(Color.WHITE);
         proveedoresButton.setForeground(Color.WHITE);
@@ -129,6 +137,7 @@ public class SubMenu extends JFrame {
         manualidadesButton.setForeground(Color.WHITE);
         globosButton.setForeground(Color.WHITE);
         desayunosButton.setForeground(Color.WHITE);
+        ventasButton.setForeground(Color.WHITE);
 
         add(panel3);
 
@@ -144,6 +153,7 @@ public class SubMenu extends JFrame {
         listaManualidades = new ListaManualidades();
         listaGlobos = new ListaGlobos();
         listaDesayunos = new ListaDesayunos();
+        listaVentas = new ListaVentas();
 
         clientesButton.addActionListener(new ActionListener() {
             @Override
@@ -219,6 +229,13 @@ public class SubMenu extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 listaDesayunos.setVisible(true);
+            }
+        });
+
+        ventasButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                listaVentas.setVisible(true);
             }
         });
     }
