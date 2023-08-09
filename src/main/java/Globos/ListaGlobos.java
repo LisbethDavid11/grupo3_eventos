@@ -26,7 +26,7 @@ public class ListaGlobos extends JFrame {
     private JButton botonAtras;
     private JButton botonAdelante;
     private JTextField campoBusqueda;
-    private TextPrompt placeholder = new TextPrompt(" Buscar por forma, color, tamaño ó precio", campoBusqueda);
+    private TextPrompt placeholder = new TextPrompt(" Buscar por tamaño, color ó precio", campoBusqueda);
     private JButton botonEditar;
     private JButton botonCrear;
     private JLabel lblPagina;
@@ -106,7 +106,6 @@ public class ListaGlobos extends JFrame {
             }
         });
 
-        /*
         botonCrear.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -116,6 +115,7 @@ public class ListaGlobos extends JFrame {
             }
         });
 
+        /*
         botonVer.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -248,15 +248,13 @@ public class ListaGlobos extends JFrame {
                      "SELECT * FROM globos WHERE " +
                              "(color LIKE CONCAT('%', ?, '%') OR " +
                              "tamano LIKE CONCAT('%', ?, '%') OR " +
-                             "forma LIKE CONCAT('%', ?, '%') OR " +
                              "precio LIKE CONCAT('%', ?, '%')) LIMIT ?, 20"
              )
         ) {
             preparedStatement.setString(1, busqueda); // Valor de búsqueda para color
             preparedStatement.setString(2, busqueda); // Valor de búsqueda para tamaño
             preparedStatement.setString(3, busqueda); // Valor de búsqueda para forma
-            preparedStatement.setString(4, busqueda); // Valor de búsqueda para precio
-            preparedStatement.setInt(5, pagina * 20);
+            preparedStatement.setInt(4, pagina * 20);
 
             ResultSet resultSet = preparedStatement.executeQuery();
             listaGlobo = new ArrayList<>(); // No es necesario volver a declarar, solo inicializamos aquí
