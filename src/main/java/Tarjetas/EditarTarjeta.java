@@ -937,7 +937,7 @@ public class EditarTarjeta extends JFrame {
 
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement(
-                     "SELECT tarjetas_detalles.id, materiales.nombre, materiales.cantidad, materiales.precio, materiales.cantidad * materiales.precio AS total " +
+                     "SELECT tarjetas_detalles.id, materiales.nombre, tarjetas_detalles.cantidad, materiales.precio, tarjetas_detalles.cantidad * materiales.precio AS total " +
                              "FROM tarjetas_detalles " +
                              "JOIN materiales ON materiales.id = tarjetas_detalles.id_material " +
                              "WHERE id_tarjeta = ?"

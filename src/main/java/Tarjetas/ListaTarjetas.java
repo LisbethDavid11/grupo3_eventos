@@ -140,18 +140,18 @@ public class ListaTarjetas extends JFrame {
                 actual.dispose();
             }
         });
-        /*botonVer.addActionListener(new ActionListener() {
+        botonVer.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (listaMateriales.getSelectedRow() == -1) {
+                if (listaTarjetas.getSelectedRow() == -1) {
                     JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
                     return;
                 }
-                VerMaterial material = new VerMaterial(materialList.get(listaMateriales.getSelectedRow()).getId());
-                material.setVisible(true);
+                VerTarjeta verTarjeta = new VerTarjeta(tarjetaList.get(listaTarjetas.getSelectedRow()));
+                verTarjeta.setVisible(true);
                 actual.dispose();
             }
-        });*/
+        });
 
        botonEditar.addActionListener(new ActionListener() {
             @Override
@@ -166,7 +166,7 @@ public class ListaTarjetas extends JFrame {
             }
         });
         
-       /* botonVer.addMouseListener(new java.awt.event.MouseAdapter() {
+       botonVer.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 botonVer.setBackground(lightColor);
             }
@@ -174,7 +174,7 @@ public class ListaTarjetas extends JFrame {
                 botonVer.setBackground(darkColor);
             }
         });
-*/
+
         JTableHeader header = listaTarjetas.getTableHeader();
         header.setForeground(Color.WHITE);
 
