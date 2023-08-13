@@ -6,23 +6,16 @@ import Objetos.Conexion;
 import Objetos.Material;
 import Objetos.Tarjeta;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.sql.*;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class VerTarjeta extends JFrame {
@@ -32,7 +25,7 @@ public class VerTarjeta extends JFrame {
     private JRadioButton radioButtonSi;
     private JRadioButton radioButtonNo;
     private JButton botonCancelar;
-    private JPanel jpanelImagen, panel1, panel2, panel3, panel5, panel6;
+    private JPanel jpanelImagen, panel1, panel2, panel5, panel6;
     private JLabel lbl0;
     private JLabel lbl2;
     private JLabel lbl4;
@@ -41,15 +34,13 @@ public class VerTarjeta extends JFrame {
     private JLabel jlabelImagen;
     private JScrollPane jscrollMateriales, panel4;
 
-    private JTextField campoBusquedaMateriales;
-    private JComboBox<String> jcbOcasion;
     private JPanel jpanelDescripcion;
     private JLabel jtextCatidadTotalMateriales;
     private JLabel lbl8;
-    private JPanel panel7;
     private JTextField campoManoObra;
     private JLabel lbl9;
     private JLabel lbl10;
+    private JTextField jtOcasion;
     private List<Material> materialList = new ArrayList<>();
     private String imagePath = "";
     private VerTarjeta actual = this;
@@ -72,7 +63,7 @@ public class VerTarjeta extends JFrame {
 
     public VerTarjeta(Tarjeta tarjeta) {
         super("");
-        setSize(1000, 700);
+        setSize(650, 700);
         setLocationRelativeTo(null);
         setContentPane(panel1);
 
@@ -82,6 +73,44 @@ public class VerTarjeta extends JFrame {
         campoDescripcion.setWrapStyleWord(true);
 
         sql = new Conexion();
+
+        jtOcasion.setEditable(false);
+        jtOcasion.setFocusable(false);
+        campoPrecioTarjeta.setEditable(false);
+        campoPrecioTarjeta.setFocusable(false);
+        campoManoObra.setEditable(false);
+        campoManoObra.setFocusable(false);
+        campoDescripcion.setEditable(false);
+        campoDescripcion.setFocusable(false);
+
+        // Color de fondo del panel
+        panel1.setBackground(Color.decode("#F5F5F5"));
+        panel2.setBackground(Color.decode("#F5F5F5"));
+        panel5.setBackground(Color.decode("#F5F5F5"));
+        panel6.setBackground(Color.decode("#F5F5F5"));
+
+
+
+        Font font = new Font("Century Gothic", Font.BOLD, 15);
+        // Aplicamos la fuente personalizada al JTextField
+        jtOcasion.setFont(font);
+        campoPrecioTarjeta.setFont(font);
+        campoManoObra.setFont(font);
+        campoDescripcion.setFont(font);
+
+
+        // Color de texto para los JTextField
+        Color textColor = Color.decode("#E30052");
+        jtOcasion.setForeground(textColor);
+        campoPrecioTarjeta.setForeground(textColor);
+        campoManoObra.setForeground(textColor);
+        campoDescripcion.setForeground(textColor);
+
+        //Color para JTextArea
+        campoDescripcion.setBackground(new Color(215, 215, 215));
+
+
+
 
         // Establecer ancho y alto deseados para el paneldescripcion
         int panelDesWidth = 80;
@@ -125,11 +154,9 @@ public class VerTarjeta extends JFrame {
         // Color de fondo del panel
         panel1.setBackground(Color.decode("#F5F5F5"));
         panel2.setBackground(Color.decode("#F5F5F5"));
-        panel3.setBackground(Color.decode("#F5F5F5"));
         panel4.setBackground(Color.decode("#F5F5F5"));
         panel5.setBackground(Color.decode("#F5F5F5"));
         panel6.setBackground(Color.decode("#F5F5F5"));
-        panel7.setBackground(Color.decode("#F5F5F5"));
         jpanelDescripcion.setBackground(Color.decode("#F5F5F5"));
         jpanelImagen.setBackground(Color.decode("#F5F5F5"));
         radioButtonSi.setBackground(Color.decode("#F5F5F5"));
@@ -138,8 +165,6 @@ public class VerTarjeta extends JFrame {
         DefaultTableModel modeloProductos = new DefaultTableModel();
 
 
-        // Color de texto para los JTextField
-        Color textColor = Color.decode("#212121");
 
         // Cargar los iconos en blanco
         ImageIcon cancelIcon = new ImageIcon("cancel_icon_white.png");
@@ -197,9 +222,6 @@ public class VerTarjeta extends JFrame {
         buttonGroup.add(radioButtonNo);
         buttonGroup.add(radioButtonSi);
 
-        // Color de texto para el JTextArea
-        campoDescripcion.setForeground(textColor);
-        campoDescripcion.setBackground(new Color(215, 215, 215));
 
         // No seleccionar ningún botón de radio por defecto
         buttonGroup.clearSelection();
@@ -345,13 +367,6 @@ public class VerTarjeta extends JFrame {
         jtableMateriales.setModel(cargarDetallesMateriales());
         configurarTablaMateriales();
 
-        campoBusquedaMateriales.setVisible(false);
-        campoBusquedaMateriales.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyReleased(KeyEvent e) {
-                jtableMateriales.setModel(cargarDatosMateriales());
-            }
-        });
 
 
         jlabelImagen.addMouseListener(new MouseAdapter() {
@@ -376,14 +391,16 @@ public class VerTarjeta extends JFrame {
 
     public void  cargarDatosEditar(){
         campoDescripcion.setText(this.originalTarjeta.getDescripcion());
-        jcbOcasion.getModel().setSelectedItem(this.originalTarjeta.getOcasion());
+        jtOcasion.setText(this.originalTarjeta.getOcasion());
         campoPrecioTarjeta.setText(this.originalTarjeta.getPrecio_tarjeta()+"");
         campoManoObra.setText(this.originalTarjeta.getMano_obra()+"");
 
         if (this.originalTarjeta.getDisponible().equals("Si")){
             radioButtonSi.setSelected(true);
+            radioButtonNo.setVisible(false);
         }else {
             radioButtonNo.setSelected(true);
+            radioButtonSi.setVisible(false);
         }
 
         String directorio = "img/tarjetas/"+this.originalTarjeta.getImagen();
@@ -525,12 +542,10 @@ public class VerTarjeta extends JFrame {
              PreparedStatement preparedStatement = mysql.prepareStatement(
                      "SELECT m.*, p.empresaProveedora " +
                              "FROM materiales m " +
-                             "JOIN Proveedores p ON m.proveedor_id = p.id " +
-                             "WHERE (m.nombre LIKE CONCAT('%', ?, '%') OR p.empresaProveedora LIKE CONCAT('%', ?, '%')) "
+                             "JOIN Proveedores p ON m.proveedor_id = p.id "
              )
         ) {
-            preparedStatement.setString(1, campoBusquedaMateriales.getText());
-            preparedStatement.setString(2, campoBusquedaMateriales.getText());
+
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
