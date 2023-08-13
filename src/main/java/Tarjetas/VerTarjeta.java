@@ -82,6 +82,8 @@ public class VerTarjeta extends JFrame {
         campoManoObra.setFocusable(false);
         campoDescripcion.setEditable(false);
         campoDescripcion.setFocusable(false);
+        radioButtonNo.setFocusable(false);
+        radioButtonSi.setFocusable(false);
 
         // Color de fondo del panel
         panel1.setBackground(Color.decode("#F5F5F5"));
@@ -99,12 +101,6 @@ public class VerTarjeta extends JFrame {
         campoDescripcion.setFont(font);
 
 
-        // Color de texto para los JTextField
-        Color textColor = Color.decode("#E30052");
-        jtOcasion.setForeground(textColor);
-        campoPrecioTarjeta.setForeground(textColor);
-        campoManoObra.setForeground(textColor);
-        campoDescripcion.setForeground(textColor);
 
         //Color para JTextArea
         campoDescripcion.setBackground(new Color(215, 215, 215));
