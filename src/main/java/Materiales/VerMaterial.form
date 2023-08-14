@@ -50,14 +50,14 @@
             </constraints>
             <properties/>
           </component>
-          <component id="e82f1" class="javax.swing.JLabel">
+          <component id="e82f1" class="javax.swing.JLabel" binding="lbl7">
             <constraints>
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <font name="Arial" size="12" style="1"/>
               <foreground color="-16315129"/>
-              <text value="Descripción :"/>
+              <text value="Descripción:"/>
             </properties>
           </component>
           <grid id="d7bb8" binding="panel5" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
@@ -79,14 +79,14 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="b2161" class="javax.swing.JLabel">
+          <component id="b2161" class="javax.swing.JLabel" binding="lbl4">
             <constraints>
               <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <font name="Arial" size="12" style="1"/>
               <foreground color="-16315129"/>
-              <text value="Proveedor :"/>
+              <text value="Proveedor:"/>
             </properties>
           </component>
           <component id="8c364" class="javax.swing.JTextField" binding="etiquetaProveedor">
@@ -101,24 +101,24 @@
               <text value=""/>
             </properties>
           </component>
-          <component id="3797d" class="javax.swing.JLabel">
+          <component id="3797d" class="javax.swing.JLabel" binding="lbl2">
             <constraints>
               <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <font name="Arial" size="12" style="1"/>
               <foreground color="-16315129"/>
-              <text value="Cantidad : "/>
+              <text value="Cantidad: "/>
             </properties>
           </component>
-          <component id="89851" class="javax.swing.JLabel">
+          <component id="89851" class="javax.swing.JLabel" binding="lbl3">
             <constraints>
               <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <font name="Arial" size="12" style="1"/>
               <foreground color="-16315129"/>
-              <text value="Precio :"/>
+              <text value="Precio:"/>
             </properties>
           </component>
           <component id="d0a5d" class="javax.swing.JTextField" binding="etiquetaPrecio">
@@ -143,14 +143,14 @@
               <enabled value="true"/>
             </properties>
           </component>
-          <component id="fa49f" class="javax.swing.JLabel">
+          <component id="fa49f" class="javax.swing.JLabel" binding="lbl1">
             <constraints>
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <font name="Arial" size="12" style="1"/>
               <foreground color="-16315129"/>
-              <text value="Nombre :"/>
+              <text value="Nombre:"/>
             </properties>
           </component>
           <component id="143fe" class="javax.swing.JTextField" binding="etiquetaNombre">
@@ -165,14 +165,14 @@
               <text value=""/>
             </properties>
           </component>
-          <component id="6fd52" class="javax.swing.JLabel">
+          <component id="6fd52" class="javax.swing.JLabel" binding="lbl5">
             <constraints>
               <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <font name="Arial" size="12" style="1"/>
               <foreground color="-16315129"/>
-              <text value="Disponible :"/>
+              <text value="Disponible:"/>
             </properties>
           </component>
           <component id="9594f" class="javax.swing.JTextField" binding="etiquetaDisponible">
@@ -186,14 +186,14 @@
               <enabled value="true"/>
             </properties>
           </component>
-          <component id="a00b8" class="javax.swing.JLabel">
+          <component id="a00b8" class="javax.swing.JLabel" binding="lbl6">
             <constraints>
               <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <font name="Arial" size="12" style="1"/>
               <foreground color="-16315129"/>
-              <text value="Exento :"/>
+              <text value="Exento:"/>
             </properties>
           </component>
           <component id="b840e" class="javax.swing.JTextField" binding="etiquetaExento">

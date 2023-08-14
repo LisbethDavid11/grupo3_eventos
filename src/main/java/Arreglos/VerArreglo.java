@@ -11,39 +11,71 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 
 public class VerArreglo extends JFrame {
     private JPanel panel1, panelImg;
     private JTextField etiquetaNombre, etiquetaPrecio, etiquetaDisponible;
     private JButton volverButton;
     private JLabel lblImagen, lbl0;
+    private JLabel lbl1;
+    private JLabel lbl2;
+    private JLabel lbl3;
     private final VerArreglo actual = this;
     private Conexion sql;
     private Connection mysql;
     private int id;
     private int panelImgWidth = 220;
     private int panelImgHeight = 220;
+    Font fontTitulo = new Font("Century Gothic", Font.BOLD, 20);
+    Font font = new Font("Century Gothic", Font.BOLD, 15);
+    Font font2 = new Font("Century Gothic", Font.BOLD, 11);
 
+    // Colores para el botón "Cyan"
+    Color primaryColorCyan = new Color(0, 188, 212); // Cyan primario
+    Color lightColorCyan = new Color(77, 208, 225); // Cyan claro
+    Color darkColorCyan = new Color(0, 151, 167); // Cyan oscuro
+
+    // Colores para el botón "Aqua"
+    Color primaryColorAqua = new Color(0, 150, 136); // Aqua primario
+    Color lightColorAqua = new Color(77, 182, 172); // Aqua claro
+    Color darkColorAqua = new Color(0, 121, 107); // Aqua oscuro
+
+    // Colores para el botón "Rosado"
+    Color primaryColorRosado = new Color(233, 30, 99); // Rosado primario
+    Color lightColorRosado = new Color(240, 98, 146); // Rosado claro
+    Color darkColorRosado = new Color(194, 24, 91); // Rosado oscuro
+
+    // Colores para el botón "Amber"
+    Color primaryColorAmber = new Color(255, 193, 7); // Amber primario
+    Color lightColorAmber = new Color(255, 213, 79); // Amber claro
+    Color darkColorAmber = new Color(255, 160, 0); // Amber oscuro
+
+    // Colores para el botón "Verde lima"
+    Color primaryColorVerdeLima = new Color(205, 220, 57); // Verde lima primario
+    Color lightColorVerdeLima = new Color(220, 237, 200); // Verde lima claro
+    Color darkColorVerdeLima = new Color(139, 195, 74); // Verde lima oscuro
+
+    Color darkColorPink = new Color(233, 30, 99);
+    Color darkColorRed = new Color(244, 67, 54);
+    Color darkColorBlue = new Color(33, 150, 243);
+    EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
     public VerArreglo(int id) {
         super("");
-        setSize(550, 600);
+        setSize(550, 550);
         setLocationRelativeTo(null);
         setContentPane(panel1);
         this.id = id;
 
-        // Crear una instancia de Dimension con las dimensiones deseadas
         Dimension panelImgSize = new Dimension(panelImgWidth, panelImgHeight);
 
-        // Establecer las dimensiones en el panelImg
         panelImg.setPreferredSize(panelImgSize);
         panelImg.setMaximumSize(panelImgSize);
         panelImg.setMinimumSize(panelImgSize);
         panelImg.setSize(panelImgSize);
 
-        // Configurar el layout del panelImg como GridBagLayout
         panelImg.setLayout(new GridBagLayout());
 
-        // Configurar restricciones de diseño para la etiqueta de imagen
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -53,13 +85,11 @@ public class VerArreglo extends JFrame {
         lblImagen.setHorizontalAlignment(SwingConstants.CENTER);
         panelImg.add(lblImagen, gbc);
 
-        // Color de fondo del panel
         panel1.setBackground(Color.decode("#F5F5F5"));
         panelImg.setBackground(Color.decode("#F5F5F5"));
 
         mostrar();
 
-        // Deshabilitar la edición de los JTextField y el JTextArea
         etiquetaNombre.setEditable(false);
         etiquetaNombre.setFocusable(false);
         etiquetaPrecio.setEditable(false);
@@ -67,56 +97,54 @@ public class VerArreglo extends JFrame {
         etiquetaDisponible.setEditable(false);
         etiquetaDisponible.setFocusable(false);
 
-        // Color de fondo del panel
         panel1.setBackground(Color.decode("#F5F5F5"));
         panelImg.setBackground(Color.decode("#F5F5F5"));
 
-        // Color de texto para los JTextField
-        Color textColor = Color.decode("#212121");
+        Color textColor = Color.decode("#263238");
+        Color textColor2 = Color.decode("#607d8b");
         etiquetaNombre.setForeground(textColor);
         etiquetaPrecio.setForeground(textColor);
         etiquetaDisponible.setForeground(textColor);
 
-        // Color de fondo para los JTextField
-        Color textFieldColor = Color.decode("#FFFFFF");
+        etiquetaDisponible.setBorder(BorderFactory.createEmptyBorder());
+        etiquetaNombre.setBorder(BorderFactory.createEmptyBorder());
+        etiquetaPrecio.setBorder(BorderFactory.createEmptyBorder());
+
+        Color textFieldColor = Color.decode("#F5F5F5");
         etiquetaNombre.setBackground(textFieldColor);
         etiquetaPrecio.setBackground(textFieldColor);
         etiquetaDisponible.setBackground(textFieldColor);
 
-        // Color de texto de los botones
-        volverButton.setForeground(Color.WHITE);
+        etiquetaNombre.setFont(font);
+        etiquetaDisponible.setFont(font);
+        etiquetaPrecio.setFont(font);
 
-        // Color de fondo de los botones
+        volverButton.setForeground(Color.WHITE);
         volverButton.setBackground(Color.decode("#263238"));
         volverButton.setFocusPainted(false);
-
-        Color primaryColor = new Color(33, 150, 243); // Azul primario
-        Color lightColor = new Color(100, 181, 246); // Azul claro
-        Color darkColor = new Color(25, 118, 210); // Azul oscuro
-
-        volverButton.setBackground(primaryColor);
-
-        // Crea un margen de 10 píxeles desde el borde inferior
-        EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
-
-        // Aplica el margen al botón
         volverButton.setBorder(margin);
 
-        // Crea un margen de 15 píxeles desde el borde inferior
-        EmptyBorder marginTitulo = new EmptyBorder(15, 0, 15, 0);
-        lbl0.setBorder(marginTitulo);
-
-        // Crear una fuente con un tamaño de 18 puntos
-        Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
+        lbl0.setBorder(margin);
         lbl0.setFont(fontTitulo);
+
+        lbl1.setForeground(textColor2);
+        lbl2.setForeground(textColor2);
+        lbl3.setForeground(textColor2);
+
+        lbl1.setFont(font2);
+        lbl2.setFont(font2);
+        lbl3.setFont(font2);
+
+        etiquetaNombre.setFont(font);
+        etiquetaPrecio.setFont(font);
+        etiquetaDisponible.setFont(font);
 
         volverButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                volverButton.setBackground(lightColor);
+                volverButton.setBackground(textColor2);
             }
-
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                volverButton.setBackground(darkColor);
+                volverButton.setBackground(textColor);
             }
         });
 
@@ -130,6 +158,7 @@ public class VerArreglo extends JFrame {
     private void mostrar() {
         sql = new Conexion();
         mysql = sql.conectamysql();
+        DecimalFormat decimalFormat = new DecimalFormat("###,###.00");
 
         try {
             PreparedStatement statement = mysql.prepareStatement("SELECT * FROM arreglos WHERE id = ?;");
@@ -137,9 +166,11 @@ public class VerArreglo extends JFrame {
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
+                double precioValue = resultSet.getDouble("precio");
+                String formattedPrecio = "L. " + decimalFormat.format(precioValue);
+                etiquetaPrecio.setText(formattedPrecio + "  ");
                 etiquetaNombre.setText(resultSet.getString("nombre"));
-                etiquetaPrecio.setText(resultSet.getString("precio"));
-                etiquetaDisponible.setText(resultSet.getString("disponible"));
+                etiquetaDisponible.setText(resultSet.getString("disponible") + " está disponible");
 
                 String imagenNombre = resultSet.getString("imagen");
                 String imagenPath = "img/arreglos/" + imagenNombre;
@@ -182,11 +213,9 @@ public class VerArreglo extends JFrame {
         }
     }
 
-
-
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            VerArreglo verArreglo = new VerArreglo(1); // Pasa el ID del arreglo que deseas ver
+            VerArreglo verArreglo = new VerArreglo(1);
             verArreglo.setVisible(true);
         });
     }

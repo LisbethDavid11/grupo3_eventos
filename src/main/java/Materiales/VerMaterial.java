@@ -14,11 +14,50 @@ public class VerMaterial extends JFrame {
     private JTextField etiquetaNombre, etiquetaCantidad, etiquetaPrecio, etiquetaDisponible, etiquetaProveedor, etiquetaExento;
     private JButton volverButton;
     private JLabel lbl0;
+    private JLabel lbl1;
+    private JLabel lbl2;
+    private JLabel lbl3;
+    private JLabel lbl4;
+    private JLabel lbl5;
+    private JLabel lbl6;
+    private JLabel lbl7;
     private final VerMaterial actual = this;
     private Conexion sql;
     private Connection mysql;
     private int id;
+    Font fontTitulo = new Font("Century Gothic", Font.BOLD, 20);
+    Font font = new Font("Century Gothic", Font.BOLD, 15);
+    Font font2 = new Font("Century Gothic", Font.BOLD, 11);
 
+    // Colores para el botón "Cyan"
+    Color primaryColorCyan = new Color(0, 188, 212); // Cyan primario
+    Color lightColorCyan = new Color(77, 208, 225); // Cyan claro
+    Color darkColorCyan = new Color(0, 151, 167); // Cyan oscuro
+
+    // Colores para el botón "Aqua"
+    Color primaryColorAqua = new Color(0, 150, 136); // Aqua primario
+    Color lightColorAqua = new Color(77, 182, 172); // Aqua claro
+    Color darkColorAqua = new Color(0, 121, 107); // Aqua oscuro
+
+    // Colores para el botón "Rosado"
+    Color primaryColorRosado = new Color(233, 30, 99); // Rosado primario
+    Color lightColorRosado = new Color(240, 98, 146); // Rosado claro
+    Color darkColorRosado = new Color(194, 24, 91); // Rosado oscuro
+
+    // Colores para el botón "Amber"
+    Color primaryColorAmber = new Color(255, 193, 7); // Amber primario
+    Color lightColorAmber = new Color(255, 213, 79); // Amber claro
+    Color darkColorAmber = new Color(255, 160, 0); // Amber oscuro
+
+    // Colores para el botón "Verde lima"
+    Color primaryColorVerdeLima = new Color(205, 220, 57); // Verde lima primario
+    Color lightColorVerdeLima = new Color(220, 237, 200); // Verde lima claro
+    Color darkColorVerdeLima = new Color(139, 195, 74); // Verde lima oscuro
+
+    Color darkColorPink = new Color(233, 30, 99);
+    Color darkColorRed = new Color(244, 67, 54);
+    Color darkColorBlue = new Color(33, 150, 243);
+    EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
     public VerMaterial(int id) {
         super("");
         setSize(550, 460);
@@ -30,7 +69,6 @@ public class VerMaterial extends JFrame {
         etiquetaDescripcion.setLineWrap(true);
         etiquetaDescripcion.setWrapStyleWord(true);
 
-        // Deshabilitar la edición de los JTextField
         etiquetaNombre.setEditable(false);
         etiquetaNombre.setFocusable(false);
         etiquetaCantidad.setEditable(false);
@@ -46,14 +84,12 @@ public class VerMaterial extends JFrame {
         etiquetaProveedor.setEditable(false);
         etiquetaProveedor.setFocusable(false);
 
-        // Color de fondo del panel
         panel1.setBackground(Color.decode("#F5F5F5"));
         panel2.setBackground(Color.decode("#F5F5F5"));
         panel3.setBackground(Color.decode("#F5F5F5"));
         panel4.setBackground(Color.decode("#F5F5F5"));
         panel5.setBackground(Color.decode("#F5F5F5"));
 
-        // Aplicamos un borde vacío al JTextField para eliminar el borde
         etiquetaCantidad.setBorder(BorderFactory.createEmptyBorder());
         etiquetaNombre.setBorder(BorderFactory.createEmptyBorder());
         etiquetaProveedor.setBorder(BorderFactory.createEmptyBorder());
@@ -61,8 +97,6 @@ public class VerMaterial extends JFrame {
         etiquetaExento.setBorder(BorderFactory.createEmptyBorder());
         etiquetaDisponible.setBorder(BorderFactory.createEmptyBorder());
 
-        Font font = new Font("Century Gothic", Font.BOLD, 15);
-        // Aplicamos la fuente personalizada al JTextField
         etiquetaNombre.setFont(font);
         etiquetaProveedor.setFont(font);
         etiquetaCantidad.setFont(font);
@@ -71,8 +105,8 @@ public class VerMaterial extends JFrame {
         etiquetaDisponible.setFont(font);
         etiquetaDescripcion.setFont(font);
 
-        // Color de texto para los JTextField
-        Color textColor = Color.decode("#1976D2");
+        Color textColor = Color.decode("#263238");
+        Color textColor2 = Color.decode("#607d8b");
         etiquetaNombre.setForeground(textColor);
         etiquetaCantidad.setForeground(textColor);
         etiquetaPrecio.setForeground(textColor);
@@ -81,7 +115,6 @@ public class VerMaterial extends JFrame {
         etiquetaDescripcion.setForeground(textColor);
         etiquetaProveedor.setForeground(textColor);
 
-        // Color de fondo para los JTextField
         Color textFieldColor = Color.decode("#F5F5F5");
         etiquetaNombre.setBackground(textFieldColor);
         etiquetaCantidad.setBackground(textFieldColor);
@@ -91,40 +124,36 @@ public class VerMaterial extends JFrame {
         etiquetaDescripcion.setBackground(textFieldColor);
         etiquetaProveedor.setBackground(textFieldColor);
 
-        // Color de texto de los botones
         volverButton.setForeground(Color.WHITE);
-
-        // Color de fondo de los botones
         volverButton.setBackground(Color.decode("#263238"));
         volverButton.setFocusPainted(false);
-
-        Color primaryColor = new Color(33, 150, 243); // Azul primario
-        Color lightColor = new Color(100, 181, 246); // Azul claro
-        Color darkColor = new Color(25, 118, 210); // Azul oscuro
-
-        volverButton.setBackground(primaryColor);
-
-        // Crea un margen de 10 píxeles desde el borde inferior
-        EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
-
-        // Aplica el margen al botón
         volverButton.setBorder(margin);
 
-        // Crea un margen de 15 píxeles desde el borde inferior
-        EmptyBorder marginTitulo = new EmptyBorder(15, 0, 15, 0);
-        lbl0.setBorder(marginTitulo);
-
-        // Crear una fuente con un tamaño de 18 puntos
-        Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
+        lbl0.setBorder(margin);
         lbl0.setFont(fontTitulo);
+
+        lbl1.setForeground(textColor2);
+        lbl2.setForeground(textColor2);
+        lbl3.setForeground(textColor2);
+        lbl4.setForeground(textColor2);
+        lbl5.setForeground(textColor2);
+        lbl6.setForeground(textColor2);
+        lbl7.setForeground(textColor2);
+
+        lbl1.setFont(font2);
+        lbl2.setFont(font2);
+        lbl3.setFont(font2);
+        lbl4.setFont(font2);
+        lbl5.setFont(font2);
+        lbl6.setFont(font2);
+        lbl7.setFont(font2);
 
         volverButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                volverButton.setBackground(lightColor);
+                volverButton.setBackground(textColor2);
             }
-
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                volverButton.setBackground(darkColor);
+                volverButton.setBackground(textColor);
             }
         });
 
@@ -133,7 +162,6 @@ public class VerMaterial extends JFrame {
             listaMateriales.setVisible(true);
             actual.dispose();
         });
-
         mostrar();
     }
 

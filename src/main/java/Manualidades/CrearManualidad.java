@@ -54,9 +54,8 @@ public class CrearManualidad extends JFrame {
     private String nombreFile;
     private String urlDestino = "";
     private DefaultTableModel modeloProductos;
-
+    private TextPrompt placeholder = new TextPrompt(" Buscar por nombre, proveedor o precio", campoBusquedaMateriales);
     private List<Material> materialListTemporal = new ArrayList<>();
-
     Color textColor = Color.decode("#212121");
     Color darkColorCyan = new Color(0, 150, 136);
     Color darkColorPink = new Color(233, 30, 99);
@@ -933,7 +932,6 @@ public class CrearManualidad extends JFrame {
         return precio;
     }
 
-
     private ModeloProducto cargarDetallesMateriales() {
         sql = new Conexion();
         materialList.clear(); // Limpiar la lista antes de agregar los materiales
@@ -1008,12 +1006,12 @@ public class CrearManualidad extends JFrame {
                      "SELECT m.*, p.empresaProveedora " +
                              "FROM materiales m " +
                              "JOIN Proveedores p ON m.proveedor_id = p.id " +
-                             "WHERE (m.nombre LIKE CONCAT('%', ?, '%') OR p.empresaProveedora LIKE CONCAT('%', ?, '%')) "
+                             "WHERE (m.nombre LIKE CONCAT('%', ?, '%') OR p.empresaProveedora LIKE CONCAT('%', ?, '%') OR m.precio LIKE CONCAT('%', ?, '%'))"
              )
         ) {
             preparedStatement.setString(1, campoBusquedaMateriales.getText());
             preparedStatement.setString(2, campoBusquedaMateriales.getText());
-
+            preparedStatement.setString(3, campoBusquedaMateriales.getText());
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {

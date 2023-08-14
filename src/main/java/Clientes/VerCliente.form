@@ -92,64 +92,64 @@
           <text value="REGRESAR"/>
         </properties>
       </component>
-      <component id="fa49f" class="javax.swing.JLabel">
+      <component id="fa49f" class="javax.swing.JLabel" binding="lbl1">
         <constraints>
           <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <font name="Arial" size="12" style="1"/>
           <foreground color="-16315129"/>
-          <text value="Nombres"/>
+          <text value="Nombres:"/>
         </properties>
       </component>
-      <component id="aa2ce" class="javax.swing.JLabel">
+      <component id="aa2ce" class="javax.swing.JLabel" binding="lbl2">
         <constraints>
           <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <font name="Arial" size="12" style="1"/>
           <foreground color="-16315129"/>
-          <text value="Apellidos"/>
+          <text value="Apellidos:"/>
         </properties>
       </component>
-      <component id="5aeb4" class="javax.swing.JLabel">
+      <component id="5aeb4" class="javax.swing.JLabel" binding="lbl3">
         <constraints>
           <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <font name="Arial" size="12" style="1"/>
           <foreground color="-16315129"/>
-          <text value="Identidad"/>
+          <text value="Identidad:"/>
         </properties>
       </component>
-      <component id="afb7f" class="javax.swing.JLabel">
+      <component id="afb7f" class="javax.swing.JLabel" binding="lbl4">
         <constraints>
           <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <font name="Arial" size="12" style="1"/>
           <foreground color="-16315129"/>
-          <text value="Teléfono"/>
+          <text value="Teléfono:"/>
         </properties>
       </component>
-      <component id="6fd52" class="javax.swing.JLabel">
+      <component id="6fd52" class="javax.swing.JLabel" binding="lbl5">
         <constraints>
           <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <font name="Arial" size="12" style="1"/>
           <foreground color="-16315129"/>
-          <text value="Tipo de Cliente"/>
+          <text value="Tipo de Cliente:"/>
         </properties>
       </component>
-      <component id="21b12" class="javax.swing.JLabel">
+      <component id="21b12" class="javax.swing.JLabel" binding="lbl6">
         <constraints>
           <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <font name="Arial" size="12" style="1"/>
           <foreground color="-16315129"/>
-          <text value="Domicilio"/>
+          <text value="Domicilio:"/>
         </properties>
       </component>
     </children>

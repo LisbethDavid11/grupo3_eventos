@@ -120,9 +120,9 @@ public class ListaManualidades extends JFrame {
                     JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
                     return;
                 }
-                // VerManualidad manualidad = new VerManualidad(listaManualidad.get(listaManualidades.getSelectedRow()).getId());
-                // manualidad.setVisible(true);
-                // actual.dispose();
+                //VerManualidades manualidad = new VerManualidades(listaManualidad.get(listaManualidades.getSelectedRow()).getId());
+                //manualidad.setVisible(true);
+                //actual.dispose();
             }
         });
 

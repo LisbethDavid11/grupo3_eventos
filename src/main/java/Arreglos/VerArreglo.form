@@ -63,34 +63,34 @@
           <text value="REGRESAR"/>
         </properties>
       </component>
-      <component id="fa49f" class="javax.swing.JLabel">
+      <component id="fa49f" class="javax.swing.JLabel" binding="lbl1">
         <constraints>
           <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <font name="Arial" size="12" style="1"/>
           <foreground color="-16315129"/>
-          <text value="Nombre del arreglo"/>
+          <text value="Nombre del arreglo:"/>
         </properties>
       </component>
-      <component id="5aeb4" class="javax.swing.JLabel">
+      <component id="5aeb4" class="javax.swing.JLabel" binding="lbl2">
         <constraints>
           <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <font name="Arial" size="12" style="1"/>
           <foreground color="-16315129"/>
-          <text value="Precio"/>
+          <text value="Precio:"/>
         </properties>
       </component>
-      <component id="6fd52" class="javax.swing.JLabel">
+      <component id="6fd52" class="javax.swing.JLabel" binding="lbl3">
         <constraints>
           <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <font name="Arial" size="12" style="1"/>
           <foreground color="-16315129"/>
-          <text value="Disponible"/>
+          <text value="Disponible:"/>
         </properties>
       </component>
       <grid id="83ba8" binding="panelImg" layout-manager="BorderLayout" hgap="0" vgap="0">
