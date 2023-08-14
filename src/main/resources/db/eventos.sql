@@ -783,7 +783,7 @@ VALUES ('FACTURA-0000', '2023-01-10', 1, 1);
 
 -- Detalles de la primera compra
 INSERT INTO detalles_compras (compra_id, material_id, cantidad, precio)
-VALUES (1, 1, 10, 10);
+VALUES (1, 1, 20, 10);
 
 INSERT INTO detalles_compras (compra_id, material_id, cantidad, precio)
 VALUES (1, 2, 10, 10);
@@ -1104,24 +1104,71 @@ INSERT INTO tarjetas_detalles (id_material, id_tarjeta, cantidad, precio) VALUES
 (7, 7, 45, 19.20),
 (8, 8, 55, 22.50);
 
--- Inserción 1 en la tabla "manualidades"
+-- Inserciones en la tabla "manualidades"
 INSERT INTO manualidades (imagen, nombre, descripcion, tipo, precio_manualidad, mano_obra)
-VALUES ('imagen 1.jpg', 'Centro de Mesa', 'Centro de mesa decorativo para eventos especiales', 'Centros de mesas', 1500.00, 200.00);
+VALUES
+    ('imagen 1.JPG', 'Manualidad 1', 'Descripción de la manualidad 1, Descripción de la manualidad 1, Descripción de la manualidad 1', 'Centros de mesas', 1500.00, 20000.12),
+    ('imagen 2.JPEG', 'Manualidad 2', 'Descripción de la manualidad 2', 'Letras personalizadas', 1000.00, 150.00),
+    ('imagen 3.JPEG', 'Manualidad 3', 'Descripción de la manualidad 3', 'Cajas personalizadas', 1200.00, 180.00),
+    ('imagen 4.JPEG', 'Manualidad 4', 'Descripción de la manualidad 4', 'Arcos para eventos', 1300.00, 220.00),
+    ('imagen 5.JPG', 'Manualidad 5', 'Descripción de la manualidad 5', 'Fotografía personalizadas', 1100.00, 170.00),
+    ('imagen 6.JPG', 'Manualidad 6', 'Descripción de la manualidad 6', 'Centros de mesas', 1600.00, 250.00),
+    ('imagen 7.JPEG', 'Manualidad 7', 'Descripción de la manualidad 7', 'Letras personalizadas', 1350.00, 210.00),
+    ('imagen 8.JPEG', 'Manualidad 8', 'Descripción de la manualidad 8', 'Cajas personalizadas', 1250.00, 190.00),
+    ('imagen 9.JPEG', 'Manualidad 9', 'Descripción de la manualidad 9', 'Arcos para eventos', 1400.00, 230.00),
+    ('imagen 10.JPEG', 'Manualidad 10', 'Descripción de la manualidad 10', 'Fotografía personalizadas', 1550.00, 240.00),
+    ('imagen 11.jpg', 'Manualidad 11', 'Descripción de la manualidad 11', 'Centros de mesas', 1450.00, 210.00),
+    ('imagen 12.JPEG', 'Manualidad 12', 'Descripción de la manualidad 12', 'Letras personalizadas', 1200.00, 180.00),
+    ('imagen 13.JPEG', 'Manualidad 13', 'Descripción de la manualidad 13', 'Cajas personalizadas', 1300.00, 220.00),
+    ('imagen 14.JPEG', 'Manualidad 14', 'Descripción de la manualidad 14', 'Arcos para eventos', 1100.00, 170.00),
+    ('imagen 15.JPEG', 'Manualidad 15', 'Descripción de la manualidad 15', 'Fotografía personalizadas', 1600.00, 250.00),
+    ('imagen 16.JPEG', 'Manualidad 16', 'Descripción de la manualidad 16', 'Centros de mesas', 1350.00, 210.00),
+    ('imagen 17.jpg', 'Manualidad 17', 'Descripción de la manualidad 17', 'Letras personalizadas', 1250.00, 190.00),
+    ('imagen 18.jpg', 'Manualidad 18', 'Descripción de la manualidad 18', 'Cajas personalizadas', 1400.00, 230.00),
+    ('imagen 19.JPEG', 'Manualidad 19', 'Descripción de la manualidad 19', 'Arcos para eventos', 1550.00, 240.00),
+    ('imagen 20.jpg', 'Manualidad 20', 'Descripción de la manualidad 20', 'Fotografía personalizadas', 1450.00, 210.00),
+    ('imagen 1.jpg', 'Manualidad 21', 'Descripción de la manualidad 21', 'Centros de mesas', 1200.00, 180.00),
+    ('imagen 2.JPEG', 'Manualidad 22', 'Descripción de la manualidad 22', 'Letras personalizadas', 1300.00, 220.00),
+    ('imagen 3.JPEG', 'Manualidad 23', 'Descripción de la manualidad 23', 'Cajas personalizadas', 1100.00, 170.00),
+    ('imagen 4.JPEG', 'Manualidad 24', 'Descripción de la manualidad 24', 'Arcos para eventos', 1600.00, 250.00),
+    ('imagen 5.jpg', 'Manualidad 25', 'Descripción de la manualidad 25', 'Fotografía personalizadas', 1350.00, 210.00);
 
--- Inserción 2 en la tabla "manualidades"
-INSERT INTO manualidades (imagen, nombre, descripcion, tipo, precio_manualidad, mano_obra)
-VALUES ('imagen 2.jpg', 'Letras Personalizadas', 'Letras decorativas personalizadas para nombres o frases', 'Letras personalizadas', 1000.00, 150.00);
-
--- Inserción 1 en la tabla "detalles_manualidades"
+-- Inserciones en la tabla "detalles_manualidades"
 INSERT INTO detalles_manualidades (manualidad_id, material_id, cantidad, precio)
-VALUES (1, 1, 10, 50.00);
-
--- Inserción 2 en la tabla "detalles_manualidades"
-INSERT INTO detalles_manualidades (manualidad_id, material_id, cantidad, precio)
-VALUES (2, 2, 5, 30.00);
+VALUES
+    (1, 1, 5, 2005.11),
+    (1, 2, 3, 11005.00),
+    (1, 3, 2, 12.00),
+    (2, 2, 2, 10.00),
+    (2, 4, 1, 8.00),
+    (2, 5, 4, 20.00),
+    (3, 1, 3, 15.00),
+    (3, 3, 2, 12.00),
+    (4, 2, 1, 5.00),
+    (4, 4, 3, 15.00),
+    (5, 4, 3, 15.00),
+    (6, 5, 6, 30.00),
+    (7, 2, 8, 40.00),
+    (8, 3, 4, 20.00),
+    (9, 1, 15, 75.00),
+    (10, 5, 2, 10.00),
+    (11, 2, 6, 30.00),
+    (12, 3, 3, 15.00),
+    (13, 4, 7, 35.00),
+    (14, 5, 5, 25.00),
+    (15, 1, 10, 50.00),
+    (16, 2, 4, 20.00),
+    (17, 3, 9, 45.00),
+    (18, 4, 2, 10.00),
+    (19, 5, 6, 30.00),
+    (20, 1, 8, 40.00),
+    (21, 2, 3, 15.00),
+    (22, 3, 7, 35.00),
+    (23, 4, 5, 25.00),
+    (24, 5, 9, 45.00),
+    (25, 1, 4, 20.00);
 
 -- Inserción en la tabla "globos"
-
 INSERT INTO globos (codigo_globo, tipo, material, para, tamano, color, forma, cantidad_paquete, porta_globo, cantidad, precio)
 VALUES 
 ('GB01', 'Cumpleaños', 'Latex', 'Aire', '12 x 12 cm', 'Rojo', 'Redondo', 10, 1, 10, 10.00),

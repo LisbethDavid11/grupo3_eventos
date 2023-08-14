@@ -55,24 +55,24 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="5aeb4" class="javax.swing.JLabel">
+          <component id="5aeb4" class="javax.swing.JLabel" binding="lbl3">
             <constraints>
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <font name="Arial" size="12" style="1"/>
               <foreground color="-16315129"/>
-              <text value="Cantidad :   "/>
+              <text value="Cantidad:   "/>
             </properties>
           </component>
-          <component id="8457" class="javax.swing.JLabel">
+          <component id="8457" class="javax.swing.JLabel" binding="lbl4">
             <constraints>
               <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <font name="Arial" size="12" style="1"/>
               <foreground color="-16315129"/>
-              <text value="Precio :"/>
+              <text value="Precio:"/>
             </properties>
           </component>
           <component id="f715e" class="javax.swing.JTextField" binding="etiquetaCantidad">
@@ -107,14 +107,14 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="fa49f" class="javax.swing.JLabel">
+          <component id="fa49f" class="javax.swing.JLabel" binding="lbl1">
             <constraints>
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <font name="Arial" size="12" style="1"/>
               <foreground color="-16315129"/>
-              <text value="Nombre :    "/>
+              <text value="Nombre:    "/>
             </properties>
           </component>
           <hspacer id="8f2c1">
@@ -144,14 +144,14 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="6fd52" class="javax.swing.JLabel">
+          <component id="6fd52" class="javax.swing.JLabel" binding="lbl2">
             <constraints>
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <font name="Arial" size="12" style="1"/>
               <foreground color="-16315129"/>
-              <text value="Proveedor :"/>
+              <text value="Proveedor:"/>
             </properties>
           </component>
           <hspacer id="da1af">
