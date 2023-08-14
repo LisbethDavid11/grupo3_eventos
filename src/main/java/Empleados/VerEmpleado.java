@@ -29,16 +29,60 @@ public class VerEmpleado extends JFrame {
     private JTextField etiquetaTelefonoContacto;
     private JTextField etiquetaTipo;
     private JLabel lbl0;
+    private JLabel lbl1;
+    private JLabel lbl2;
+    private JLabel lbl3;
+    private JLabel lbl4;
+    private JLabel lbl5;
+    private JLabel lbl6;
+    private JLabel lbl7;
+    private JLabel lbl8;
+    private JLabel lbl9;
+    private JLabel lbl10;
+    private JLabel lbl11;
     public VerEmpleado mostrarEmpleado = this;
     private final VerEmpleado actual = this;
     private Conexion sql;
     private Connection mysql;
     private int id;
     private int empleadoId; // Variable de instancia para almacenar el ID del empleado
+    Font fontTitulo = new Font("Century Gothic", Font.BOLD, 20);
+    Font font = new Font("Century Gothic", Font.BOLD, 15);
+    Font font2 = new Font("Century Gothic", Font.BOLD, 11);
+
+    // Colores para el botón "Cyan"
+    Color primaryColorCyan = new Color(0, 188, 212); // Cyan primario
+    Color lightColorCyan = new Color(77, 208, 225); // Cyan claro
+    Color darkColorCyan = new Color(0, 151, 167); // Cyan oscuro
+
+    // Colores para el botón "Aqua"
+    Color primaryColorAqua = new Color(0, 150, 136); // Aqua primario
+    Color lightColorAqua = new Color(77, 182, 172); // Aqua claro
+    Color darkColorAqua = new Color(0, 121, 107); // Aqua oscuro
+
+    // Colores para el botón "Rosado"
+    Color primaryColorRosado = new Color(233, 30, 99); // Rosado primario
+    Color lightColorRosado = new Color(240, 98, 146); // Rosado claro
+    Color darkColorRosado = new Color(194, 24, 91); // Rosado oscuro
+
+    // Colores para el botón "Amber"
+    Color primaryColorAmber = new Color(255, 193, 7); // Amber primario
+    Color lightColorAmber = new Color(255, 213, 79); // Amber claro
+    Color darkColorAmber = new Color(255, 160, 0); // Amber oscuro
+
+    // Colores para el botón "Verde lima"
+    Color primaryColorVerdeLima = new Color(205, 220, 57); // Verde lima primario
+    Color lightColorVerdeLima = new Color(220, 237, 200); // Verde lima claro
+    Color darkColorVerdeLima = new Color(139, 195, 74); // Verde lima oscuro
+
+    Color darkColorPink = new Color(233, 30, 99);
+    Color darkColorRed = new Color(244, 67, 54);
+    Color darkColorBlue = new Color(33, 150, 243);
+    EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
 
     public VerEmpleado(int id) {
         super("");
-        setSize(600, 450);
+        setSize(600, 475);
         setLocationRelativeTo(null);
         setContentPane(panel1);
 
@@ -48,7 +92,6 @@ public class VerEmpleado extends JFrame {
         etiquetaDireccion.setLineWrap(true);
         etiquetaDireccion.setWrapStyleWord(true);
 
-        // Deshabilitar la edición de los JTextField y el JTextArea
         etiquetaIdentidad.setEditable(false);
         etiquetaIdentidad.setFocusable(false);
         etiquetaNombre.setEditable(false);
@@ -72,17 +115,10 @@ public class VerEmpleado extends JFrame {
         etiquetaTipo.setEditable(false);
         etiquetaTipo.setFocusable(false);
 
-        // Colores de la paleta
-        Color primaryColor = Color.decode("#37474f"); // Gris azul oscuro
-        Color lightColor = Color.decode("#cfd8dc"); // Gris claro
-        Color darkColor = Color.decode("#263238"); // Gris oscuro
-
-        // Color de fondo del panel
         panel1.setBackground(Color.decode("#F5F5F5"));
 
-
-        // Color de texto para los JTextField
         Color textColor = Color.decode("#263238");
+        Color textColor2 = Color.decode("#607d8b");
         etiquetaNombre.setForeground(textColor);
         etiquetaNombre.setForeground(textColor);
         etiquetaApellido.setForeground(textColor);
@@ -94,9 +130,9 @@ public class VerEmpleado extends JFrame {
         etiquetaNombreContacto.setForeground(textColor);
         etiquetaTelefonoContacto.setForeground(textColor);
         etiquetaTipo.setForeground(textColor);
+        etiquetaDireccion.setForeground(textColor);
 
-        // Color de fondo para los JTextField
-        Color textFieldColor = Color.decode("#FFFFFF");
+        Color textFieldColor = Color.decode("#F5F5F5");
         etiquetaNombre.setBackground(textFieldColor);
         etiquetaApellido.setBackground(textFieldColor);
         etiquetaIdentidad.setBackground(textFieldColor);
@@ -107,49 +143,71 @@ public class VerEmpleado extends JFrame {
         etiquetaNombreContacto.setBackground(textFieldColor);
         etiquetaTelefonoContacto.setBackground(textFieldColor);
         etiquetaTipo.setBackground(textFieldColor);
-
-        // Color de texto para el JTextArea
-        etiquetaDireccion.setForeground(textColor);
-
-        // Color de fondo para el JTextArea
         etiquetaDireccion.setBackground(textFieldColor);
 
-        // Color de texto de los botones
-        cancelarButton.setForeground(Color.WHITE);
+        etiquetaNombre.setBorder(BorderFactory.createEmptyBorder());
+        etiquetaApellido.setBorder(BorderFactory.createEmptyBorder());
+        etiquetaIdentidad.setBorder(BorderFactory.createEmptyBorder());
+        etiquetaGenero.setBorder(BorderFactory.createEmptyBorder());
+        etiquetaEdad.setBorder(BorderFactory.createEmptyBorder());
+        etiquetaCorreo.setBorder(BorderFactory.createEmptyBorder());
+        etiquetaTelefono.setBorder(BorderFactory.createEmptyBorder());
+        etiquetaNombreContacto.setBorder(BorderFactory.createEmptyBorder());
+        etiquetaTelefonoContacto.setBorder(BorderFactory.createEmptyBorder());
+        etiquetaTipo.setBorder(BorderFactory.createEmptyBorder());
 
-        // Color de fondo de los botones
+        etiquetaNombre.setFont(font);
+        etiquetaApellido.setFont(font);
+        etiquetaIdentidad.setFont(font);
+        etiquetaEdad.setFont(font);
+        etiquetaGenero.setFont(font);
+        etiquetaCorreo.setFont(font);
+        etiquetaTelefono.setFont(font);
+        etiquetaNombreContacto.setFont(font);
+        etiquetaTelefonoContacto.setFont(font);
+        etiquetaTipo.setFont(font);
+        etiquetaDireccion.setFont(font);
+
+        cancelarButton.setForeground(Color.WHITE);
         cancelarButton.setBackground(Color.decode("#263238"));
         cancelarButton.setFocusPainted(false);
-
-        Color primaryColors = new Color(244, 67, 54); // Rojo primario
-        Color lightColors = new Color(239, 154, 154); // Rojo claro
-        Color darkColors = new Color(211, 47, 47); // Rojo oscuro
-
-        cancelarButton.setBackground(primaryColors);
-
-        // Crea un margen de 10 píxeles desde el borde inferior
-        EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
-
-        // Aplica el margen al botón
         cancelarButton.setBorder(margin);
 
-        // Crea un margen de 15 píxeles desde el borde inferior
-        EmptyBorder marginTitulo = new EmptyBorder(15, 0, 15, 0);
-        lbl0.setBorder(marginTitulo);
-
-        // Crear una fuente con un tamaño de 18 puntos
-        Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
+        lbl0.setBorder(margin);
         lbl0.setFont(fontTitulo);
+
+        lbl1.setForeground(textColor2);
+        lbl2.setForeground(textColor2);
+        lbl3.setForeground(textColor2);
+        lbl4.setForeground(textColor2);
+        lbl5.setForeground(textColor2);
+        lbl6.setForeground(textColor2);
+        lbl7.setForeground(textColor2);
+        lbl8.setForeground(textColor2);
+        lbl9.setForeground(textColor2);
+        lbl10.setForeground(textColor2);
+        lbl11.setForeground(textColor2);
+
+        lbl1.setFont(font2);
+        lbl2.setFont(font2);
+        lbl3.setFont(font2);
+        lbl4.setFont(font2);
+        lbl5.setFont(font2);
+        lbl6.setFont(font2);
+        lbl7.setFont(font2);
+        lbl8.setFont(font2);
+        lbl9.setFont(font2);
+        lbl10.setFont(font2);
+        lbl11.setFont(font2);
 
         cancelarButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                cancelarButton.setBackground(lightColors);
+                cancelarButton.setBackground(textColor2);
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                cancelarButton.setBackground(darkColors);
+                cancelarButton.setBackground(textColor);
             }
         });
-
 
         cancelarButton.addActionListener(new ActionListener() {
             @Override
@@ -170,12 +228,12 @@ public class VerEmpleado extends JFrame {
             statement.setInt(1, this.id);
             ResultSet resultSet = statement.executeQuery();
 
-            if (resultSet.next()) { // Verificar si hay un resultado antes de obtener los valores
+            if (resultSet.next()) {
                 etiquetaIdentidad.setText(resultSet.getString(2));
                 etiquetaNombre.setText(resultSet.getString(3));
                 etiquetaApellido.setText(resultSet.getString(4));
                 etiquetaGenero.setText(resultSet.getString(5));
-                etiquetaEdad.setText(resultSet.getString(6));
+                etiquetaEdad.setText(resultSet.getString(6) + " años");
                 etiquetaCorreo.setText(resultSet.getString(7));
                 etiquetaTelefono.setText(resultSet.getString(8));
                 etiquetaNombreContacto.setText(resultSet.getString(9));
@@ -193,7 +251,7 @@ public class VerEmpleado extends JFrame {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                VerEmpleado verEmpleado = new VerEmpleado(1); // Pasa el ID del cliente que deseas ver
+                VerEmpleado verEmpleado = new VerEmpleado(1);
                 verEmpleado.setVisible(true);
             }
         });

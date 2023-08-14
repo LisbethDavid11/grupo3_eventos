@@ -24,20 +24,55 @@ public class VerCompras extends JFrame {
     private JButton cancelarButton;
     private JLabel lbl0, lbl8, lbl9, lbl10, lbl12;
     private JScrollPane panel2;
+    private JLabel lbl4;
+    private JLabel lbl3;
+    private JLabel lbl2;
+    private JLabel lbl1;
+    private JLabel lbl5;
+    private JLabel lbl6;
+    private JLabel lbl7;
+    private JLabel lbl13;
+    private JPanel panel3;
     private Conexion sql;
     private Connection mysql;
     private int id;
     private VerCompras actual = this;
-    Color textColor = Color.decode("#212121");
-    Color darkColorCyan = new Color(0, 150, 136);
+    Font fontTitulo = new Font("Century Gothic", Font.BOLD, 20);
+    Font font = new Font("Century Gothic", Font.BOLD, 15);
+    Font font2 = new Font("Century Gothic", Font.BOLD, 11);
+
+    // Colores para el botón "Cyan"
+    Color primaryColorCyan = new Color(0, 188, 212); // Cyan primario
+    Color lightColorCyan = new Color(77, 208, 225); // Cyan claro
+    Color darkColorCyan = new Color(0, 151, 167); // Cyan oscuro
+
+    // Colores para el botón "Aqua"
+    Color primaryColorAqua = new Color(0, 150, 136); // Aqua primario
+    Color lightColorAqua = new Color(77, 182, 172); // Aqua claro
+    Color darkColorAqua = new Color(0, 121, 107); // Aqua oscuro
+
+    // Colores para el botón "Rosado"
+    Color primaryColorRosado = new Color(233, 30, 99); // Rosado primario
+    Color lightColorRosado = new Color(240, 98, 146); // Rosado claro
+    Color darkColorRosado = new Color(194, 24, 91); // Rosado oscuro
+
+    // Colores para el botón "Amber"
+    Color primaryColorAmber = new Color(255, 193, 7); // Amber primario
+    Color lightColorAmber = new Color(255, 213, 79); // Amber claro
+    Color darkColorAmber = new Color(255, 160, 0); // Amber oscuro
+
+    // Colores para el botón "Verde lima"
+    Color primaryColorVerdeLima = new Color(205, 220, 57); // Verde lima primario
+    Color lightColorVerdeLima = new Color(220, 237, 200); // Verde lima claro
+    Color darkColorVerdeLima = new Color(139, 195, 74); // Verde lima oscuro
+
     Color darkColorPink = new Color(233, 30, 99);
     Color darkColorRed = new Color(244, 67, 54);
     Color darkColorBlue = new Color(33, 150, 243);
     EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
-    Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
 
     public VerCompras(int id) {
-        super("Ver Compras");
+        super("");
         setSize(700, 470);
         setLocationRelativeTo(null);
         setContentPane(panel1);
@@ -55,12 +90,13 @@ public class VerCompras extends JFrame {
         fecha.setFocusable(false);
 
         Color textColor = Color.decode("#263238");
+        Color textColor2 = Color.decode("#607d8b");
         codigo_compra.setForeground(textColor);
         proveedor.setForeground(textColor);
         empleado.setForeground(textColor);
         proveedor.setForeground(textColor);
 
-        Color textFieldColor = Color.decode("#FFFFFF");
+        Color textFieldColor = Color.decode("#F5F5F5");
         codigo_compra.setBackground(textFieldColor);
         fecha.setBackground(textFieldColor);
         proveedor.setBackground(textFieldColor);
@@ -68,29 +104,52 @@ public class VerCompras extends JFrame {
 
         panel1.setBackground(Color.decode("#F5F5F5"));
         panel2.setBackground(Color.decode("#F5F5F5"));
+        panel3.setBackground(Color.decode("#F5F5F5"));
+
+        codigo_compra.setBorder(BorderFactory.createEmptyBorder());
+        fecha.setBorder(BorderFactory.createEmptyBorder());
+        proveedor.setBorder(BorderFactory.createEmptyBorder());
+        empleado.setBorder(BorderFactory.createEmptyBorder());
+
+        codigo_compra.setFont(font);
+        fecha.setFont(font);
+        proveedor.setFont(font);
+        empleado.setFont(font);
 
         cancelarButton.setForeground(Color.WHITE);
         cancelarButton.setBackground(Color.decode("#263238"));
         cancelarButton.setFocusPainted(false);
-        Color primaryColors = new Color(244, 67, 54); // Rojo primario
-        Color lightColors = new Color(239, 154, 154); // Rojo claro
-        Color darkColors = new Color(211, 47, 47); // Rojo oscuro
-
-        cancelarButton.setBackground(primaryColors);
-
-        // Crea un margen de 10 píxeles desde el borde inferior
-        EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
-
-        // Aplica el margen al botón
         cancelarButton.setBorder(margin);
 
-        // Crea un margen de 15 píxeles desde el borde inferior
-        EmptyBorder marginTitulo = new EmptyBorder(15, 0, 15, 0);
-        lbl0.setBorder(marginTitulo);
-
-        // Crear una fuente con un tamaño de 18 puntos
-        Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
+        lbl0.setBorder(margin);
         lbl0.setFont(fontTitulo);
+
+        lbl1.setForeground(textColor2);
+        lbl2.setForeground(textColor2);
+        lbl3.setForeground(textColor2);
+        lbl4.setForeground(textColor2);
+        lbl5.setForeground(textColor2);
+        lbl6.setForeground(textColor2);
+        lbl7.setForeground(textColor2);
+        lbl13.setForeground(textColor2);
+
+        lbl1.setFont(font2);
+        lbl2.setFont(font2);
+        lbl3.setFont(font2);
+        lbl4.setFont(font2);
+        lbl5.setFont(font2);
+        lbl6.setFont(font2);
+        lbl7.setFont(font2);
+        lbl13.setFont(font2);
+
+        cancelarButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                cancelarButton.setBackground(textColor2);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                cancelarButton.setBackground(textColor);
+            }
+        });
 
         cancelarButton.addActionListener(new ActionListener() {
             @Override
@@ -105,7 +164,7 @@ public class VerCompras extends JFrame {
     private void mostrar() {
         sql = new Conexion();
         mysql = sql.conectamysql();
-        DecimalFormat decimalFormat = new DecimalFormat("#.00");
+        DecimalFormat decimalFormat = new DecimalFormat("#,###.00");
 
         double sumExentoFalse = 0;
         double sumIsv = 0;
@@ -155,17 +214,17 @@ public class VerCompras extends JFrame {
 
                     if (exento) {
                         isv = "Exento";
-                        total = decimalFormat.format(subtotal);
+                        total = "L. " + decimalFormat.format(subtotal);
                         sumExentoTrue += subtotal;
                     } else {
                         double impuesto = subtotal * 0.15;
-                        total = decimalFormat.format(subtotal + impuesto);
-                        isv = decimalFormat.format(impuesto);
+                        total = "L. " + decimalFormat.format(subtotal + impuesto);
+                        isv = "L. " + decimalFormat.format(impuesto);
                         sumExentoFalse += subtotal;
                         sumIsv += impuesto;
                     }
 
-                    Object[] fila = {numeroMaterial, nombreMaterial, cantidad, precio, decimalFormat.format(subtotal), isv, total};
+                    Object[] fila = {numeroMaterial, nombreMaterial, cantidad, "L. " + decimalFormat.format(precio), "L. " + decimalFormat.format(subtotal), isv, total};
                     modeloProductos.addRow(fila);
 
                     numeroMaterial++;
@@ -173,10 +232,10 @@ public class VerCompras extends JFrame {
 
                 productos.setModel(modeloProductos);
 
-                lbl8.setText(decimalFormat.format(sumExentoFalse));
-                lbl9.setText(decimalFormat.format(sumIsv));
-                lbl12.setText(decimalFormat.format(sumExentoTrue));
-                lbl10.setText(decimalFormat.format(sumExentoFalse + sumIsv + sumExentoTrue));
+                lbl8.setText("L. " + decimalFormat.format(sumExentoFalse));
+                lbl9.setText("L. " + decimalFormat.format(sumIsv));
+                lbl12.setText("L. " + decimalFormat.format(sumExentoTrue));
+                lbl10.setText("L. " + decimalFormat.format(sumExentoFalse + sumIsv + sumExentoTrue));
 
             } else {
                 JOptionPane.showMessageDialog(null, "La compra con el ID " + this.id + " no fue encontrada.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -186,6 +245,8 @@ public class VerCompras extends JFrame {
             System.out.println(error.getMessage());
         }
     }
+
+
 
     private String obtenerNombreProveedor(int proveedorId) {
         try {

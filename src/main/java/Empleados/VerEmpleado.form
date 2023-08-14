@@ -10,44 +10,44 @@
     </properties>
     <border type="none"/>
     <children>
-      <component id="8ea53" class="javax.swing.JLabel">
+      <component id="8ea53" class="javax.swing.JLabel" binding="lbl9">
         <constraints>
           <grid row="9" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <font name="Arial" size="12" style="1"/>
           <foreground color="-16315129"/>
-          <text value="Nombre del contacto de emergencia"/>
+          <text value="Nombre del contacto de emergencia:"/>
         </properties>
       </component>
-      <component id="b26d9" class="javax.swing.JLabel">
+      <component id="b26d9" class="javax.swing.JLabel" binding="lbl7">
         <constraints>
           <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <font name="Arial" size="12" style="1"/>
           <foreground color="-16315129"/>
-          <text value="Teléfono"/>
+          <text value="Teléfono:"/>
         </properties>
       </component>
-      <component id="14c19" class="javax.swing.JLabel">
+      <component id="14c19" class="javax.swing.JLabel" binding="lbl1">
         <constraints>
           <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <font name="Arial" size="12" style="1"/>
           <foreground color="-16315129"/>
-          <text value="Nombres"/>
+          <text value="Nombres:"/>
         </properties>
       </component>
-      <component id="bf996" class="javax.swing.JLabel">
+      <component id="bf996" class="javax.swing.JLabel" binding="lbl3">
         <constraints>
           <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <font name="Arial" size="12" style="1"/>
           <foreground color="-16315129"/>
-          <text value="Identidad"/>
+          <text value="Identidad:"/>
         </properties>
       </component>
       <component id="7283" class="javax.swing.JTextField" binding="etiquetaIdentidad">
@@ -66,14 +66,14 @@
         </constraints>
         <properties/>
       </component>
-      <component id="6d4a8" class="javax.swing.JLabel">
+      <component id="6d4a8" class="javax.swing.JLabel" binding="lbl2">
         <constraints>
           <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <font name="Arial" size="12" style="1"/>
           <foreground color="-16315129"/>
-          <text value="Apellidos"/>
+          <text value="Apellidos:"/>
         </properties>
       </component>
       <component id="2e938" class="javax.swing.JTextField" binding="etiquetaApellido">
@@ -84,14 +84,14 @@
         </constraints>
         <properties/>
       </component>
-      <component id="da76d" class="javax.swing.JLabel">
+      <component id="da76d" class="javax.swing.JLabel" binding="lbl5">
         <constraints>
           <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <font name="Arial" size="12" style="1"/>
           <foreground color="-16315129"/>
-          <text value="Género"/>
+          <text value="Género:"/>
         </properties>
       </component>
       <component id="3b2c8" class="javax.swing.JTextField" binding="etiquetaGenero">
@@ -102,14 +102,14 @@
         </constraints>
         <properties/>
       </component>
-      <component id="34f94" class="javax.swing.JLabel">
+      <component id="34f94" class="javax.swing.JLabel" binding="lbl6">
         <constraints>
           <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <font name="Arial" size="12" style="1"/>
           <foreground color="-16315129"/>
-          <text value="Edad"/>
+          <text value="Edad:"/>
         </properties>
       </component>
       <component id="b6a2d" class="javax.swing.JTextField" binding="etiquetaEdad">
@@ -120,14 +120,14 @@
         </constraints>
         <properties/>
       </component>
-      <component id="24aa7" class="javax.swing.JLabel">
+      <component id="24aa7" class="javax.swing.JLabel" binding="lbl4">
         <constraints>
           <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <font name="Arial" size="12" style="1"/>
           <foreground color="-16315129"/>
-          <text value="Correo electrónico"/>
+          <text value="Correo electrónico:"/>
         </properties>
       </component>
       <component id="cd4f9" class="javax.swing.JTextField" binding="etiquetaCorreo">
@@ -154,14 +154,14 @@
         </constraints>
         <properties/>
       </component>
-      <component id="f9623" class="javax.swing.JLabel">
+      <component id="f9623" class="javax.swing.JLabel" binding="lbl10">
         <constraints>
           <grid row="9" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <font name="Arial" size="12" style="1"/>
           <foreground color="-16315129"/>
-          <text value="Teléfono del ontacto de emergencia"/>
+          <text value="Teléfono del contacto de emergencia:"/>
         </properties>
       </component>
       <component id="f9ff3" class="javax.swing.JTextField" binding="etiquetaTelefonoContacto">
@@ -172,14 +172,14 @@
         </constraints>
         <properties/>
       </component>
-      <component id="85e08" class="javax.swing.JLabel">
+      <component id="85e08" class="javax.swing.JLabel" binding="lbl8">
         <constraints>
           <grid row="7" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <font name="Arial" size="12" style="1"/>
           <foreground color="-16315129"/>
-          <text value="Tipo de empleado"/>
+          <text value="Tipo de empleado:"/>
         </properties>
       </component>
       <component id="ef89f" class="javax.swing.JTextField" binding="etiquetaTipo">
@@ -190,14 +190,14 @@
         </constraints>
         <properties/>
       </component>
-      <component id="90cdb" class="javax.swing.JLabel">
+      <component id="90cdb" class="javax.swing.JLabel" binding="lbl11">
         <constraints>
           <grid row="11" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <font name="Arial" size="12" style="1"/>
           <foreground color="-16315129"/>
-          <text value="Dirección"/>
+          <text value="Dirección:"/>
         </properties>
       </component>
       <component id="9d5c6" class="javax.swing.JTextArea" binding="etiquetaDireccion">
