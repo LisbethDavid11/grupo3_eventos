@@ -1,5 +1,6 @@
 package Desayunos;
 import Manualidades.PreviewImagen;
+import Materiales.TextPrompt;
 import Modelos.*;
 import Objetos.*;
 import javax.imageio.ImageIO;
@@ -37,6 +38,8 @@ public class CrearDesayuno extends JFrame {
     private JScrollPane panel4;
     private JButton agregarButton;
     private JTextField campoBusquedaMateriales;
+    private TextPrompt placeholder = new TextPrompt(" Buscar por nombre de producto", campoBusquedaMateriales);
+
     private JButton cancelarButton;
     private JComboBox<ProveedorDesayuno> jcbProveedores;
     private JPanel jpanelDescripcion;
@@ -259,7 +262,7 @@ public class CrearDesayuno extends JFrame {
                 agregarFloresButton.setVisible(false);
                 agregarGloboButton.setVisible(false);
                 agregarTarjetasButton.setVisible(false);
-               jtableMateriales.setModel(cargarDatosMaterial());
+                jtableMateriales.setModel(cargarDatosMaterial());
             }
         });
 
@@ -317,6 +320,7 @@ public class CrearDesayuno extends JFrame {
                 agregarTarjetasButton.setVisible(true);
                 jtableMateriales.setModel(cargarDetallesMateriales());
                 actualizarLbl8y10();
+                configurarTablaMateriales();
             }
         });
 
@@ -357,6 +361,7 @@ public class CrearDesayuno extends JFrame {
                     public void actionPerformed(ActionEvent e) {
                         // Acciones para el botón Sí
                         materialListTemporal.clear();
+                        productosListTemporal.clear();
                         eliminarDetallesMaterial();
                         limpiarTablaMateriales();
                         lbl8.setText("0.00");
@@ -369,7 +374,6 @@ public class CrearDesayuno extends JFrame {
                         calcularTotalTabla();
                         actualizarLbl8y10();
 
-                        // Luego cierra el diálogo
                         dialog.dispose();
                     }
                 });
