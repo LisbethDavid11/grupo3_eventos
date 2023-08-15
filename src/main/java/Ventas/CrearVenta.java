@@ -28,7 +28,6 @@ public class CrearVenta extends JFrame {
     private JPanel panel1;
     private JTable tablaProductos;
     private DefaultTableModel modeloProductos;
-
     public JButton guardarButton, cancelarButton, limpiarButton, agregarButton;
     public JTextField campoCodigo, campoFecha, campoCantidad, campoPrecio;
     public JComboBox<String> boxCliente, boxEmpleado, boxMaterial;
@@ -486,7 +485,7 @@ public class CrearVenta extends JFrame {
         String codigoVenta = campoCodigo.getText();
         String fechaCampo = campoFecha.getText();
 
-// Convertir la fecha en formato "Domingo, 30 de julio de 2023" a "2023-07-30"
+        // Convertir la fecha en formato "Domingo, 30 de julio de 2023" a "2023-07-30"
         String fechaVenta = convertirFecha(fechaCampo);
 
         int clienteId = Integer.parseInt(boxCliente.getSelectedItem().toString().split(" - ")[0]);
@@ -570,15 +569,15 @@ public class CrearVenta extends JFrame {
                 break;
             }
         }
+
         if (!listaVentaAbierta) {
             JOptionPane.showMessageDialog(null, "Venta registrada exitosamente.", "Éxito", JOptionPane.DEFAULT_OPTION);
         }
+
         crearVenta.dispose();
 
-        if (!listaVentaAbierta) {
-            ListaVentas ventas = new ListaVentas();
-            ventas.setVisible(true);
-        }
+        ListaVentas ventas = new ListaVentas();
+        ventas.setVisible(true);
     }
 
     private String convertirFecha(String fechaCampo) {
