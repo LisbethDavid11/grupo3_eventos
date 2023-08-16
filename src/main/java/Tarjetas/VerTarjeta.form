@@ -101,7 +101,7 @@
                 <properties>
                   <font name="Arial" size="12" style="1"/>
                   <foreground color="-16315129"/>
-                  <text value="Precio"/>
+                  <text value="Precio Final"/>
                 </properties>
               </component>
               <component id="54939" class="javax.swing.JTextField" binding="campoPrecioTarjeta">
@@ -282,7 +282,7 @@
               <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Total L. "/>
+              <text value="Precio sugerido L. "/>
             </properties>
           </component>
           <component id="12b7a" class="javax.swing.JLabel" binding="lbl10">

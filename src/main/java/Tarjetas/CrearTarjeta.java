@@ -1,4 +1,5 @@
 package Tarjetas;
+import Compras.CrearCompra;
 import Modelos.ModeloMaterial;
 import Modelos.ModeloProducto;
 import Objetos.Conexion;
@@ -58,6 +59,7 @@ public class CrearTarjeta extends JFrame {
     private String nombreFile;
     private String urlDestino = "";
     private DefaultTableModel modeloProductos;
+    private TextPrompt placeholder = new TextPrompt("Buscar por nombre, proveedor o precio", campoBusquedaMateriales);
 
     private List<Material> materialListTemporal = new ArrayList<>();
 
@@ -133,6 +135,7 @@ public class CrearTarjeta extends JFrame {
         radioButtonNo.setBackground(Color.decode("#F5F5F5"));
 
         DefaultTableModel modeloProductos = new DefaultTableModel();
+
 
 
         // Color de texto para los JTextField
@@ -494,7 +497,7 @@ public class CrearTarjeta extends JFrame {
                             if (!lbl10Text.isEmpty()) {
                                 double lbl10Value = Double.parseDouble(lbl10Text);
                                 if (precio <= lbl10Value) {
-                                    JOptionPane.showMessageDialog(null, "El precio debe ser mayor que el valor Total despues de gastos de materiales y mano de obra.", "Validación", JOptionPane.ERROR_MESSAGE);
+                                    JOptionPane.showMessageDialog(null, "El precio debe ser mayor que el valor total después de gastos de materiales y mano de obra.", "Validación", JOptionPane.ERROR_MESSAGE);
                                     return;
                                 }
                             } else {
