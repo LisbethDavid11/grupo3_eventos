@@ -1,5 +1,4 @@
 package Tarjetas;
-import Compras.CrearCompra;
 import Modelos.ModeloMaterial;
 import Modelos.ModeloProducto;
 import Objetos.Conexion;
@@ -135,7 +134,6 @@ public class CrearTarjeta extends JFrame {
         radioButtonNo.setBackground(Color.decode("#F5F5F5"));
 
         DefaultTableModel modeloProductos = new DefaultTableModel();
-
 
 
         // Color de texto para los JTextField
@@ -973,11 +971,12 @@ public class CrearTarjeta extends JFrame {
                      "SELECT m.*, p.empresaProveedora " +
                              "FROM materiales m " +
                              "JOIN Proveedores p ON m.proveedor_id = p.id " +
-                             "WHERE (m.nombre LIKE CONCAT('%', ?, '%') OR p.empresaProveedora LIKE CONCAT('%', ?, '%')) "
+                             "WHERE (m.nombre LIKE CONCAT('%', ?, '%') OR p.empresaProveedora LIKE CONCAT('%', ?, '%') OR m.precio LIKE CONCAT('%', ?, '%')) "
              )
         ) {
             preparedStatement.setString(1, campoBusquedaMateriales.getText());
             preparedStatement.setString(2, campoBusquedaMateriales.getText());
+            preparedStatement.setString(3, campoBusquedaMateriales.getText());
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
