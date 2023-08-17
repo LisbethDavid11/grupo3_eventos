@@ -114,7 +114,7 @@ public class CrearCompra extends JFrame {
         limpiarButton.setFocusPainted(false);
         limpiarButton.setBorder(margin);
 
-        agregarButton.setForeground(Color.WHITE);
+        agregarButton.setForeground(Color.DARK_GRAY);
         agregarButton.setBackground(darkColorBlue);
         agregarButton.setFocusPainted(false);
         agregarButton.setBorder(margin);

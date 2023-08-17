@@ -206,14 +206,14 @@ public class CrearDesayuno extends JFrame {
         agregarFloresButton.setForeground(Color.DARK_GRAY);
 
         // Color de fondo de los botones
-        botonCancelar.setBackground(darkColorCyan);
+        botonCancelar.setBackground(darkColorRed);
         botonGuardar.setBackground(darkColorAqua);
-        botonCargarImagen.setBackground(lightColorVerdeLima);
+        botonCargarImagen.setBackground(darkColorBlue);
         agregarMaterialButton.setBackground(lightColorAmber);
         agregarFloresButton.setBackground(lightColorAqua);
         agregarGloboButton.setBackground(lightColorCyan);
         agregarTarjetasButton.setBackground(lightColorRosado);
-        botonLimpiar.setBackground(darkColorRosado);
+        botonLimpiar.setBackground(darkColorPink);
         agregarButton.setBackground(darkColorCyan);
         cancelarButton.setBackground(darkColorRosado);
 
