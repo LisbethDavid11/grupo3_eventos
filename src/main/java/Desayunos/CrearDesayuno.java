@@ -1526,7 +1526,6 @@ public class CrearDesayuno extends JFrame {
         dialog.setVisible(true);
     }
 
-
     private void cargarProveedores() {
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement("SELECT id, empresaProveedora, nombreVendedor FROM Proveedores");

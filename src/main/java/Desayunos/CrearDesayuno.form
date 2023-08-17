@@ -356,7 +356,7 @@
             </constraints>
             <properties>
               <font name="Arial" size="12" style="1"/>
-              <icon value="IconosBotones/cancelarpp.png"/>
+              <icon value="IconosBotones/icon_limpiar_16x16.png"/>
               <text value="LIMPIAR LISTA DE PRODUCTOS"/>
             </properties>
           </component>
