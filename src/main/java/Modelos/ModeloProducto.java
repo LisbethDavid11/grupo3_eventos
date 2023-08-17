@@ -3,11 +3,12 @@ package Modelos;
 import Objetos.Conexion;
 import Objetos.Material;
 
+import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
 
 public class ModeloProducto extends AbstractTableModel {
-    private final String[] columnas = {"N°", "Nombre", "Cantidad", "Precio", "Total"};
+    private final String[] columnas = {"N°", "Nombre", "Cantidad", "Precio", "Total", "Eliminar"};
     private final List<Material> materiales;
     private final Conexion sql;
 
@@ -54,8 +55,40 @@ public class ModeloProducto extends AbstractTableModel {
                 double total = material.getPrecio() * cantidad;
                 String totalFormateado = String.format("%.2f", total);
                 return totalFormateado;
+            case 5: // Eliminar (Botón)
+                return "X";
+
             default:
                 return null;
+        }
+    }
+
+    @Override
+    public Class<?> getColumnClass(int columnIndex) {
+        if (columnIndex == 5) {
+            return JButton.class;
+        }
+        return super.getColumnClass(columnIndex);
+    }
+
+    @Override
+    public boolean isCellEditable(int rowIndex, int columnIndex) {
+        return columnIndex == 5;
+    }
+
+    @Override
+    public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+        if (columnIndex == 5 && aValue instanceof String && aValue.equals("X")) {
+            // Aquí puedes realizar la lógica para eliminar la fila en la base de datos si es necesario
+            materiales.remove(rowIndex);
+            fireTableRowsDeleted(rowIndex, rowIndex);
+        }
+    }
+
+    public void removeRow(int rowIndex) {
+        if (rowIndex >= 0 && rowIndex < materiales.size()) {
+            materiales.remove(rowIndex);
+            fireTableRowsDeleted(rowIndex, rowIndex);
         }
     }
 }

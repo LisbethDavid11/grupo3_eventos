@@ -20,10 +20,10 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.EventObject;
 import java.util.List;
 
 public class CrearManualidad extends JFrame {
-
     private JTextField campoPrecioManualidad, campoManoObra, campoNombre;
     private JTextArea campoDescripcion;
     private JButton botonGuardar;
@@ -34,7 +34,6 @@ public class CrearManualidad extends JFrame {
     private JLabel lbl4;
     private JButton botonCargarImagen;
     private JButton agregarMaterialButton;
-    private JTable jtableMateriales;
     private JLabel jlabelImagen;
     private JScrollPane jscrollMateriales, panel4;
     private JButton agregarButton;
@@ -47,7 +46,6 @@ public class CrearManualidad extends JFrame {
     private JButton botonLimpiar;
     private JLabel lbl9;
     private JLabel lbl10;
-    private List<Material> materialList = new ArrayList<>();
     private String imagePath = "";
     private CrearManualidad actual = this;
     private Conexion sql;
@@ -55,6 +53,8 @@ public class CrearManualidad extends JFrame {
     private String urlDestino = "";
     private DefaultTableModel modeloProductos;
     private TextPrompt placeholder = new TextPrompt(" Buscar por nombre, proveedor o precio", campoBusquedaMateriales);
+    private JTable jtableMateriales;
+    private List<Material> materialList = new ArrayList<>();
     private List<Material> materialListTemporal = new ArrayList<>();
     Color textColor = Color.decode("#212121");
     Color darkColorCyan = new Color(0, 150, 136);
@@ -121,12 +121,9 @@ public class CrearManualidad extends JFrame {
         panel4.setBackground(Color.decode("#F5F5F5"));
         panel5.setBackground(Color.decode("#F5F5F5"));
         panel6.setBackground(Color.decode("#F5F5F5"));
-        // panel7.setBackground(Color.decode("#F5F5F5"));
+        panel7.setBackground(Color.decode("#F5F5F5"));
         jpanelDescripcion.setBackground(Color.decode("#F5F5F5"));
         jpanelImagen.setBackground(Color.decode("#F5F5F5"));
-
-        DefaultTableModel modeloProductos = new DefaultTableModel();
-
 
         // Color de texto para los JTextField
         Color textColor = Color.decode("#212121");
@@ -164,11 +161,12 @@ public class CrearManualidad extends JFrame {
         agregarButton.setForeground(Color.WHITE);
 
         // Color de fondo de los botones
-        botonCancelar.setBackground(darkColorCyan);
+        botonCancelar.setBackground(darkColorRed);
+        cancelarButton.setBackground(darkColorRed);
         botonGuardar.setBackground(darkColorAqua);
-        botonCargarImagen.setBackground(lightColorAqua);
+        botonCargarImagen.setBackground(darkColorBlue);
         agregarMaterialButton.setBackground(lightColorCyan);
-        botonLimpiar.setBackground(darkColorRosado);
+        botonLimpiar.setBackground(darkColorPink);
         agregarButton.setBackground(darkColorCyan);
         cancelarButton.setBackground(darkColorRosado);
 
@@ -262,7 +260,6 @@ public class CrearManualidad extends JFrame {
 
                     // Establecer el nuevo modelo en la tabla
                     jtableMateriales.setModel(nuevoModelo);
-
                     // Actualizar los totales después de limpiar la tabla
                     calcularTotalTabla();
                 }
@@ -717,6 +714,9 @@ public class CrearManualidad extends JFrame {
 
                                 // Actualizar la tabla con los detalles actualizados
                                 jtableMateriales.setModel(cargarDetallesMateriales());
+                                jtableMateriales.getColumnModel().getColumn(5).setCellRenderer(new CrearManualidad.ButtonRenderer());
+                                jtableMateriales.getColumnModel().getColumn(5).setCellEditor(new CrearManualidad.ButtonEditor());
+
                                 actualizarLbl8y10();
                             } else {
                                 JOptionPane.showMessageDialog(null, "El material ya está presente en la tabla", "Validación", JOptionPane.ERROR_MESSAGE);
@@ -746,24 +746,7 @@ public class CrearManualidad extends JFrame {
         });
     }
 
-    private void configurarTablaMateriales() {
-        int columnCount = jtableMateriales.getColumnCount();
-        if (columnCount > 0) {
-            TableColumnModel columnModel = jtableMateriales.getColumnModel();
 
-            columnModel.getColumn(0).setPreferredWidth(20); // Id
-            columnModel.getColumn(1).setPreferredWidth(200); // Nombre
-            columnModel.getColumn(2).setPreferredWidth(60);  // Precio
-            columnModel.getColumn(3).setPreferredWidth(100); // Proveedor
-            columnModel.getColumn(4).setPreferredWidth(60);  // Disponible
-
-            columnModel.getColumn(0).setCellRenderer(new CrearManualidad.CenterAlignedRenderer());
-            columnModel.getColumn(1).setCellRenderer(new CrearManualidad.LeftAlignedRenderer());
-            columnModel.getColumn(2).setCellRenderer(new CrearManualidad.LeftAlignedRenderer());
-            columnModel.getColumn(3).setCellRenderer(new CrearManualidad.LeftAlignedRenderer());
-            columnModel.getColumn(4).setCellRenderer(new CrearManualidad.CenterAlignedRenderer());
-        }
-    }
 
     class CenterAlignedRenderer extends DefaultTableCellRenderer {
         public CenterAlignedRenderer() {
@@ -932,55 +915,7 @@ public class CrearManualidad extends JFrame {
         return precio;
     }
 
-    private ModeloProducto cargarDetallesMateriales() {
-        sql = new Conexion();
-        materialList.clear(); // Limpiar la lista antes de agregar los materiales
 
-        try (Connection mysql = sql.conectamysql();
-             PreparedStatement preparedStatement = mysql.prepareStatement(
-                     "SELECT materiales.id, materiales.nombre, materiales.cantidad, materiales.precio, materiales.cantidad * materiales.precio AS total " +
-                             "FROM tarjetas_detalles " +
-                             "JOIN materiales ON materiales.id = tarjetas_detalles.id_material " +
-                             "WHERE id_tarjeta IS NULL"
-             )
-        ) {
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            double precioTotalMateriales = 0.00;
-
-            while (resultSet.next()) {
-                Material material = new Material();
-                material.setId(resultSet.getInt("id"));
-                material.setNombre(resultSet.getString("nombre"));
-                material.setCantidad(resultSet.getInt("cantidad"));
-                material.setPrecio(resultSet.getDouble("precio"));
-                double total = resultSet.getDouble("total");
-                precioTotalMateriales += total;
-            }
-
-            for (Material materialTemporal : materialListTemporal) {
-                precioTotalMateriales += materialTemporal.getPrecio() * materialTemporal.getCantidad();
-                materialList.add(materialTemporal);
-            }
-
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
-            materialList = new ArrayList<>();
-        }
-
-        // Configurar la tabla para mostrar los encabezados de las columnas
-        JTableHeader tableHeader = jtableMateriales.getTableHeader();
-        tableHeader.setVisible(true);
-
-        // Configurar la tabla para mantener el ordenamiento de filas incluso sin encabezados visibles
-        jtableMateriales.setAutoCreateRowSorter(true);
-
-        // Configurar el ancho de las columnas y alineaciones de las celdas
-        configurarTablaMateriales();
-
-        return new ModeloProducto(materialList, sql);
-    }
 
     private void limpiarTablaMateriales() {
         materialList.clear();
@@ -1128,6 +1063,158 @@ public class CrearManualidad extends JFrame {
         // Calcular el total y actualizar lbl10
         double total = totalTabla + manoObra;
         lbl10.setText(String.format("%.2f", total));
+    }
+
+    private void configurarTablaMateriales() {
+        int columnCount = jtableMateriales.getColumnCount();
+        if (columnCount > 0) {
+            TableColumnModel columnModel = jtableMateriales.getColumnModel();
+
+            columnModel.getColumn(0).setPreferredWidth(20); // Id
+            columnModel.getColumn(1).setPreferredWidth(200); // Nombre
+            columnModel.getColumn(2).setPreferredWidth(60);  // Precio
+            columnModel.getColumn(3).setPreferredWidth(100); // Proveedor
+            columnModel.getColumn(4).setPreferredWidth(60);  // Disponible
+            columnModel.getColumn(5).setCellEditor(new DefaultCellEditor(new JCheckBox()));
+            columnModel.getColumn(5).setCellRenderer(new CrearManualidad.ButtonRenderer());
+
+
+
+            columnModel.getColumn(0).setCellRenderer(new CrearManualidad.CenterAlignedRenderer());
+            columnModel.getColumn(1).setCellRenderer(new CrearManualidad.LeftAlignedRenderer());
+            columnModel.getColumn(2).setCellRenderer(new CrearManualidad.LeftAlignedRenderer());
+            columnModel.getColumn(3).setCellRenderer(new CrearManualidad.LeftAlignedRenderer());
+            columnModel.getColumn(4).setCellRenderer(new CrearManualidad.CenterAlignedRenderer());
+        }
+    }
+
+    private ModeloProducto cargarDetallesMateriales() {
+        sql = new Conexion();
+        materialList.clear(); // Limpiar la lista antes de agregar los materiales
+
+        try (Connection mysql = sql.conectamysql();
+             PreparedStatement preparedStatement = mysql.prepareStatement(
+                     "SELECT materiales.id, materiales.nombre, materiales.cantidad, materiales.precio, materiales.cantidad * materiales.precio AS total " +
+                             "FROM detalles_manualidades " +
+                             "JOIN materiales ON materiales.id = detalles_manualidades.material_id " +
+                             "WHERE manualidad_id IS NULL"
+             )
+        ) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            double precioTotalMateriales = 0.00;
+
+            while (resultSet.next()) {
+                Material material = new Material();
+                material.setId(resultSet.getInt("id"));
+                material.setNombre(resultSet.getString("nombre"));
+                material.setCantidad(resultSet.getInt("cantidad"));
+                material.setPrecio(resultSet.getDouble("precio"));
+                double total = resultSet.getDouble("total");
+                precioTotalMateriales += total;
+            }
+
+            for (Material materialTemporal : materialListTemporal) {
+                precioTotalMateriales += materialTemporal.getPrecio() * materialTemporal.getCantidad();
+                materialList.add(materialTemporal);
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            materialList = new ArrayList<>();
+        }
+
+        // Configurar la tabla para mostrar los encabezados de las columnas
+        JTableHeader tableHeader = jtableMateriales.getTableHeader();
+        tableHeader.setVisible(true);
+
+        // Configurar la tabla para mantener el ordenamiento de filas incluso sin encabezados visibles
+        jtableMateriales.setAutoCreateRowSorter(true);
+
+        // Configurar el ancho de las columnas y alineaciones de las celdas
+        configurarTablaMateriales();
+
+        return new ModeloProducto(materialList, sql);
+    }
+
+    class ButtonRenderer extends JButton implements TableCellRenderer {
+        public ButtonRenderer() {
+            setOpaque(true);
+            setForeground(Color.WHITE);
+            setBackground(darkColorPink);
+            setFocusPainted(false);
+        }
+
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            setText("X");
+            return this;
+        }
+    }
+
+    class ButtonEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
+        private JButton button;
+        private int row;
+        private JTable table;
+
+        public ButtonEditor() {
+            button = new JButton("X");
+            button.addActionListener(this);
+            button.setFocusPainted(false);
+        }
+
+        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+            this.table = table;
+            this.row = row;
+            return button;
+        }
+
+        public Object getCellEditorValue() {
+            return "X";
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            // Realiza la acción necesaria aquí, como eliminar una fila de la tabla y actualizar los datos
+            // Acceder al modelo de la tabla usando el modelo que estás utilizando (ModeloProducto)
+            ModeloProducto modelo = (ModeloProducto) table.getModel();
+
+            // Obtener el id del material que se va a eliminar (puedes obtenerlo desde el modelo)
+            int id_material = materialList.get(row).getId();
+
+            // Eliminar el detalle de manualidad de la base de datos
+            eliminarDetalleManualidad(id_material);
+
+            // Remover la fila de la tabla
+            modelo.removeRow(row);
+
+            // Remover el material de la lista temporal
+            Material materialTemporalToRemove = null;
+            for (Material materialTemporal : materialListTemporal) {
+                if (materialTemporal.getId() == id_material) {
+                    materialTemporalToRemove = materialTemporal;
+                    break;
+                }
+            }
+            if (materialTemporalToRemove != null) {
+                materialListTemporal.remove(materialTemporalToRemove);
+            }
+
+            // Asegúrate de llamar a fireEditingStopped() para finalizar la edición y actualizar la interfaz
+            fireEditingStopped();
+            calcularTotalTabla();
+            actualizarLbl8y10();
+        }
+    }
+
+    private void eliminarDetalleManualidad(int id_material) {
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "DELETE FROM detalles_manualidades WHERE manualidad_id IS NULL AND material_id = ?")) {
+            preparedStatement.setInt(1, id_material);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void main(String[] args) {
