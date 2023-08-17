@@ -225,6 +225,9 @@
                 <item value="Cumpleaños"/>
                 <item value="Bodas"/>
                 <item value="Bautizo"/>
+                <item value="Graduaciones"/>
+                <item value="Día de la madre"/>
+                <item value="Día del padre"/>
                 <item value="14 de Febrero"/>
                 <item value="15 de Septiembre"/>
               </model>
