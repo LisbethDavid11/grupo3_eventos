@@ -5,6 +5,11 @@ import Manualidades.CrearManualidad;
 import Materiales.TextPrompt;
 import Modelos.*;
 import Objetos.*;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.jdatepicker.impl.JDatePickerImpl;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -14,6 +19,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.IOException;
 import java.sql.*;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -48,6 +55,7 @@ public class CrearVenta extends JFrame {
     private List<PoliManualidad> manualidadList = new ArrayList<>();
     private Map<String,String> tiposDescripcion = new HashMap<>();
     private Map<String,String> tiposTablas = new HashMap<>();
+    private List<VentaListener> ventaListeners = new ArrayList<>();
     private int selectTabla = 1;
     Color textColor = Color.decode("#212121");
     Font fontTitulo = new Font("Century Gothic", Font.BOLD, 17);
@@ -684,6 +692,57 @@ public class CrearVenta extends JFrame {
             }
         });
 
+        imprimirButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int validacion = 0;
+                String mensaje = "Faltó ingresar: \n";
+
+                if (campoCodigo.getText().trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "El código\n";
+                }
+
+                if (campoFecha.getText().trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "El código\n";
+                }
+
+                String clienteText = boxCliente.getSelectedItem().toString();
+                if (clienteText.equals("Seleccione un cliente")) {
+                    validacion++;
+                    mensaje += "El cliente\n";
+                }
+
+                String empleadoText = boxEmpleado.getSelectedItem().toString();
+                if (empleadoText.equals("Seleccione un empleado")) {
+                    validacion++;
+                    mensaje += "El empleado\n";
+                }
+
+                if (tablaProductos.getRowCount() == 0) {
+                    validacion++;
+                    mensaje += "Los productos\n";
+                }
+
+                if (validacion > 0) {
+                    JOptionPane.showMessageDialog(null, mensaje, "Validación", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                guardarDatos();
+
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "El archivo se ha guardado con éxito.",
+                            "Guardado Exitoso",
+                            JOptionPane.INFORMATION_MESSAGE
+                    );
+
+
+            }
+        });
+
         botonCrear.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -772,12 +831,8 @@ public class CrearVenta extends JFrame {
     private void limpiar() {
         boxCliente.setSelectedIndex(0);
         boxEmpleado.setSelectedIndex(0);
-        campoCantidad.setText("");
-        campoPrecio.setText("");
-        lbl8.setText("0.00");
-        lbl9.setText("0.00");
-        lbl10.setText("0.00");
     }
+
     private String convertirFecha(String fechaCampo) {
         try {
             // Parsear la fecha en formato "Domingo, 30 de julio de 2023" a un objeto Date
@@ -792,8 +847,6 @@ public class CrearVenta extends JFrame {
             return ""; // Devolver una cadena vacía si ocurre algún error al parsear la fecha
         }
     }
-
-
 
     private double calcularTotalTabla() {
         double sumaTotal = 0.0;
@@ -1012,6 +1065,9 @@ public class CrearVenta extends JFrame {
         }
     }
 
+    public void addVentaListener(VentaListener listener) {
+        ventaListeners.add(listener);
+    }
 
     private void guardarDatos() {
         Object[] options = {"Sí", "No"};
@@ -1093,13 +1149,19 @@ public class CrearVenta extends JFrame {
             ListaVentas ventas = new ListaVentas();
             ventas.setVisible(true);
 
+            // Lógica para registrar la venta
+            // Crea una instancia de Venta con los datos necesarios
+            Venta nuevaVenta = new Venta();
+
+            // Notificar a los listeners que la venta ha sido registrada
+            for (VentaListener listener : ventaListeners) {
+                listener.onVentaRegistrada(nuevaVenta);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error al guardar la venta", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
-
 
     private void guardarDetalleVenta(int id_material, int cantidad, String tipo) {
 
@@ -1127,7 +1189,6 @@ public class CrearVenta extends JFrame {
             JOptionPane.showMessageDialog(null, "Error al agregar el detalle de la manualidad", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
 
     private int obtenerCantidadMaterialDesdeBD(int id_material, String tipo) {
         int availableQuantity = 0;
@@ -1562,6 +1623,24 @@ public class CrearVenta extends JFrame {
         });
 
         dialog.setVisible(true);
+    }
+
+    private List<Producto> obtenerProductosDeTabla() {
+        List<Producto> productos = new ArrayList<>();
+
+        DefaultTableModel model = (DefaultTableModel) tablaProductos.getModel();
+        int rowCount = model.getRowCount();
+
+        for (int i = 0; i < rowCount; i++) {
+            String nombre = (String) model.getValueAt(i, 0);
+            int cantidad = (int) model.getValueAt(i, 1);
+            double precio = (double) model.getValueAt(i, 2);
+
+            Producto producto = new Producto("P", i + 1, nombre, cantidad, precio);
+            productos.add(producto);
+        }
+
+        return productos;
     }
 
 

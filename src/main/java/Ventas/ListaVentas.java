@@ -290,54 +290,7 @@ public class ListaVentas extends JFrame {
         }
     }
 
-    private ModeloVenta cargarDatos() {
-        sql = new Conexion();
-        try (Connection mysql = sql.conectamysql();
-             PreparedStatement preparedStatement = mysql.prepareStatement(
-                     "SELECT c.*, p.nombre, CONCAT(e.nombres, ' ', e.apellidos) AS apellido " +
-                             "FROM ventas c " +
-                             "JOIN clientes p ON c.cliente_id = p.id " +
-                             "JOIN empleados e ON c.empleado_id = e.id " +
-                             "WHERE c.codigo_venta LIKE CONCAT('%', ?, '%') " +
-                             "OR DATE_FORMAT(c.fecha, '%d de %M %Y') LIKE CONCAT('%', ?, '%') " +
-                             "OR p.nombre LIKE CONCAT('%', ?, '%') " +
-                             "LIMIT ?, 20")) {
 
-            SimpleDateFormat formatoFecha = new SimpleDateFormat("dd 'de' MMMM yyyy", new Locale("es"));
-
-            preparedStatement.setString(1, busqueda);  // Búsqueda por código de venta
-            preparedStatement.setString(2, busqueda);  // Búsqueda por fecha de la venta
-            preparedStatement.setString(3, busqueda);  // Búsqueda por nombre o apellido del cliente
-            preparedStatement.setInt(4, pagina * 20);
-
-            ResultSet resultSet = preparedStatement.executeQuery();
-            ventaList = new ArrayList<>();
-            while (resultSet.next()) {
-                Venta venta = new Venta();
-                venta.setId(resultSet.getInt("id"));
-                venta.setCodigoVenta(resultSet.getString("codigo_venta"));
-                java.util.Date fecha = resultSet.getDate("fecha");
-                if (fecha != null) {
-                    venta.setFecha(formatoFecha.format(fecha));
-                } else {
-                    venta.setFecha("");
-                }
-
-                venta.setClienteId(resultSet.getInt("cliente_id"));
-                venta.setEmpleadoId(resultSet.getInt("empleado_id"));
-                ventaList.add(venta);
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
-            ventaList = new ArrayList<>();
-        }
-        if (listaVentas.getColumnCount() > 0) {
-            TableColumn columnId = listaVentas.getColumnModel().getColumn(0);
-            columnId.setPreferredWidth(50);
-        }
-        return new ModeloVenta(ventaList, sql);
-    }
 
     private int obtenerNumeroMes(String mesSeleccionado) {
         int numeroMes = 0;
@@ -482,26 +435,23 @@ public class ListaVentas extends JFrame {
         return totalPageCount;
     }
 
-    private double calcularSubtotal(List<VentaDetalle> detalles) {
+    public double calcularSubtotal(List<VentaDetalle> detalles) {
         double subtotal = 0.0;
+
         for (VentaDetalle detalle : detalles) {
-            Material producto = obtenerMaterialPorId(detalle.getDetalleId());
-            if (producto != null) {
-                subtotal += detalle.getCantidad() * detalle.getPrecio();
-            }
+            double precioDetalle = obtenerPrecioProducto(detalle.getDetalleId(), sql);
+            subtotal += (detalle.getCantidad() * precioDetalle) * 0.85;
         }
-        // Restar el 15% al subtotal
-        subtotal *= 0.85;
+
         return subtotal;
     }
 
-    private double calcularISV(List<VentaDetalle> detalles) {
+    public double calcularISV(List<VentaDetalle> detalles) {
         double isv = 0.0;
+
         for (VentaDetalle detalle : detalles) {
-            Material producto = obtenerMaterialPorId(detalle.getDetalleId());
-            if (producto != null) {
-                isv += detalle.getCantidad() * detalle.getPrecio() * 0.15;
-            }
+            double precioDetalle = obtenerPrecioProducto(detalle.getDetalleId(), sql);
+            isv += (detalle.getCantidad() * precioDetalle) * 0.15;
         }
         return isv;
     }
@@ -512,46 +462,211 @@ public class ListaVentas extends JFrame {
         return subtotal + isv;
     }
 
-    public Material obtenerMaterialPorId(int materialId) {
-        Material material = null;
+    private ModeloVenta cargarDatos() {
+        sql = new Conexion();
+        try (Connection mysql = sql.conectamysql();
+             PreparedStatement preparedStatement = mysql.prepareStatement(
+                     "SELECT c.*, p.nombre, CONCAT(e.nombres, ' ', e.apellidos) AS apellido " +
+                             "FROM ventas c " +
+                             "JOIN clientes p ON c.cliente_id = p.id " +
+                             "JOIN empleados e ON c.empleado_id = e.id " +
+                             "WHERE c.codigo_venta LIKE CONCAT('%', ?, '%') " +
+                             "OR DATE_FORMAT(c.fecha, '%d de %M %Y') LIKE CONCAT('%', ?, '%') " +
+                             "OR p.nombre LIKE CONCAT('%', ?, '%') " +
+                             "LIMIT ?, 20")) {
 
-        try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("SELECT nombre, exento FROM materiales WHERE id = ?")) {
+            SimpleDateFormat formatoFecha = new SimpleDateFormat("dd 'de' MMMM yyyy", new Locale("es"));
 
-            preparedStatement.setInt(1, materialId);
+            preparedStatement.setString(1, busqueda);  // Búsqueda por código de venta
+            preparedStatement.setString(2, busqueda);  // Búsqueda por fecha de la venta
+            preparedStatement.setString(3, busqueda);  // Búsqueda por nombre o apellido del cliente
+            preparedStatement.setInt(4, pagina * 20);
+
             ResultSet resultSet = preparedStatement.executeQuery();
+            ventaList = new ArrayList<>();
+            while (resultSet.next()) {
+                Venta venta = new Venta();
+                venta.setId(resultSet.getInt("id"));
+                venta.setCodigoVenta(resultSet.getString("codigo_venta"));
+                java.util.Date fecha = resultSet.getDate("fecha");
+                if (fecha != null) {
+                    venta.setFecha(formatoFecha.format(fecha));
+                } else {
+                    venta.setFecha("");
+                }
 
-            if (resultSet.next()) {
-                String nombreMaterial = resultSet.getString("nombre");
-                boolean exento = resultSet.getBoolean("exento");
-                material = new Material(materialId, nombreMaterial, 0,0 , null, null, exento, 0);
+                venta.setClienteId(resultSet.getInt("cliente_id"));
+                venta.setEmpleadoId(resultSet.getInt("empleado_id"));
+                ventaList.add(venta);
             }
-
         } catch (SQLException e) {
-            // En caso de error en la conexión o consulta, se muestra un mensaje de error.
             System.out.println(e.getMessage());
             JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            ventaList = new ArrayList<>();
         }
-
-        return material;
+        if (listaVentas.getColumnCount() > 0) {
+            TableColumn columnId = listaVentas.getColumnModel().getColumn(0);
+            columnId.setPreferredWidth(50);
+        }
+        return new ModeloVenta(ventaList, sql);
     }
 
-    public String obtenerNombreMaterial(int materialId, Conexion sql) {
-        String nombreMaterial = "";
-        boolean exento = false; // Variable para indicar si el material es exento
+    public double obtenerPrecioProducto(int detalleId, Conexion sql) {
+        double precioProducto = 0.0;
 
         try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("SELECT nombre FROM materiales WHERE id = ?")) {
-            preparedStatement.setInt(1, materialId);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                nombreMaterial = resultSet.getString("nombre");
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "SELECT tipo_detalle, detalle_id FROM detalles_ventas WHERE id = ?")) {
+
+            preparedStatement.setInt(1, detalleId);
+            ResultSet rs = preparedStatement.executeQuery();
+
+            if (rs.next()) {
+                String tipoDetalle = rs.getString("tipo_detalle");
+                int productoId = rs.getInt("detalle_id");
+
+                switch (tipoDetalle) {
+                    case "material":
+                        try (PreparedStatement materialStatement = connection.prepareStatement(
+                                "SELECT precio FROM materiales WHERE id = ?")) {
+
+                            materialStatement.setInt(1, productoId);
+                            ResultSet materialRs = materialStatement.executeQuery();
+                            if (materialRs.next()) {
+                                precioProducto = materialRs.getDouble("precio");
+                            }
+                        }
+                        break;
+                    case "floristeria":
+                        try (PreparedStatement floristeriaStatement = connection.prepareStatement(
+                                "SELECT precio FROM floristeria WHERE id = ?")) {
+
+                            floristeriaStatement.setInt(1, productoId);
+                            ResultSet floristeriaRs = floristeriaStatement.executeQuery();
+                            if (floristeriaRs.next()) {
+                                precioProducto = floristeriaRs.getDouble("precio");
+                            }
+                        }
+                        break;
+                    case "tarjeta":
+                        try (PreparedStatement tarjetaStatement = connection.prepareStatement(
+                                "SELECT precio_tarjeta FROM tarjetas WHERE id = ?")) {
+
+                            tarjetaStatement.setInt(1, productoId);
+                            ResultSet tarjetaRs = tarjetaStatement.executeQuery();
+                            if (tarjetaRs.next()) {
+                                precioProducto = tarjetaRs.getDouble("precio_tarjeta");
+                            }
+                        }
+                        break;
+                    case "manualidad":
+                        try (PreparedStatement manualidadStatement = connection.prepareStatement(
+                                "SELECT precio_manualidad FROM manualidades WHERE id = ?")) {
+
+                            manualidadStatement.setInt(1, productoId);
+                            ResultSet manualidadRs = manualidadStatement.executeQuery();
+                            if (manualidadRs.next()) {
+                                precioProducto = manualidadRs.getDouble("precio_manualidad");
+                            }
+                        }
+                        break;
+                    case "arreglo":
+                        try (PreparedStatement arregloStatement = connection.prepareStatement(
+                                "SELECT precio FROM arreglos WHERE id = ?")) {
+
+                            arregloStatement.setInt(1, productoId);
+                            ResultSet arregloRs = arregloStatement.executeQuery();
+                            if (arregloRs.next()) {
+                                precioProducto = arregloRs.getDouble("precio");
+                            }
+                        }
+                        break;
+                    case "desayuno":
+                        try (PreparedStatement desayunoStatement = connection.prepareStatement(
+                                "SELECT precio_desayuno FROM desayunos WHERE id = ?")) {
+
+                            desayunoStatement.setInt(1, productoId);
+                            ResultSet desayunoRs = desayunoStatement.executeQuery();
+                            if (desayunoRs.next()) {
+                                precioProducto = desayunoRs.getDouble("precio_desayuno");
+                            }
+                        }
+                        break;
+                    default:
+                        precioProducto = 0.0;
+                }
             }
+
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
             JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
         }
-        return nombreMaterial;
+
+        return precioProducto;
+    }
+
+    public String obtenerNombreProducto(int detalleId, Conexion sql) {
+        String nombreProducto = "Producto no encontrado";
+
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "SELECT tipo_detalle, detalle_id FROM detalles_ventas WHERE id = ?"
+             )
+        ) {
+            preparedStatement.setInt(1, detalleId);
+            ResultSet rs = preparedStatement.executeQuery();
+
+            if (rs.next()) {
+                String tipoDetalle = rs.getString("tipo_detalle");
+                int detalleIdProducto = rs.getInt("detalle_id");
+
+                String query = null;
+                String columnName = null;
+
+                switch (tipoDetalle) {
+                    case "floristeria":
+                        query = "SELECT nombre FROM floristeria WHERE id = ?";
+                        columnName = "nombre";
+                        break;
+                    case "tarjeta":
+                        query = "SELECT ocasion FROM tarjetas WHERE id = ?";
+                        columnName = "ocasion";
+                        break;
+                    case "manualidad":
+                        query = "SELECT nombre FROM manualidades WHERE id = ?";
+                        columnName = "nombre";
+                        break;
+                    case "arreglo":
+                        query = "SELECT nombre FROM arreglos WHERE id = ?";
+                        columnName = "nombre";
+                        break;
+                    case "desayuno":
+                        query = "SELECT nombre FROM desayunos WHERE id = ?";
+                        columnName = "nombre";
+                        break;
+                    case "material":
+                        query = "SELECT nombre FROM materiales WHERE id = ?";
+                        columnName = "nombre";
+                        break;
+                    default:
+                        return "Tipo de detalle no reconocido";
+                }
+
+                try (PreparedStatement productoStatement = connection.prepareStatement(query)) {
+                    productoStatement.setInt(1, detalleIdProducto);
+                    ResultSet productoRs = productoStatement.executeQuery();
+
+                    if (productoRs.next()) {
+                        nombreProducto = productoRs.getString(columnName);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+        }
+
+        return nombreProducto;
     }
 
     public void imprimirFactura(int indiceItem) {
@@ -647,13 +762,17 @@ public class ListaVentas extends JFrame {
                 contentStream.newLineAtOffset(50, yPosition);
                 contentStream.showText(String.valueOf(rowNumber + 1));
                 contentStream.newLineAtOffset(columnWidths[0], 0);
-                contentStream.showText(obtenerNombreMaterial(detalle.getDetalleId(), sql));
+                contentStream.showText(obtenerNombreProducto(detalle.getDetalleId(), sql));
+
                 contentStream.newLineAtOffset(columnWidths[1], 0);
                 contentStream.showText(String.valueOf(detalle.getCantidad()));
                 contentStream.newLineAtOffset(columnWidths[2], 0);
-                contentStream.showText(String.format("L. %.2f", detalle.getPrecio()));
+                contentStream.showText(String.format("L. %.2f", obtenerPrecioProducto(detalle.getDetalleId(), sql)));
+
+
+                //contentStream.showText(String.format("L. %.2f", detalle.getPrecio()));
                 contentStream.newLineAtOffset(columnWidths[3], 0);
-                contentStream.showText(String.format("L. %.2f", detalle.getCantidad() * detalle.getPrecio()));
+                contentStream.showText(String.format("L. %.2f", detalle.getCantidad() * obtenerPrecioProducto(detalle.getDetalleId(), sql)));
                 contentStream.endText();
 
 
@@ -756,7 +875,6 @@ public class ListaVentas extends JFrame {
             e.printStackTrace();
         }
     }
-
 
     public static void main(String[] args) {
         ListaVentas listaVentas = new ListaVentas();
