@@ -1,11 +1,13 @@
 package Modelos;
 
 import Objetos.PoliProducto;
+
+import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
 
 public class PoliModeloProducto extends AbstractTableModel {
-    private final String[] columnas = {"ID", "Nombre", "Cantidad", "Precio", "Total"};
+    private final String[] columnas = {"ID", "Nombre", "Cantidad", "Precio", "Total", "Eliminar"};
     private final List<PoliProducto> productos;
 
     public PoliModeloProducto(List<PoliProducto> productos) {
@@ -50,8 +52,40 @@ public class PoliModeloProducto extends AbstractTableModel {
                 double total = material.getPrecio() * cantidad;
                 String totalFormateado = String.format("%.2f", total);
                 return totalFormateado;
+            case 5: // Eliminar (Botón)
+                return "X";
             default:
                 return null;
+        }
+    }
+
+
+    @Override
+    public Class<?> getColumnClass(int columnIndex) {
+        if (columnIndex == 5) {
+            return JButton.class;
+        }
+        return super.getColumnClass(columnIndex);
+    }
+
+    @Override
+    public boolean isCellEditable(int rowIndex, int columnIndex) {
+        return columnIndex == 5;
+    }
+
+    @Override
+    public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+        if (columnIndex == 5 && aValue instanceof String && aValue.equals("X")) {
+            // Aquí puedes realizar la lógica para eliminar la fila en la base de datos si es necesario
+            productos.remove(rowIndex);
+            fireTableRowsDeleted(rowIndex, rowIndex);
+        }
+    }
+
+    public void removeRow(int rowIndex) {
+        if (rowIndex >= 0 && rowIndex < productos.size()) {
+            productos.remove(rowIndex);
+            fireTableRowsDeleted(rowIndex, rowIndex);
         }
     }
 }

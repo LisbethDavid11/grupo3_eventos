@@ -1,6 +1,7 @@
 package Ventas;
 import Clientes.CrearCliente;
 import Clientes.ListaClientes;
+import Manualidades.CrearManualidad;
 import Materiales.TextPrompt;
 import Modelos.*;
 import Objetos.*;
@@ -41,9 +42,7 @@ public class CrearVenta extends JFrame {
     private List<PoliMaterial> materialList = new ArrayList<>();
     private List<PoliMaterial> materialListTemporal = new ArrayList<>();
     private List<PoliFlor> floristeriaList = new ArrayList<>();
-    private List<PoliFlor> floristeriaListTemporal = new ArrayList<>();
     private List<PoliTarjeta> tarjetaList = new ArrayList<>();
-    private List<PoliTarjeta> tarjetaListTemporal = new ArrayList<>();
     private List<PoliArreglo> arregloList = new ArrayList<>();
     private List<PoliDesayuno> desayunoList = new ArrayList<>();
     private List<PoliManualidad> manualidadList = new ArrayList<>();
@@ -236,10 +235,10 @@ public class CrearVenta extends JFrame {
                     agregarDesayunoButton.setVisible(true);
                     // Actualizar la tabla con los detalles actualizados
                     tablaProductos.setModel(cargarDetallesMateriales());
+                    tablaProductos.getColumnModel().getColumn(5).setCellRenderer(new CrearVenta.ButtonRenderer());
+                    tablaProductos.getColumnModel().getColumn(5).setCellEditor(new CrearVenta.ButtonEditor());
+
                     configurarTablaMateriales();
-
-
-
                     actualizarLbl8y10();
 
 
@@ -699,6 +698,9 @@ public class CrearVenta extends JFrame {
         botonCrear.setFocusable(false);
 
         tablaProductos.setModel(cargarDetallesMateriales());
+        tablaProductos.getColumnModel().getColumn(5).setCellRenderer(new CrearVenta.ButtonRenderer());
+        tablaProductos.getColumnModel().getColumn(5).setCellEditor(new CrearVenta.ButtonEditor());
+
         actualizarLbl8y10();
         configurarTablaMateriales();
         agregarProductoButton.setVisible(false);
@@ -791,47 +793,7 @@ public class CrearVenta extends JFrame {
         }
     }
 
-    private void actualizarTotales() {
-        double sumaSubtotal = 0.0;
-        double sumaISV = 0.0;
-        double sumaISVExento = 0.0;
-        double sumaTotal = 0.0;
-        for (int i = 0; i < modeloProductos.getRowCount(); i++) {
-            try {
-                double subtotal = Double.parseDouble(modeloProductos.getValueAt(i, 3).toString().replace(",", "."));
-                double isv;
-                if (modeloProductos.getValueAt(i, 4).toString().equalsIgnoreCase("Exento")) {
-                    isv = subtotal;  // Exempted amount goes into ISV
-                    sumaISVExento += isv;
-                } else {
-                    isv = Double.parseDouble(modeloProductos.getValueAt(i, 4).toString().replace(",", "."));
-                    sumaISV += isv;
 
-                    sumaSubtotal += subtotal;
-
-                }
-                double total = Double.parseDouble(modeloProductos.getValueAt(i, 5).toString().replace(",", "."));
-                sumaTotal += total;
-
-            } catch (NumberFormatException e) {
-                // Handle the case when the string cannot be parsed as a double
-                // You can choose to display an error message or take any other appropriate action
-                System.err.println("Invalid number format encountered. Skipping calculation for row " + i);
-            }
-        }
-        double isvExento = sumaISVExento;
-        DecimalFormat decimalFormat = new DecimalFormat("#.00");
-
-        String sumaSubtotalFormatted = decimalFormat.format(sumaSubtotal);
-
-        String sumaISVFormatted = decimalFormat.format(sumaISV);
-        String sumaISVExentoFormatted = decimalFormat.format(isvExento);
-
-        String sumaTotalFormatted = decimalFormat.format(sumaTotal);
-        lbl8.setText(" " + sumaSubtotalFormatted);
-        lbl9.setText(" " + sumaISVFormatted);
-        lbl10.setText(" " + sumaTotalFormatted);
-    }
 
     private double calcularTotalTabla() {
         double sumaTotal = 0.0;
@@ -947,62 +909,6 @@ public class CrearVenta extends JFrame {
         }
     }
 
-    class ButtonRenderer extends JButton implements TableCellRenderer {
-        public ButtonRenderer() {
-            setOpaque(true);
-            setForeground(Color.WHITE);
-            setBackground(darkColorPink);
-            setFocusPainted(false);
-        }
-
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            setText("X");
-            return this;
-        }
-    }
-
-    class ButtonEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
-        private JButton button;
-        private int row, col;
-        private JTable table;
-
-        public ButtonEditor(JCheckBox checkBox) {
-            button = new JButton();
-            button.setOpaque(true);
-            button.addActionListener(this);
-            button.setForeground(Color.WHITE);
-            button.setBackground(darkColorPink);
-            button.setFocusPainted(false);
-            button.setBorder(margin);
-        }
-
-        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-            button.setText("X");
-            this.table = table;
-            this.row = row;
-            this.col = column;
-            return button;
-        }
-
-        public Object getCellEditorValue() {
-            return "X";
-        }
-
-        public void actionPerformed(ActionEvent e) {
-            if (table != null) {
-                int modelRow = table.convertRowIndexToModel(row);
-                DefaultTableModel model = (DefaultTableModel) table.getModel();
-
-                // Verificar si el modelo de la tabla tiene la fila que se intenta eliminar
-                if (modelRow >= 0 && modelRow < model.getRowCount()) {
-                    fireEditingStopped(); // Mover la llamada a fireEditingStopped() aquí
-                    model.removeRow(modelRow);
-                    actualizarTotales();
-                }
-            }
-        }
-    }
-
     class CenterAlignedRenderer extends DefaultTableCellRenderer {
         public CenterAlignedRenderer() {
             setHorizontalAlignment(CENTER);
@@ -1027,6 +933,65 @@ public class CrearVenta extends JFrame {
         }
     }
 
+    class ButtonRenderer extends JButton implements TableCellRenderer {
+        public ButtonRenderer() {
+            setOpaque(true);
+            setForeground(Color.WHITE);
+            setBackground(darkColorPink);
+            setFocusPainted(false);
+        }
+
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            setText("X");
+            return this;
+        }
+    }
+
+    class ButtonEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
+        private JButton button;
+        private int row, col;
+        private JTable table;
+
+        public ButtonEditor() {
+            button = new JButton();
+            button.setOpaque(true);
+            button.addActionListener(this);
+            button.setForeground(Color.WHITE);
+            button.setBackground(darkColorPink);
+            button.setFocusPainted(false);
+            button.setBorder(margin);
+        }
+
+        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+            button.setText("X");
+            this.table = table;
+            this.row = row;
+            this.col = column;
+            return button;
+        }
+
+        public Object getCellEditorValue() {
+            return "X";
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            if (table != null) {
+                int modelRow = table.convertRowIndexToModel(row);
+                TableModel model = table.getModel();  // Obtener el modelo de la tabla
+
+                // Aquí utilizamos el método de eliminación del modelo personalizado en lugar del DefaultTableModel
+                if (model instanceof PoliModeloProducto) {
+                    PoliModeloProducto productoModel = (PoliModeloProducto) model;
+                    productoModel.removeRow(modelRow);
+                }
+
+                fireEditingStopped(); // Mover esta línea aquí para asegurarte de que se complete la edición
+                calcularTotalTabla();
+                actualizarLbl8y10();
+            }
+        }
+    }
+
     private void configurarTablaMateriales() {
         int columnCount = tablaProductos.getColumnCount();
         if (columnCount > 0) {
@@ -1041,8 +1006,10 @@ public class CrearVenta extends JFrame {
             columnModel.getColumn(1).setCellRenderer(new CrearVenta.LeftAlignedRenderer());
             columnModel.getColumn(2).setCellRenderer(new CrearVenta.LeftAlignedRenderer());
             columnModel.getColumn(3).setCellRenderer(new CrearVenta.LeftAlignedRenderer());
+
         }
     }
+
 
     private void guardarDatos() {
         Object[] options = {"Sí", "No"};
@@ -1096,6 +1063,27 @@ public class CrearVenta extends JFrame {
                 materialList = new ArrayList<>();
             }
 
+            // Actualizar cantidades en las tablas correspondientes
+            for (PoliProducto detalle : productosListTemporal) {
+                String tipoDetalle = detalle.getTipo();
+                int detalleId = detalle.getID();
+                int cantidadDetalle = detalle.getCantidad();
+
+                if (tipoDetalle.equals("F") || tipoDetalle.equals("A") || tipoDetalle.equals("M")
+                        || tipoDetalle.equals("T") || tipoDetalle.equals("D") || tipoDetalle.equals("X")) {
+
+                    String tablaDetalle = tiposTablas.get(tipoDetalle);
+                    try (PreparedStatement updateStatement = connection.prepareStatement(
+                            "UPDATE " + tablaDetalle + " SET cantidad = cantidad - ? WHERE id = ?")) {
+                        updateStatement.setInt(1, cantidadDetalle);
+                        updateStatement.setInt(2, detalleId);
+                        updateStatement.executeUpdate();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                        JOptionPane.showMessageDialog(null, "Error al actualizar las cantidades en la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            }
 
             JOptionPane.showMessageDialog(null, "Venta registrada exitosamente.", "Éxito", JOptionPane.DEFAULT_OPTION);
             crearVenta.dispose();
@@ -1108,6 +1096,8 @@ public class CrearVenta extends JFrame {
             JOptionPane.showMessageDialog(null, "Error al guardar la venta", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+
+
 
     private void guardarDetalleVenta(int id_material, int cantidad, String tipo) {
 
@@ -1135,6 +1125,7 @@ public class CrearVenta extends JFrame {
             JOptionPane.showMessageDialog(null, "Error al agregar el detalle de la manualidad", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+
 
     private int obtenerCantidadMaterialDesdeBD(int id_material, String tipo) {
         int availableQuantity = 0;
