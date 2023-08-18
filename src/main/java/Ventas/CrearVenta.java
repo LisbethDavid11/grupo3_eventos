@@ -1,7 +1,6 @@
 package Ventas;
 import Clientes.CrearCliente;
 import Clientes.ListaClientes;
-import Desayunos.CrearDesayuno;
 import Materiales.TextPrompt;
 import Modelos.*;
 import Objetos.*;
@@ -16,12 +15,11 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.sql.*;
 import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
 import java.util.Date;
 import java.util.List;
+import java.util.*;
 
 public class CrearVenta extends JFrame {
     private JPanel panel1, panel2, panel3, panel4, panel5, panel6;
@@ -33,6 +31,7 @@ public class CrearVenta extends JFrame {
     private JLabel lbl0, lbl1, lbl2, lbl3, lbl4, lbl5, lbl6, lbl7, lbl8, lbl9, lbl10, lbl11;
     private JButton botonCrear, imprimirButton, agregarMaterialButton, agregarArregloButton, agregarTarjetasButton, agregarFloresButton, agregarManualidadButton, agregarDesayunoButton, agregarProductoButton, cancelarProductoButton;
     private JTextField campoBusquedaMateriales;
+    private JButton botonLimpiar;
     private JPanel panelCliente;
     private Conexion sql;
     private Connection mysql;
@@ -314,7 +313,7 @@ public class CrearVenta extends JFrame {
         agregarProductoButton.setFocusPainted(false);
 
         cancelarButton.setForeground(Color.WHITE);
-        cancelarButton.setBackground(darkColorRed);
+        cancelarButton.setBackground(darkColorBlue);
         cancelarButton.setFocusPainted(false);
         cancelarButton.setBorder(margin);
 
@@ -324,9 +323,14 @@ public class CrearVenta extends JFrame {
         guardarButton.setBorder(margin);
 
         limpiarButton.setForeground(Color.WHITE);
-        limpiarButton.setBackground(darkColorPink);
+        limpiarButton.setBackground(darkColorRed);
         limpiarButton.setFocusPainted(false);
         limpiarButton.setBorder(margin);
+
+        botonLimpiar.setForeground(Color.WHITE);
+        botonLimpiar.setBackground(darkColorPink);
+        botonLimpiar.setFocusPainted(false);
+        botonLimpiar.setBorder(margin);
 
         imprimirButton.setForeground(Color.WHITE);
         imprimirButton.setBackground(darkColorVerdeLima);
@@ -366,8 +370,6 @@ public class CrearVenta extends JFrame {
         lbl2.setForeground(textColor);
         lbl3.setForeground(textColor);
         lbl4.setForeground(textColor);
-
-
         lbl0.setBorder(margin);
         lbl0.setFont(fontTitulo);
 
@@ -558,6 +560,78 @@ public class CrearVenta extends JFrame {
             }
         });
 
+        botonLimpiar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JButton btnYes = new JButton("Sí");
+                JButton btnNo = new JButton("No");
+
+                // Personaliza los botones aquí
+                btnYes.setBackground(darkColorAqua);
+                btnNo.setBackground(darkColorPink);
+
+                // Personaliza los fondos de los botones aquí
+                btnYes.setForeground(Color.WHITE);
+                btnNo.setForeground(Color.WHITE);
+
+                // Elimina el foco
+                btnYes.setFocusPainted(false);
+                btnNo.setFocusPainted(false);
+
+                // Crea un JOptionPane
+                JOptionPane optionPane = new JOptionPane(
+                        "¿Estás seguro de que deseas limpiar la tabla de detalles?",
+                        JOptionPane.DEFAULT_OPTION,
+                        JOptionPane.DEFAULT_OPTION,
+                        null,
+                        new Object[]{}, // no options
+                        null
+                );
+
+                // Crea un JDialog
+                JDialog dialog = optionPane.createDialog("Limpiar");
+
+                // Añade ActionListener a los botones
+                btnYes.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // Acciones para el botón Sí
+                        materialListTemporal.clear();
+                        productosListTemporal.clear();
+                        eliminarDetallesMaterial();
+                        limpiarTablaMateriales();
+                        lbl8.setText("0.00");
+                        lbl9.setText("0.00");
+                        lbl10.setText("0.00");
+
+                        PoliModeloProducto nuevoModelo = new PoliModeloProducto(new ArrayList<>());
+                        tablaProductos.setModel(nuevoModelo);
+                        configurarTablaMateriales();
+
+                        calcularTotalTabla();
+                        actualizarLbl8y10();
+
+                        dialog.dispose();
+                    }
+                });
+
+                btnNo.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // Acciones para el botón No
+                        // No se hace nada, sólo se cierra el diálogo
+                        dialog.dispose();
+                    }
+                });
+
+                // Añade los botones al JOptionPane
+                optionPane.setOptions(new Object[]{btnYes, btnNo});
+
+                // Muestra el diálogo
+                dialog.setVisible(true);
+            }
+        });
+
         limpiarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -672,135 +746,36 @@ public class CrearVenta extends JFrame {
         }
     }
 
-    private JButton crearBotonEliminar() {
-        JButton botonEliminar = new JButton("Eliminar");
-        botonEliminar.setForeground(Color.WHITE);
-        botonEliminar.setBackground(darkColorRed);
-        botonEliminar.setFocusPainted(false);
-        botonEliminar.setBorder(margin);
-
-        botonEliminar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Object[] options = {"Sí", "No"};
-                int opcion = JOptionPane.showOptionDialog(null, "¿Está seguro que desea eliminar este producto?", "Confirmación", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-                if (opcion == JOptionPane.YES_OPTION) {
-                    JButton boton = (JButton) e.getSource();
-                    int filaSeleccionada = tablaProductos.convertRowIndexToModel(tablaProductos.getEditingRow());
-                    modeloProductos.removeRow(filaSeleccionada);
-                    actualizarTotales();
-                }
-            }
-        });
-        return botonEliminar;
-    }
-
-    private void guardarDatos() {
+    private void cancelar() {
         Object[] options = {"Sí", "No"};
-        int confirmacionGuardar = JOptionPane.showOptionDialog(null, "¿Desea guardar la venta?", "Confirmar", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+        int dialogResult = JOptionPane.showOptionDialog(null, "¿Está seguro de que desea cancelar?", "Confirmar cancelación", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 
-        if (confirmacionGuardar != JOptionPane.YES_OPTION) {
-            return;
-        }
-
-        String codigoVenta = campoCodigo.getText();
-        String fechaCampo = campoFecha.getText();
-
-        // Convertir la fecha en formato "Domingo, 30 de julio de 2023" a "2023-07-30"
-        String fechaVenta = convertirFecha(fechaCampo);
-
-        int clienteId = Integer.parseInt(boxCliente.getSelectedItem().toString().split(" - ")[0]);
-        int empleadoId = Integer.parseInt(boxEmpleado.getSelectedItem().toString().split(" - ")[0]);
-
-        try (PreparedStatement preparedStatement = mysql.prepareStatement("INSERT INTO ventas (codigo_venta, fecha, cliente_id, empleado_id) VALUES (?, ?, ?, ?)")) {
-            preparedStatement.setString(1, codigoVenta);
-            preparedStatement.setString(2, fechaVenta);
-            preparedStatement.setInt(3, clienteId);
-            preparedStatement.setInt(4, empleadoId);
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        int ventaId = 0;
-        try (PreparedStatement preparedStatement = mysql.prepareStatement("SELECT LAST_INSERT_ID()")) {
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                ventaId = resultSet.getInt(1);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        for (int i = 0; i < modeloProductos.getRowCount(); i++) {
-            String producto = (String) modeloProductos.getValueAt(i, 0);
-            int cantidad = (int) modeloProductos.getValueAt(i, 1);
-            double precio = (double) modeloProductos.getValueAt(i, 2);
-            int materialId = 0;
-            try (PreparedStatement preparedStatement = mysql.prepareStatement("SELECT id FROM materiales WHERE nombre = ?")) {
-                preparedStatement.setString(1, producto);
-                ResultSet resultSet = preparedStatement.executeQuery();
-                if (resultSet.next()) {
-                    materialId = resultSet.getInt("id");
+        if (dialogResult == JOptionPane.YES_OPTION) {
+            boolean listaVentaAbierta = false;
+            Window[] windows = Window.getWindows();
+            for (Window window : windows) {
+                if (window instanceof ListaClientes) {
+                    listaVentaAbierta = true;
+                    break;
                 }
-            } catch (SQLException e) {
-                e.printStackTrace();
             }
-            boolean exento = false; // Valor por defecto
-            if (modeloProductos.getValueAt(i, 4).toString().equalsIgnoreCase("Exento")) {
-                exento = true;
+            if (!listaVentaAbierta) {
+                ListaVentas ventas = new ListaVentas();
+                ventas.setVisible(true);
             }
-            try (PreparedStatement preparedStatement = mysql.prepareStatement("INSERT INTO detalles_ventas (venta_id, material_id, cantidad, precio) VALUES (?, ?, ?, ?)")) {
-                preparedStatement.setInt(1, ventaId);
-                preparedStatement.setInt(2, materialId);
-                preparedStatement.setInt(3, cantidad);
-                preparedStatement.setDouble(4, precio);
-                preparedStatement.executeUpdate();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
-            // Actualizar la cantidad en la tabla "materiales"
-            int cantidadAnterior = 0;
-            try (PreparedStatement consultaCantidad = mysql.prepareStatement("SELECT cantidad FROM materiales WHERE id = ?")) {
-                consultaCantidad.setInt(1, materialId);
-                ResultSet resultSet = consultaCantidad.executeQuery();
-                if (resultSet.next()) {
-                    cantidadAnterior = resultSet.getInt("cantidad");
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
-            int nuevaCantidad = cantidadAnterior - cantidad;
-
-            try (PreparedStatement actualizarCantidad = mysql.prepareStatement("UPDATE materiales SET cantidad = ? WHERE id = ?")) {
-                actualizarCantidad.setInt(1, nuevaCantidad);
-                actualizarCantidad.setInt(2, materialId);
-                actualizarCantidad.executeUpdate();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            crearVenta.dispose();
         }
-
-        boolean listaVentaAbierta = false;
-        Window[] windows = Window.getWindows();
-        for (Window window : windows) {
-            if (window instanceof ListaClientes) {
-                listaVentaAbierta = true;
-                break;
-            }
-        }
-
-        if (!listaVentaAbierta) {
-            JOptionPane.showMessageDialog(null, "Venta registrada exitosamente.", "Éxito", JOptionPane.DEFAULT_OPTION);
-        }
-
-        crearVenta.dispose();
-
-        ListaVentas ventas = new ListaVentas();
-        ventas.setVisible(true);
     }
 
+    private void limpiar() {
+        boxCliente.setSelectedIndex(0);
+        boxEmpleado.setSelectedIndex(0);
+        campoCantidad.setText("");
+        campoPrecio.setText("");
+        lbl8.setText("0.00");
+        lbl9.setText("0.00");
+        lbl10.setText("0.00");
+    }
     private String convertirFecha(String fechaCampo) {
         try {
             // Parsear la fecha en formato "Domingo, 30 de julio de 2023" a un objeto Date
@@ -858,232 +833,6 @@ public class CrearVenta extends JFrame {
         lbl10.setText(" " + sumaTotalFormatted);
     }
 
-    private void cancelar() {
-        Object[] options = {"Sí", "No"};
-        int dialogResult = JOptionPane.showOptionDialog(null, "¿Está seguro de que desea cancelar?", "Confirmar cancelación", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-
-        if (dialogResult == JOptionPane.YES_OPTION) {
-            boolean listaVentaAbierta = false;
-            Window[] windows = Window.getWindows();
-            for (Window window : windows) {
-                if (window instanceof ListaClientes) {
-                    listaVentaAbierta = true;
-                    break;
-                }
-            }
-            if (!listaVentaAbierta) {
-                ListaVentas ventas = new ListaVentas();
-                ventas.setVisible(true);
-            }
-            crearVenta.dispose();
-        }
-    }
-
-    private void limpiar() {
-        boxCliente.setSelectedIndex(0);
-        boxEmpleado.setSelectedIndex(0);
-        boxMaterial.setSelectedIndex(0);
-        campoCantidad.setText("");
-        campoPrecio.setText("");
-        modeloProductos.setRowCount(0);
-        lbl8.setText("0.00");
-        lbl9.setText("0.00");
-        lbl10.setText("0.00");
-    }
-
-    private boolean existeProductoEnTabla(String producto) {
-        for (int i = 0; i < modeloProductos.getRowCount(); i++) {
-            String nombreProducto = (String) modeloProductos.getValueAt(i, 0);
-            if (nombreProducto.equals(producto)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private void configurarTablaMateriales() {
-        int columnCount = tablaProductos.getColumnCount();
-        if (columnCount > 0) {
-            TableColumnModel columnModel = tablaProductos.getColumnModel();
-
-            columnModel.getColumn(0).setPreferredWidth(20); // Id
-            columnModel.getColumn(1).setPreferredWidth(200); // Nombre
-            columnModel.getColumn(2).setPreferredWidth(60);  // Precio
-            columnModel.getColumn(3).setPreferredWidth(100); // Proveedor
-
-            columnModel.getColumn(0).setCellRenderer(new CrearVenta.CenterAlignedRenderer());
-            columnModel.getColumn(1).setCellRenderer(new CrearVenta.LeftAlignedRenderer());
-            columnModel.getColumn(2).setCellRenderer(new CrearVenta.LeftAlignedRenderer());
-            columnModel.getColumn(3).setCellRenderer(new CrearVenta.LeftAlignedRenderer());
-        }
-    }
-
-    class CenterAlignedRenderer extends DefaultTableCellRenderer {
-        public CenterAlignedRenderer() {
-            setHorizontalAlignment(CENTER);
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            return cell;
-        }
-    }
-
-    class LeftAlignedRenderer extends DefaultTableCellRenderer {
-        public LeftAlignedRenderer() {
-            setHorizontalAlignment(LEFT);
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            return cell;
-        }
-    }
-
-    public boolean isDateOutOfRange(Date selectedDate, Calendar firstDayOfMonth, Calendar today) {
-        Calendar selectedCal = Calendar.getInstance();
-        selectedCal.setTime(selectedDate);
-        return selectedCal.before(firstDayOfMonth) || selectedCal.after(today);
-    }
-
-    public void setFormattedDate(Date selectedDate) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd 'de' MMMM yyyy"); // Desired date format
-        String formattedDate = (selectedDate != null) ? dateFormat.format(selectedDate) : "";
-        datePicker.getJFormattedTextField().setText(formattedDate);
-    }
-
-    public class SimpleDateFormatter extends JFormattedTextField.AbstractFormatter {
-        private final String datePattern = "yyyy-MM-dd";
-        private final SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);
-
-        @Override
-        public Object stringToValue(String text) throws ParseException {
-            return dateFormatter.parse(text);
-        }
-
-        @Override
-        public String valueToString(Object value) throws ParseException {
-            if (value != null) {
-                if (value instanceof Date) {
-                    return dateFormatter.format((Date) value);
-                } else if (value instanceof Calendar) {
-                    return dateFormatter.format(((Calendar) value).getTime());
-                }
-            }
-            return "";
-        }
-    }
-
-    private void mostrarMensajeError(String mensaje) {
-        JOptionPane.showMessageDialog(null, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
-    }
-
-    public void generarCamposAutomaticamente() {
-        // Generar campoCodigo
-        String codigo = generarCodigo();
-        campoCodigo.setText(codigo);
-
-        // Generar campoFecha
-        String fecha = obtenerFechaActual();
-        campoFecha.setText(fecha);
-    }
-
-    private String generarCodigo() {
-        // Obtener fecha actual
-        Date fechaActual = new Date();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMyyyy");
-        String fecha = dateFormat.format(fechaActual);
-
-        // Obtener hora actual en formato "a.m." o "p.m."
-        SimpleDateFormat hourFormat = new SimpleDateFormat("hhmmss");
-        String hora = hourFormat.format(fechaActual).toUpperCase();
-
-        // Generar número aleatorio de 5 dígitos
-        Random random = new Random();
-        int numeroAleatorio = random.nextInt(100000);
-
-        // Formatear el código final
-        String codigo = "V-" + fecha + "-" + hora + "-" + String.format("%05d", numeroAleatorio);
-        return codigo;
-    }
-
-    private String obtenerFechaActual() {
-        // Obtener fecha actual
-        Date fechaActual = new Date();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd 'de' MMMM 'de' yyyy");
-        String fecha = dateFormat.format(fechaActual);
-
-        // Capitalizar primera letra del día de la semana
-        fecha = fecha.substring(0, 1).toUpperCase() + fecha.substring(1);
-
-        return fecha;
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    private void guardarDetalleVenta(int id_material, int cantidad, String tipo) {
-        try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO detalles_desayunos (tipo_detalle, detalle_id, cantidad,precio) VALUES (?, ?, ?, ?)")) {
-            preparedStatement.setString(1, tiposDescripcion.get(tipo));
-            preparedStatement.setInt(2, id_material);
-            preparedStatement.setInt(3, cantidad);
-            preparedStatement.setDouble(4, obtenerPrecioMaterialDesdeBD(id_material,tipo)); // Obtener el precio del material desde la base de datos
-            preparedStatement.executeUpdate();
-
-            JOptionPane.showMessageDialog(null, "Detalle agregado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al agregar el detalle de la manualidad", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    private double obtenerPrecioMaterialDesdeBD(int id_material, String tipo) {
-        double precio = 0.0;
-
-        try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("SELECT "+(tipo.equals("T")?"precio_tarjeta":"precio")+" FROM "+tiposTablas.get(tipo)+" WHERE id = ?")) {
-            preparedStatement.setInt(1, id_material);
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next()) {
-                precio = resultSet.getDouble(tipo.equals("T")?"precio_tarjeta":"precio");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al obtener el precio del material desde la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-
-        return precio;
-    }
-
-    private void limpiarTablaMateriales() {
-        materialList.clear();
-        DefaultTableModel emptyModel = new DefaultTableModel();
-        tablaProductos.setModel(emptyModel);
-    }
-
-    private void eliminarDetallesMaterial() {
-        try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM detalles_desayunos WHERE desayuno_id IS NULL")) {
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
     private double calcularTotalTabla() {
         double sumaTotal = 0.0;
         TableModel modelo = tablaProductos.getModel();
@@ -1132,6 +881,62 @@ public class CrearVenta extends JFrame {
         lbl10.setText(String.format("L. %.2f", totalConAumento));
     }
 
+    public void generarCamposAutomaticamente() {
+        // Generar campoCodigo
+        String codigo = generarCodigo();
+        campoCodigo.setText(codigo);
+
+        // Generar campoFecha
+        String fecha = obtenerFechaActual();
+        campoFecha.setText(fecha);
+    }
+
+    private String generarCodigo() {
+        // Obtener fecha actual
+        Date fechaActual = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMyyyy");
+        String fecha = dateFormat.format(fechaActual);
+
+        // Obtener hora actual en formato "a.m." o "p.m."
+        SimpleDateFormat hourFormat = new SimpleDateFormat("hhmmss");
+        String hora = hourFormat.format(fechaActual).toUpperCase();
+
+        // Generar número aleatorio de 5 dígitos
+        Random random = new Random();
+        int numeroAleatorio = random.nextInt(100000);
+
+        // Formatear el código final
+        String codigo = "V-" + fecha + "-" + hora + "-" + String.format("%05d", numeroAleatorio);
+        return codigo;
+    }
+
+    private String obtenerFechaActual() {
+        // Obtener fecha actual
+        Date fechaActual = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, dd 'de' MMMM 'de' yyyy");
+        String fecha = dateFormat.format(fechaActual);
+
+        // Capitalizar primera letra del día de la semana
+        fecha = fecha.substring(0, 1).toUpperCase() + fecha.substring(1);
+
+        return fecha;
+    }
+
+    private void limpiarTablaMateriales() {
+        materialList.clear();
+        DefaultTableModel emptyModel = new DefaultTableModel();
+        tablaProductos.setModel(emptyModel);
+    }
+
+    private void eliminarDetallesMaterial() {
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM detalles_ventas WHERE venta_id IS NULL")) {
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     private double extraerValorNumerico(String valor) {
         String valorNumerico = valor.replace(',', '.');
         try {
@@ -1140,6 +945,246 @@ public class CrearVenta extends JFrame {
             System.err.println("Se encontró un formato de número no válido. No se puede convertir a double: " + valor);
             return 0.0;
         }
+    }
+
+    class ButtonRenderer extends JButton implements TableCellRenderer {
+        public ButtonRenderer() {
+            setOpaque(true);
+            setForeground(Color.WHITE);
+            setBackground(darkColorPink);
+            setFocusPainted(false);
+        }
+
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            setText("X");
+            return this;
+        }
+    }
+
+    class ButtonEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
+        private JButton button;
+        private int row, col;
+        private JTable table;
+
+        public ButtonEditor(JCheckBox checkBox) {
+            button = new JButton();
+            button.setOpaque(true);
+            button.addActionListener(this);
+            button.setForeground(Color.WHITE);
+            button.setBackground(darkColorPink);
+            button.setFocusPainted(false);
+            button.setBorder(margin);
+        }
+
+        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+            button.setText("X");
+            this.table = table;
+            this.row = row;
+            this.col = column;
+            return button;
+        }
+
+        public Object getCellEditorValue() {
+            return "X";
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            if (table != null) {
+                int modelRow = table.convertRowIndexToModel(row);
+                DefaultTableModel model = (DefaultTableModel) table.getModel();
+
+                // Verificar si el modelo de la tabla tiene la fila que se intenta eliminar
+                if (modelRow >= 0 && modelRow < model.getRowCount()) {
+                    fireEditingStopped(); // Mover la llamada a fireEditingStopped() aquí
+                    model.removeRow(modelRow);
+                    actualizarTotales();
+                }
+            }
+        }
+    }
+
+    class CenterAlignedRenderer extends DefaultTableCellRenderer {
+        public CenterAlignedRenderer() {
+            setHorizontalAlignment(CENTER);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            return cell;
+        }
+    }
+
+    class LeftAlignedRenderer extends DefaultTableCellRenderer {
+        public LeftAlignedRenderer() {
+            setHorizontalAlignment(LEFT);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            return cell;
+        }
+    }
+
+    private void configurarTablaMateriales() {
+        int columnCount = tablaProductos.getColumnCount();
+        if (columnCount > 0) {
+            TableColumnModel columnModel = tablaProductos.getColumnModel();
+
+            columnModel.getColumn(0).setPreferredWidth(20); // Id
+            columnModel.getColumn(1).setPreferredWidth(200); // Nombre
+            columnModel.getColumn(2).setPreferredWidth(60);  // Precio
+            columnModel.getColumn(3).setPreferredWidth(100); // Proveedor
+
+            columnModel.getColumn(0).setCellRenderer(new CrearVenta.CenterAlignedRenderer());
+            columnModel.getColumn(1).setCellRenderer(new CrearVenta.LeftAlignedRenderer());
+            columnModel.getColumn(2).setCellRenderer(new CrearVenta.LeftAlignedRenderer());
+            columnModel.getColumn(3).setCellRenderer(new CrearVenta.LeftAlignedRenderer());
+        }
+    }
+
+    private void guardarDatos() {
+        Object[] options = {"Sí", "No"};
+        int confirmacionGuardar = JOptionPane.showOptionDialog(
+                null,
+                "¿Desea guardar la venta?",
+                "Confirmar",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[0]
+        );
+
+        if (confirmacionGuardar != JOptionPane.YES_OPTION) {
+            return;
+        }
+
+        String codigoVenta = campoCodigo.getText();
+        String fechaCampo = campoFecha.getText();
+        String fechaVenta = convertirFecha(fechaCampo);
+
+        int clienteId = Integer.parseInt(boxCliente.getSelectedItem().toString().split(" - ")[0]);
+        int empleadoId = Integer.parseInt(boxEmpleado.getSelectedItem().toString().split(" - ")[0]);
+
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "INSERT INTO ventas (codigo_venta, fecha, cliente_id, empleado_id) VALUES (?, ?, ?, ?)",
+                     Statement.RETURN_GENERATED_KEYS
+             )) {
+
+            preparedStatement.setString(1, codigoVenta);
+            preparedStatement.setString(2, fechaVenta);
+            preparedStatement.setInt(3, clienteId);
+            preparedStatement.setInt(4, empleadoId);
+            preparedStatement.executeUpdate();
+
+            ResultSet resultSet = preparedStatement.getGeneratedKeys();
+            int lastId = 0;
+            if (resultSet.next()) {
+                lastId = resultSet.getInt(1);
+            }
+
+            try (PreparedStatement prepared = connection.prepareStatement(
+                    "UPDATE detalles_ventas SET venta_id = ? WHERE venta_id IS NULL")) {
+                prepared.setInt(1, lastId);
+                prepared.executeUpdate();
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+                JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+                materialList = new ArrayList<>();
+            }
+
+
+            JOptionPane.showMessageDialog(null, "Venta registrada exitosamente.", "Éxito", JOptionPane.DEFAULT_OPTION);
+            crearVenta.dispose();
+
+            ListaVentas ventas = new ListaVentas();
+            ventas.setVisible(true);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al guardar la venta", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void guardarDetalleVenta(int id_material, int cantidad, String tipo) {
+
+        double availableQuantity = obtenerCantidadMaterialDesdeBD(id_material, tipo);
+
+        if (cantidad <= 0) {
+            showErrorDialog("La cantidad debe ser mayor a 0.");
+            return;
+        } else if (cantidad > availableQuantity) {
+            showErrorDialog("La cantidad supera la cantidad disponible en la base de datos.");
+            return;
+        }
+
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO detalles_ventas (tipo_detalle, detalle_id, cantidad,precio) VALUES (?, ?, ?, ?)")) {
+            preparedStatement.setString(1, tiposDescripcion.get(tipo));
+            preparedStatement.setInt(2, id_material);
+            preparedStatement.setInt(3, cantidad);
+            preparedStatement.setDouble(4, obtenerPrecioMaterialDesdeBD(id_material,tipo)); // Obtener el precio del material desde la base de datos
+            preparedStatement.executeUpdate();
+
+            JOptionPane.showMessageDialog(null, "Detalle agregado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al agregar el detalle de la manualidad", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private int obtenerCantidadMaterialDesdeBD(int id_material, String tipo) {
+        int availableQuantity = 0;
+
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "SELECT cantidad FROM " + tiposTablas.get(tipo) + " WHERE id = ?"
+             )) {
+            preparedStatement.setInt(1, id_material);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                availableQuantity = resultSet.getInt("cantidad");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al obtener la cantidad desde la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        return availableQuantity;
+    }
+    
+    private double obtenerPrecioMaterialDesdeBD(int id_material, String tipo) {
+        double precio = 0.0;
+
+        String precioColumn;
+        if (tipo.equals("T")) {
+            precioColumn = "precio_tarjeta";
+        } else if (tipo.equals("X")) {
+            precioColumn = "precio_manualidad";
+        } else if (tipo.equals("D")) {
+            precioColumn = "precio_desayuno";
+        } else {
+            precioColumn = "precio";
+        }
+
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT " + precioColumn + " FROM " + tiposTablas.get(tipo) + " WHERE id = ?")) {
+            preparedStatement.setInt(1, id_material);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                precio = resultSet.getDouble(precioColumn);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al obtener el precio del material desde la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        return precio;
     }
 
     private PoliModeloProducto cargarDetallesMateriales() {
@@ -1179,9 +1224,9 @@ public class CrearVenta extends JFrame {
 
                              " UNION "+
 
-                             " SELECT detalles_desayunos.*,'M' AS 'tipo',materiales.nombre AS 'nombre', (detalles_desayunos.cantidad * detalles_desayunos.precio) AS 'total' FROM detalles_desayunos "+
-                             " JOIN materiales ON materiales.id = detalles_desayunos.detalle_id "+
-                             " WHERE detalles_desayunos.desayuno_id IS NULL AND detalles_desayunos.tipo_detalle = 'material';"
+                             " SELECT detalles_ventas.*,'M' AS 'tipo',materiales.nombre AS 'nombre', (detalles_ventas.cantidad * detalles_ventas.precio) AS 'total' FROM detalles_ventas "+
+                             " JOIN materiales ON materiales.id = detalles_ventas.detalle_id "+
+                             " WHERE detalles_ventas.venta_id IS NULL AND detalles_ventas.tipo_detalle = 'material';"
              )
         ) {
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -1312,7 +1357,7 @@ public class CrearVenta extends JFrame {
                 manualidad.setID(resultSet.getInt("id"));
                 manualidad.setNombre(resultSet.getString("nombre"));
                 manualidad.setCantidad(resultSet.getInt("cantidad"));
-                manualidad.setPrecio(resultSet.getDouble("precio"));
+                manualidad.setPrecio(resultSet.getDouble("precio_manualidad"));
                 manualidad.setTipo("X");
                 manualidadList.add(manualidad);
             }
@@ -1525,63 +1570,6 @@ public class CrearVenta extends JFrame {
 
         dialog.setVisible(true);
     }
-
-    class ButtonRenderer extends JButton implements TableCellRenderer {
-        public ButtonRenderer() {
-            setOpaque(true);
-            setForeground(Color.WHITE);
-            setBackground(darkColorPink);
-            setFocusPainted(false);
-        }
-
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            setText("X");
-            return this;
-        }
-    }
-
-    class ButtonEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
-        private JButton button;
-        private int row, col;
-        private JTable table;
-
-        public ButtonEditor(JCheckBox checkBox) {
-            button = new JButton();
-            button.setOpaque(true);
-            button.addActionListener(this);
-            button.setForeground(Color.WHITE);
-            button.setBackground(darkColorPink);
-            button.setFocusPainted(false);
-            button.setBorder(margin);
-        }
-
-        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-            button.setText("X");
-            this.table = table;
-            this.row = row;
-            this.col = column;
-            return button;
-        }
-
-        public Object getCellEditorValue() {
-            return "X";
-        }
-
-        public void actionPerformed(ActionEvent e) {
-            if (table != null) {
-                int modelRow = table.convertRowIndexToModel(row);
-                DefaultTableModel model = (DefaultTableModel) table.getModel();
-
-                // Verificar si el modelo de la tabla tiene la fila que se intenta eliminar
-                if (modelRow >= 0 && modelRow < model.getRowCount()) {
-                    fireEditingStopped(); // Mover la llamada a fireEditingStopped() aquí
-                    model.removeRow(modelRow);
-                    actualizarTotales();
-                }
-            }
-        }
-    }
-
 
 
 

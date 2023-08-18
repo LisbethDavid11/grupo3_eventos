@@ -164,22 +164,29 @@ public class ModeloVenta extends AbstractTableModel {
     private List<VentaDetalle> obtenerDetallesVenta(int ventaId) {
         List<VentaDetalle> detalles = new ArrayList<>();
 
-        try (Connection mysql = sql.conectamysql();
-             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT * FROM detalles_ventas WHERE venta_id = ?")) {
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM detalles_ventas WHERE venta_id = ?")) {
+
             preparedStatement.setInt(1, ventaId);
-            ResultSet resultSet = preparedStatement.executeQuery();
 
-            while (resultSet.next()) {
-                int detalleId = resultSet.getInt("id");
-                int materialId = resultSet.getInt("material_id");
-                int cantidad = resultSet.getInt("cantidad");
-                double precio = resultSet.getDouble("precio");
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    int detalleId = resultSet.getInt("id");
+                    String tipoDetalle = resultSet.getString("tipo_detalle");
+                    int detalleEspecificoId = resultSet.getInt("detalle_id");
+                    int cantidad = resultSet.getInt("cantidad");
+                    double precio = resultSet.getDouble("precio");
 
-                VentaDetalle detalle = new VentaDetalle(detalleId, ventaId, materialId, cantidad, precio);
-                detalles.add(detalle);
+                    // Aquí puedes agregar lógica para determinar el tipo de detalle específico y crear el objeto VentaDetalle adecuado
+                    VentaDetalle detalle = new VentaDetalle(detalleId, ventaId, tipoDetalle, detalleEspecificoId, cantidad, precio);
+                    detalles.add(detalle);
+                }
             }
+
         } catch (SQLException e) {
-            e.printStackTrace();
+            // Manejar la excepción de manera adecuada, como imprimir el error o lanzar una excepción personalizada
+            e.printStackTrace(); // Imprime el error en la consola
+            // Puedes lanzar una excepción personalizada aquí si lo prefieres
         }
 
         return detalles;

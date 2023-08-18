@@ -327,14 +327,14 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="ee23a" class="javax.swing.JButton" binding="botonGuardar">
+          <component id="45717" class="javax.swing.JButton" binding="botonCancelar">
             <constraints>
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <font name="Arial" size="12" style="1"/>
-              <icon value="IconosBotones/guardarP.png"/>
-              <text value="GUARDAR"/>
+              <icon value="IconosBotones/cancelarpp.png"/>
+              <text value="CANCELAR"/>
             </properties>
           </component>
         </children>
@@ -347,24 +347,24 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="31d31" class="javax.swing.JButton" binding="botonLimpiar">
-            <constraints>
-              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <font name="Arial" size="12" style="1"/>
-              <icon value="IconosBotones/cancelarpp.png"/>
-              <text value="LIMPIAR DATOS DE MATERIALES"/>
-            </properties>
-          </component>
-          <component id="a7ea6" class="javax.swing.JButton" binding="botonCancelar">
+          <component id="78848" class="javax.swing.JButton" binding="botonGuardar">
             <constraints>
               <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <font name="Arial" size="12" style="1"/>
-              <icon value="IconosBotones/cancelarpp.png"/>
-              <text value="CANCELAR"/>
+              <icon value="IconosBotones/guardarP.png"/>
+              <text value="GUARDAR"/>
+            </properties>
+          </component>
+          <component id="68e43" class="javax.swing.JButton" binding="botonLimpiar">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <font name="Arial" size="12" style="1"/>
+              <icon value="IconosBotones/icon_limpiar_16x16.png"/>
+              <text value="LIMPIAR DATOS DE MATERIALES"/>
             </properties>
           </component>
         </children>

@@ -104,7 +104,7 @@ public class CrearDesayuno extends JFrame {
 
     public CrearDesayuno() {
         super("");
-        setSize(1000, 700);
+        setSize(1000, 680);
         setLocationRelativeTo(null);
         setContentPane(panel1);
         sql = new Conexion();
@@ -206,7 +206,7 @@ public class CrearDesayuno extends JFrame {
         agregarFloresButton.setForeground(Color.DARK_GRAY);
 
         // Color de fondo de los botones
-        botonCancelar.setBackground(darkColorRed);
+        botonCancelar.setBackground(darkColorBlue);
         botonGuardar.setBackground(darkColorAqua);
         botonCargarImagen.setBackground(darkColorBlue);
         agregarMaterialButton.setBackground(lightColorAmber);
@@ -1056,16 +1056,19 @@ public class CrearDesayuno extends JFrame {
 
         String descripcion = campoDescripcion.getText().trim();
 
+        int cantidad = 0;
+
         ProveedorDesayuno tipo = (ProveedorDesayuno) jcbProveedores.getModel().getSelectedItem();
         try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO desayunos (imagen, nombre, descripcion, proveedor_id, precio_desayuno, mano_obra) VALUES (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO desayunos (imagen, nombre, descripcion, proveedor_id, cantidad, precio_desayuno, mano_obra) VALUES (?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
 
             preparedStatement.setString(1, nombreFile); // Reemplaza "nombreFile" con el nombre de archivo de la imagen.
             preparedStatement.setString(2, nombre);
             preparedStatement.setString(3, descripcion);
             preparedStatement.setInt(4, tipo.getIdProveedor());
-            preparedStatement.setDouble(5, precio_manualidad);
-            preparedStatement.setDouble(6, mano_obra);
+            preparedStatement.setInt(5, cantidad);
+            preparedStatement.setDouble(6, precio_manualidad);
+            preparedStatement.setDouble(7, mano_obra);
             preparedStatement.executeUpdate();
 
             ResultSet resultSet = preparedStatement.getGeneratedKeys();

@@ -30,7 +30,7 @@ public class ModeloVentaDetalle extends AbstractTableModel {
                 VentaDetalle detalle = new VentaDetalle();
                 detalle.setId(resultSet.getInt("id"));
                 detalle.setVentaId(resultSet.getInt("venta_id"));
-                detalle.setMaterialId(resultSet.getInt("material_id"));
+                detalle.setDetalleId(resultSet.getInt("detalle_id"));
                 detalle.setCantidad(resultSet.getInt("cantidad"));
                 detalle.setPrecio(resultSet.getDouble("precio"));
                 detalles.add(detalle);
@@ -71,7 +71,7 @@ public class ModeloVentaDetalle extends AbstractTableModel {
             case 1: // Venta
                 return detalleVenta.getVentaId();
             case 2: // Producto
-                int materialId = detalleVenta.getMaterialId();
+                int materialId = detalleVenta.getDetalleId();
                 String productoNombre = obtenerNombreProducto(materialId);
                 return productoNombre;
             case 3: // Cantidad

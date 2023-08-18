@@ -485,7 +485,7 @@ public class ListaVentas extends JFrame {
     private double calcularSubtotal(List<VentaDetalle> detalles) {
         double subtotal = 0.0;
         for (VentaDetalle detalle : detalles) {
-            Material producto = obtenerMaterialPorId(detalle.getMaterialId());
+            Material producto = obtenerMaterialPorId(detalle.getDetalleId());
             if (producto != null) {
                 subtotal += detalle.getCantidad() * detalle.getPrecio();
             }
@@ -498,7 +498,7 @@ public class ListaVentas extends JFrame {
     private double calcularISV(List<VentaDetalle> detalles) {
         double isv = 0.0;
         for (VentaDetalle detalle : detalles) {
-            Material producto = obtenerMaterialPorId(detalle.getMaterialId());
+            Material producto = obtenerMaterialPorId(detalle.getDetalleId());
             if (producto != null) {
                 isv += detalle.getCantidad() * detalle.getPrecio() * 0.15;
             }
@@ -647,7 +647,7 @@ public class ListaVentas extends JFrame {
                 contentStream.newLineAtOffset(50, yPosition);
                 contentStream.showText(String.valueOf(rowNumber + 1));
                 contentStream.newLineAtOffset(columnWidths[0], 0);
-                contentStream.showText(obtenerNombreMaterial(detalle.getMaterialId(), sql));
+                contentStream.showText(obtenerNombreMaterial(detalle.getDetalleId(), sql));
                 contentStream.newLineAtOffset(columnWidths[1], 0);
                 contentStream.showText(String.valueOf(detalle.getCantidad()));
                 contentStream.newLineAtOffset(columnWidths[2], 0);

@@ -66,7 +66,7 @@ public class CrearManualidad extends JFrame {
 
     public CrearManualidad() {
         super("");
-        setSize(1000, 700);
+        setSize(1000, 680);
         setLocationRelativeTo(null);
         setContentPane(panel1);
 
@@ -161,7 +161,7 @@ public class CrearManualidad extends JFrame {
         agregarButton.setForeground(Color.WHITE);
 
         // Color de fondo de los botones
-        botonCancelar.setBackground(darkColorRed);
+        botonCancelar.setBackground(darkColorBlue);
         cancelarButton.setBackground(darkColorRed);
         botonGuardar.setBackground(darkColorAqua);
         botonCargarImagen.setBackground(darkColorBlue);

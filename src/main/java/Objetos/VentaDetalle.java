@@ -3,7 +3,8 @@ package Objetos;
 public class VentaDetalle {
     private int id;
     private int ventaId;
-    private int materialId;
+    private String tipoDetalle;
+    private int detalleId;
     private int cantidad;
     private double precio;
 
@@ -13,22 +14,17 @@ public class VentaDetalle {
     }
 
     public Object[] toTableRow() {
-        return new Object[]{id, ventaId, materialId, cantidad, precio};
+        return new Object[]{id, ventaId, tipoDetalle, detalleId, cantidad, precio};
     }
 
-    public VentaDetalle(int id, int ventaId, int materialId, int cantidad, double precio) {
+    public VentaDetalle(int id, int ventaId, String tipoDetalle, int detalleId, int cantidad, double precio) {
         this.id = id;
         this.ventaId = ventaId;
-        this.materialId = materialId;
+        this.tipoDetalle = tipoDetalle;
+        this.detalleId = detalleId;
         this.cantidad = cantidad;
         this.precio = precio;
     }
-
-    public double calcularSubtotal() {
-        return precio * cantidad;
-    }
-
-    // getters y setters
 
     public int getId() {
         return id;
@@ -46,12 +42,20 @@ public class VentaDetalle {
         this.ventaId = ventaId;
     }
 
-    public int getMaterialId() {
-        return materialId;
+    public String getTipoDetalle() {
+        return tipoDetalle;
     }
 
-    public void setMaterialId(int materialId) {
-        this.materialId = materialId;
+    public void setTipoDetalle(String tipoDetalle) {
+        this.tipoDetalle = tipoDetalle;
+    }
+
+    public int getDetalleId() {
+        return detalleId;
+    }
+
+    public void setDetalleId(int detalleId) {
+        this.detalleId = detalleId;
     }
 
     public int getCantidad() {
