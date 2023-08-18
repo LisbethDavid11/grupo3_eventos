@@ -7,6 +7,7 @@ public class Desayuno {
     private String nombre;
     private String descripcion;
     private int proveedor_id;
+    private int cantidad;
     private double precio_desayuno;
     private double mano_obra;
 
@@ -16,15 +17,16 @@ public class Desayuno {
     }
 
     public Object[] toTableRow() {
-        return new Object[] {id, imagen, nombre, descripcion, proveedor_id, precio_desayuno, mano_obra};
+        return new Object[] {id, imagen, nombre, descripcion, proveedor_id, cantidad, precio_desayuno, mano_obra};
     }
 
-    public Desayuno(int id, ImageIcon imagen, String nombre, String descripcion, int proveedor_id, double precio_desayuno, double mano_obra) {
+    public Desayuno(int id, ImageIcon imagen, String nombre, String descripcion, int proveedor_id, int cantidad, double precio_desayuno, double mano_obra) {
         this.id = id;
         this.imagen = imagen;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.proveedor_id = proveedor_id;
+        this.cantidad = cantidad;
         this.precio_desayuno = precio_desayuno;
         this.mano_obra = mano_obra;
     }
@@ -67,6 +69,14 @@ public class Desayuno {
 
     public void setProveedor_id(int proveedor_id) {
         this.proveedor_id = proveedor_id;
+    }
+
+    public int getCantidad() {
+        return cantidad;
+    }
+
+    public void setCantidad(int cantidad) {
+        this.cantidad = cantidad;
     }
 
     public double getPrecio_desayuno() {

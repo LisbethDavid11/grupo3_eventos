@@ -377,9 +377,10 @@ public class CrearArreglo extends JFrame {
         String precioText = campoPrecio.getText().replace("L ", "").replace(",", "").replace("_", "");
         double precio = Double.parseDouble(precioText);
         String disponible = radioButtonSi.isSelected() ? "Si" : "No";
+        int cantidad = 0;
 
         try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO arreglos (imagen, nombre, precio, disponible) VALUES (?, ?, ?, ?)")) {
+             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO arreglos (imagen, nombre, cantidad, precio, disponible) VALUES (?, ?, ?, ?, ?)")) {
 
                 // Generar el nombre de la imagen
                 SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH-mm-ss");
@@ -402,8 +403,9 @@ public class CrearArreglo extends JFrame {
 
                 preparedStatement.setString(1, rutaImagen);
                 preparedStatement.setString(2, nombre);
-                preparedStatement.setDouble(3, precio);
-                preparedStatement.setString(4, disponible);
+                preparedStatement.setDouble(3, cantidad);
+                preparedStatement.setDouble(4, precio);
+                preparedStatement.setString(5, disponible);
                 preparedStatement.executeUpdate();
 
                 JOptionPane.showMessageDialog(null, "Arreglo guardado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);

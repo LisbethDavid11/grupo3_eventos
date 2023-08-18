@@ -979,10 +979,12 @@ public class CrearVenta extends JFrame {
                 int modelRow = table.convertRowIndexToModel(row);
                 TableModel model = table.getModel();  // Obtener el modelo de la tabla
 
-                // Aquí utilizamos el método de eliminación del modelo personalizado en lugar del DefaultTableModel
+                // Verificar si el modelo de la tabla es un PoliModeloProducto
                 if (model instanceof PoliModeloProducto) {
                     PoliModeloProducto productoModel = (PoliModeloProducto) model;
-                    productoModel.removeRow(modelRow);
+
+                    // Eliminar el producto tanto de la lista temporal como de la tabla
+                    productoModel.removeProductAtIndex(modelRow);
                 }
 
                 fireEditingStopped(); // Mover esta línea aquí para asegurarte de que se complete la edición

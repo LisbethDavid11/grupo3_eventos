@@ -7,6 +7,7 @@ public class Arreglo {
     private String nombre;
     private ImageIcon imagen;
     private double precio;
+    private double cantidad;
     private String disponible;
 
     public static String nombreTabla = "arreglos";
@@ -15,13 +16,14 @@ public class Arreglo {
     }
 
     public Object[] toTableRow() {
-        return new Object[] {id, nombre, imagen, precio, disponible };
+        return new Object[] {id, nombre, imagen, cantidad, precio, disponible };
     }
 
-    public Arreglo(int id, String nombre, ImageIcon imagen, double precio, String disponible) {
+    public Arreglo(int id, String nombre, ImageIcon imagen, int cantidad, double precio, String disponible) {
         this.id = id;
         this.nombre = nombre;
         this.imagen = imagen;
+        this.cantidad = cantidad;
         this.precio = precio;
         this.disponible = disponible;
     }
@@ -48,6 +50,14 @@ public class Arreglo {
 
     public void setImagen(ImageIcon imagen) {
         this.imagen = imagen;
+    }
+
+    public double getCantidad() {
+        return cantidad;
+    }
+
+    public void setCantidad(double cantidad) {
+        this.cantidad = cantidad;
     }
 
     public double getPrecio() {

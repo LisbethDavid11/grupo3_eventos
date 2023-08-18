@@ -88,4 +88,12 @@ public class PoliModeloProducto extends AbstractTableModel {
             fireTableRowsDeleted(rowIndex, rowIndex);
         }
     }
+
+    public void removeProductAtIndex(int index) {
+        if (index >= 0 && index < productos.size()) {
+            productos.remove(index);
+            fireTableRowsDeleted(index, index);
+        }
+    }
+
 }

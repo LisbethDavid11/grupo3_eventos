@@ -3,6 +3,8 @@ import Manualidades.PreviewImagen;
 import Materiales.TextPrompt;
 import Modelos.*;
 import Objetos.*;
+import Ventas.CrearVenta;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -104,7 +106,7 @@ public class CrearDesayuno extends JFrame {
 
     public CrearDesayuno() {
         super("");
-        setSize(1000, 680);
+        setSize(1050, 680);
         setLocationRelativeTo(null);
         setContentPane(panel1);
         sql = new Conexion();
@@ -825,6 +827,9 @@ public class CrearDesayuno extends JFrame {
         });
 
         jtableMateriales.setModel(cargarDetallesMateriales());
+        jtableMateriales.getColumnModel().getColumn(5).setCellRenderer(new CrearDesayuno.ButtonRenderer());
+        jtableMateriales.getColumnModel().getColumn(5).setCellEditor(new CrearDesayuno.ButtonEditor());
+
         actualizarLbl8y10();
         configurarTablaMateriales();
         agregarButton.setVisible(false);
@@ -948,6 +953,9 @@ public class CrearDesayuno extends JFrame {
                     agregarTarjetasButton.setVisible(true);
                     // Actualizar la tabla con los detalles actualizados
                     jtableMateriales.setModel(cargarDetallesMateriales());
+                    jtableMateriales.getColumnModel().getColumn(5).setCellRenderer(new CrearDesayuno.ButtonRenderer());
+                    jtableMateriales.getColumnModel().getColumn(5).setCellEditor(new CrearDesayuno.ButtonEditor());
+
                     configurarTablaMateriales();
                     actualizarLbl8y10();
                 } else {
@@ -1009,9 +1017,9 @@ public class CrearDesayuno extends JFrame {
         if (columnCount > 0) {
             TableColumnModel columnModel = jtableMateriales.getColumnModel();
 
-            columnModel.getColumn(0).setPreferredWidth(20); // Id
-            columnModel.getColumn(1).setPreferredWidth(200); // Nombre
-            columnModel.getColumn(2).setPreferredWidth(60);  // Precio
+            columnModel.getColumn(0).setPreferredWidth(30); // Id
+            columnModel.getColumn(1).setPreferredWidth(180); // Nombre
+            columnModel.getColumn(2).setPreferredWidth(80);  // Precio
             columnModel.getColumn(3).setPreferredWidth(100); // Proveedor
 
             columnModel.getColumn(0).setCellRenderer(new CenterAlignedRenderer());
@@ -1543,6 +1551,68 @@ public class CrearDesayuno extends JFrame {
             e.printStackTrace();
         }
     }
+
+    class ButtonRenderer extends JButton implements TableCellRenderer {
+        public ButtonRenderer() {
+            setOpaque(true);
+            setForeground(Color.WHITE);
+            setBackground(darkColorPink);
+            setFocusPainted(false);
+        }
+
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            setText("X");
+            return this;
+        }
+    }
+
+    class ButtonEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
+        private JButton button;
+        private int row, col;
+        private JTable table;
+
+        public ButtonEditor() {
+            button = new JButton();
+            button.setOpaque(true);
+            button.addActionListener(this);
+            button.setForeground(Color.WHITE);
+            button.setBackground(darkColorPink);
+            button.setFocusPainted(false);
+            button.setBorder(margin);
+        }
+
+        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+            button.setText("X");
+            this.table = table;
+            this.row = row;
+            this.col = column;
+            return button;
+        }
+
+        public Object getCellEditorValue() {
+            return "X";
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            if (table != null) {
+                int modelRow = table.convertRowIndexToModel(row);
+                TableModel model = table.getModel();  // Obtener el modelo de la tabla
+
+                // Verificar si el modelo de la tabla es un PoliModeloProducto
+                if (model instanceof PoliModeloProducto) {
+                    PoliModeloProducto productoModel = (PoliModeloProducto) model;
+
+                    // Eliminar el producto tanto de la lista temporal como de la tabla
+                    productoModel.removeProductAtIndex(modelRow);
+                }
+
+                fireEditingStopped(); // Mover esta línea aquí para asegurarte de que se complete la edición
+                calcularTotalTabla();
+                actualizarLbl8y10();
+            }
+        }
+    }
+
 
     public static void main(String[] args) {
         CrearDesayuno crearDesayuno = new CrearDesayuno();
