@@ -1,38 +1,83 @@
 package Globos;
+import Modelos.PoliModeloProducto;
 import Objetos.Conexion;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Random;
 
 public class CrearGlobo extends JFrame {
     private JTextField campoCodigo, campoPrecio, campoForma, campoTamanio, campoColor, campoCantidadPorPaquete;
     private JRadioButton radioButtonAire, radioButtonHelio, radioButtonAmbos, radioButtonSiNecesita, radioButtonNoNecesita;
-    private JButton botonGuardar, botonCancelar;
-    private JPanel panel, panel1, panel2, panel3;
+    private JButton botonGuardar, botonCancelar, botonLimpiar;
+    private JPanel panel1, panel2, panel3, panel4, panel5, panel6, panel7;
     private JLabel lbl0, lbl1, lbl2, lbl3;
     private JComboBox comboBoxTipoEvento, comboBoxMaterial;
+    private String imagePath = "";
+    private JPanel panelImg;
+    private JLabel imagenLabel;
+    private JButton botonCargarImagen;
     private CrearGlobo actual = this;
     private Conexion sql;
 
     public CrearGlobo() {
         super("");
-        setSize(500, 490);
+        setSize(800, 490);
         setLocationRelativeTo(null);
-        setContentPane(panel);
+        setContentPane(panel1);
         sql = new Conexion();
 
-        // Color de fondo del panel
-        panel.setBackground(Color.decode("#F5F5F5"));
+        // Establecer ancho y alto deseados para el panelImg
+        int panelImgWidth = 200;
+        int panelImgHeight = 200;
+
+        // Crear una instancia de Dimension con las dimensiones deseadas
+        Dimension panelImgSize = new Dimension(panelImgWidth, panelImgHeight);
+
+        // Establecer las dimensiones en el panelImg
+        panelImg.setPreferredSize(panelImgSize);
+        panelImg.setMaximumSize(panelImgSize);
+        panelImg.setMinimumSize(panelImgSize);
+        panelImg.setSize(panelImgSize);
+
+        // Configurar el layout del panelImg como GridBagLayout
+        panelImg.setLayout(new GridBagLayout());
+
+        // Configurar restricciones de diseño para la etiqueta de imagen
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        imagenLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        panelImg.add(imagenLabel, gbc);
+
+        // Color de fondo del panel1
         panel1.setBackground(Color.decode("#F5F5F5"));
         panel2.setBackground(Color.decode("#F5F5F5"));
         panel3.setBackground(Color.decode("#F5F5F5"));
+        panel4.setBackground(Color.decode("#F5F5F5"));
+        panel5.setBackground(Color.decode("#F5F5F5"));
+        panel3.setBackground(Color.decode("#F5F5F5"));
+        panel4.setBackground(Color.decode("#F5F5F5"));
+        panelImg.setBackground(Color.decode("#F5F5F5"));
         radioButtonAire.setBackground(Color.decode("#F5F5F5"));
         radioButtonHelio.setBackground(Color.decode("#F5F5F5"));
         radioButtonAmbos.setBackground(Color.decode("#F5F5F5"));
@@ -67,23 +112,34 @@ public class CrearGlobo extends JFrame {
         Color lightColorRosado = new Color(240, 98, 146); // Rosado claro
         Color darkColorRosado = new Color(194, 24, 91); // Rosado oscuro
 
+        Color darkColorPink = new Color(233, 30, 99);
+        Color darkColorRed = new Color(244, 67, 54);
+        Color darkColorBlue = new Color(33, 150, 243);
+
         // Crea un margen de 10 píxeles desde el borde inferior
         EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
 
         // Color de texto de los botones
         botonCancelar.setForeground(Color.WHITE);
         botonGuardar.setForeground(Color.WHITE);
+        botonLimpiar.setForeground(Color.WHITE);
+        botonCargarImagen.setForeground(Color.WHITE);
 
         // Color de fondo de los botones
-        botonCancelar.setBackground(darkColorCyan);
+        botonCancelar.setBackground(darkColorBlue);
         botonGuardar.setBackground(darkColorAqua);
+        botonLimpiar.setBackground(darkColorRosado);
+        botonCargarImagen.setBackground(darkColorRed);
 
         botonCancelar.setFocusPainted(false);
         botonGuardar.setFocusPainted(false);
+        botonLimpiar.setFocusPainted(false);
+        botonCargarImagen.setFocusPainted(false);
 
         // Aplica el margen al botón
         botonGuardar.setBorder(margin);
         botonCancelar.setBorder(margin);
+        botonLimpiar.setBorder(margin);
 
         lbl0.setForeground(textColor);
         lbl1.setForeground(textColor);
@@ -337,6 +393,11 @@ public class CrearGlobo extends JFrame {
                 int validacion = 0;
                 String mensaje = "Faltó ingresar: \n";
 
+                if (imagePath.isEmpty()) {
+                    validacion++;
+                    mensaje += "Imagen\n";
+                }
+
                 if (campoCodigo.getText().trim().isEmpty()) {
                     validacion++;
                     mensaje += "El código del globo\n";
@@ -508,6 +569,114 @@ public class CrearGlobo extends JFrame {
                 }
             }
         });
+
+        botonCargarImagen.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                UIManager.put("FileChooser.openButtonText", "Cargar");
+                UIManager.put("FileChooser.cancelButtonText", "Cancelar");
+                UIManager.put("FileChooser.lookInLabelText", "Ver en");
+                UIManager.put("FileChooser.fileNameLabelText", "Nombre del archivo");
+                UIManager.put("FileChooser.filesOfTypeLabelText", "Archivos del tipo");
+                UIManager.put("FileChooser.upFolderToolTipText", "Subir un nivel");
+                UIManager.put("FileChooser.homeFolderToolTipText", "Escritorio");
+                UIManager.put("FileChooser.newFolderToolTipText", "Crear nueva carpeta");
+                UIManager.put("FileChooser.listViewButtonToolTipText", "Lista");
+                UIManager.put("FileChooser.newFolderButtonText", "Crear nueva carpeta");
+                UIManager.put("FileChooser.renameFileButtonText", "Renombrar archivo");
+                UIManager.put("FileChooser.deleteFileButtonText", "Eliminar archivo");
+                UIManager.put("FileChooser.filterLabelText", "Tipo de archivo");
+                UIManager.put("FileChooser.detailsViewButtonToolTipText", "Detalles");
+                UIManager.put("FileChooser.fileSizeHeaderText", "Tamaño");
+                UIManager.put("FileChooser.fileDateHeaderText", "Fecha de modificación");
+
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setDialogTitle("Seleccionar imagen"); // Cambiar título del diálogo
+
+                fileChooser.setFileFilter(new FileNameExtensionFilter("Imágenes", "jpg", "jpeg", "png", "bmp", "gif"));
+
+                int seleccion = fileChooser.showOpenDialog(actual);
+                if (seleccion == JFileChooser.APPROVE_OPTION) {
+                    File file = fileChooser.getSelectedFile();
+                    imagePath = file.getAbsolutePath();
+                    ImageIcon originalIcon = new ImageIcon(imagePath);
+
+                    // Obtener las dimensiones originales de la imagen
+                    int originalWidth = originalIcon.getIconWidth();
+                    int originalHeight = originalIcon.getIconHeight();
+
+                    // Obtener las dimensiones del JPanel
+                    int panelImgWidth = panelImg.getWidth();
+                    int panelImgHeight = panelImg.getHeight();
+
+                    // Calcular la escala para ajustar la imagen al JPanel
+                    double scale = Math.min((double) panelImgWidth / originalWidth, (double) panelImgHeight / originalHeight);
+
+                    // Calcular las nuevas dimensiones de la imagen redimensionada
+                    int scaledWidth = (int) (originalWidth * scale);
+                    int scaledHeight = (int) (originalHeight * scale);
+
+                    // Redimensionar la imagen manteniendo su proporción
+                    Image resizedImage = originalIcon.getImage().getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH);
+
+                    // Crear un nuevo ImageIcon a partir de la imagen redimensionada
+                    ImageIcon scaledIcon = new ImageIcon(resizedImage);
+
+                    imagenLabel.setIcon(scaledIcon);
+                }
+            }
+        });
+
+        botonLimpiar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JButton btnYes = new JButton("Sí");
+                JButton btnNo = new JButton("No");
+
+                // Personaliza los botones aquí
+                btnYes.setBackground(darkColorAqua);
+                btnNo.setBackground(darkColorPink);
+
+                // Personaliza los fondos de los botones aquí
+                btnYes.setForeground(Color.WHITE);
+                btnNo.setForeground(Color.WHITE);
+
+                // Elimina el foco
+                btnYes.setFocusPainted(false);
+                btnNo.setFocusPainted(false);
+
+                // Crea un JOptionPane
+                JOptionPane optionPane = new JOptionPane(
+                        "¿Estás seguro de que deseas limpiar los datos?",
+                        JOptionPane.DEFAULT_OPTION,
+                        JOptionPane.DEFAULT_OPTION,
+                        null,
+                        new Object[]{}, // no options
+                        null
+                );
+
+                // Crea un JDialog
+                JDialog dialog = optionPane.createDialog("Limpiar");
+
+                btnYes.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        limpiarCampos();
+                        dialog.dispose();
+                    }
+                });
+
+                btnNo.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        dialog.dispose();
+                    }
+                });
+                optionPane.setOptions(new Object[]{btnYes, btnNo});
+                dialog.setVisible(true);
+            }
+        });
+
     }
 
     private void guardarGlobos() {
@@ -524,18 +693,39 @@ public class CrearGlobo extends JFrame {
         int cantidad = 0;
 
         try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO globos (codigo_globo, tipo, material, para, tamano, color, forma, cantidad_paquete, porta_globo, cantidad, precio) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
-            preparedStatement.setString(1, codigo);
-            preparedStatement.setString(2, tipoEvento);
-            preparedStatement.setString(3, material);
-            preparedStatement.setString(4, para);
-            preparedStatement.setString(5, tamanio);
-            preparedStatement.setString(6, color);
-            preparedStatement.setString(7, forma);
-            preparedStatement.setInt(8, cantidadPorPaquete);
-            preparedStatement.setString(9, portaGlobo);
-            preparedStatement.setInt(10, cantidad);
-            preparedStatement.setDouble(11, precio);
+             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO globos (imagen, codigo_globo, tipo, material, para, tamano, color, forma, cantidad_paquete, porta_globo, cantidad, precio) VALUES (?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+
+            // Generar el nombre de la imagen
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH-mm-ss");
+            String fechaActual = dateFormat.format(new Date());
+            String nombreImagen = "imagen " + fechaActual + " " + generarNumeroAleatorio(0, 9999);
+
+            // Guardar la imagen en la carpeta
+            String rutaImagen = nombreImagen + obtenerExtensionImagen(imagePath);
+            File destino = new File("img/globos/" + rutaImagen);
+
+            try {
+                // Copiar el archivo seleccionado a la ubicación destino
+                Path origenPath = Path.of(imagePath);
+                Files.copy(origenPath, destino.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error al guardar la imagen", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            preparedStatement.setString(1, rutaImagen);
+            preparedStatement.setString(2, codigo);
+            preparedStatement.setString(3, tipoEvento);
+            preparedStatement.setString(4, material);
+            preparedStatement.setString(5, para);
+            preparedStatement.setString(6, tamanio);
+            preparedStatement.setString(7, color);
+            preparedStatement.setString(8, forma);
+            preparedStatement.setInt(9, cantidadPorPaquete);
+            preparedStatement.setString(10, portaGlobo);
+            preparedStatement.setInt(11, cantidad);
+            preparedStatement.setDouble(12, precio);
             preparedStatement.executeUpdate();
 
             JOptionPane.showMessageDialog(null, "Globo guardado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
@@ -543,6 +733,35 @@ public class CrearGlobo extends JFrame {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error al guardar el globo", "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private String obtenerExtensionImagen(String imagePath) {
+        int extensionIndex = imagePath.lastIndexOf(".");
+        if (extensionIndex != -1) {
+            return imagePath.substring(extensionIndex);
+        }
+        return "";
+    }
+
+    private void limpiarCampos() {
+        campoCodigo.setText("");
+        campoPrecio.setText("");
+        campoForma.setText("");
+        campoTamanio.setText("");
+        campoColor.setText("");
+        campoCantidadPorPaquete.setText("");
+        radioButtonHelio.setSelected(false);
+        radioButtonAire.setSelected(false);
+        radioButtonAmbos.setSelected(false);
+        radioButtonSiNecesita.setSelected(false);
+        comboBoxTipoEvento.setSelectedIndex(0);
+        comboBoxMaterial.setSelectedIndex(0);
+    }
+
+    private String generarNumeroAleatorio(int min, int max) {
+        Random random = new Random();
+        int numeroAleatorio = random.nextInt(max - min + 1) + min;
+        return String.format("%04d", numeroAleatorio);
     }
 
     public static void main(String[] args) {
