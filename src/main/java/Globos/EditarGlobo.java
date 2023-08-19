@@ -563,7 +563,7 @@ public class EditarGlobo extends JFrame {
                 );
 
                 if (respuesta == JOptionPane.YES_OPTION) {
-                    guardarGlobos();
+                    actualizarGlobos(idGlobo);
                     ListaGlobos listaGlobos = new ListaGlobos();
                     listaGlobos.setVisible(true);
                     actual.dispose();
@@ -738,7 +738,7 @@ public class EditarGlobo extends JFrame {
     }
 
 
-    private void guardarGlobos() {
+    private void actualizarGlobos(int id) {
         String codigo = campoCodigo.getText().trim();
         double precio = Double.parseDouble(campoPrecio.getText().trim());
         String forma = campoForma.getText().trim();
@@ -749,10 +749,9 @@ public class EditarGlobo extends JFrame {
         String portaGlobo = radioButtonSiNecesita.isSelected() ? "1" : "0";
         String tipoEvento = comboBoxTipoEvento.getSelectedItem().toString();
         String material = comboBoxMaterial.getSelectedItem().toString();
-        int cantidad = 0;
 
         try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO globos (imagen, codigo_globo, tipo, material, para, tamano, color, forma, cantidad_paquete, porta_globo, cantidad, precio) VALUES (?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+             PreparedStatement preparedStatement = connection.prepareStatement("UPDATE globos SET imagen = ?, codigo_globo = ?, tipo = ?, material = ?, para = ?, tamano = ?, color = ?, forma = ?, cantidad_paquete = ?, porta_globo = ?, precio = ? WHERE id = ?")) {
 
             // Generar el nombre de la imagen
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH-mm-ss");
@@ -783,16 +782,17 @@ public class EditarGlobo extends JFrame {
             preparedStatement.setString(8, forma);
             preparedStatement.setInt(9, cantidadPorPaquete);
             preparedStatement.setString(10, portaGlobo);
-            preparedStatement.setInt(11, cantidad);
-            preparedStatement.setDouble(12, precio);
+            preparedStatement.setDouble(11, precio);
+            preparedStatement.setInt(12, id);  // Set the ID for the WHERE clause
             preparedStatement.executeUpdate();
 
-            JOptionPane.showMessageDialog(null, "Globo guardado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Datos actualizados exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al guardar el globo", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error al actualizar los datos", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+
 
     private String obtenerExtensionImagen(String imagePath) {
         int extensionIndex = imagePath.lastIndexOf(".");
