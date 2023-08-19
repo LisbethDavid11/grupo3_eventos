@@ -129,6 +129,8 @@ public class ListaGlobos extends JFrame {
             }
         });
 
+
+         */
         botonEditar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -141,7 +143,7 @@ public class ListaGlobos extends JFrame {
                 actual.dispose();
             }
         });
-         */
+
         JTableHeader header = listaGlobos.getTableHeader();
         header.setForeground(Color.WHITE);
 
