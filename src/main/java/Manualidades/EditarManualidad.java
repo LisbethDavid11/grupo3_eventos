@@ -3,6 +3,7 @@ import Modelos.ModeloMaterial;
 import Modelos.ModeloProducto;
 import Objetos.Conexion;
 import Objetos.Manualidad;
+import Objetos.ManualidadDetalle;
 import Objetos.Material;
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -27,8 +28,6 @@ public class EditarManualidad extends JFrame {
 
     private JTextField campoPrecio;
     private JTextArea campoDescripcion;
-    private JRadioButton radioButtonSi;
-    private JRadioButton radioButtonNo;
     private JButton botonGuardar;
     private JButton botonCancelar;
     private JPanel jpanelImagen, panel1, panel2, panel3, panel5, panel6;
@@ -54,19 +53,18 @@ public class EditarManualidad extends JFrame {
     private JLabel lbl10;
     private JTextField campoNombre;
     private JPanel panel8;
-    private List<Material> materialList = new ArrayList<>();
     private String imagePath = "";
     private EditarManualidad actual = this;
     private Conexion sql;
+    private Connection mysql;
     private String nombreFile;
     private String urlDestino = "";
     private DefaultTableModel modeloProductos;
     private TextPrompt placeholder = new TextPrompt(" Buscar por nombre, proveedor o precio", campoBusquedaMateriales);
-
+    private List<Material> materialList = new ArrayList<>();
     private List<Material> materialListTemporal = new ArrayList<>();
-
+    private List<Material> backupMaterialList; // Copia de seguridad de los datos originales
     private Manualidad originalManualidad;
-
     Color textColor = Color.decode("#212121");
     Color darkColorCyan = new Color(0, 150, 136);
     Color darkColorPink = new Color(233, 30, 99);
@@ -77,14 +75,15 @@ public class EditarManualidad extends JFrame {
     // Establecer ancho y alto deseados para el panelImg
     int panelImgWidth = 70;
     int panelImgHeight = 150;
-    public EditarManualidad(Manualidad manualidad) {
+    private int id;
+    public EditarManualidad(Manualidad manualidad, int id) {
         super("");
         setSize(1000, 700);
         setLocationRelativeTo(null);
         setContentPane(panel1);
-
+        this.id = id;
         this.originalManualidad = manualidad;
-
+        backupMaterialList = new ArrayList<>(materialListTemporal);
         campoDescripcion.setLineWrap(true);
         campoDescripcion.setWrapStyleWord(true);
 
@@ -217,16 +216,9 @@ public class EditarManualidad extends JFrame {
         lbl9.setFont(font10);
         lbl10.setFont(font10);
 
-        ButtonGroup buttonGroup = new ButtonGroup();
-        buttonGroup.add(radioButtonNo);
-        buttonGroup.add(radioButtonSi);
-
         // Color de texto para el JTextArea
         campoDescripcion.setForeground(textColor);
         campoDescripcion.setBackground(new Color(215, 215, 215));
-
-        // No seleccionar ningún botón de radio por defecto
-        buttonGroup.clearSelection();
 
         agregarMaterialButton.addActionListener(new ActionListener() {
             @Override
@@ -248,38 +240,6 @@ public class EditarManualidad extends JFrame {
                 jtableMateriales.setModel(cargarDetallesMateriales());
             }
         });
-
-        botonLimpiar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int respuesta = JOptionPane.showOptionDialog(
-                        null,
-                        "¿Estás seguro de que deseas restaurar todos los datos del materiale?",
-                        "Confirmar limpieza",
-                        JOptionPane.YES_NO_OPTION,
-                        JOptionPane.QUESTION_MESSAGE,
-                        null,
-                        new Object[]{"Sí", "No"},
-                        "No"
-                );
-                if (respuesta == JOptionPane.YES_OPTION) {
-                    // Eliminar los detalles temporales
-                    materialListTemporal.clear();
-
-                    // Actualizar el total de dinero en el campo de texto
-                    lbl8.setText("0.00");
-                    lbl10.setText("0.00");
-
-                    eliminarDetallesMaterial();
-
-                    cargarDatosEditar();
-
-                    // Actualizar los totales después de limpiar la tabla
-                    calcularTotalTabla();
-                }
-            }
-        });
-
 
         campoPrecio.addKeyListener(new KeyAdapter() {
             @Override
@@ -401,8 +361,6 @@ public class EditarManualidad extends JFrame {
             }
         });
 
-
-
         botonCancelar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -464,7 +422,6 @@ public class EditarManualidad extends JFrame {
                 }
 
                 String precioText = campoPrecio.getText().trim();
-// Replace commas with periods to handle decimal separator
                 precioText = precioText.replaceAll(",", ".");
 
                 if (precioText.isEmpty()) {
@@ -702,52 +659,87 @@ public class EditarManualidad extends JFrame {
                 }
             }
         });
+
+        botonLimpiar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int respuesta = JOptionPane.showOptionDialog(
+                        null,
+                        "¿Estás seguro de que deseas restaurar todos los datos del materiale?",
+                        "Confirmar limpieza",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        new Object[]{"Sí", "No"},
+                        "No"
+                );
+                if (respuesta == JOptionPane.YES_OPTION) {
+                    resetFieldsAndTables();
+                    materialListTemporal.clear();
+                }
+            }
+        });
+
         cargarDatosEditar();
+        mostrar();
     }
 
-    public void cargarDatosEditar() {
-        campoDescripcion.setText(this.originalManualidad.getDescripcion());
-        jcbOcasion.setSelectedItem(this.originalManualidad.getTipo());
-        campoPrecio.setText(String.valueOf(this.originalManualidad.getPrecio_manualidad()));
-        campoManoObra.setText(String.valueOf(this.originalManualidad.getMano_obra()));
-        campoNombre.setText(String.valueOf(this.originalManualidad.getNombre()));
+    private void mostrar() {
+        sql = new Conexion();
+        mysql = sql.conectamysql();
+        DecimalFormat decimalFormat = new DecimalFormat("###,###.00");
+        double suma = 0;
 
-        //String nombreImagen = this.originalManualidad.getNombreImagen(); // Asumiendo que hay un método getNombreImagen() en la clase originalManualidad
-        //mostrarImagen(nombreImagen);
+        try {
+            PreparedStatement statement = mysql.prepareStatement("SELECT * FROM manualidades WHERE id = ?;");
+            statement.setInt(1, this.id);
+            ResultSet resultSet = statement.executeQuery();
 
-        jtableMateriales.setModel(cargarDetallesMateriales());
-        jtableMateriales.getColumnModel().getColumn(5).setCellRenderer(new EditarManualidad.ButtonRenderer());
-        jtableMateriales.getColumnModel().getColumn(5).setCellEditor(new EditarManualidad.ButtonEditor());
-        calcularTotalTabla();
-        actualizarLbl8y10();
-        configurarTablaMateriales();
-    }
+            if (resultSet.next()) {
+                PreparedStatement detallesStatement = mysql.prepareStatement("SELECT m.nombre, dc.cantidad, dc.precio FROM detalles_manualidades dc JOIN materiales m ON dc.material_id = m.id WHERE dc.manualidad_id = ?");
+                detallesStatement.setInt(1, this.id);
+            } else {
+                JOptionPane.showMessageDialog(null, "La manualidad con el ID " + this.id + " no fue encontrada.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
 
-    private void mostrarImagen(String imagen) {
-        imagePath = "img/manualidades/" + imagen;
+            String imagenNombre = resultSet.getString("imagen");
+            String imagenPath = "img/manualidades/" + imagenNombre;
 
-        File file = new File(imagePath);
-        if (file.exists()) {
-            ImageIcon originalIcon = new ImageIcon(imagePath);
+            try {
+                File imagenFile = new File(imagenPath);
+                if (imagenFile.exists()) {
+                    Image imagenOriginal = ImageIO.read(imagenFile);
 
-            // Obtener las dimensiones originales de la imagen
-            int originalWidth = originalIcon.getIconWidth();
-            int originalHeight = originalIcon.getIconHeight();
+                    // Ajusta el tamaño de la imagen para que se ajuste al tamaño predeterminado del panel
+                    int anchoPanelPredeterminado = 300;
+                    int altoPanelPredeterminado = 300;
 
-            // Calcular la escala para ajustar la imagen al tamaño deseado
-            double scale = Math.min((double) panelImgWidth / originalWidth, (double) panelImgHeight / originalHeight);
+                    // Calcula las proporciones de escalamiento para ajustar la imagen al tamaño del panel
+                    double proporcionAncho = (double) anchoPanelPredeterminado / imagenOriginal.getWidth(null);
+                    double proporcionAlto = (double) altoPanelPredeterminado / imagenOriginal.getHeight(null);
 
-            // Calcular las nuevas dimensiones de la imagen redimensionada
-            int scaledWidth = (int) (originalWidth * scale);
-            int scaledHeight = (int) (originalHeight * scale);
+                    // Escala la imagen utilizando la proporción más pequeña para evitar distorsiones
+                    double proporcionEscalamiento = Math.min(proporcionAncho, proporcionAlto);
+                    int anchoEscalado = (int) (imagenOriginal.getWidth(null) * proporcionEscalamiento);
+                    int altoEscalado = (int) (imagenOriginal.getHeight(null) * proporcionEscalamiento);
 
-            // Redimensionar la imagen manteniendo su proporción
-            Image resizedImage = originalIcon.getImage().getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH);
+                    // Crea una nueva imagen escalada con las dimensiones calculadas
+                    Image imagenEscalada = imagenOriginal.getScaledInstance(anchoEscalado, altoEscalado, Image.SCALE_SMOOTH);
 
-            // Crear un nuevo ImageIcon a partir de la imagen redimensionada
-            ImageIcon scaledIcon = new ImageIcon(resizedImage);
+                    // Crea un ImageIcon a partir de la imagen escalada
+                    ImageIcon imagenIcono = new ImageIcon(imagenEscalada);
 
-            jlabelImagen.setIcon(scaledIcon);
+                    // Actualiza la etiqueta lblImagen con el ImageIcon
+                    jlabelImagen.setIcon(imagenIcono);
+                } else {
+                    System.out.println("No se encontró la imagen: " + imagenPath);
+                }
+            } catch (Exception e) {
+                System.out.println("Error al cargar la imagen: " + e.getMessage());
+            }
+
+        } catch (SQLException error) {
+            System.out.println(error.getMessage());
         }
     }
 
@@ -809,6 +801,41 @@ public class EditarManualidad extends JFrame {
         return cantidadExistente;
     }
 
+    private double obtenerPrecioMaterialDesdeBD(int material_id) {
+        double precio = 0.0;
+
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT precio FROM Materiales WHERE id = ?")) {
+            preparedStatement.setInt(1, material_id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                precio = resultSet.getDouble("precio");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al obtener el precio del material desde la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        return precio;
+    }
+
+    public void cargarDatosEditar() {
+        campoDescripcion.setText(this.originalManualidad.getDescripcion());
+        jcbOcasion.setSelectedItem(this.originalManualidad.getTipo());
+        campoPrecio.setText(String.valueOf(this.originalManualidad.getPrecio_manualidad()));
+        campoManoObra.setText(String.valueOf(this.originalManualidad.getMano_obra()));
+        campoNombre.setText(String.valueOf(this.originalManualidad.getNombre()));
+
+        jtableMateriales.setModel(cargarDetallesMateriales());
+
+        calcularTotalTabla();
+        actualizarLbl8y10();
+        configurarTablaMateriales();
+        jtableMateriales.getColumnModel().getColumn(5).setCellRenderer(new EditarManualidad.ButtonRenderer());
+        jtableMateriales.getColumnModel().getColumn(5).setCellEditor(new EditarManualidad.ButtonEditor());
+    }
+
     private void guardarMateriales() {
         String precioManualidadText = campoPrecio.getText().replace("L ", "").replace(",", "").replace("_", "");
         double precio_manualidad = Double.parseDouble(precioManualidadText);
@@ -861,53 +888,6 @@ public class EditarManualidad extends JFrame {
         }
     }
 
-
-
-    private double obtenerPrecioMaterialDesdeBD(int material_id) {
-        double precio = 0.0;
-
-        try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("SELECT precio FROM Materiales WHERE id = ?")) {
-            preparedStatement.setInt(1, material_id);
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next()) {
-                precio = resultSet.getDouble("precio");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al obtener el precio del material desde la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-
-        return precio;
-    }
-
-    private void limpiarTablaMateriales() {
-        materialList.clear();
-        DefaultTableModel emptyModel = new DefaultTableModel();
-        jtableMateriales.setModel(emptyModel);
-    }
-
-    private void eliminarDetallesMaterial() {
-        int materialesViejos = this.originalManualidad.getDetalles().size();
-        System.out.println(materialesViejos+" detalles");
-        System.out.println(materialList.size()+" detalles");
-        for (Material m :materialList){
-
-            if (materialesViejos == 0){
-                try (Connection connection = sql.conectamysql();
-                     PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM detalles_manualidades WHERE id = ? ")) {
-                    preparedStatement.setInt(1,m.getId());
-                    preparedStatement.executeUpdate();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }else{
-                materialesViejos--;
-            }
-        }
-    }
-
     private ModeloMaterial cargarDatosMateriales() {
         sql = new Conexion();
         materialList.clear();
@@ -950,6 +930,68 @@ public class EditarManualidad extends JFrame {
         }
 
         return new ModeloMaterial(materialList, sql);
+    }
+
+    private ModeloProducto cargarDetallesMateriales() {
+        sql = new Conexion();
+        materialList.clear(); // Limpiar la lista antes de agregar los materiales
+
+        try (Connection mysql = sql.conectamysql();
+             PreparedStatement preparedStatement = mysql.prepareStatement(
+                     "SELECT detalles_manualidades.id, materiales.nombre, detalles_manualidades.cantidad, materiales.precio, detalles_manualidades.cantidad * materiales.precio AS total " +
+                             "FROM detalles_manualidades " +
+                             "JOIN materiales ON materiales.id = detalles_manualidades.material_id " +
+                             "WHERE manualidad_id = ?"
+             )
+        ) {
+            preparedStatement.setInt(1,this.originalManualidad.getId());
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            double precioTotalMateriales = 0.00;
+
+            while (resultSet.next()) {
+                Material material = new Material();
+                material.setId(resultSet.getInt("id"));
+                material.setNombre(resultSet.getString("nombre"));
+                material.setCantidad(resultSet.getInt("cantidad"));
+                material.setPrecio(resultSet.getDouble("precio"));
+                double total = resultSet.getDouble("total");
+                precioTotalMateriales += total;
+                materialList.add(material);
+            }
+
+            for (Material materialTemporal : materialListTemporal) {
+                precioTotalMateriales += materialTemporal.getPrecio() * materialTemporal.getCantidad();
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            materialList = new ArrayList<>();
+        }
+
+        // Configurar la tabla para mostrar los encabezados de las columnas
+        JTableHeader tableHeader = jtableMateriales.getTableHeader();
+        tableHeader.setVisible(true);
+
+        // Configurar la tabla para mantener el ordenamiento de filas incluso sin encabezados visibles
+        jtableMateriales.setAutoCreateRowSorter(true);
+
+        // Configurar el ancho de las columnas y alineaciones de las celdas
+        configurarTablaMateriales();
+
+        return new ModeloProducto(materialList, sql);
+    }
+
+    private void eliminarDetalleManualidad(int material_id) {
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "DELETE FROM detalles_manualidades WHERE  id = ?")) {
+            preparedStatement.setInt(1, material_id);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private double calcularTotalTabla() {
@@ -1052,10 +1094,9 @@ public class EditarManualidad extends JFrame {
             columnModel.getColumn(2).setPreferredWidth(60);  // Precio
             columnModel.getColumn(3).setPreferredWidth(100); // Proveedor
             columnModel.getColumn(4).setPreferredWidth(60);  // Disponible
+
             columnModel.getColumn(5).setCellEditor(new DefaultCellEditor(new JCheckBox()));
             columnModel.getColumn(5).setCellRenderer(new EditarManualidad.ButtonRenderer());
-
-
 
             columnModel.getColumn(0).setCellRenderer(new EditarManualidad.CenterAlignedRenderer());
             columnModel.getColumn(1).setCellRenderer(new EditarManualidad.LeftAlignedRenderer());
@@ -1065,55 +1106,42 @@ public class EditarManualidad extends JFrame {
         }
     }
 
-    private ModeloProducto cargarDetallesMateriales() {
-        sql = new Conexion();
-        materialList.clear(); // Limpiar la lista antes de agregar los materiales
+    private void resetFieldsAndTables() {
+        // Restaurar los datos originales en la base de datos a partir de la copia de seguridad
+        restaurarDatosOriginalesEnBaseDeDatos();
 
-        try (Connection mysql = sql.conectamysql();
-             PreparedStatement preparedStatement = mysql.prepareStatement(
-                     "SELECT detalles_manualidades.id, materiales.nombre, detalles_manualidades.cantidad, materiales.precio, detalles_manualidades.cantidad * materiales.precio AS total " +
-                             "FROM detalles_manualidades " +
-                             "JOIN materiales ON materiales.id = detalles_manualidades.material_id " +
-                             "WHERE manualidad_id = ?"
-             )
-        ) {
-            preparedStatement.setInt(1,this.originalManualidad.getId());
-            ResultSet resultSet = preparedStatement.executeQuery();
+        // Restaurar la lista temporal a su estado original
+        materialListTemporal.clear();
+        materialListTemporal.addAll(backupMaterialList);
 
-            double precioTotalMateriales = 0.00;
+        cargarDatosEditar();
 
-            while (resultSet.next()) {
-                Material material = new Material();
-                material.setId(resultSet.getInt("id"));
-                material.setNombre(resultSet.getString("nombre"));
-                material.setCantidad(resultSet.getInt("cantidad"));
-                material.setPrecio(resultSet.getDouble("precio"));
-                double total = resultSet.getDouble("total");
-                precioTotalMateriales += total;
-                materialList.add(material);
+        // Restaurar la tabla con los datos originales
+        jtableMateriales.setModel(cargarDetallesMateriales());
+
+        jtableMateriales.getColumnModel().getColumn(5).setCellRenderer(new EditarManualidad.ButtonRenderer());
+        jtableMateriales.getColumnModel().getColumn(5).setCellEditor(new EditarManualidad.ButtonEditor());
+
+        // Recalcular y actualizar totales y etiquetas
+        calcularTotalTabla();
+        actualizarLbl8y10();
+    }
+
+    private void restaurarDatosOriginalesEnBaseDeDatos() {
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "UPDATE detalles_manualidades SET cantidad = ?, precio = ? WHERE manualidad_id = ? AND material_id = ?")) {
+            for (Material material : backupMaterialList) {
+                preparedStatement.setInt(1, material.getCantidad());
+                preparedStatement.setDouble(2, material.getPrecio());
+                preparedStatement.setInt(3, this.originalManualidad.getId());
+                preparedStatement.setInt(4, material.getId());
+                preparedStatement.executeUpdate();
             }
-
-            for (Material materialTemporal : materialListTemporal) {
-                precioTotalMateriales += materialTemporal.getPrecio() * materialTemporal.getCantidad();
-            }
-
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
-            materialList = new ArrayList<>();
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al restaurar los datos en la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
         }
-
-        // Configurar la tabla para mostrar los encabezados de las columnas
-        JTableHeader tableHeader = jtableMateriales.getTableHeader();
-        tableHeader.setVisible(true);
-
-        // Configurar la tabla para mantener el ordenamiento de filas incluso sin encabezados visibles
-        jtableMateriales.setAutoCreateRowSorter(true);
-
-        // Configurar el ancho de las columnas y alineaciones de las celdas
-        configurarTablaMateriales();
-
-        return new ModeloProducto(materialList, sql);
     }
 
     class ButtonRenderer extends JButton implements TableCellRenderer {
@@ -1183,16 +1211,4 @@ public class EditarManualidad extends JFrame {
             actualizarLbl8y10();
         }
     }
-
-    private void eliminarDetalleManualidad(int material_id) {
-        try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement(
-                     "DELETE FROM detalles_manualidades WHERE  id = ?")) {
-            preparedStatement.setInt(1, material_id);
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
 }

@@ -2,6 +2,8 @@ package Manualidades;
 import Modelos.ModeloManualidad;
 import Objetos.Conexion;
 import Objetos.Manualidad;
+import Objetos.Material;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
@@ -52,6 +54,7 @@ public class ListaManualidades extends JFrame {
         setLocationRelativeTo(null);
         setContentPane(panelPrincipal);
         campoBusqueda.setText("");
+
 
         listaManualidades.setModel(cargarDatos());
         configurarTablaManualidades();
@@ -133,7 +136,7 @@ public class ListaManualidades extends JFrame {
                     JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
                     return;
                 }
-                EditarManualidad editarManualidad = new EditarManualidad(listaManualidad.get(listaManualidades.getSelectedRow()));
+                EditarManualidad editarManualidad = new EditarManualidad(listaManualidad.get(listaManualidades.getSelectedRow()), listaManualidad.get(listaManualidades.getSelectedRow()).getId());
                 editarManualidad.setVisible(true);
                 actual.dispose();
             }
