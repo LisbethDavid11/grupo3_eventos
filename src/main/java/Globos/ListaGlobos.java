@@ -115,7 +115,6 @@ public class ListaGlobos extends JFrame {
             }
         });
 
-        /*
         botonVer.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -123,14 +122,12 @@ public class ListaGlobos extends JFrame {
                     JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
                     return;
                 }
-                VerGlobo globo = new VerArreglo(listaGlobo.get(listaGlobos.getSelectedRow()).getId());
+                VerGlobo globo = new VerGlobo(listaGlobo.get(listaGlobos.getSelectedRow()).getId());
                 globo.setVisible(true);
                 actual.dispose();
             }
         });
 
-
-         */
         botonEditar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
