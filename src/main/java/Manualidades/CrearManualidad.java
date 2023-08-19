@@ -66,7 +66,7 @@ public class CrearManualidad extends JFrame {
 
     public CrearManualidad() {
         super("");
-        setSize(1000, 680);
+        setSize(1000, 700);
         setLocationRelativeTo(null);
         setContentPane(panel1);
 
@@ -155,20 +155,19 @@ public class CrearManualidad extends JFrame {
         botonCancelar.setForeground(Color.WHITE);
         botonGuardar.setForeground(Color.WHITE);
         agregarMaterialButton.setForeground(Color.DARK_GRAY);
-        botonCargarImagen.setForeground(Color.DARK_GRAY);
+        botonCargarImagen.setForeground(Color.WHITE);
         botonLimpiar.setForeground(Color.WHITE);
         cancelarButton.setForeground(Color.WHITE);
         agregarButton.setForeground(Color.WHITE);
 
         // Color de fondo de los botones
+        botonCargarImagen.setBackground(darkColorPink);
         botonCancelar.setBackground(darkColorBlue);
-        cancelarButton.setBackground(darkColorRed);
         botonGuardar.setBackground(darkColorAqua);
-        botonCargarImagen.setBackground(darkColorBlue);
+        botonLimpiar.setBackground(darkColorRed);
         agregarMaterialButton.setBackground(lightColorCyan);
-        botonLimpiar.setBackground(darkColorPink);
         agregarButton.setBackground(darkColorCyan);
-        cancelarButton.setBackground(darkColorRosado);
+        cancelarButton.setBackground(darkColorRed);
 
         botonCancelar.setFocusPainted(false);
         botonGuardar.setFocusPainted(false);

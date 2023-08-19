@@ -107,20 +107,20 @@ public class ListaDesayunos extends JFrame {
             }
         });
 
-        /*
         botonVer.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (listaManualidades.getSelectedRow() == -1) {
+                if (listaDesayunos.getSelectedRow() == -1) {
                     JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
                     return;
                 }
-                // VerManualidad manualidad = new VerManualidad(listaManualidad.get(listaManualidades.getSelectedRow()).getId());
-                // manualidad.setVisible(true);
-                // actual.dispose();
+                VerDesayunos verDesayunos = new VerDesayunos(listaDesayuno.get(listaDesayunos.getSelectedRow()).getId());
+                verDesayunos.setVisible(true);
+                actual.dispose();
             }
         });
 
+        /*
         botonEditar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

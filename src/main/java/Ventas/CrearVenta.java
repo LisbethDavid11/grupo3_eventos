@@ -330,12 +330,12 @@ public class CrearVenta extends JFrame {
         guardarButton.setBorder(margin);
 
         limpiarButton.setForeground(Color.WHITE);
-        limpiarButton.setBackground(darkColorRed);
+        limpiarButton.setBackground(darkColorPink);
         limpiarButton.setFocusPainted(false);
         limpiarButton.setBorder(margin);
 
         botonLimpiar.setForeground(Color.WHITE);
-        botonLimpiar.setBackground(darkColorPink);
+        botonLimpiar.setBackground(darkColorRed);
         botonLimpiar.setFocusPainted(false);
         botonLimpiar.setBorder(margin);
 

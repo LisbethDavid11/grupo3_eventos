@@ -46,7 +46,7 @@
             <properties>
               <font name="Arial" size="12" style="1"/>
               <icon value="IconosBotones/guardarP.png"/>
-              <text value="GUARDAR"/>
+              <text value="ACTUALIZAR"/>
             </properties>
           </component>
           <component id="1b8d" class="javax.swing.JButton" binding="botonLimpiar">
@@ -56,7 +56,7 @@
             <properties>
               <font name="Arial" size="12" style="1"/>
               <icon value="IconosBotones/icon_limpiar_16x16.png"/>
-              <text value="LIMPIAR     "/>
+              <text value="LIMPIAR          "/>
             </properties>
           </component>
         </children>

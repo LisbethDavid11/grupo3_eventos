@@ -192,11 +192,11 @@ public class ListaVentas extends JFrame {
         botonAdelante.setBackground(darkColor);
         botonAtras.setBackground(darkColor);
         botonVer.setBackground(darkColor);
-        fechaComboBox.setBackground(darkColor);
+        fechaComboBox.setBackground(lightColor);
         campoBusqueda.setBackground(darkColor);
 
         placeholder.setForeground(Color.WHITE);
-        fechaComboBox.setForeground(Color.WHITE);
+        fechaComboBox.setForeground(primaryColor);
         botonImprimir.setForeground(Color.WHITE);
         botonVer.setForeground(Color.WHITE);
         botonAtras.setForeground(Color.WHITE);
@@ -222,6 +222,7 @@ public class ListaVentas extends JFrame {
         botonVer.setFocusable(false);
         botonImprimir.setFocusable(false);
         fechaComboBox.setFocusable(false);
+
 
         fechaComboBox.addActionListener(new ActionListener() {
             @Override

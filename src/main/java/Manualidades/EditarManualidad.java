@@ -53,6 +53,7 @@ public class EditarManualidad extends JFrame {
     private JLabel lbl9;
     private JLabel lbl10;
     private JTextField campoNombre;
+    private JPanel panel8;
     private List<Material> materialList = new ArrayList<>();
     private String imagePath = "";
     private EditarManualidad actual = this;
@@ -136,6 +137,7 @@ public class EditarManualidad extends JFrame {
         panel5.setBackground(Color.decode("#F5F5F5"));
         panel6.setBackground(Color.decode("#F5F5F5"));
         panel7.setBackground(Color.decode("#F5F5F5"));
+        panel8.setBackground(Color.decode("#F5F5F5"));
         jpanelDescripcion.setBackground(Color.decode("#F5F5F5"));
         jpanelImagen.setBackground(Color.decode("#F5F5F5"));
 
@@ -169,19 +171,19 @@ public class EditarManualidad extends JFrame {
         botonCancelar.setForeground(Color.WHITE);
         botonGuardar.setForeground(Color.WHITE);
         agregarMaterialButton.setForeground(Color.DARK_GRAY);
-        botonCargarImagen.setForeground(Color.DARK_GRAY);
+        botonCargarImagen.setForeground(Color.WHITE);
         botonLimpiar.setForeground(Color.WHITE);
         cancelarButton.setForeground(Color.WHITE);
         agregarButton.setForeground(Color.WHITE);
 
         // Color de fondo de los botones
-        botonCancelar.setBackground(darkColorCyan);
+        botonCancelar.setBackground(darkColorBlue);
         botonGuardar.setBackground(darkColorAqua);
-        botonCargarImagen.setBackground(lightColorAqua);
+        botonCargarImagen.setBackground(darkColorPink);
         agregarMaterialButton.setBackground(lightColorCyan);
-        botonLimpiar.setBackground(darkColorRosado);
+        botonLimpiar.setBackground(darkColorRed);
         agregarButton.setBackground(darkColorCyan);
-        cancelarButton.setBackground(darkColorRosado);
+        cancelarButton.setBackground(darkColorRed);
 
         botonCancelar.setFocusPainted(false);
         botonGuardar.setFocusPainted(false);
@@ -708,13 +710,10 @@ public class EditarManualidad extends JFrame {
         jcbOcasion.setSelectedItem(this.originalManualidad.getTipo());
         campoPrecio.setText(String.valueOf(this.originalManualidad.getPrecio_manualidad()));
         campoManoObra.setText(String.valueOf(this.originalManualidad.getMano_obra()));
+        campoNombre.setText(String.valueOf(this.originalManualidad.getNombre()));
 
-        ImageIcon imagenIcon = this.originalManualidad.getImagen();
-        if (imagenIcon != null) {
-            jlabelImagen.setIcon(imagenIcon);
-        } else {
-            System.out.println("ImageIcon is null");
-        }
+        //String nombreImagen = this.originalManualidad.getNombreImagen(); // Asumiendo que hay un método getNombreImagen() en la clase originalManualidad
+        //mostrarImagen(nombreImagen);
 
         jtableMateriales.setModel(cargarDetallesMateriales());
         jtableMateriales.getColumnModel().getColumn(5).setCellRenderer(new EditarManualidad.ButtonRenderer());
@@ -750,14 +749,6 @@ public class EditarManualidad extends JFrame {
 
             jlabelImagen.setIcon(scaledIcon);
         }
-    }
-
-    private String getFileExtension(String fileName) {
-        int lastDotIndex = fileName.lastIndexOf(".");
-        if (lastDotIndex > 0 && lastDotIndex < fileName.length() - 1) {
-            return fileName.substring(lastDotIndex + 1);
-        }
-        return "";  // Si no se encuentra extensión, retornar cadena vacía
     }
 
     class CenterAlignedRenderer extends DefaultTableCellRenderer {

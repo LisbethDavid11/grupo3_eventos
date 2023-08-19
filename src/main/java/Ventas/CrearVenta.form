@@ -63,7 +63,7 @@
             </constraints>
             <properties>
               <icon value="IconosBotones/guardarP.png"/>
-              <text value="GUARDAR"/>
+              <text value="GUARDAR VENTA           "/>
             </properties>
           </component>
         </children>

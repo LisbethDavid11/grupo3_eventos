@@ -354,7 +354,7 @@
             <properties>
               <font name="Arial" size="12" style="1"/>
               <icon value="IconosBotones/guardarP.png"/>
-              <text value="GUARDAR"/>
+              <text value="GUARDAR MANUALIDAD     "/>
             </properties>
           </component>
           <component id="68e43" class="javax.swing.JButton" binding="botonLimpiar">

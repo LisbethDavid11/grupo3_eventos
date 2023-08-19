@@ -199,7 +199,7 @@ public class CrearDesayuno extends JFrame {
         botonCancelar.setForeground(Color.WHITE);
         botonGuardar.setForeground(Color.WHITE);
         agregarMaterialButton.setForeground(Color.DARK_GRAY);
-        botonCargarImagen.setForeground(Color.DARK_GRAY);
+        botonCargarImagen.setForeground(Color.WHITE);
         botonLimpiar.setForeground(Color.WHITE);
         cancelarButton.setForeground(Color.WHITE);
         agregarButton.setForeground(Color.WHITE);
@@ -210,14 +210,14 @@ public class CrearDesayuno extends JFrame {
         // Color de fondo de los botones
         botonCancelar.setBackground(darkColorBlue);
         botonGuardar.setBackground(darkColorAqua);
-        botonCargarImagen.setBackground(darkColorBlue);
+        botonCargarImagen.setBackground(darkColorPink);
         agregarMaterialButton.setBackground(lightColorAmber);
         agregarFloresButton.setBackground(lightColorAqua);
         agregarGloboButton.setBackground(lightColorCyan);
         agregarTarjetasButton.setBackground(lightColorRosado);
-        botonLimpiar.setBackground(darkColorPink);
+        botonLimpiar.setBackground(darkColorRed);
         agregarButton.setBackground(darkColorCyan);
-        cancelarButton.setBackground(darkColorRosado);
+        cancelarButton.setBackground(darkColorRed);
 
         botonCancelar.setFocusPainted(false);
         botonGuardar.setFocusPainted(false);

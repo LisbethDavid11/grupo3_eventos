@@ -18,15 +18,13 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="5a7ab" class="javax.swing.JButton" binding="guardarButton">
+          <component id="85560" class="javax.swing.JButton" binding="cancelarButton">
             <constraints>
-              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
-                <preferred-size width="140" height="30"/>
-              </grid>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <icon value="IconosBotones/guardarP.png"/>
-              <text value="GUARDAR"/>
+              <icon value="IconosBotones/cancelarpp.png"/>
+              <text value="CANCELAR"/>
             </properties>
           </component>
         </children>
@@ -39,22 +37,24 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="c154e" class="javax.swing.JButton" binding="cancelarButton">
+          <component id="ba151" class="javax.swing.JButton" binding="guardarButton">
             <constraints>
-              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="140" height="30"/>
+              </grid>
             </constraints>
             <properties>
-              <icon value="IconosBotones/cancelarpp.png"/>
-              <text value="CANCELAR"/>
+              <icon value="IconosBotones/guardarP.png"/>
+              <text value="GUARDAR"/>
             </properties>
           </component>
-          <component id="fcbdb" class="javax.swing.JButton" binding="limpiarButton">
+          <component id="bb4c6" class="javax.swing.JButton" binding="limpiarButton">
             <constraints>
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <icon value="IconosBotones/cancelarpp.png"/>
-              <text value="LIMPIAR"/>
+              <icon value="IconosBotones/icon_limpiar_16x16.png"/>
+              <text value="LIMPIAR LISTA DE PRODUCTOS"/>
             </properties>
           </component>
         </children>
@@ -201,7 +201,7 @@
               </grid>
             </constraints>
             <properties>
-              <icon value="IconosBotones/guardarP.png"/>
+              <icon value="IconosBotones/materiales.png"/>
               <text value="AGREGAR"/>
             </properties>
           </component>

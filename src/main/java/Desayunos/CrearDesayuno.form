@@ -347,7 +347,7 @@
             <properties>
               <font name="Arial" size="12" style="1"/>
               <icon value="IconosBotones/guardarP.png"/>
-              <text value="GUARDAR"/>
+              <text value="GUARDAR DESAYUNO            "/>
             </properties>
           </component>
           <component id="f513d" class="javax.swing.JButton" binding="botonLimpiar">
