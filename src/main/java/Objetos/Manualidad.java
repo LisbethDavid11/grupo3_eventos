@@ -1,6 +1,8 @@
 package Objetos;
 
 import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Manualidad {
     private int id;
@@ -14,8 +16,12 @@ public class Manualidad {
 
     public static String nombreTabla = "manualidades";
 
+    private List<ManualidadDetalle> detalles;
+
     public Manualidad() {
+        this.detalles = new ArrayList<>();
     }
+
 
     public Object[] toTableRow() {
         return new Object[] {id, imagen, nombre, descripcion, tipo, cantidad, precio_manualidad, mano_obra};
@@ -30,6 +36,7 @@ public class Manualidad {
         this.cantidad = cantidad;
         this.precio_manualidad = precio_manualidad;
         this.mano_obra = mano_obra;
+        this.detalles = new ArrayList<>();
     }
 
     public int getId() {
@@ -94,5 +101,17 @@ public class Manualidad {
 
     public void setMano_obra(double mano_obra) {
         this.mano_obra = mano_obra;
+    }
+
+    public List<ManualidadDetalle> getDetalles() {
+        return detalles;
+    }
+
+    public void setDetalles(List<ManualidadDetalle> detalles) {
+        this.detalles = detalles;
+    }
+
+    public void addDetalles(ManualidadDetalle detalles) {
+        this.detalles.add(detalles);
     }
 }

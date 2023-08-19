@@ -120,9 +120,9 @@ public class ListaManualidades extends JFrame {
                     JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
                     return;
                 }
-                //VerManualidades manualidad = new VerManualidades(listaManualidad.get(listaManualidades.getSelectedRow()).getId());
-                //manualidad.setVisible(true);
-                //actual.dispose();
+                VerManualidades manualidad = new VerManualidades(listaManualidad.get(listaManualidades.getSelectedRow()).getId());
+                manualidad.setVisible(true);
+                actual.dispose();
             }
         });
 
@@ -133,9 +133,9 @@ public class ListaManualidades extends JFrame {
                     JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
                     return;
                 }
-                // EditarManualidad manualidad = new EditarManualidad(listaManualidad.get(listaManualidades.getSelectedRow()).getId());
-                // manualidad.setVisible(true);
-                // actual.dispose();
+                EditarManualidad editarManualidad = new EditarManualidad(listaManualidad.get(listaManualidades.getSelectedRow()));
+                editarManualidad.setVisible(true);
+                actual.dispose();
             }
         });
 
