@@ -164,7 +164,7 @@ public class ListaArreglos extends JFrame {
         panelTitulo.setBackground(primaryColor);
         panelA.setBackground(primaryColor);
         panelB.setBackground(primaryColor);
-        campoBusqueda.setBackground(darkColor);
+        campoBusqueda.setBackground(Color.WHITE);
         noCheckBox.setBackground(primaryColor);
         siCheckBox.setBackground(primaryColor);
         botonAdelante.setBackground(darkColor);
@@ -179,8 +179,7 @@ public class ListaArreglos extends JFrame {
         botonVer.setForeground(Color.WHITE);
         botonCrear.setForeground(Color.WHITE);
         botonEditar.setForeground(Color.WHITE);
-        campoBusqueda.setForeground(Color.WHITE);
-        placeholder.setForeground(Color.WHITE);
+        placeholder.setForeground(darkColor);
         noCheckBox.setForeground(Color.WHITE);
         siCheckBox.setForeground(Color.WHITE);
         lblPagina.setForeground(Color.WHITE);

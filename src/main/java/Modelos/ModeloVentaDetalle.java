@@ -30,6 +30,7 @@ public class ModeloVentaDetalle extends AbstractTableModel {
                 VentaDetalle detalle = new VentaDetalle();
                 detalle.setId(resultSet.getInt("id"));
                 detalle.setVentaId(resultSet.getInt("venta_id"));
+                detalle.setTipoDetalle(resultSet.getString("tipo_detalle"));
                 detalle.setDetalleId(resultSet.getInt("detalle_id"));
                 detalle.setCantidad(resultSet.getInt("cantidad"));
                 detalle.setPrecio(resultSet.getDouble("precio"));

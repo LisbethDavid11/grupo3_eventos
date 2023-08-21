@@ -26,7 +26,7 @@
               <actionCommand value="CANCELAR"/>
               <font name="Arial" size="12" style="1"/>
               <icon value="IconosBotones/hacia-atras.png"/>
-              <text value="VOLVER"/>
+              <text value="REGRESAR"/>
             </properties>
           </component>
         </children>

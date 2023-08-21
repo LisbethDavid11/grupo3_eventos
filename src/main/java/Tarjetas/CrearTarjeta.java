@@ -24,7 +24,6 @@ import java.util.EventObject;
 import java.util.List;
 
 public class CrearTarjeta extends JFrame {
-
     private JTextField campoPrecioTarjeta;
     private JTextArea campoDescripcion;
     private JRadioButton radioButtonSi;
@@ -52,6 +51,7 @@ public class CrearTarjeta extends JFrame {
     private JTextField campoManoObra;
     private JLabel lbl9;
     private JLabel lbl10;
+    private JPanel panel8;
     private List<Material> materialList = new ArrayList<>();
     private String imagePath = "";
     private CrearTarjeta actual = this;
@@ -129,11 +129,11 @@ public class CrearTarjeta extends JFrame {
         panel5.setBackground(Color.decode("#F5F5F5"));
         panel6.setBackground(Color.decode("#F5F5F5"));
         panel7.setBackground(Color.decode("#F5F5F5"));
+        panel8.setBackground(Color.decode("#F5F5F5"));
         jpanelDescripcion.setBackground(Color.decode("#F5F5F5"));
         jpanelImagen.setBackground(Color.decode("#F5F5F5"));
         radioButtonSi.setBackground(Color.decode("#F5F5F5"));
         radioButtonNo.setBackground(Color.decode("#F5F5F5"));
-
 
         // Color de texto para los JTextField
         Color textColor = Color.decode("#212121");
@@ -165,19 +165,19 @@ public class CrearTarjeta extends JFrame {
         botonCancelar.setForeground(Color.WHITE);
         botonGuardar.setForeground(Color.WHITE);
         agregarMaterialButton.setForeground(Color.DARK_GRAY);
-        botonCargarImagen.setForeground(Color.DARK_GRAY);
+        botonCargarImagen.setForeground(Color.WHITE);
         botonLimpiar.setForeground(Color.WHITE);
         cancelarButton.setForeground(Color.WHITE);
         agregarButton.setForeground(Color.WHITE);
 
         // Color de fondo de los botones
-        botonCancelar.setBackground(darkColorCyan);
+        botonCancelar.setBackground(darkColorBlue);
         botonGuardar.setBackground(darkColorAqua);
-        botonCargarImagen.setBackground(lightColorAqua);
+        botonCargarImagen.setBackground(darkColorPink);
         agregarMaterialButton.setBackground(lightColorCyan);
-        botonLimpiar.setBackground(darkColorRosado);
+        botonLimpiar.setBackground(darkColorRed);
         agregarButton.setBackground(darkColorCyan);
-        cancelarButton.setBackground(darkColorRosado);
+        cancelarButton.setBackground(darkColorRed);
 
         botonCancelar.setFocusPainted(false);
         botonGuardar.setFocusPainted(false);

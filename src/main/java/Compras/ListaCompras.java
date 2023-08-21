@@ -194,17 +194,17 @@ public class ListaCompras extends JFrame {
         botonAdelante.setBackground(darkColor);
         botonAtras.setBackground(darkColor);
         botonVer.setBackground(darkColor);
-        fechaComboBox.setBackground(darkColor);
-        campoBusqueda.setBackground(darkColor);
+        fechaComboBox.setBackground(Color.WHITE);
+        campoBusqueda.setBackground(Color.WHITE);
 
-        placeholder.setForeground(Color.WHITE);
-        fechaComboBox.setForeground(Color.WHITE);
+        placeholder.setForeground(darkColor);
+        fechaComboBox.setForeground(darkColor);
         botonImprimir.setForeground(Color.WHITE);
         botonVer.setForeground(Color.WHITE);
         botonAtras.setForeground(Color.WHITE);
         botonAdelante.setForeground(Color.WHITE);
         botonCrear.setForeground(Color.WHITE);
-        campoBusqueda.setForeground(Color.WHITE);
+        campoBusqueda.setForeground(darkColor);
         lblPagina.setForeground(Color.WHITE);
 
         campoBusqueda.setFont(font);

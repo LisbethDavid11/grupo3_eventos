@@ -1,16 +1,11 @@
 package Ventas;
 import Clientes.CrearCliente;
 import Clientes.ListaClientes;
-import Manualidades.CrearManualidad;
 import Materiales.TextPrompt;
 import Modelos.*;
 import Objetos.*;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.jdatepicker.impl.JDatePickerImpl;
+import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.*;
@@ -19,8 +14,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.File;
-import java.io.IOException;
 import java.sql.*;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -113,14 +106,12 @@ public class CrearVenta extends JFrame {
         tiposDescripcion.put("A","arreglo");
         tiposDescripcion.put("D","desayuno");
 
-
         tiposTablas.put("F","floristeria");
         tiposTablas.put("M","materiales");
         tiposTablas.put("X","manualidades");
         tiposTablas.put("T","tarjetas");
         tiposTablas.put("A","arreglos");
         tiposTablas.put("D","desayunos");
-
 
         agregarProductoButton.addActionListener(new ActionListener() {
             @Override
@@ -248,17 +239,6 @@ public class CrearVenta extends JFrame {
 
                     configurarTablaMateriales();
                     actualizarLbl8y10();
-
-
-
-
-
-
-
-
-
-
-
                 } else {
                     // Crea un botón personalizado
                     JButton btnOK = new JButton("OK");
@@ -297,9 +277,6 @@ public class CrearVenta extends JFrame {
                 }
             }
         });
-
-        boxCliente.addItem("Seleccione un cliente");
-        cargarClientes();
 
         boxEmpleado.addItem("Seleccione un empleado");
         cargarEmpleados();
@@ -773,6 +750,21 @@ public class CrearVenta extends JFrame {
         });
     }
 
+    public void cargarComboCliente(String cliente){
+
+
+        boxCliente.addItem("Seleccione un cliente");
+        cargarClientes();
+        AutoCompleteDecorator.decorate(boxCliente);
+
+        if (cliente.equals("")){
+
+        }else {
+            boxCliente.setSelectedItem(cliente);
+        }
+
+    }
+
     public void cargarClientes() {
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement("SELECT id, nombre, apellido FROM clientes");
@@ -1144,6 +1136,7 @@ public class CrearVenta extends JFrame {
             }
 
             JOptionPane.showMessageDialog(null, "Venta registrada exitosamente.", "Éxito", JOptionPane.DEFAULT_OPTION);
+            ListaVentas.imprimirFactura(codigoVenta);
             crearVenta.dispose();
 
             ListaVentas ventas = new ListaVentas();

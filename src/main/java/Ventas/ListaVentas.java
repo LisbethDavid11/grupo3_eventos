@@ -42,7 +42,7 @@ public class ListaVentas extends JFrame {
     private JPanel panelTitulo;
     private List<Venta> ventaList;
     private int pagina = 0;
-    private Conexion sql;
+    private static Conexion sql;
     private String busqueda = "";
     private ListaVentas actual = this;
 
@@ -134,6 +134,7 @@ public class ListaVentas extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 CrearVenta crearVenta = new CrearVenta();
                 crearVenta.setVisible(true);
+                crearVenta.cargarComboCliente("");
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(listaVentas); // Obtén la ventana que contiene la lista de compras
                 if (frame != null) {
                     frame.dispose(); // Cierra la ventana
@@ -168,7 +169,7 @@ public class ListaVentas extends JFrame {
                 int filaSeleccionada = listaVentas.getSelectedRow();
                 if (filaSeleccionada >= 0) {
                     int indiceItemSeleccionado = listaVentas.convertRowIndexToModel(filaSeleccionada);
-                    imprimirFactura(indiceItemSeleccionado);
+                    imprimirFactura(ventaList.get(indiceItemSeleccionado).getCodigoVenta());
                 }
             }
         });
@@ -192,17 +193,17 @@ public class ListaVentas extends JFrame {
         botonAdelante.setBackground(darkColor);
         botonAtras.setBackground(darkColor);
         botonVer.setBackground(darkColor);
-        fechaComboBox.setBackground(lightColor);
-        campoBusqueda.setBackground(darkColor);
+        fechaComboBox.setBackground(Color.WHITE);
+        campoBusqueda.setBackground(Color.WHITE);
 
-        placeholder.setForeground(Color.WHITE);
+        placeholder.setForeground(darkColor);
         fechaComboBox.setForeground(primaryColor);
         botonImprimir.setForeground(Color.WHITE);
         botonVer.setForeground(Color.WHITE);
         botonAtras.setForeground(Color.WHITE);
         botonAdelante.setForeground(Color.WHITE);
         botonCrear.setForeground(Color.WHITE);
-        campoBusqueda.setForeground(Color.WHITE);
+        campoBusqueda.setForeground(primaryColor);
         lblPagina.setForeground(Color.WHITE);
 
         campoBusqueda.setFont(font);
@@ -290,8 +291,6 @@ public class ListaVentas extends JFrame {
             return cell;
         }
     }
-
-
 
     private int obtenerNumeroMes(String mesSeleccionado) {
         int numeroMes = 0;
@@ -436,83 +435,34 @@ public class ListaVentas extends JFrame {
         return totalPageCount;
     }
 
-    public double calcularSubtotal(List<VentaDetalle> detalles) {
+    public static double calcularSubtotal(List<VentaDetalle> detalles) {
         double subtotal = 0.0;
 
         for (VentaDetalle detalle : detalles) {
-            double precioDetalle = obtenerPrecioProducto(detalle.getDetalleId(), sql);
+            double precioDetalle = obtenerPrecioProducto(detalle.getId(), sql);
             subtotal += (detalle.getCantidad() * precioDetalle) * 0.85;
         }
 
         return subtotal;
     }
 
-    public double calcularISV(List<VentaDetalle> detalles) {
+    public static double calcularISV(List<VentaDetalle> detalles) {
         double isv = 0.0;
 
         for (VentaDetalle detalle : detalles) {
-            double precioDetalle = obtenerPrecioProducto(detalle.getDetalleId(), sql);
+            double precioDetalle = obtenerPrecioProducto(detalle.getId(), sql);
             isv += (detalle.getCantidad() * precioDetalle) * 0.15;
         }
         return isv;
     }
 
-    private double calcularTotal(List<VentaDetalle> detalles) {
+    private static double calcularTotal(List<VentaDetalle> detalles) {
         double subtotal = calcularSubtotal(detalles);
         double isv = calcularISV(detalles);
         return subtotal + isv;
     }
 
-    private ModeloVenta cargarDatos() {
-        sql = new Conexion();
-        try (Connection mysql = sql.conectamysql();
-             PreparedStatement preparedStatement = mysql.prepareStatement(
-                     "SELECT c.*, p.nombre, CONCAT(e.nombres, ' ', e.apellidos) AS apellido " +
-                             "FROM ventas c " +
-                             "JOIN clientes p ON c.cliente_id = p.id " +
-                             "JOIN empleados e ON c.empleado_id = e.id " +
-                             "WHERE c.codigo_venta LIKE CONCAT('%', ?, '%') " +
-                             "OR DATE_FORMAT(c.fecha, '%d de %M %Y') LIKE CONCAT('%', ?, '%') " +
-                             "OR p.nombre LIKE CONCAT('%', ?, '%') " +
-                             "LIMIT ?, 20")) {
-
-            SimpleDateFormat formatoFecha = new SimpleDateFormat("dd 'de' MMMM yyyy", new Locale("es"));
-
-            preparedStatement.setString(1, busqueda);  // Búsqueda por código de venta
-            preparedStatement.setString(2, busqueda);  // Búsqueda por fecha de la venta
-            preparedStatement.setString(3, busqueda);  // Búsqueda por nombre o apellido del cliente
-            preparedStatement.setInt(4, pagina * 20);
-
-            ResultSet resultSet = preparedStatement.executeQuery();
-            ventaList = new ArrayList<>();
-            while (resultSet.next()) {
-                Venta venta = new Venta();
-                venta.setId(resultSet.getInt("id"));
-                venta.setCodigoVenta(resultSet.getString("codigo_venta"));
-                java.util.Date fecha = resultSet.getDate("fecha");
-                if (fecha != null) {
-                    venta.setFecha(formatoFecha.format(fecha));
-                } else {
-                    venta.setFecha("");
-                }
-
-                venta.setClienteId(resultSet.getInt("cliente_id"));
-                venta.setEmpleadoId(resultSet.getInt("empleado_id"));
-                ventaList.add(venta);
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
-            ventaList = new ArrayList<>();
-        }
-        if (listaVentas.getColumnCount() > 0) {
-            TableColumn columnId = listaVentas.getColumnModel().getColumn(0);
-            columnId.setPreferredWidth(50);
-        }
-        return new ModeloVenta(ventaList, sql);
-    }
-
-    public double obtenerPrecioProducto(int detalleId, Conexion sql) {
+    public static double obtenerPrecioProducto(int detalleId, Conexion sql) {
         double precioProducto = 0.0;
 
         try (Connection connection = sql.conectamysql();
@@ -606,7 +556,7 @@ public class ListaVentas extends JFrame {
         return precioProducto;
     }
 
-    public String obtenerNombreProducto(int detalleId, Conexion sql) {
+    public static String obtenerNombreProducto(int detalleId, Conexion sql) {
         String nombreProducto = "Producto no encontrado";
 
         try (Connection connection = sql.conectamysql();
@@ -670,10 +620,90 @@ public class ListaVentas extends JFrame {
         return nombreProducto;
     }
 
-    public void imprimirFactura(int indiceItem) {
+    private ModeloVenta cargarDatos() {
+        sql = new Conexion();
+        try (Connection mysql = sql.conectamysql();
+             PreparedStatement preparedStatement = mysql.prepareStatement(
+                     "SELECT c.*, p.nombre, CONCAT(e.nombres, ' ', e.apellidos) AS apellido " +
+                             "FROM ventas c " +
+                             "JOIN clientes p ON c.cliente_id = p.id " +
+                             "JOIN empleados e ON c.empleado_id = e.id " +
+                             "WHERE c.codigo_venta LIKE CONCAT('%', ?, '%') " +
+                             "OR DATE_FORMAT(c.fecha, '%d de %M %Y') LIKE CONCAT('%', ?, '%') " +
+                             "OR p.nombre LIKE CONCAT('%', ?, '%') " +
+                             "LIMIT ?, 20")) {
+
+            SimpleDateFormat formatoFecha = new SimpleDateFormat("dd 'de' MMMM yyyy", new Locale("es"));
+
+            preparedStatement.setString(1, busqueda);  // Búsqueda por código de venta
+            preparedStatement.setString(2, busqueda);  // Búsqueda por fecha de la venta
+            preparedStatement.setString(3, busqueda);  // Búsqueda por nombre o apellido del cliente
+            preparedStatement.setInt(4, pagina * 20);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            ventaList = new ArrayList<>();
+            while (resultSet.next()) {
+                Venta venta = new Venta();
+                venta.setId(resultSet.getInt("id"));
+                venta.setCodigoVenta(resultSet.getString("codigo_venta"));
+                java.util.Date fecha = resultSet.getDate("fecha");
+                if (fecha != null) {
+                    venta.setFecha(formatoFecha.format(fecha));
+                } else {
+                    venta.setFecha("");
+                }
+
+                venta.setClienteId(resultSet.getInt("cliente_id"));
+                venta.setEmpleadoId(resultSet.getInt("empleado_id"));
+                ventaList.add(venta);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            ventaList = new ArrayList<>();
+        }
+        if (listaVentas.getColumnCount() > 0) {
+            TableColumn columnId = listaVentas.getColumnModel().getColumn(0);
+            columnId.setPreferredWidth(50);
+        }
+        return new ModeloVenta(ventaList, sql);
+    }
+
+    public static void imprimirFactura(String codigo) {
+        Venta venta = new Venta();
+
         try {
-            // Obtener la compra asociada al ítem seleccionado
-            Venta venta = ventaList.get(indiceItem);
+            sql = new Conexion();
+            try (Connection mysql = sql.conectamysql();
+                 PreparedStatement preparedStatement = mysql.prepareStatement(
+                         "SELECT c.*, p.nombre, CONCAT(e.nombres, ' ', e.apellidos) AS apellido " +
+                                 "FROM ventas c " +
+                                 "JOIN clientes p ON c.cliente_id = p.id " +
+                                 "JOIN empleados e ON c.empleado_id = e.id " +
+                                 "WHERE c.codigo_venta LIKE CONCAT('%', ?, '%')")) {
+
+                SimpleDateFormat formatoFecha = new SimpleDateFormat("dd 'de' MMMM yyyy", new Locale("es"));
+
+                preparedStatement.setString(1, codigo);  // Búsqueda por código de venta
+
+                ResultSet resultSet = preparedStatement.executeQuery();
+
+                while (resultSet.next()) {
+                    venta.setId(resultSet.getInt("id"));
+                    venta.setCodigoVenta(resultSet.getString("codigo_venta"));
+                    java.util.Date fecha = resultSet.getDate("fecha");
+                    if (fecha != null) {
+                        venta.setFecha(formatoFecha.format(fecha));
+                    } else {
+                        venta.setFecha("");
+                    }
+                    venta.setClienteId(resultSet.getInt("cliente_id"));
+                    venta.setEmpleadoId(resultSet.getInt("empleado_id"));
+                }
+            }catch (Exception ignored){
+
+            }
+
 
             // Crear un nuevo documento
             PDDocument doc = new PDDocument();
@@ -718,7 +748,7 @@ public class ListaVentas extends JFrame {
             contentStream.newLineAtOffset(50, yPosition);
             contentStream.showText("N°");
             contentStream.newLineAtOffset(columnWidths[0], 0);
-            contentStream.showText("Material");
+            contentStream.showText("Producto");
             contentStream.newLineAtOffset(columnWidths[1], 0);
             contentStream.showText("Cantidad");
             contentStream.newLineAtOffset(columnWidths[2], 0);
@@ -747,7 +777,7 @@ public class ListaVentas extends JFrame {
                     rowNumber = 0;
                     contentStream.showText("N°");
                     contentStream.newLineAtOffset(columnWidths[0], 0);
-                    contentStream.showText("Material");
+                    contentStream.showText("Producto");
                     contentStream.newLineAtOffset(columnWidths[1], 0);
                     contentStream.showText("Cantidad");
                     contentStream.newLineAtOffset(columnWidths[2], 0);
@@ -763,17 +793,17 @@ public class ListaVentas extends JFrame {
                 contentStream.newLineAtOffset(50, yPosition);
                 contentStream.showText(String.valueOf(rowNumber + 1));
                 contentStream.newLineAtOffset(columnWidths[0], 0);
-                contentStream.showText(obtenerNombreProducto(detalle.getDetalleId(), sql));
+                contentStream.showText(obtenerNombreProducto(detalle.getId(), sql));
 
                 contentStream.newLineAtOffset(columnWidths[1], 0);
                 contentStream.showText(String.valueOf(detalle.getCantidad()));
                 contentStream.newLineAtOffset(columnWidths[2], 0);
-                contentStream.showText(String.format("L. %.2f", obtenerPrecioProducto(detalle.getDetalleId(), sql)));
+                contentStream.showText(String.format("L. %.2f", obtenerPrecioProducto(detalle.getId(), sql)));
 
 
                 //contentStream.showText(String.format("L. %.2f", detalle.getPrecio()));
                 contentStream.newLineAtOffset(columnWidths[3], 0);
-                contentStream.showText(String.format("L. %.2f", detalle.getCantidad() * obtenerPrecioProducto(detalle.getDetalleId(), sql)));
+                contentStream.showText(String.format("L. %.2f", detalle.getCantidad() * obtenerPrecioProducto(detalle.getId(), sql)));
                 contentStream.endText();
 
 

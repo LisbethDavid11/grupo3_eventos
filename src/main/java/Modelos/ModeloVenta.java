@@ -65,13 +65,13 @@ public class ModeloVenta extends AbstractTableModel {
                 String empleadoNombre = obtenerNombreEmpleado(empleadoId);
                 return "  " + empleadoNombre;
             case 5: // Sub Total
-                double subTotal = calcularSubTotal(venta);
+                double subTotal = obtenerSubTotal(venta.getId());
                 return String.format("  L. %.2f", subTotal);
             case 6: // ISV
-                double isv = calcularISV(venta);
+                double isv = obtenerISV(venta.getId());
                 return String.format("  L. %.2f", isv);
             case 7: // Total
-                double total = calcularTotal(venta);
+                double total = obtenerTotal(venta.getId());
                 return String.format("  L. %.2f", total);
             default:
                 return null;
@@ -114,52 +114,122 @@ public class ModeloVenta extends AbstractTableModel {
         return null; // Devuelve null si no se encuentra el empleado o hay un error
     }
 
-    private double calcularSubTotal(Venta venta) {
-        double subTotal = 0.0;
+    private double obtenerSubTotal(int ventaId) {
+        try (Connection mysql = sql.conectamysql();
+             PreparedStatement preparedStatement = mysql.prepareStatement(
+                     "SELECT " +
+                             "SUM(dv.cantidad * " +
+                             "CASE " +
+                             "WHEN dv.tipo_detalle = 'material' THEN m.precio " +
+                             "WHEN dv.tipo_detalle = 'tarjeta' THEN t.precio_tarjeta " +
+                             "WHEN dv.tipo_detalle = 'floristeria' THEN f.precio " +
+                             "WHEN dv.tipo_detalle = 'manualidad' THEN ma.precio_manualidad " +
+                             "WHEN dv.tipo_detalle = 'arreglo' THEN a.precio " +
+                             "WHEN dv.tipo_detalle = 'desayuno' THEN d.precio_desayuno " +
+                             "END) * 0.85 AS sub_total " +
+                             "FROM detalles_ventas dv " +
+                             "LEFT JOIN materiales m ON dv.tipo_detalle = 'material' AND dv.detalle_id = m.id " +
+                             "LEFT JOIN tarjetas t ON dv.tipo_detalle = 'tarjeta' AND dv.detalle_id = t.id " +
+                             "LEFT JOIN floristeria f ON dv.tipo_detalle = 'floristeria' AND dv.detalle_id = f.id " +
+                             "LEFT JOIN manualidades ma ON dv.tipo_detalle = 'manualidad' AND dv.detalle_id = ma.id " +
+                             "LEFT JOIN arreglos a ON dv.tipo_detalle = 'arreglo' AND dv.detalle_id = a.id " +
+                             "LEFT JOIN desayunos d ON dv.tipo_detalle = 'desayuno' AND dv.detalle_id = d.id " +
+                             "WHERE dv.venta_id = ?")) {
 
-        // Obtener los detalles de venta asociados a la venta actual
-        List<VentaDetalle> detalles = obtenerDetallesVenta(venta.getId());
+            preparedStatement.setInt(1, ventaId);
 
-        // Calcular el subtotal sumando el subtotal de cada detalle de venta
-        for (VentaDetalle detalle : detalles) {
-            subTotal += detalle.getPrecio() * detalle.getCantidad();
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getDouble("sub_total");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
 
-        // Aplicar el descuento del 15% al subtotal
-        subTotal *= 0.85;
-
-        return subTotal;
+        return 0.0; // Si ocurre un error o no se encuentra el valor
     }
 
-    private double calcularISV(Venta venta) {
-        double totalISV = 0.0;
+    private double obtenerISV(int ventaId) {
+        try (Connection mysql = sql.conectamysql();
+             PreparedStatement preparedStatement = mysql.prepareStatement(
+                     "SELECT " +
+                             "SUM(dv.cantidad * " +
+                             "CASE " +
+                             "WHEN dv.tipo_detalle = 'material' THEN m.precio " +
+                             "WHEN dv.tipo_detalle = 'tarjeta' THEN t.precio_tarjeta " +
+                             "WHEN dv.tipo_detalle = 'floristeria' THEN f.precio " +
+                             "WHEN dv.tipo_detalle = 'manualidad' THEN ma.precio_manualidad " +
+                             "WHEN dv.tipo_detalle = 'arreglo' THEN a.precio " +
+                             "WHEN dv.tipo_detalle = 'desayuno' THEN d.precio_desayuno " +
+                             "END) * 0.15 AS isv " +
+                             "FROM detalles_ventas dv " +
+                             "LEFT JOIN materiales m ON dv.tipo_detalle = 'material' AND dv.detalle_id = m.id " +
+                             "LEFT JOIN tarjetas t ON dv.tipo_detalle = 'tarjeta' AND dv.detalle_id = t.id " +
+                             "LEFT JOIN floristeria f ON dv.tipo_detalle = 'floristeria' AND dv.detalle_id = f.id " +
+                             "LEFT JOIN manualidades ma ON dv.tipo_detalle = 'manualidad' AND dv.detalle_id = ma.id " +
+                             "LEFT JOIN arreglos a ON dv.tipo_detalle = 'arreglo' AND dv.detalle_id = a.id " +
+                             "LEFT JOIN desayunos d ON dv.tipo_detalle = 'desayuno' AND dv.detalle_id = d.id " +
+                             "WHERE dv.venta_id = ?")) {
 
-        // Obtener los detalles de venta asociados a la venta actual
-        List<VentaDetalle> detalles = obtenerDetallesVenta(venta.getId());
+            preparedStatement.setInt(1, ventaId);
 
-        // Calcular el ISV sumando los montos de los detalles de venta
-        for (VentaDetalle detalle : detalles) {
-            // Calcular el monto del ISV para este detalle y agregarlo al total
-            double montoDetalle = detalle.getPrecio() * detalle.getCantidad();
-            double isvDetalle = montoDetalle * 0.15;
-            totalISV += isvDetalle;
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getDouble("isv");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
 
-        return totalISV;
+        return 0.0; // Si ocurre un error o no se encuentra el valor
     }
 
-    private double calcularTotal(Venta venta) {
-        // Calcular subtotal y ISV
-        double subTotal = calcularSubTotal(venta);
-        double isv = calcularISV(venta);
+    private double obtenerTotal(int ventaId) {
+        try (Connection mysql = sql.conectamysql();
+             PreparedStatement preparedStatement = mysql.prepareStatement(
+                     "SELECT " +
+                             "SUM(dv.cantidad * " +
+                             "CASE " +
+                             "WHEN dv.tipo_detalle = 'material' THEN m.precio " +
+                             "WHEN dv.tipo_detalle = 'tarjeta' THEN t.precio_tarjeta " +
+                             "WHEN dv.tipo_detalle = 'floristeria' THEN f.precio " +
+                             "WHEN dv.tipo_detalle = 'manualidad' THEN ma.precio_manualidad " +
+                             "WHEN dv.tipo_detalle = 'arreglo' THEN a.precio " +
+                             "WHEN dv.tipo_detalle = 'desayuno' THEN d.precio_desayuno " +
+                             "END) * 0.85 + " +
+                             "SUM(dv.cantidad * " +
+                             "CASE " +
+                             "WHEN dv.tipo_detalle = 'material' THEN m.precio " +
+                             "WHEN dv.tipo_detalle = 'tarjeta' THEN t.precio_tarjeta " +
+                             "WHEN dv.tipo_detalle = 'floristeria' THEN f.precio " +
+                             "WHEN dv.tipo_detalle = 'manualidad' THEN ma.precio_manualidad " +
+                             "WHEN dv.tipo_detalle = 'arreglo' THEN a.precio " +
+                             "WHEN dv.tipo_detalle = 'desayuno' THEN d.precio_desayuno " +
+                             "END) * 0.15 AS total " +
+                             "FROM detalles_ventas dv " +
+                             "LEFT JOIN materiales m ON dv.tipo_detalle = 'material' AND dv.detalle_id = m.id " +
+                             "LEFT JOIN tarjetas t ON dv.tipo_detalle = 'tarjeta' AND dv.detalle_id = t.id " +
+                             "LEFT JOIN floristeria f ON dv.tipo_detalle = 'floristeria' AND dv.detalle_id = f.id " +
+                             "LEFT JOIN manualidades ma ON dv.tipo_detalle = 'manualidad' AND dv.detalle_id = ma.id " +
+                             "LEFT JOIN arreglos a ON dv.tipo_detalle = 'arreglo' AND dv.detalle_id = a.id " +
+                             "LEFT JOIN desayunos d ON dv.tipo_detalle = 'desayuno' AND dv.detalle_id = d.id " +
+                             "WHERE dv.venta_id = ?")) {
 
-        // Sumar subtotal e ISV para obtener el total
-        double total = subTotal + isv;
+            preparedStatement.setInt(1, ventaId);
 
-        return total;
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getDouble("total");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return 0.0; // Si ocurre un error o no se encuentra el valor
     }
-
-
 
     private List<VentaDetalle> obtenerDetallesVenta(int ventaId) {
         List<VentaDetalle> detalles = new ArrayList<>();

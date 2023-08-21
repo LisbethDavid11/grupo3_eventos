@@ -144,7 +144,7 @@ public class ListaClientes extends JFrame {
         panelTitulo.setBackground(primaryColor);
         panelA.setBackground(primaryColor);
         panelB.setBackground(primaryColor);
-        campoBusqueda.setBackground(darkColor);
+        campoBusqueda.setBackground(Color.WHITE);
         botonAdelante.setBackground(darkColor);
         botonAtras.setBackground(darkColor);
         botonVer.setBackground(darkColor);
@@ -157,8 +157,8 @@ public class ListaClientes extends JFrame {
         botonVer.setForeground(Color.WHITE);
         botonCrear.setForeground(Color.WHITE);
         botonEditar.setForeground(Color.WHITE);
-        campoBusqueda.setForeground(Color.WHITE);
-        placeholder.setForeground(Color.WHITE);
+        campoBusqueda.setForeground(darkColor);
+        placeholder.setForeground(darkColor);
         lblPagina.setForeground(Color.WHITE);
 
         campoBusqueda.setFont(font);

@@ -55,6 +55,7 @@ public class EditarTarjeta extends JFrame {
     private JTextField campoManoObra;
     private JLabel lbl9;
     private JLabel lbl10;
+    private JPanel panel8;
     private List<Material> materialList = new ArrayList<>();
     private String imagePath = "";
     private EditarTarjeta actual = this;
@@ -172,17 +173,17 @@ public class EditarTarjeta extends JFrame {
         botonCancelar.setForeground(Color.WHITE);
         botonGuardar.setForeground(Color.WHITE);
         agregarMaterialButton.setForeground(Color.DARK_GRAY);
-        botonCargarImagen.setForeground(Color.DARK_GRAY);
+        botonCargarImagen.setForeground(Color.WHITE);
         botonLimpiar.setForeground(Color.WHITE);
         cancelarButton.setForeground(Color.WHITE);
         agregarButton.setForeground(Color.WHITE);
 
         // Color de fondo de los botones
-        botonCancelar.setBackground(darkColorCyan);
+        botonCancelar.setBackground(darkColorBlue);
         botonGuardar.setBackground(darkColorAqua);
-        botonCargarImagen.setBackground(lightColorAqua);
+        botonCargarImagen.setBackground(darkColorPink);
         agregarMaterialButton.setBackground(lightColorCyan);
-        botonLimpiar.setBackground(darkColorRosado);
+        botonLimpiar.setBackground(darkColorRed);
         agregarButton.setBackground(darkColorCyan);
         cancelarButton.setBackground(darkColorRosado);
 

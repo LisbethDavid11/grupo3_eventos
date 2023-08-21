@@ -157,15 +157,15 @@ public class ListaGlobos extends JFrame {
         botonAdelante.setBackground(darkColor);
         botonAtras.setBackground(darkColor);
         botonVer.setBackground(darkColor);
-        campoBusqueda.setBackground(darkColor);
+        campoBusqueda.setBackground(Color.WHITE);
 
-        placeholder.setForeground(Color.WHITE);
+        placeholder.setForeground(darkColor);
         botonVer.setForeground(Color.WHITE);
         botonAtras.setForeground(Color.WHITE);
         botonAdelante.setForeground(Color.WHITE);
         botonCrear.setForeground(Color.WHITE);
         botonEditar.setForeground(Color.WHITE);
-        campoBusqueda.setForeground(Color.WHITE);
+        campoBusqueda.setForeground(darkColor);
         lblPagina.setForeground(Color.WHITE);
 
         campoBusqueda.setFont(font);
