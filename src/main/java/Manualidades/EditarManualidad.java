@@ -76,6 +76,9 @@ public class EditarManualidad extends JFrame {
     int panelImgWidth = 70;
     int panelImgHeight = 150;
     private int id;
+    private String nombreArchivoImagen;
+    private boolean imagenCambiada = false; // Variable de control
+
     public EditarManualidad(Manualidad manualidad, int id) {
         super("");
         setSize(1000, 700);
@@ -377,7 +380,7 @@ public class EditarManualidad extends JFrame {
                 int validacion = 0;
                 String mensaje = "Faltó ingresar: \n";
 
-                if (imagePath.isEmpty()) {
+                if (imagenCambiada && imagePath.isEmpty()) {
                     validacion++;
                     mensaje += "Imagen\n";
                 }
@@ -484,6 +487,9 @@ public class EditarManualidad extends JFrame {
                 );
 
                 if (respuesta == JOptionPane.YES_OPTION) {
+                    if (!imagePath.isEmpty()) {
+                        imagenCambiada = true;
+                    }
                     guardarMateriales();
                     ListaManualidades listaManualidades = new ListaManualidades();
                     listaManualidades.setVisible(true);
@@ -684,65 +690,6 @@ public class EditarManualidad extends JFrame {
         mostrar();
     }
 
-    private void mostrar() {
-        sql = new Conexion();
-        mysql = sql.conectamysql();
-        DecimalFormat decimalFormat = new DecimalFormat("###,###.00");
-        double suma = 0;
-
-        try {
-            PreparedStatement statement = mysql.prepareStatement("SELECT * FROM manualidades WHERE id = ?;");
-            statement.setInt(1, this.id);
-            ResultSet resultSet = statement.executeQuery();
-
-            if (resultSet.next()) {
-                PreparedStatement detallesStatement = mysql.prepareStatement("SELECT m.nombre, dc.cantidad, dc.precio FROM detalles_manualidades dc JOIN materiales m ON dc.material_id = m.id WHERE dc.manualidad_id = ?");
-                detallesStatement.setInt(1, this.id);
-            } else {
-                JOptionPane.showMessageDialog(null, "La manualidad con el ID " + this.id + " no fue encontrada.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-
-            String imagenNombre = resultSet.getString("imagen");
-            String imagenPath = "img/manualidades/" + imagenNombre;
-
-            try {
-                File imagenFile = new File(imagenPath);
-                if (imagenFile.exists()) {
-                    Image imagenOriginal = ImageIO.read(imagenFile);
-
-                    // Ajusta el tamaño de la imagen para que se ajuste al tamaño predeterminado del panel
-                    int anchoPanelPredeterminado = 300;
-                    int altoPanelPredeterminado = 300;
-
-                    // Calcula las proporciones de escalamiento para ajustar la imagen al tamaño del panel
-                    double proporcionAncho = (double) anchoPanelPredeterminado / imagenOriginal.getWidth(null);
-                    double proporcionAlto = (double) altoPanelPredeterminado / imagenOriginal.getHeight(null);
-
-                    // Escala la imagen utilizando la proporción más pequeña para evitar distorsiones
-                    double proporcionEscalamiento = Math.min(proporcionAncho, proporcionAlto);
-                    int anchoEscalado = (int) (imagenOriginal.getWidth(null) * proporcionEscalamiento);
-                    int altoEscalado = (int) (imagenOriginal.getHeight(null) * proporcionEscalamiento);
-
-                    // Crea una nueva imagen escalada con las dimensiones calculadas
-                    Image imagenEscalada = imagenOriginal.getScaledInstance(anchoEscalado, altoEscalado, Image.SCALE_SMOOTH);
-
-                    // Crea un ImageIcon a partir de la imagen escalada
-                    ImageIcon imagenIcono = new ImageIcon(imagenEscalada);
-
-                    // Actualiza la etiqueta lblImagen con el ImageIcon
-                    jlabelImagen.setIcon(imagenIcono);
-                } else {
-                    System.out.println("No se encontró la imagen: " + imagenPath);
-                }
-            } catch (Exception e) {
-                System.out.println("Error al cargar la imagen: " + e.getMessage());
-            }
-
-        } catch (SQLException error) {
-            System.out.println(error.getMessage());
-        }
-    }
-
     class CenterAlignedRenderer extends DefaultTableCellRenderer {
         public CenterAlignedRenderer() {
             setHorizontalAlignment(CENTER);
@@ -836,6 +783,66 @@ public class EditarManualidad extends JFrame {
         jtableMateriales.getColumnModel().getColumn(5).setCellEditor(new EditarManualidad.ButtonEditor());
     }
 
+    private void mostrar() {
+        sql = new Conexion();
+        mysql = sql.conectamysql();
+        DecimalFormat decimalFormat = new DecimalFormat("###,###.00");
+        double suma = 0;
+
+        try {
+            PreparedStatement statement = mysql.prepareStatement("SELECT * FROM manualidades WHERE id = ?;");
+            statement.setInt(1, this.id);
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                PreparedStatement detallesStatement = mysql.prepareStatement("SELECT m.nombre, dc.cantidad, dc.precio FROM detalles_manualidades dc JOIN materiales m ON dc.material_id = m.id WHERE dc.manualidad_id = ?");
+                detallesStatement.setInt(1, this.id);
+            } else {
+                JOptionPane.showMessageDialog(null, "La manualidad con el ID " + this.id + " no fue encontrada.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+            String imagenNombre = resultSet.getString("imagen");
+            nombreArchivoImagen = imagenNombre;  // Asignar el valor del nombre de la imagen
+            String imagenPath = "img/manualidades/" + imagenNombre;
+
+            try {
+                File imagenFile = new File(imagenPath);
+                if (imagenFile.exists()) {
+                    Image imagenOriginal = ImageIO.read(imagenFile);
+
+                    // Ajusta el tamaño de la imagen para que se ajuste al tamaño predeterminado del panel
+                    int anchoPanelPredeterminado = 300;
+                    int altoPanelPredeterminado = 300;
+
+                    // Calcula las proporciones de escalamiento para ajustar la imagen al tamaño del panel
+                    double proporcionAncho = (double) anchoPanelPredeterminado / imagenOriginal.getWidth(null);
+                    double proporcionAlto = (double) altoPanelPredeterminado / imagenOriginal.getHeight(null);
+
+                    // Escala la imagen utilizando la proporción más pequeña para evitar distorsiones
+                    double proporcionEscalamiento = Math.min(proporcionAncho, proporcionAlto);
+                    int anchoEscalado = (int) (imagenOriginal.getWidth(null) * proporcionEscalamiento);
+                    int altoEscalado = (int) (imagenOriginal.getHeight(null) * proporcionEscalamiento);
+
+                    // Crea una nueva imagen escalada con las dimensiones calculadas
+                    Image imagenEscalada = imagenOriginal.getScaledInstance(anchoEscalado, altoEscalado, Image.SCALE_SMOOTH);
+
+                    // Crea un ImageIcon a partir de la imagen escalada
+                    ImageIcon imagenIcono = new ImageIcon(imagenEscalada);
+
+                    // Actualiza la etiqueta lblImagen con el ImageIcon
+                    jlabelImagen.setIcon(imagenIcono);
+                } else {
+                    System.out.println("No se encontró la imagen: " + imagenPath);
+                }
+            } catch (Exception e) {
+                System.out.println("Error al cargar la imagen: " + e.getMessage());
+            }
+
+        } catch (SQLException error) {
+            System.out.println(error.getMessage());
+        }
+    }
+
     private void guardarMateriales() {
         String precioManualidadText = campoPrecio.getText().replace("L ", "").replace(",", "").replace("_", "");
         double precio_manualidad = Double.parseDouble(precioManualidadText);
@@ -852,7 +859,7 @@ public class EditarManualidad extends JFrame {
             preparedStatement.setString(1, jcbOcasion.getModel().getSelectedItem().toString());
             preparedStatement.setString(2, nombre);
             preparedStatement.setString(3, descripcion);
-            preparedStatement.setString(4, nombreFile); // Reemplaza "nombreFile" con el nombre de archivo de la imagen.
+            preparedStatement.setString(4, nombreArchivoImagen); // Reemplaza "nombreFile" con el nombre de archivo de la imagen.
             preparedStatement.setInt(5, cantidad);
             preparedStatement.setDouble(6, precio_manualidad);
             preparedStatement.setDouble(7, mano_obra);
