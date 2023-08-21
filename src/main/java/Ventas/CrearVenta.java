@@ -5,7 +5,6 @@ import Materiales.TextPrompt;
 import Modelos.*;
 import Objetos.*;
 import org.jdatepicker.impl.JDatePickerImpl;
-import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.*;
@@ -25,19 +24,19 @@ import java.util.*;
 public class CrearVenta extends JFrame {
     private JPanel panel1, panel2, panel3, panel4, panel5, panel6;
     private JTable tablaProductos;
-    private DefaultTableModel modeloProductos;
+
     public JButton guardarButton, cancelarButton, limpiarButton;
     public JTextField campoCodigo, campoFecha, campoCantidad, campoPrecio;
-    public JComboBox<String> boxCliente, boxEmpleado, boxMaterial;
-    private JLabel lbl0, lbl1, lbl2, lbl3, lbl4, lbl5, lbl6, lbl7, lbl8, lbl9, lbl10, lbl11;
+    public JComboBox<String> boxCliente, boxEmpleado;
+    private JLabel lbl0, lbl1, lbl2, lbl3, lbl4, lbl8, lbl9, lbl10;
     private JButton botonCrear, imprimirButton, agregarMaterialButton, agregarArregloButton, agregarTarjetasButton, agregarFloresButton, agregarManualidadButton, agregarDesayunoButton, agregarProductoButton, cancelarProductoButton;
     private JTextField campoBusquedaMateriales;
     private JButton botonLimpiar;
-    private JPanel panelCliente;
+    private JTextField buscarCliente;
     private Conexion sql;
-    private Connection mysql;
     public CrearVenta crearVenta = this;
     private Materiales.TextPrompt placeholder = new TextPrompt(" Buscar por nombre de producto", campoBusquedaMateriales);
+    private Materiales.TextPrompt placeholderCliente = new TextPrompt(" Buscar cliente por nombre o apellido", buscarCliente);
     private List<PoliProducto> productosListTemporal = new ArrayList<>();
     private List<PoliMaterial> materialList = new ArrayList<>();
     private List<PoliMaterial> materialListTemporal = new ArrayList<>();
@@ -84,10 +83,6 @@ public class CrearVenta extends JFrame {
     Color darkColorRed = new Color(244, 67, 54);
     Color darkColorBlue = new Color(33, 150, 243);
     EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
-    private JTextField[] campos = { campoCodigo, campoFecha, campoCantidad, campoPrecio };
-    private JDatePickerImpl datePicker; // Declare the datePicker variable at the class level
-
-    private double sumaISVExento = 0;
 
     public CrearVenta() {
         super("");
@@ -95,7 +90,7 @@ public class CrearVenta extends JFrame {
         setLocationRelativeTo(null);
         setContentPane(panel1);
         sql = new Conexion();
-        mysql = sql.conectamysql();
+        Connection mysql = sql.conectamysql();
         generarCamposAutomaticamente();
         configurarTablaMateriales();
 
@@ -709,17 +704,25 @@ public class CrearVenta extends JFrame {
                     JOptionPane.showMessageDialog(null, mensaje, "Validación", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-
                 guardarDatos();
+                String codigoVenta = campoCodigo.getText();
+                ListaVentas.imprimirFactura(codigoVenta);
+            }
+        });
 
-                    JOptionPane.showMessageDialog(
-                            null,
-                            "El archivo se ha guardado con éxito.",
-                            "Guardado Exitoso",
-                            JOptionPane.INFORMATION_MESSAGE
-                    );
+        buscarCliente.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                String searchText = buscarCliente.getText().trim().toLowerCase(); // Get the search text
 
-
+                // Iterate through combo box items and find the first match
+                for (int i = 0; i < boxCliente.getItemCount(); i++) {
+                    String itemText = boxCliente.getItemAt(i).toString().toLowerCase();
+                    if (itemText.contains(searchText)) {
+                        boxCliente.setSelectedIndex(i); // Select the matching item
+                        break; // Stop iterating after the first match
+                    }
+                }
             }
         });
 
@@ -753,10 +756,6 @@ public class CrearVenta extends JFrame {
         });
     }
 
-    public void updateSelectedClient(String selectedClient) {
-        boxCliente.setSelectedItem(selectedClient);
-    }
-
     public void selectLastAddedClient(String nuevoCliente) {
         int index = boxCliente.getItemCount() - 1; // Índice del último elemento agregado
         if (index > 0) {
@@ -764,11 +763,9 @@ public class CrearVenta extends JFrame {
         }
     }
 
-
     public void cargarClientes() {
         // Borra los elementos anteriores del JComboBox
         boxCliente.removeAllItems();
-        boxCliente.addItem("Seleccione un cliente");
 
         // Agrega el elemento predeterminado al JComboBox
         boxCliente.addItem("Seleccione un cliente");
@@ -1143,7 +1140,6 @@ public class CrearVenta extends JFrame {
             }
 
             JOptionPane.showMessageDialog(null, "Venta registrada exitosamente.", "Éxito", JOptionPane.DEFAULT_OPTION);
-            ListaVentas.imprimirFactura(codigoVenta);
             crearVenta.dispose();
 
             ListaVentas ventas = new ListaVentas();
