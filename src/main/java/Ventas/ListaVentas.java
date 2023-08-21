@@ -134,7 +134,6 @@ public class ListaVentas extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 CrearVenta crearVenta = new CrearVenta();
                 crearVenta.setVisible(true);
-                crearVenta.cargarComboCliente("");
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(listaVentas); // Obtén la ventana que contiene la lista de compras
                 if (frame != null) {
                     frame.dispose(); // Cierra la ventana

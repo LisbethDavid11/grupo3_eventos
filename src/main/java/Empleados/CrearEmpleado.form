@@ -132,26 +132,6 @@
           <text value="Tipo de empleado"/>
         </properties>
       </component>
-      <component id="93e6d" class="javax.swing.JButton" binding="guardarButton">
-        <constraints>
-          <grid row="21" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
-            <preferred-size width="261" height="30"/>
-          </grid>
-        </constraints>
-        <properties>
-          <icon value="IconosBotones/guardarP.png"/>
-          <text value="GUARDAR"/>
-        </properties>
-      </component>
-      <component id="55985" class="javax.swing.JButton" binding="cancelarButton">
-        <constraints>
-          <grid row="21" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <icon value="IconosBotones/cancelarpp.png"/>
-          <text value="CANCELAR"/>
-        </properties>
-      </component>
       <vspacer id="406e1">
         <constraints>
           <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
@@ -396,6 +376,26 @@
           </component>
         </children>
       </grid>
+      <component id="a9852" class="javax.swing.JButton" binding="cancelarButton">
+        <constraints>
+          <grid row="21" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <icon value="IconosBotones/cancelarpp.png"/>
+          <text value="CANCELAR"/>
+        </properties>
+      </component>
+      <component id="cd0d0" class="javax.swing.JButton" binding="guardarButton">
+        <constraints>
+          <grid row="21" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="261" height="30"/>
+          </grid>
+        </constraints>
+        <properties>
+          <icon value="IconosBotones/guardarP.png"/>
+          <text value="GUARDAR"/>
+        </properties>
+      </component>
     </children>
   </grid>
 </form>

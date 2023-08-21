@@ -242,10 +242,6 @@ public class EditarCliente extends  JFrame{
 
         campoDomicilio.setBackground(new Color(215, 215, 215));
 
-        // Establecer los iconos en los botones
-        cancelarButton.setIcon(cancelIcon);
-        guardarButton.setIcon(saveIcon);
-
         // Crea un margen de 15 píxeles desde el borde inferior
         EmptyBorder marginTitulo = new EmptyBorder(15, 0, 15, 0);
         label1.setBorder(marginTitulo);
@@ -480,8 +476,6 @@ public class EditarCliente extends  JFrame{
 
             }
 
-            System.out.println(statement.execute());
-
         } catch (SQLException error) {
             //mensaje de error
             System.out.println(error.getMessage());
@@ -517,7 +511,6 @@ public class EditarCliente extends  JFrame{
             statement.setString(5, campoDomicilio.getText());
             statement.setString(6, tipoCliente);
             statement.setInt(7, this.id);
-            System.out.println(statement.execute());
 
             String nombreCompleto = campoNombre.getText() + " " + campoApellido.getText();
             System.out.println("Cliente " + nombreCompleto + " ha sido actualizado exitosamente.");

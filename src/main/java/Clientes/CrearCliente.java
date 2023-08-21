@@ -444,12 +444,15 @@ public class CrearCliente extends JFrame{
                     // Verifica si la ventana anterior es CrearVenta y actualiza los clientes
                     if (ventanaAnterior instanceof CrearVenta) {
                         CrearVenta ventanaVenta = (CrearVenta) ventanaAnterior;
+                        String nuevoCliente = campoNombre.getText().trim() + " - " + campoApellido.getText().trim();
                         ventanaVenta.cargarClientes(); // Llama al método para cargar los clientes en CrearVenta
+                        ventanaVenta.selectLastAddedClient(nuevoCliente); // Llama a un método que seleccionará automáticamente el nuevo cliente
                     }
 
                     ventanaAnterior.setVisible(true); // Muestra la ventana anterior
                     actual.dispose(); // Cierra la ventana CrearCliente
                 }
+
             }
         });
     }

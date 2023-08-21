@@ -434,7 +434,6 @@ public class EditarArreglo extends JFrame {
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error al obtener los datos del arreglo.", "Error", JOptionPane.ERROR_MESSAGE);
         }
-        botonGuardar.setIcon(new ImageIcon("update_icon_white.png"));
     }
 
     private void actualizarArreglo() {

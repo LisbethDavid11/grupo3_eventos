@@ -350,10 +350,6 @@ public class EditarEmpleado extends JFrame {
 
         campoDireccion.setBackground(new Color(215, 215, 215));
 
-        // Establecer los iconos en los botones
-        cancelarButton.setIcon(cancelIcon);
-        guardarButton.setIcon(saveIcon);
-
         // Crea un margen de 15 píxeles desde el borde inferior
         EmptyBorder marginTitulo = new EmptyBorder(15, 0, 15, 0);
         lbl0.setBorder(marginTitulo);

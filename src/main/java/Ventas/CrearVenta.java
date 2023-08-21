@@ -281,6 +281,9 @@ public class CrearVenta extends JFrame {
         boxEmpleado.addItem("Seleccione un empleado");
         cargarEmpleados();
 
+        boxCliente.addItem("Seleccione un cliente");
+        cargarClientes();
+
         panel1.setBackground(Color.decode("#F5F5F5"));
         panel2.setBackground(Color.decode("#F5F5F5"));
         panel3.setBackground(Color.decode("#F5F5F5"));
@@ -750,22 +753,26 @@ public class CrearVenta extends JFrame {
         });
     }
 
-    public void cargarComboCliente(String cliente){
-
-
-        boxCliente.addItem("Seleccione un cliente");
-        cargarClientes();
-        AutoCompleteDecorator.decorate(boxCliente);
-
-        if (cliente.equals("")){
-
-        }else {
-            boxCliente.setSelectedItem(cliente);
-        }
-
+    public void updateSelectedClient(String selectedClient) {
+        boxCliente.setSelectedItem(selectedClient);
     }
 
+    public void selectLastAddedClient(String nuevoCliente) {
+        int index = boxCliente.getItemCount() - 1; // Índice del último elemento agregado
+        if (index > 0) {
+            boxCliente.setSelectedIndex(index);
+        }
+    }
+
+
     public void cargarClientes() {
+        // Borra los elementos anteriores del JComboBox
+        boxCliente.removeAllItems();
+        boxCliente.addItem("Seleccione un cliente");
+
+        // Agrega el elemento predeterminado al JComboBox
+        boxCliente.addItem("Seleccione un cliente");
+
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement("SELECT id, nombre, apellido FROM clientes");
              ResultSet resultSet = preparedStatement.executeQuery()) {
