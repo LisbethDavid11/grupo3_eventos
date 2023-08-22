@@ -676,6 +676,7 @@ public class CrearManualidad extends JFrame {
                 // Obtener la cantidad del material que deseas agregar (por ejemplo, mediante un cuadro de diálogo)
                 int cantidadMaterial = obtenerCantidadMaterial();
 
+
                 // Verificar que la cantidad sea válida y no se haya cancelado el cuadro de diálogo
                 if (cantidadMaterial >= 1) {
                     // Verificar que la cantidad no sea mayor a la existente en la base de datos
@@ -720,12 +721,12 @@ public class CrearManualidad extends JFrame {
                             } else {
                                 JOptionPane.showMessageDialog(null, "El material ya está presente en la tabla", "Validación", JOptionPane.ERROR_MESSAGE);
                             }
-                        } else {
-                            JOptionPane.showMessageDialog(null, "El precio debe ser mayor o igual a 1", "Validación", JOptionPane.ERROR_MESSAGE);
                         }
                     } else {
                         JOptionPane.showMessageDialog(null, "La cantidad no debe ser mayor a la existente en la base de datos", "Validación", JOptionPane.ERROR_MESSAGE);
                     }
+                } else {
+                    JOptionPane.showMessageDialog(null, "La cantidad debe ser mayor o igual a 1", "Validación", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
