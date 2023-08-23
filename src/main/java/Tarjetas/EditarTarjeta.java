@@ -686,14 +686,14 @@ public class EditarTarjeta extends JFrame {
                             } else {
                                 JOptionPane.showMessageDialog(null, "El material ya está presente en la tabla", "Validación", JOptionPane.ERROR_MESSAGE);
                             }
+                        }
                         } else {
-                            JOptionPane.showMessageDialog(null, "El precio debe ser mayor o igual a 1", "Validación", JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.showMessageDialog(null, "La cantidad no debe ser mayor a la existente en la base de datos", "Validación", JOptionPane.ERROR_MESSAGE);
                         }
                     } else {
-                        JOptionPane.showMessageDialog(null, "La cantidad no debe ser mayor a la existente en la base de datos", "Validación", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "El precio debe ser mayor o igual a 1", "Validación", JOptionPane.ERROR_MESSAGE);
                     }
                 }
-            }
         });
 
         jlabelImagen.addMouseListener(new MouseAdapter() {
