@@ -193,6 +193,9 @@
                 <item value="Boda"/>
                 <item value="Babyshower"/>
                 <item value="Cumpleaños"/>
+                <item value="Eventos gubernamentales"/>
+                <item value="Reuniones familiares "/>
+                <item value="Aniversarios "/>
               </model>
             </properties>
           </component>

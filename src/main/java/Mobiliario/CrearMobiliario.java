@@ -399,6 +399,15 @@ public class CrearMobiliario extends JFrame {
                     mensaje += "La fecha entrega\n";
                 }
 
+                String disponibilidad = radioButtonSiNecesita.getText().trim();
+                if (cantidad.trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "disponibilidad\n";
+                }
+
+
+
+
 
                 if (validacion > 0) {
                     JOptionPane.showMessageDialog(null, mensaje, "Validación", JOptionPane.ERROR_MESSAGE);
