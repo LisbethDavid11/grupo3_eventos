@@ -9,6 +9,7 @@ import Floristerias.ListaFloristerias;
 import Globos.ListaGlobos;
 import Manualidades.ListaManualidades;
 import Materiales.ListaMateriales;
+import Mobiliario.ListaMobiliario;
 import Proveedores.ListaProveedores;
 import Tarjetas.ListaTarjetas;
 import Ventas.ListaVentas;
@@ -19,7 +20,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class SubMenu extends JFrame {
-    private JButton proveedoresButton, empleadosButton, clientesButton, floristeriaButton, arreglosButton, materialesButton, comprasButton,tarjetaButton, manualidadesButton, globosButton, desayunosButton, ventasButton;
+    private JButton proveedoresButton, empleadosButton, clientesButton, floristeriaButton, arreglosButton, materialesButton, comprasButton,tarjetaButton, manualidadesButton, globosButton, desayunosButton, ventasButton, mobiliarioButton;
     private JPanel panel, panel2, panel3;
     private ListaClientes listaCliente;
     private ListaEmpleados listaEmpleados;
@@ -33,6 +34,7 @@ public class SubMenu extends JFrame {
     private ListaGlobos listaGlobos;
     private ListaDesayunos listaDesayunos;
     private ListaVentas listaVentas;
+    private ListaMobiliario listaMobiliario;
 
     public SubMenu() {
         super("Menú Principal");
@@ -90,6 +92,10 @@ public class SubMenu extends JFrame {
         ventasButton.setBackground(Color.decode("#795548"));
         ventasButton.setPreferredSize(new Dimension(100, 40)); // Ajustar tamaño
 
+        mobiliarioButton = new JButton("Mobiliario");
+        mobiliarioButton.setBackground(Color.decode("#17b5da"));
+        mobiliarioButton.setPreferredSize(new Dimension(100, 40)); // Ajustar tamaño
+
         panel.add(clientesButton);
         panel.add(empleadosButton);
         panel.add(floristeriaButton);
@@ -102,6 +108,7 @@ public class SubMenu extends JFrame {
         panel.add(globosButton);
         panel.add(desayunosButton);
         panel.add(ventasButton);
+        panel.add(mobiliarioButton);
 
         // Crea el panel de imagen y lo coloca en el centro
         ImagePanel imagenPanel = new ImagePanel();
@@ -125,6 +132,7 @@ public class SubMenu extends JFrame {
         globosButton.setFocusPainted(false);
         desayunosButton.setFocusPainted(false);
         ventasButton.setFocusPainted(false);
+        mobiliarioButton.setFocusPainted(false);
 
         clientesButton.setForeground(Color.WHITE);
         proveedoresButton.setForeground(Color.WHITE);
@@ -138,6 +146,7 @@ public class SubMenu extends JFrame {
         globosButton.setForeground(Color.WHITE);
         desayunosButton.setForeground(Color.WHITE);
         ventasButton.setForeground(Color.WHITE);
+        mobiliarioButton.setForeground(Color.WHITE);
 
         add(panel3);
 
@@ -154,6 +163,7 @@ public class SubMenu extends JFrame {
         listaGlobos = new ListaGlobos();
         listaDesayunos = new ListaDesayunos();
         listaVentas = new ListaVentas();
+        listaMobiliario = new ListaMobiliario();
 
         clientesButton.addActionListener(new ActionListener() {
             @Override
@@ -236,6 +246,13 @@ public class SubMenu extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 listaVentas.setVisible(true);
+            }
+        });
+
+        mobiliarioButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                listaMobiliario.setVisible(true);
             }
         });
     }
