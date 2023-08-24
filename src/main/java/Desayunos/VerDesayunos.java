@@ -3,7 +3,10 @@ import Objetos.Conexion;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,6 +26,7 @@ public class VerDesayunos extends JFrame {
     private JLabel lbl0, lbl1, lbl2, lbl3, lbl4, lbl5, lbl6, lbl7, lbl8, lbl9, lbl10, lbl11, lbl12, lblImagen;
     private JScrollPane panel2;
     private JTextArea descripcion;
+    private JLabel lbl13;
     private Conexion sql;
     private Connection mysql;
     private int id;
@@ -66,7 +70,7 @@ public class VerDesayunos extends JFrame {
     private int panelImgHeight2 = 200;
     public VerDesayunos(int id) {
         super("");
-        setSize(700, 610);
+        setSize(850, 610);
         setLocationRelativeTo(null);
         setContentPane(panel1);
 
@@ -119,6 +123,10 @@ public class VerDesayunos extends JFrame {
         nombre.setEditable(false);
         nombre.setFocusable(false);
 
+        JTableHeader header = productos.getTableHeader();
+        header.setForeground(Color.WHITE);
+        header.setBackground(darkColorCyan);
+
         precio_desayuno.setBorder(BorderFactory.createEmptyBorder());
         precio_desayuno.setBackground(Color.decode("#F5F5F5"));
         precio_desayuno.setForeground(textColor);
@@ -166,6 +174,7 @@ public class VerDesayunos extends JFrame {
         lbl7.setForeground(textColor2);
         lbl11.setForeground(textColor2);
         lbl12.setForeground(textColor2);
+        lbl13.setForeground(textColor2);
 
         lbl1.setFont(font2);
         lbl2.setFont(font2);
@@ -176,6 +185,7 @@ public class VerDesayunos extends JFrame {
         lbl7.setFont(font2);
         lbl11.setFont(font2);
         lbl12.setFont(font2);
+        lbl13.setFont(font2);
 
         nombre.setFont(font);
         precio_desayuno.setFont(font);
@@ -205,6 +215,8 @@ public class VerDesayunos extends JFrame {
                 actual.dispose();
             }
         });
+
+        configurarTablaMateriales();
     }
 
     private void mostrar() {
@@ -314,6 +326,49 @@ public class VerDesayunos extends JFrame {
 
         } catch (SQLException error) {
             System.out.println(error.getMessage());
+        }
+    }
+
+    private void configurarTablaMateriales() {
+        int columnCount = productos.getColumnCount();
+        if (columnCount > 0) {
+            TableColumnModel columnModel = productos.getColumnModel();
+
+            columnModel.getColumn(0).setPreferredWidth(20);
+            columnModel.getColumn(1).setPreferredWidth(220);
+            columnModel.getColumn(2).setPreferredWidth(100);
+            columnModel.getColumn(3).setPreferredWidth(100);
+            columnModel.getColumn(4).setPreferredWidth(100);
+
+            columnModel.getColumn(0).setCellRenderer(new VerDesayunos.CenterAlignedRenderer());
+            columnModel.getColumn(1).setCellRenderer(new VerDesayunos.LeftAlignedRenderer());
+            columnModel.getColumn(2).setCellRenderer(new VerDesayunos.LeftAlignedRenderer());
+            columnModel.getColumn(3).setCellRenderer(new VerDesayunos.LeftAlignedRenderer());
+            columnModel.getColumn(4).setCellRenderer(new VerDesayunos.LeftAlignedRenderer());
+        }
+    }
+
+    class CenterAlignedRenderer extends DefaultTableCellRenderer {
+        public CenterAlignedRenderer() {
+            setHorizontalAlignment(CENTER);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            return cell;
+        }
+    }
+
+    class LeftAlignedRenderer extends DefaultTableCellRenderer {
+        public LeftAlignedRenderer() {
+            setHorizontalAlignment(LEFT);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            return cell;
         }
     }
 
