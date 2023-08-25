@@ -1,8 +1,8 @@
 package Ventas;
-import Modelos.ModeloCompra;
-import Modelos.ModeloVenta;
 import Modelos.ModeloVentaDetalle;
-import Objetos.*;
+import Objetos.Conexion;
+import Objetos.Venta;
+import Objetos.VentaDetalle;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -10,269 +10,277 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.List;
 import java.util.*;
-public class ListaVentas extends JFrame {
-    private JPanel panelPrincipal;
-    private JTable listaVentas;
-    private JButton botonAtras,botonAdelante, botonCrear, botonImprimir;
-    private JTextField campoBusqueda;
-    private TextPrompt placeholder = new TextPrompt(" Buscar por código de venta, fecha ó nombre de cliente", campoBusqueda);
-    private JLabel lbl0, lblPagina;
-    private JComboBox fechaComboBox;
-    private JButton botonVer;
-    private JPanel panelB;
-    private JPanel panelA;
-    private JPanel panelTitulo;
-    private List<Venta> ventaList;
-    private int pagina = 0;
+import java.util.List;
+
+public class VerVentas extends JFrame {
+    private JPanel panel1;
+    private JTextField codigo_venta,fecha, cliente, empleado;
+    private JTable productos;
+    private JButton cancelarButton;
+    private JLabel lbl0, lbl1, lbl2, lbl3, lbl4, lbl5, lbl6, lbl7, lbl8, lbl9, lbl10, lbl13;
+    private JScrollPane panel2;
+    private JPanel panel3;
+    private JPanel panel4;
+    private JPanel panel5;
+    private JButton imprimirButton;
     private static Conexion sql;
-    private String busqueda = "";
-    private ListaVentas actual = this;
+    private Connection mysql;
+    private int id;
+    private VerVentas actual = this;
+    Font fontTitulo = new Font("Century Gothic", Font.BOLD, 20);
+    Font font = new Font("Century Gothic", Font.BOLD, 15);
+    Font font2 = new Font("Century Gothic", Font.BOLD, 11);
 
-    Font fontTitulo = new Font("Century Gothic", Font.BOLD, 17);
-    Font font = new Font("Century Gothic", Font.BOLD, 11);
-    Color primaryColor = Color.decode("#37474f"); // Gris azul oscuro
-    Color lightColor = Color.decode("#cfd8dc"); // Gris azul claro
-    Color darkColor = Color.decode("#263238"); // Gris azul más oscuro
+    // Colores para el botón "Cyan"
+    Color primaryColorCyan = new Color(0, 188, 212); // Cyan primario
+    Color lightColorCyan = new Color(77, 208, 225); // Cyan claro
+    Color darkColorCyan = new Color(0, 151, 167); // Cyan oscuro
 
-    public ListaVentas() {
+    // Colores para el botón "Aqua"
+    Color primaryColorAqua = new Color(0, 150, 136); // Aqua primario
+    Color lightColorAqua = new Color(77, 182, 172); // Aqua claro
+    Color darkColorAqua = new Color(0, 121, 107); // Aqua oscuro
+
+    // Colores para el botón "Rosado"
+    Color primaryColorRosado = new Color(233, 30, 99); // Rosado primario
+    Color lightColorRosado = new Color(240, 98, 146); // Rosado claro
+    Color darkColorRosado = new Color(194, 24, 91); // Rosado oscuro
+
+    // Colores para el botón "Amber"
+    Color primaryColorAmber = new Color(255, 193, 7); // Amber primario
+    Color lightColorAmber = new Color(255, 213, 79); // Amber claro
+    Color darkColorAmber = new Color(255, 160, 0); // Amber oscuro
+
+    // Colores para el botón "Verde lima"
+    Color primaryColorVerdeLima = new Color(205, 220, 57); // Verde lima primario
+    Color lightColorVerdeLima = new Color(220, 237, 200); // Verde lima claro
+    Color darkColorVerdeLima = new Color(139, 195, 74); // Verde lima oscuro
+
+    Color darkColorPink = new Color(233, 30, 99);
+    Color darkColorRed = new Color(244, 67, 54);
+    Color darkColorBlue = new Color(33, 150, 243);
+    EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
+    private int panelImgWidth = 200;
+    private int panelImgHeight = 200;
+
+    private int panelImgWidth2 = 300;
+    private int panelImgHeight2 = 200;
+    public VerVentas(int id) {
         super("");
-        setSize(990, 505);
+        setSize(850, 610);
         setLocationRelativeTo(null);
-        setContentPane(panelPrincipal);
-        campoBusqueda.setText("");
+        setContentPane(panel1);
+        this.id = id;
+        mostrar();
 
-        ventaList = new ArrayList<>();
-        listaVentas.setModel(cargarDatos());
-        configurarTablaVentas();
+        panel1.setBackground(Color.decode("#F5F5F5"));
+        panel2.setBackground(Color.decode("#F5F5F5"));
+        panel4.setBackground(Color.decode("#F5F5F5"));
+        panel5.setBackground(Color.decode("#F5F5F5"));
 
-        String mesSeleccionado = (String) fechaComboBox.getSelectedItem();
-        lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount(mesSeleccionado));
+        Color textColor = Color.decode("#263238");
+        Color textColor2 = Color.decode("#607d8b");
+        codigo_venta.setBorder(BorderFactory.createEmptyBorder());
+        codigo_venta.setBackground(Color.decode("#F5F5F5"));
+        codigo_venta.setForeground(textColor);
+        codigo_venta.setEditable(false);
+        codigo_venta.setFocusable(false);
 
-        DefaultComboBoxModel<String> comboBoxModel = new DefaultComboBoxModel<>();
-        comboBoxModel.addElement("Todos");
-        comboBoxModel.addElement("Enero");
-        comboBoxModel.addElement("Febrero");
-        comboBoxModel.addElement("Marzo");
-        comboBoxModel.addElement("Abril");
-        comboBoxModel.addElement("Mayo");
-        comboBoxModel.addElement("Junio");
-        comboBoxModel.addElement("Julio");
-        comboBoxModel.addElement("Agosto");
-        comboBoxModel.addElement("Septiembre");
-        comboBoxModel.addElement("Octubre");
-        comboBoxModel.addElement("Noviembre");
-        comboBoxModel.addElement("Diciembre");
+        fecha.setBorder(BorderFactory.createEmptyBorder());
+        fecha.setBackground(Color.decode("#F5F5F5"));
+        fecha.setForeground(textColor);
+        fecha.setEditable(false);
+        fecha.setFocusable(false);
 
-        fechaComboBox.setModel(comboBoxModel);
+        cliente.setBorder(BorderFactory.createEmptyBorder());
+        cliente.setBackground(Color.decode("#F5F5F5"));
+        cliente.setForeground(textColor);
+        cliente.setEditable(false);
+        cliente.setFocusable(false);
 
-        botonAtras.setEnabled(false);
-        botonAtras.addActionListener(new ActionListener() {
+        empleado.setBorder(BorderFactory.createEmptyBorder());
+        empleado.setBackground(Color.decode("#F5F5F5"));
+        empleado.setForeground(textColor);
+        empleado.setEditable(false);
+        empleado.setFocusable(false);
+
+        imprimirButton.setForeground(Color.WHITE);
+        imprimirButton.setBackground(darkColorVerdeLima);
+        imprimirButton.setFocusPainted(false);
+        imprimirButton.setBorder(margin);
+
+        cancelarButton.setForeground(Color.WHITE);
+        cancelarButton.setBackground(Color.decode("#263238"));
+        cancelarButton.setFocusPainted(false);
+        cancelarButton.setBorder(margin);
+
+        lbl0.setBorder(margin);
+        lbl0.setFont(fontTitulo);
+
+        lbl1.setForeground(textColor2);
+        lbl2.setForeground(textColor2);
+        lbl3.setForeground(textColor2);
+        lbl4.setForeground(textColor2);
+        lbl5.setForeground(textColor2);
+        lbl6.setForeground(textColor2);
+        lbl7.setForeground(textColor2);
+        lbl13.setForeground(textColor2);
+
+        lbl1.setFont(font2);
+        lbl2.setFont(font2);
+        lbl3.setFont(font2);
+        lbl4.setFont(font2);
+        lbl5.setFont(font2);
+        lbl6.setFont(font2);
+        lbl7.setFont(font2);
+        lbl13.setFont(font2);
+
+        codigo_venta.setFont(font);
+        fecha.setFont(font);
+        cliente.setFont(font);
+        empleado.setFont(font);
+
+        lbl8.setFont(font);
+        lbl9.setFont(font);
+        lbl10.setFont(font);
+
+        JTableHeader header = productos.getTableHeader();
+        header.setForeground(Color.WHITE);
+        header.setBackground(darkColorCyan);
+
+        cancelarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (pagina > 0) {
-                    pagina--;
-                    botonAdelante.setEnabled(true);
-                    if (pagina == 0) {
-                        botonAtras.setEnabled(false);
-                    }
-                }
-                listaVentas.setModel(cargarDatos());
-                configurarTablaVentas();
-                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount(mesSeleccionado));
-            }
-        });
-
-        botonAdelante.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if ((pagina + 1) < getTotalPageCount(mesSeleccionado)) {
-                    pagina++;
-                    botonAtras.setEnabled(true);
-                    if ((pagina + 1) == getTotalPageCount(mesSeleccionado)) {
-                        botonAdelante.setEnabled(false);
-                    }
-                }
-                listaVentas.setModel(cargarDatos());
-                configurarTablaVentas();
-                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount(mesSeleccionado));
-            }
-        });
-
-        campoBusqueda.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyReleased(KeyEvent e) {
-                busqueda = campoBusqueda.getText();
-                pagina = 0;
-                botonAdelante.setEnabled((pagina + 1) < getTotalPageCount(mesSeleccionado));
-                botonAtras.setEnabled(pagina > 0);
-                listaVentas.setModel(cargarDatos());
-                configurarTablaVentas();
-                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount(mesSeleccionado));
-            }
-        });
-
-        botonCrear.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                CrearVenta crearVenta = new CrearVenta();
-                crearVenta.setVisible(true);
-                JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(listaVentas); // Obtén la ventana que contiene la lista de compras
-                if (frame != null) {
-                    frame.dispose(); // Cierra la ventana
-                }
-            }
-        });
-
-        botonVer.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (listaVentas.getSelectedRow() == -1) {
-                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar", "Validación", JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
-                VerVentas ventas = new VerVentas(ventaList.get(listaVentas.getSelectedRow()).getId());
-                ventas.setVisible(true);
+                ListaVentas listaVentas = new ListaVentas();
+                listaVentas.setVisible(true);
                 actual.dispose();
             }
         });
 
-        botonImprimir.addActionListener(new ActionListener() {
+        imprimirButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (listaVentas.getSelectedRow() == -1) {
-                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
-
-                int filaSeleccionada = listaVentas.getSelectedRow();
-                if (filaSeleccionada >= 0) {
-                    int indiceItemSeleccionado = listaVentas.convertRowIndexToModel(filaSeleccionada);
-                    imprimirFactura(ventaList.get(indiceItemSeleccionado).getCodigoVenta());
-                }
+                String codigoVenta = codigo_venta.getText();
+                ListaVentas.imprimirFactura(codigoVenta);
             }
         });
 
-        JTableHeader header = listaVentas.getTableHeader();
-        header.setForeground(Color.WHITE);
-
-        int campoBusquedaHeight = 35;
-        campoBusqueda.setPreferredSize(new Dimension(campoBusqueda.getPreferredSize().width, campoBusquedaHeight));
-
-        int fechasHeight = 35;
-        fechaComboBox.setPreferredSize(new Dimension(fechaComboBox.getPreferredSize().width, fechasHeight));
-
-        panelPrincipal.setBackground(primaryColor);
-        panelTitulo.setBackground(primaryColor);
-        panelA.setBackground(primaryColor);
-        panelB.setBackground(primaryColor);
-        header.setBackground(darkColor);
-        botonImprimir.setBackground(darkColor);
-        botonCrear.setBackground(darkColor);
-        botonAdelante.setBackground(darkColor);
-        botonAtras.setBackground(darkColor);
-        botonVer.setBackground(darkColor);
-        fechaComboBox.setBackground(Color.WHITE);
-        campoBusqueda.setBackground(Color.WHITE);
-
-        placeholder.setForeground(darkColor);
-        fechaComboBox.setForeground(primaryColor);
-        botonImprimir.setForeground(Color.WHITE);
-        botonVer.setForeground(Color.WHITE);
-        botonAtras.setForeground(Color.WHITE);
-        botonAdelante.setForeground(Color.WHITE);
-        botonCrear.setForeground(Color.WHITE);
-        campoBusqueda.setForeground(primaryColor);
-        lblPagina.setForeground(Color.WHITE);
-
-        campoBusqueda.setFont(font);
-        botonAdelante.setFont(font);
-        botonVer.setFont(font);
-        botonAtras.setFont(font);
-        botonCrear.setFont(font);
-        botonImprimir.setFont(font);
-        fechaComboBox.setFont(font);
-        placeholder.setFont(font);
-        lbl0.setFont(fontTitulo);
-        lblPagina.setFont(font);
-
-        botonAdelante.setFocusable(false);
-        botonAtras.setFocusable(false);
-        botonCrear.setFocusable(false);
-        botonVer.setFocusable(false);
-        botonImprimir.setFocusable(false);
-        fechaComboBox.setFocusable(false);
+        configurarTablaMateriales();
+    }
 
 
-        fechaComboBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String mesSeleccionado = (String) fechaComboBox.getSelectedItem();
-                actualizarModeloTablaConMesSeleccionado(mesSeleccionado);
+
+    private void mostrar() {
+        sql = new Conexion();
+        mysql = sql.conectamysql();
+        DecimalFormat decimalFormat = new DecimalFormat("###,###.00");
+        double suma = 0;
+
+        try {
+            PreparedStatement statement = mysql.prepareStatement(
+                    "SELECT v.*, CONCAT(c.nombre, ' ', c.apellido)  AS nombre_cliente, CONCAT(e.Nombres, ' ', e.Apellidos) AS nombre_empleado " +
+                            "FROM ventas v " +
+                            "LEFT JOIN clientes c ON v.cliente_id = c.id " +
+                            "LEFT JOIN empleados e ON v.empleado_id = e.id " +
+                            "WHERE v.id = ?;"
+            );
+            statement.setInt(1, this.id);
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                // Llenar los campos de la interfaz con los datos de la venta
+                codigo_venta.setText(resultSet.getString("codigo_venta"));
+                fecha.setText(resultSet.getString("fecha"));
+
+                // Mostrar el nombre completo del cliente y del empleado
+                cliente.setText(resultSet.getString("nombre_cliente"));
+                empleado.setText(resultSet.getString("nombre_empleado"));
+
+                DefaultTableModel modeloProductos = new DefaultTableModel();
+                modeloProductos.addColumn("N°");
+                modeloProductos.addColumn("Producto");
+                modeloProductos.addColumn("Cantidad");
+                modeloProductos.addColumn("Precio");
+                modeloProductos.addColumn("Total");
+
+                PreparedStatement detallesStatement = mysql.prepareStatement("SELECT detalle_id, cantidad FROM detalles_ventas WHERE venta_id = ?");
+                detallesStatement.setInt(1, this.id);
+                ResultSet detallesResultSet = detallesStatement.executeQuery();
+
+                int numeroDetalle = 1;
+                while (detallesResultSet.next()) {
+                    int detalleId = detallesResultSet.getInt("detalle_id");
+                    int cantidad = detallesResultSet.getInt("cantidad");
+                    double precioDetalle = obtenerPrecioProducto(detalleId, sql);
+                    double subtotal = cantidad * precioDetalle; // Aplicar el factor 0.85 según tu lógica
+                    suma += subtotal;
+
+                    String nombreProducto = obtenerNombreProducto(detalleId, sql);
+
+                    Object[] fila = {numeroDetalle, "  " + nombreProducto, "  " + cantidad + " unidades", "  L. " + decimalFormat.format(precioDetalle), "  L. " +
+                            decimalFormat.format(subtotal)};
+                    modeloProductos.addRow(fila);
+
+                    numeroDetalle++;
+                }
+
+                // Llenar la tabla de productos con el modelo
+                productos.setModel(modeloProductos);
+
+                // Calcular los valores totales
+                double subtotal = suma * 0.85; // Aplicar el factor 0.85 según tu lógica
+                double isv = suma * 0.15; // Aplicar el factor 0.15 según tu lógica
+                double total = subtotal + isv;
+
+                // Actualizar etiquetas con los resultados de los cálculos
+                String formattedSuma = "L. " + decimalFormat.format(subtotal);
+                lbl8.setText(formattedSuma);
+
+                String formattedISV = "L. " + decimalFormat.format(isv);
+                lbl9.setText(formattedISV);
+
+                String formattedTotal = "L. " + decimalFormat.format(total);
+                lbl10.setText(formattedTotal);
+
+            } else {
+                JOptionPane.showMessageDialog(null, "La venta con el ID " + this.id + " no fue encontrada.", "Error", JOptionPane.ERROR_MESSAGE);
             }
-        });
-    }
 
-    private void configurarTablaVentas() {
-        TableColumnModel columnModel = listaVentas.getColumnModel();
-
-        columnModel.getColumn(0).setPreferredWidth(20);
-        columnModel.getColumn(1).setPreferredWidth(120);
-        columnModel.getColumn(2).setPreferredWidth(150);
-        columnModel.getColumn(3).setPreferredWidth(230);
-        columnModel.getColumn(4).setPreferredWidth(230);
-        columnModel.getColumn(5).setPreferredWidth(80);
-        columnModel.getColumn(6).setPreferredWidth(80);
-        columnModel.getColumn(7).setPreferredWidth(80);
-
-        columnModel.getColumn(0).setCellRenderer(new CenterAlignedRenderer());
-        columnModel.getColumn(1).setCellRenderer(new CenterAlignedRenderer());
-        columnModel.getColumn(2).setCellRenderer(new LeftAlignedRenderer());
-        columnModel.getColumn(3).setCellRenderer(new LeftAlignedRenderer());
-        columnModel.getColumn(4).setCellRenderer(new LeftAlignedRenderer());
-        columnModel.getColumn(5).setCellRenderer(new LeftAlignedRenderer());
-        columnModel.getColumn(6).setCellRenderer(new LeftAlignedRenderer());
-        columnModel.getColumn(7).setCellRenderer(new LeftAlignedRenderer());
-    }
-
-    class LeftAlignedRenderer extends DefaultTableCellRenderer {
-        public LeftAlignedRenderer() {
-            setHorizontalAlignment(LEFT);
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            return cell;
+        } catch (SQLException error) {
+            System.out.println(error.getMessage());
         }
     }
 
-    class RightAlignedRenderer extends DefaultTableCellRenderer {
-        public RightAlignedRenderer() {
-            setHorizontalAlignment(RIGHT);
-        }
+    private void configurarTablaMateriales() {
+        int columnCount = productos.getColumnCount();
+        if (columnCount > 0) {
+            TableColumnModel columnModel = productos.getColumnModel();
 
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            return cell;
+            columnModel.getColumn(0).setPreferredWidth(20);
+            columnModel.getColumn(1).setPreferredWidth(220);
+            columnModel.getColumn(2).setPreferredWidth(100);
+            columnModel.getColumn(3).setPreferredWidth(100);
+            columnModel.getColumn(4).setPreferredWidth(100);
+
+            columnModel.getColumn(0).setCellRenderer(new VerVentas.CenterAlignedRenderer());
+            columnModel.getColumn(1).setCellRenderer(new VerVentas.LeftAlignedRenderer());
+            columnModel.getColumn(2).setCellRenderer(new VerVentas.LeftAlignedRenderer());
+            columnModel.getColumn(3).setCellRenderer(new VerVentas.LeftAlignedRenderer());
+            columnModel.getColumn(4).setCellRenderer(new VerVentas.LeftAlignedRenderer());
         }
     }
 
@@ -288,174 +296,16 @@ public class ListaVentas extends JFrame {
         }
     }
 
-    private int obtenerNumeroMes(String mesSeleccionado) {
-        int numeroMes = 0;
-        switch (mesSeleccionado) {
-            case "Enero":
-                numeroMes = 1;
-                break;
-            case "Febrero":
-                numeroMes = 2;
-                break;
-            case "Marzo":
-                numeroMes = 3;
-                break;
-            case "Abril":
-                numeroMes = 4;
-                break;
-            case "Mayo":
-                numeroMes = 5;
-                break;
-            case "Junio":
-                numeroMes = 6;
-                break;
-            case "Julio":
-                numeroMes = 7;
-                break;
-            case "Agosto":
-                numeroMes = 8;
-                break;
-            case "Septiembre":
-                numeroMes = 9;
-                break;
-            case "Octubre":
-                numeroMes = 10;
-                break;
-            case "Noviembre":
-                numeroMes = 11;
-                break;
-            case "Diciembre":
-                numeroMes = 12;
-                break;
-            case "Todos":
-                numeroMes = 0;
-                break;
-        }
-        return numeroMes;
-    }
-
-    private void actualizarModeloTablaConMesSeleccionado(String mesSeleccionado) {
-        sql = new Conexion();
-        try (Connection mysql = sql.conectamysql()) {
-            String query = "SELECT c.*, p.nombre, CONCAT(e.Nombres, ' ', e.Apellidos) AS apellido " +
-                    "FROM ventas c " +
-                    "JOIN clientes p ON c.cliente_id = p.id " +
-                    "JOIN empleados e ON c.empleado_id = e.id ";
-
-            boolean hasMesFilter = mesSeleccionado != null && !mesSeleccionado.equals("Todos");
-            boolean hasBusquedaFilter = busqueda != null && !busqueda.isEmpty();
-
-            if (hasMesFilter || hasBusquedaFilter) {
-                query += "WHERE ";
-            }
-
-            if (hasMesFilter) {
-                query += "MONTH(c.fecha) = ? ";
-            }
-
-            if (hasMesFilter && hasBusquedaFilter) {
-                query += "AND ";
-            }
-
-            if (hasBusquedaFilter) {
-                query += "(c.codigo_venta LIKE CONCAT('%', ?, '%') OR p.nombre LIKE CONCAT('%', ?, '%')) ";
-            }
-
-            query += "LIMIT ?, 20";
-
-            PreparedStatement preparedStatement = mysql.prepareStatement(query);
-
-            int parameterIndex = 1;
-
-            if (hasMesFilter) {
-                int numeroMes = obtenerNumeroMes(mesSeleccionado);
-                preparedStatement.setInt(parameterIndex, numeroMes);
-                parameterIndex++;
-            }
-
-            if (hasBusquedaFilter) {
-                preparedStatement.setString(parameterIndex, busqueda);
-                preparedStatement.setString(parameterIndex + 1, busqueda);
-                parameterIndex += 2;
-            }
-
-            preparedStatement.setInt(parameterIndex, pagina * 20);
-
-            ResultSet resultSet = preparedStatement.executeQuery();
-            ventaList = new ArrayList<>();
-            while (resultSet.next()) {
-                Venta venta = new Venta();
-                venta.setId(resultSet.getInt("id"));
-                venta.setCodigoVenta(resultSet.getString("codigo_venta"));
-                venta.setFecha(resultSet.getString("fecha"));
-                venta.setClienteId(resultSet.getInt("cliente_id"));
-                venta.setEmpleadoId(resultSet.getInt("empleado_id"));
-                ventaList.add(venta);
-            }
-            listaVentas.setModel(new ModeloVenta(ventaList, sql));
-            configurarTablaVentas();
-            lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount(mesSeleccionado));
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
-            ventaList = new ArrayList<>();
-        }
-    }
-
-    private int getTotalPageCount(String mesSeleccionado) {
-        int count = 0;
-        try (Connection mysql = sql.conectamysql()) {
-            String query = "SELECT COUNT(*) AS total FROM " + Venta.nombreTabla;
-            if (mesSeleccionado != null && !mesSeleccionado.equals("Todos")) {
-                query += " WHERE MONTH(fecha) = ? AND codigo_venta LIKE CONCAT('%', ?, '%')";
-            } else {
-                query += " WHERE codigo_venta LIKE CONCAT('%', ?, '%')";
-            }
-            PreparedStatement preparedStatement = mysql.prepareStatement(query);
-            if (mesSeleccionado != null && !mesSeleccionado.equals("Todos")) {
-                int numeroMes = obtenerNumeroMes(mesSeleccionado);
-                preparedStatement.setInt(1, numeroMes);
-                preparedStatement.setString(2, busqueda);
-            } else {
-                preparedStatement.setString(1, busqueda);
-            }
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                count = resultSet.getInt("total");
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
-        }
-        int totalPageCount = (int) Math.ceil((double) count / 20);
-        return totalPageCount;
-    }
-
-    public static double calcularSubtotal(List<VentaDetalle> detalles) {
-        double subtotal = 0.0;
-
-        for (VentaDetalle detalle : detalles) {
-            double precioDetalle = obtenerPrecioProducto(detalle.getId(), sql);
-            subtotal += (detalle.getCantidad() * precioDetalle) * 0.85;
+    class LeftAlignedRenderer extends DefaultTableCellRenderer {
+        public LeftAlignedRenderer() {
+            setHorizontalAlignment(LEFT);
         }
 
-        return subtotal;
-    }
-
-    public static double calcularISV(List<VentaDetalle> detalles) {
-        double isv = 0.0;
-
-        for (VentaDetalle detalle : detalles) {
-            double precioDetalle = obtenerPrecioProducto(detalle.getId(), sql);
-            isv += (detalle.getCantidad() * precioDetalle) * 0.15;
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            return cell;
         }
-        return isv;
-    }
-
-    private static double calcularTotal(List<VentaDetalle> detalles) {
-        double subtotal = calcularSubtotal(detalles);
-        double isv = calcularISV(detalles);
-        return subtotal + isv;
     }
 
     public static double obtenerPrecioProducto(int detalleId, Conexion sql) {
@@ -614,55 +464,6 @@ public class ListaVentas extends JFrame {
         }
 
         return nombreProducto;
-    }
-
-    private ModeloVenta cargarDatos() {
-        sql = new Conexion();
-        try (Connection mysql = sql.conectamysql();
-             PreparedStatement preparedStatement = mysql.prepareStatement(
-                     "SELECT c.*, p.nombre, CONCAT(e.nombres, ' ', e.apellidos) AS apellido " +
-                             "FROM ventas c " +
-                             "JOIN clientes p ON c.cliente_id = p.id " +
-                             "JOIN empleados e ON c.empleado_id = e.id " +
-                             "WHERE c.codigo_venta LIKE CONCAT('%', ?, '%') " +
-                             "OR DATE_FORMAT(c.fecha, '%d de %M %Y') LIKE CONCAT('%', ?, '%') " +
-                             "OR p.nombre LIKE CONCAT('%', ?, '%') " +
-                             "LIMIT ?, 20")) {
-
-            SimpleDateFormat formatoFecha = new SimpleDateFormat("dd 'de' MMMM yyyy", new Locale("es"));
-
-            preparedStatement.setString(1, busqueda);  // Búsqueda por código de venta
-            preparedStatement.setString(2, busqueda);  // Búsqueda por fecha de la venta
-            preparedStatement.setString(3, busqueda);  // Búsqueda por nombre o apellido del cliente
-            preparedStatement.setInt(4, pagina * 20);
-
-            ResultSet resultSet = preparedStatement.executeQuery();
-            ventaList = new ArrayList<>();
-            while (resultSet.next()) {
-                Venta venta = new Venta();
-                venta.setId(resultSet.getInt("id"));
-                venta.setCodigoVenta(resultSet.getString("codigo_venta"));
-                java.util.Date fecha = resultSet.getDate("fecha");
-                if (fecha != null) {
-                    venta.setFecha(formatoFecha.format(fecha));
-                } else {
-                    venta.setFecha("");
-                }
-
-                venta.setClienteId(resultSet.getInt("cliente_id"));
-                venta.setEmpleadoId(resultSet.getInt("empleado_id"));
-                ventaList.add(venta);
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
-            ventaList = new ArrayList<>();
-        }
-        if (listaVentas.getColumnCount() > 0) {
-            TableColumn columnId = listaVentas.getColumnModel().getColumn(0);
-            columnId.setPreferredWidth(50);
-        }
-        return new ModeloVenta(ventaList, sql);
     }
 
     public static void imprimirFactura(String codigo) {
@@ -903,9 +704,37 @@ public class ListaVentas extends JFrame {
         }
     }
 
+    public static double calcularSubtotal(List<VentaDetalle> detalles) {
+        double subtotal = 0.0;
+
+        for (VentaDetalle detalle : detalles) {
+            double precioDetalle = obtenerPrecioProducto(detalle.getId(), sql);
+            subtotal += (detalle.getCantidad() * precioDetalle) * 0.85;
+        }
+
+        return subtotal;
+    }
+
+    public static double calcularISV(List<VentaDetalle> detalles) {
+        double isv = 0.0;
+
+        for (VentaDetalle detalle : detalles) {
+            double precioDetalle = obtenerPrecioProducto(detalle.getId(), sql);
+            isv += (detalle.getCantidad() * precioDetalle) * 0.15;
+        }
+        return isv;
+    }
+
+    private static double calcularTotal(List<VentaDetalle> detalles) {
+        double subtotal = calcularSubtotal(detalles);
+        double isv = calcularISV(detalles);
+        return subtotal + isv;
+    }
+
     public static void main(String[] args) {
-        ListaVentas listaVentas = new ListaVentas();
-        listaVentas.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        listaVentas.setVisible(true);
+        SwingUtilities.invokeLater(() -> {
+            VerVentas verVentas = new VerVentas(1);
+            verVentas.setVisible(true);
+        });
     }
 }
