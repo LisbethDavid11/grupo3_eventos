@@ -1,14 +1,8 @@
 package Mobiliario;
-
 import Arreglos.TextPrompt;
-import Globos.EditarGlobo;
-import Globos.VerGlobo;
-import Modelos.ModeloGlobo;
 import Modelos.ModeloMobiliario;
 import Objetos.Conexion;
-import Objetos.Globo;
 import Objetos.Mobiliario;
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
@@ -32,7 +26,7 @@ public class ListaMobiliario extends JFrame {
     private JButton botonAtras;
     private JButton botonAdelante;
     private JTextField campoBusqueda;
-    private TextPrompt placeholder = new TextPrompt(" Buscar por fecha y nombre del cliente", campoBusqueda);
+    private TextPrompt placeholder = new TextPrompt(" Buscar por nombre de mobiliario o color", campoBusqueda);
     private JButton botonEditar;
     private JButton botonCrear;
     private JLabel lblPagina;
@@ -194,12 +188,11 @@ public class ListaMobiliario extends JFrame {
         TableColumnModel columnModel = listaMobiliario.getColumnModel();
 
         columnModel.getColumn(0).setPreferredWidth(20);
-        columnModel.getColumn(1).setPreferredWidth(140);
-        columnModel.getColumn(2).setPreferredWidth(140);
-        columnModel.getColumn(3).setPreferredWidth(140);
-        columnModel.getColumn(4).setPreferredWidth(60);
-        columnModel.getColumn(5).setPreferredWidth(60);
-
+        columnModel.getColumn(1).setPreferredWidth(220);
+        columnModel.getColumn(2).setPreferredWidth(100);
+        columnModel.getColumn(3).setPreferredWidth(60);
+        columnModel.getColumn(4).setPreferredWidth(80);
+        columnModel.getColumn(5).setPreferredWidth(80);
 
         columnModel.getColumn(0).setCellRenderer(new CenterAlignedRenderer());
         columnModel.getColumn(1).setCellRenderer(new LeftAlignedRenderer());
@@ -207,7 +200,6 @@ public class ListaMobiliario extends JFrame {
         columnModel.getColumn(3).setCellRenderer(new LeftAlignedRenderer());
         columnModel.getColumn(4).setCellRenderer(new LeftAlignedRenderer());
         columnModel.getColumn(5).setCellRenderer(new LeftAlignedRenderer());
-
     }
 
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
@@ -250,15 +242,7 @@ public class ListaMobiliario extends JFrame {
         sql = new Conexion();
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement(
-                     "SELECT mobiliario.*, " +
-                             "   concat(clientes.nombre,' ',clientes.apellido) as cliente, " +
-                             "       concat(empleados.nombres,' ',empleados.apellidos) as empleado " +
-                             " FROM mobiliario " +
-                             " join clientes on clientes.id = mobiliario.id_cliente " +
-                             " join empleados on empleados.id = mobiliario.id_empleado " +
-                             " where concat(clientes.nombre,' ',clientes.apellido) like concat('%',?,'%') or " +
-                             " mobiliario.fechaEntrega like concat('%',?,'%')  " +
-                             " limit ?,20"
+                     "SELECT * FROM mobiliario WHERE color LIKE CONCAT('%', ?, '%') OR nombreMobiliario LIKE CONCAT('%', ?, '%') LIMIT ?, 20;"
              )
         ) {
 
@@ -273,13 +257,10 @@ public class ListaMobiliario extends JFrame {
                 Mobiliario mobiliario = new Mobiliario();
                 mobiliario.setId(resultSet.getInt("id"));
                 mobiliario.setNombreMobiliario(resultSet.getString("nombreMobiliario"));
-                mobiliario.setTipoEvento(resultSet.getString("tipoEvento"));
-                mobiliario.setCliente(resultSet.getInt("id_cliente"));
-                mobiliario.setEmpleado(resultSet.getInt("id_empleado"));
+                mobiliario.setColor(resultSet.getString("color"));
                 mobiliario.setDescripcion(resultSet.getString("descripcion"));
                 mobiliario.setCantidad(resultSet.getInt("cantidad"));
                 mobiliario.setPrecioUnitario(resultSet.getFloat("precioUnitario"));
-                mobiliario.setFechaEntrega(resultSet.getString("fechaEntrega"));
                 mobiliario.setImagen(resultSet.getString("image"));
                 mobiliario.setDisponibilidad(resultSet.getBoolean("disponibilidad"));
                 listadoMobiliario.add(mobiliario);
@@ -301,12 +282,7 @@ public class ListaMobiliario extends JFrame {
         int count = 0;
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement(
-                     "SELECT count(*) as total" +
-                             " FROM mobiliario " +
-                             " join clientes on clientes.id = mobiliario.id_cliente " +
-                             " join empleados on empleados.id = mobiliario.id_empleado " +
-                             " where concat(clientes.nombre,' ',clientes.apellido) like concat('%',?,'%') or " +
-                             "  mobiliario.fechaEntrega like concat('%',?,'%') "
+                     "SELECT COUNT(*) as total FROM mobiliario WHERE color LIKE CONCAT('%', ?, '%') OR nombreMobiliario LIKE CONCAT('%', ?, '%');"
              )
         ) {
             preparedStatement.setString(1, campoBusqueda.getText().isEmpty()?"":campoBusqueda.getText());

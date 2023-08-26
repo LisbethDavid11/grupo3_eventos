@@ -3,7 +3,6 @@ package Mobiliario;
 import Objetos.Cliente;
 import Objetos.Conexion;
 import Objetos.Empleado;
-import org.jdesktop.swingx.JXDatePicker;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -32,21 +31,18 @@ public class CrearMobiliario extends JFrame {
     private JButton botonGuardar, botonCancelar, botonLimpiar;
     private JPanel panel1, panel2, panel3, panel5, panel6, panel7;
     private JLabel lbl0, lbl2, lbl3;
-    private JComboBox comboBoxCliente, comboBoxEmpleado;
     private String imagePath = "";
     private JPanel panelImg;
     private JLabel imagenLabel;
     private JButton botonCargarImagen;
     private JTextArea txtaDescripcion;
-    private JComboBox comboTipoEvento;
-    private JTextField lbl_total;
-    private JXDatePicker jdatechosser;
+    private JComboBox comboColor;
     private CrearMobiliario actual = this;
     private Conexion sql;
 
     public CrearMobiliario() {
         super("");
-        setSize(800, 490);
+        setSize(700, 490);
         setLocationRelativeTo(null);
         setContentPane(panel1);
         sql = new Conexion();
@@ -78,14 +74,11 @@ public class CrearMobiliario extends JFrame {
         panelImg.add(imagenLabel, gbc);
 
 
-        jdatechosser.getEditor().setEditable(false);
-
         // Color de fondo del panel1
         panel1.setBackground(Color.decode("#F5F5F5"));
         panel2.setBackground(Color.decode("#F5F5F5"));
         panel3.setBackground(Color.decode("#F5F5F5"));
         panel5.setBackground(Color.decode("#F5F5F5"));
-        panel3.setBackground(Color.decode("#F5F5F5"));
         panelImg.setBackground(Color.decode("#F5F5F5"));
         radioButtonSiNecesita.setBackground(Color.decode("#F5F5F5"));
         radioButtonNoNecesita.setBackground(Color.decode("#F5F5F5"));
@@ -145,8 +138,6 @@ public class CrearMobiliario extends JFrame {
         botonLimpiar.setBorder(margin);
 
         lbl0.setForeground(textColor);
-        lbl2.setForeground(textColor);
-        lbl3.setForeground(textColor);
 
         // Crea un margen de 15 píxeles desde el borde inferior
         EmptyBorder marginTitulo = new EmptyBorder(15, 0, 15, 0);
@@ -164,8 +155,7 @@ public class CrearMobiliario extends JFrame {
             @Override
             public void keyReleased(KeyEvent e) {
 
-                double total = Double.parseDouble(campoCantidad.getText().isEmpty()?"0":campoCantidad.getText()) * Double.parseDouble(campoPrecioU.getText().isEmpty()?"0":campoPrecioU.getText());
-                lbl_total.setText(String.format("%.2f",total));
+
             }
 
             @Override
@@ -296,8 +286,6 @@ public class CrearMobiliario extends JFrame {
             @Override
             public void keyReleased(KeyEvent e) {
 
-                double total = Double.parseDouble(campoCantidad.getText().isEmpty()?"0":campoCantidad.getText()) * Double.parseDouble(campoPrecioU.getText().isEmpty()?"0":campoPrecioU.getText());
-                lbl_total.setText(String.format("%.2f",total));
             }
             @Override
             public void keyTyped(KeyEvent e) {
@@ -305,31 +293,15 @@ public class CrearMobiliario extends JFrame {
                 String text = campoCantidad.getText();
 
                 // Permitir solo dígitos y el carácter de punto decimal
-                if (!Character.isDigit(c) && c != '.') {
+                if (!Character.isDigit(c)) {
                     e.consume(); // Ignorar cualquier otro carácter
                     return;
                 }
 
                 // Verificar si se excede el límite de caracteres
-                if (text.length() >= 5 && c != '.' && !text.contains(".")) {
+                if (text.length() >= 4) {
                     e.consume(); // Ignorar el carácter si se excede el límite de dígitos y no es un punto decimal
                     return;
-                }
-
-                // Verificar si ya hay un punto decimal y se intenta ingresar otro
-                if (text.contains(".") && c == '.') {
-                    e.consume(); // Ignorar el carácter si ya hay un punto decimal
-                    return;
-                }
-
-                // Verificar la cantidad de dígitos después del punto decimal
-                if (text.contains(".")) {
-                    int dotIndex = text.indexOf(".");
-                    int decimalDigits = text.length() - dotIndex - 1;
-                    if (decimalDigits >= 2) {
-                        e.consume();
-                        return;
-                    }
                 }
             }
         });
@@ -337,8 +309,8 @@ public class CrearMobiliario extends JFrame {
         botonCancelar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ListaMobiliario listaGlobos = new ListaMobiliario();
-                listaGlobos.setVisible(true);
+                ListaMobiliario listaMobiliario = new ListaMobiliario();
+                listaMobiliario.setVisible(true);
                 actual.dispose();
             }
         });
@@ -358,22 +330,10 @@ public class CrearMobiliario extends JFrame {
                     validacion++;
                     mensaje += "El nombre de mobiliario\n";
                 }
-                String tipoEvento  = comboTipoEvento.getSelectedItem().toString().trim();
-                if (tipoEvento.equals("Seleccione el tipo de Evento")) {
+                String tipoEvento  = comboColor.getSelectedItem().toString().trim();
+                if (tipoEvento.equals("Seleccione el color")) {
                     validacion++;
-                    mensaje += "El tipo de evento\n";
-                }
-
-                String id_cliente =comboBoxCliente.getSelectedItem().toString().trim();
-                if (id_cliente.equals("Seleccione el Cliente")) {
-                    validacion++;
-                    mensaje += "El Cliente\n";
-                }
-
-                String id_empleado = comboBoxEmpleado.getSelectedItem().toString().trim();
-                if (id_empleado.equals("Seleccione el Empleado")) {
-                    validacion++;
-                    mensaje += "El Empleado\n";
+                    mensaje += "El color\n";
                 }
 
                 if (campoPrecioU.getText().trim().isEmpty()) {
@@ -393,21 +353,11 @@ public class CrearMobiliario extends JFrame {
                     mensaje += "La cantidad\n";
                 }
 
-                String fechaEntrega = jdatechosser.getEditor().getText().trim();
-                if (fechaEntrega.trim().isEmpty()) {
-                    validacion++;
-                    mensaje += "La fecha entrega\n";
-                }
-
                 String disponibilidad = radioButtonSiNecesita.getText().trim();
                 if (cantidad.trim().isEmpty()) {
                     validacion++;
                     mensaje += "disponibilidad\n";
                 }
-
-
-
-
 
                 if (validacion > 0) {
                     JOptionPane.showMessageDialog(null, mensaje, "Validación", JOptionPane.ERROR_MESSAGE);
@@ -433,16 +383,16 @@ public class CrearMobiliario extends JFrame {
 
                 String cantidadText = campoCantidad.getText().trim();
                 if (cantidadText.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Faltó ingresar la cantidad por paquetes de globos.", "Validación", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Faltó ingresar la cantidad.", "Validación", JOptionPane.ERROR_MESSAGE);
                     return;
                 } else {
                     if (!cantidadText.matches("\\d{1,4}")) {
-                        JOptionPane.showMessageDialog(null, "Cantidad por paquete de globos inválida. Debe contener solo números entre 1 y 9999.", "Validación", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "Cantidad inválida. Debe contener solo números entre 1 y 9999.", "Validación", JOptionPane.ERROR_MESSAGE);
                         return;
                     } else {
                         int cantidad2 = Integer.parseInt(cantidadText);
                         if (cantidad2 < 1 || cantidad2 > 9999) {
-                            JOptionPane.showMessageDialog(null, "Cantidad por paquete de globos fuera del rango válido (1 - 9999).", "Validación", JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.showMessageDialog(null, "Cantidad fuera del rango válido (1 - 9999).", "Validación", JOptionPane.ERROR_MESSAGE);
                             return;
                         }
                     }
@@ -572,29 +522,25 @@ public class CrearMobiliario extends JFrame {
                 dialog.setVisible(true);
             }
         });
-        cargarCliente();
-        cargarEmpleado();
 
+        txtaDescripcion.setBackground(new Color(215, 215, 215));
     }
 
     private void guardarMobiliario() {
 
         double precio =Double.parseDouble(campoPrecioU.getText().trim());
         String nombreMobiliario = campoNombreMobiliario.getText().trim();
-        String tipoEvento  = comboTipoEvento.getSelectedItem().toString().trim();
-        String id_cliente =comboBoxCliente.getSelectedItem().toString().trim().split("-")[0];
-        String id_empleado = comboBoxEmpleado.getSelectedItem().toString().trim().split("-")[0];
+        String tipoEvento  = comboColor.getSelectedItem().toString().trim();
         String descripcion = txtaDescripcion.getText().trim();
         String cantidad = campoCantidad.getText().trim();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        String fechaEntrega = format.format(jdatechosser.getDate());
         String image = imagePath;
         int disponibilidad = radioButtonSiNecesita.isSelected() ? 1 : 0 ;
 
 
 
         try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO mobiliario (nombreMobiliario,tipoEvento,id_cliente,id_empleado,descripcion,cantidad,precioUnitario,fechaEntrega,image,disponibilidad) VALUES (?,?,?,?,?,?,?,?,?,?)")) {
+             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO mobiliario (nombreMobiliario,color,descripcion,cantidad,precioUnitario,image,disponibilidad) VALUES (?,?,?,?,?,?,?)")) {
 
             // Generar el nombre de la imagen
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH-mm-ss");
@@ -615,17 +561,13 @@ public class CrearMobiliario extends JFrame {
                 return;
             }
 
-
             preparedStatement.setString(1, nombreMobiliario);
             preparedStatement.setString(2, tipoEvento);
-            preparedStatement.setInt(3, Integer.parseInt(id_cliente));
-            preparedStatement.setInt(4, Integer.parseInt(id_empleado));
-            preparedStatement.setString(5, descripcion);
-            preparedStatement.setInt(6, Integer.parseInt(cantidad));
-            preparedStatement.setDouble(7, precio);
-            preparedStatement.setString(8, fechaEntrega);
-            preparedStatement.setString(9, image);
-            preparedStatement.setInt(10,disponibilidad);
+            preparedStatement.setString(3, descripcion);
+            preparedStatement.setInt(4, Integer.parseInt(cantidad));
+            preparedStatement.setDouble(5, precio);
+            preparedStatement.setString(6, image);
+            preparedStatement.setInt(7,disponibilidad);
             preparedStatement.executeUpdate();
 
             JOptionPane.showMessageDialog(null, "Mobiliario guardado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
@@ -638,56 +580,6 @@ public class CrearMobiliario extends JFrame {
         }
     }
 
-    private void cargarCliente(){
-        sql = new Conexion();
-        try (Connection mysql = sql.conectamysql();
-             PreparedStatement preparedStatement = mysql.prepareStatement(
-                     "SELECT * FROM eventos.clientes"
-             )
-        ) {
-            ResultSet resultSet = preparedStatement.executeQuery();
-            comboBoxCliente.addItem("Seleccione el Cliente");
-            while (resultSet.next()) {
-                Cliente cliente = new Cliente();
-                cliente.setId(resultSet.getInt("id"));
-                cliente.setNombre(resultSet.getString("nombre"));
-                cliente.setApellido(resultSet.getString("apellido"));
-
-                comboBoxCliente.addItem(cliente.getId()+"-"+cliente.getNombre()+" "+cliente.getApellido());
-            }
-
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
-        }
-    }
-
-    private void cargarEmpleado(){
-        sql = new Conexion();
-        try (Connection mysql = sql.conectamysql();
-             PreparedStatement preparedStatement = mysql.prepareStatement(
-                     "SELECT * FROM Empleados"
-             )
-        ) {
-            ResultSet resultSet = preparedStatement.executeQuery();
-            comboBoxEmpleado.addItem("Seleccione el Empleado");
-            while (resultSet.next()) {
-                Empleado empleado1 = new Empleado();
-                empleado1.setId(resultSet.getInt("id"));
-                empleado1.setIdentidad(resultSet.getString("Identidad"));
-                empleado1.setNombres(resultSet.getString("Nombres"));
-                empleado1.setApellidos(resultSet.getString("Apellidos"));
-                empleado1.setTelefono(resultSet.getString("Telefono"));
-
-                comboBoxEmpleado.addItem(empleado1.getId()+"-"+empleado1.getNombres()+" "+empleado1.getApellidos());
-            }
-
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
-        }
-    }
-
     private String obtenerExtensionImagen(String imagePath) {
         int extensionIndex = imagePath.lastIndexOf(".");
         if (extensionIndex != -1) {
@@ -697,15 +589,11 @@ public class CrearMobiliario extends JFrame {
     }
 
     private void limpiarCampos() {
-       campoPrecioU.setText("0");
-       campoNombreMobiliario.setText("");
-        comboTipoEvento.setSelectedIndex(0);
-        comboBoxCliente.setSelectedIndex(0);
-       comboBoxEmpleado.setSelectedIndex(0);
+        campoPrecioU.setText("0");
+        campoNombreMobiliario.setText("");
+        comboColor.setSelectedIndex(0);
         txtaDescripcion.setText("");
         campoCantidad.setText("0");
-        lbl_total.setText("0");
-        jdatechosser.getEditor().setText("");
     }
 
     private String generarNumeroAleatorio(int min, int max) {
@@ -715,9 +603,9 @@ public class CrearMobiliario extends JFrame {
     }
 
     public static void main(String[] args) {
-        CrearMobiliario crearGlobo = new CrearMobiliario();
-        crearGlobo.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        crearGlobo.setVisible(true);
+        CrearMobiliario crearMobiliario = new CrearMobiliario();
+        crearMobiliario.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        crearMobiliario.setVisible(true);
     }
 
     private void createUIComponents() {

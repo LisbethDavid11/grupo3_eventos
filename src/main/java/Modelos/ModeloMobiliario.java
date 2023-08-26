@@ -10,7 +10,7 @@ import java.util.List;
 
 public class ModeloMobiliario extends AbstractTableModel {
 
-    private final String[] columnas = {"N°","Fecha", "Tipo de Evento", "Cliente", "Empleado", "Total"};
+    private final String[] columnas = {"N°","Nombre del mobiliario", "Color", "Cantidad", "Precio", "Total" };
 
     private final List<Mobiliario> mobiliarios;
     private final Conexion sql;
@@ -38,27 +38,27 @@ public class ModeloMobiliario extends AbstractTableModel {
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         Mobiliario mobiliario = mobiliarios.get(rowIndex);
-        Cliente cliente = mobiliario.traer_cliente(sql);
-        Empleado empleado = mobiliario.traer_empleado(sql);
-
         switch (columnIndex) {
             case 0: // N°
                 return rowIndex + 1;
-            case 1: // Fecha
-                return "  " + mobiliario.getFechaEntrega();
-            case 2: // Tipo de Evento
-                return "  " + mobiliario.getTipoEvento();
-            case 3: // Cliente
-                return cliente.getNombre()+" "+cliente.getApellido() ;
-            case 4: // Empleado
-                return empleado.getNombres()+" "+empleado.getApellidos() ;
-            case 5: // Total
+            case 1: // Nombre
+                return "  " + mobiliario.getNombreMobiliario();
+            case 2: // Color
+                return "  " + mobiliario.getColor();
+            case 3: // Cantidad
+                return "  " + mobiliario.getCantidad();
+            case 4: // Precio
                 double precio = mobiliario.getPrecioUnitario();
-                double cantidad = mobiliario.getCantidad();
                 if (precio < 0) {
                     precio = 0;
                 }
-                return String.format("  L. %,.2f", precio*cantidad);
+                String precioFormateado = String.format("  L. %,.2f", precio);
+                return precioFormateado;
+            case 5: // Total (Precio * Cantidad)
+                int cantidad = mobiliario.getCantidad();
+                double total = mobiliario.getPrecioUnitario() * cantidad;
+                String totalFormateado = String.format("  L. %,.2f", total);
+                return totalFormateado;
             default:
                 return null;
         }
