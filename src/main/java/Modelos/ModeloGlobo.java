@@ -6,7 +6,7 @@ import java.util.List;
 
 public class ModeloGlobo extends AbstractTableModel {
 
-    private final String[] columnas = {"N°","Tamaño", "Material", "Color", "Existencia", "Precio", "Total"};
+    private final String[] columnas = {"N°","Tamaño", "Material", "Color", "Cantidad por paquete", "Precio"};
 
     private final List<Globo> globos;
     private final Conexion sql;
@@ -45,7 +45,7 @@ public class ModeloGlobo extends AbstractTableModel {
             case 3: // Color
                 return "  " + globo.getColor();
             case 4: // Nombre
-                return "  " + globo.getCantidad() + " unidades";
+                return "  " + globo.getCantidadPaquete() + " unidades";
             case 5: // Precio
                 double precio = globo.getPrecio();
                 if (precio < 0) {
@@ -53,11 +53,6 @@ public class ModeloGlobo extends AbstractTableModel {
                 }
                 String precioFormateado = String.format("  L. %,.2f", precio);
                 return precioFormateado;
-            case 6: // Total (Precio * Cantidad)
-                int cantidad = globo.getCantidad();
-                double total = globo.getPrecio() * cantidad;
-                String totalFormateado = String.format("  L. %,.2f", total);
-                return totalFormateado;
             default:
                 return null;
         }

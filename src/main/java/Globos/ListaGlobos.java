@@ -189,11 +189,10 @@ public class ListaGlobos extends JFrame {
 
         columnModel.getColumn(0).setPreferredWidth(20);
         columnModel.getColumn(1).setPreferredWidth(140);
-        columnModel.getColumn(2).setPreferredWidth(140);
-        columnModel.getColumn(3).setPreferredWidth(140);
-        columnModel.getColumn(4).setPreferredWidth(60);
+        columnModel.getColumn(2).setPreferredWidth(100);
+        columnModel.getColumn(3).setPreferredWidth(100);
+        columnModel.getColumn(4).setPreferredWidth(100);
         columnModel.getColumn(5).setPreferredWidth(60);
-        columnModel.getColumn(6).setPreferredWidth(60);
 
         columnModel.getColumn(0).setCellRenderer(new CenterAlignedRenderer());
         columnModel.getColumn(1).setCellRenderer(new LeftAlignedRenderer());
@@ -201,7 +200,6 @@ public class ListaGlobos extends JFrame {
         columnModel.getColumn(3).setCellRenderer(new LeftAlignedRenderer());
         columnModel.getColumn(4).setCellRenderer(new LeftAlignedRenderer());
         columnModel.getColumn(5).setCellRenderer(new LeftAlignedRenderer());
-        columnModel.getColumn(6).setCellRenderer(new LeftAlignedRenderer());
     }
 
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
