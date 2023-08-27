@@ -48,7 +48,9 @@ public class CrearCompra extends JFrame {
     Color darkColorRed = new Color(244, 67, 54);
     Color darkColorBlue = new Color(33, 150, 243);
     EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
-    Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
+    Font fontTitulo = new Font("Century Gothic", Font.BOLD, 17);
+    Font font = new Font("Century Gothic", Font.BOLD, 17);
+    Font font2 = new Font("Century Gothic", Font.BOLD, 11);
     private JTextField[] campos = { campoCodigo, campoFecha, campoCantidad, campoPrecio };
     private JDatePickerImpl datePicker; // Declare the datePicker variable at the class level
 

@@ -19,54 +19,45 @@ import java.sql.SQLException;
 import java.text.ParseException;
 
 public class CrearEmpleado extends JFrame {
-    public JTextField campoNombres;
-    public JTextField campoApellidos;
-    public JTextField campoEdad;
+    public JButton botonCancelar, botonGuardar;
+    public JTextField campoNombres, campoApellidos, campoEdad, campoCorreo, campoTelefono, campoNombreContacto, campoContactoEmergencia;
     public JTextArea campoDireccion;
-    public JButton cancelarButton;
-    public JButton guardarButton;
-    private JPanel panel1;
+    private JPanel panel1, panel2, panel3, panel4, panel5, panel6;
     public JFormattedTextField campoIdentidad;
-    public JRadioButton femeninoRadioButton;
-    public JRadioButton masculinoRadioButton;
-    public JTextField campoCorreo;
-    public JTextField campoTelefono;
-    public JTextField campoContactoEmergencia;
-    public JRadioButton temporalRadioButton;
-    public JRadioButton permanenteRadioButton;
-    public JTextField campoNombreContacto;
-    private JLabel lbl3;
-    private JLabel lbl1;
-    private JLabel lbl2;
-    private JLabel lbl0;
-    private JLabel lbl4;
-    private JLabel lbl5;
-    private JLabel lbl6;
-    private JLabel lbl7;
-    private JLabel lbl8;
-    private JLabel lbl9;
-    private JLabel lbl10;
-    private JLabel lbl11;
-    private JLabel lbl12;
-    private JLabel lbl13;
-    private JPanel panel3;
-    private JPanel panel4;
+    public JRadioButton femeninoRadioButton, masculinoRadioButton;
+    public JRadioButton temporalRadioButton, permanenteRadioButton;
+    private JLabel lbl0, lbl1, lbl2, lbl3, lbl4, lbl5, lbl6, lbl7, lbl8, lbl9, lbl10, lbl11, lbl12, lbl13;
+    private JButton botonLimpiar;
     private Conexion sql;
     private Connection mysql;
     public CrearEmpleado crearEmpleado = this;
-    public ButtonGroup grupoGenero;
-    public ButtonGroup grupoTipo;
+    public ButtonGroup grupoGenero, grupoTipo;
+    Color darkColorRed = new Color(244, 67, 54);
+    Color darkColorBlue = new Color(33, 150, 243);
 
-    private JTextField[] campos = {
-            campoIdentidad,
-            campoNombres,
-            campoApellidos,
-            campoEdad,
-            campoCorreo,
-            campoTelefono,
-            campoContactoEmergencia
-    };
+    // Color de texto para los JTextField y JRadioButton
+    Color textColor = Color.decode("#212121");
+    Font fontTitulo = new Font("Century Gothic", Font.BOLD, 17);
+    Font font = new Font("Century Gothic", Font.BOLD, 17);
+    Font font2 = new Font("Century Gothic", Font.BOLD, 11);
 
+    // Colores para el botón "Cyan"
+    Color primaryColorCyan = new Color(0, 188, 212); // Cyan primario
+    Color lightColorCyan = new Color(77, 208, 225); // Cyan claro
+    Color darkColorCyan = new Color(0, 151, 167); // Cyan oscuro
+
+    // Colores para el botón "Aqua"
+    Color primaryColorAqua = new Color(0, 150, 136); // Aqua primario
+    Color lightColorAqua = new Color(77, 182, 172); // Aqua claro
+    Color darkColorAqua = new Color(0, 121, 107); // Aqua oscuro
+
+    // Colores para el botón "Rosado"
+    Color primaryColorRosado = new Color(233, 30, 99); // Rosado primario
+    Color lightColorRosado = new Color(240, 98, 146); // Rosado claro
+    Color darkColorRosado = new Color(194, 24, 91); // Rosado oscuro
+
+    // Crea un margen de 10 píxeles desde el borde inferior
+    EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
     public CrearEmpleado() {
         super("Crear Empleados");
         setSize(600, 620);
@@ -77,28 +68,12 @@ public class CrearEmpleado extends JFrame {
         campoDireccion.setLineWrap(true);
         campoDireccion.setWrapStyleWord(true);
 
-        grupoGenero = new ButtonGroup();
-        grupoGenero.add(femeninoRadioButton);
-        grupoGenero.add(masculinoRadioButton);
-        grupoGenero.clearSelection();
-
-        grupoTipo = new ButtonGroup();
-        grupoTipo.add(temporalRadioButton);
-        grupoTipo.add(permanenteRadioButton);
-        grupoTipo.clearSelection();
-
         try {
             MaskFormatter formatoIdentidad = new MaskFormatter("####-####-#####");
             campoIdentidad.setFormatterFactory(new DefaultFormatterFactory(formatoIdentidad));
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
-
-        // Asignar nombres a los campos de texto
-        campoNombres.setName("Nombre");
-        campoApellidos.setName("Apellido");
-        campoIdentidad.setName("Identidad");
-        campoTelefono.setName("Teléfono");
 
         campoNombres.addKeyListener(new KeyAdapter() {
             @Override
@@ -303,62 +278,56 @@ public class CrearEmpleado extends JFrame {
             }
         });
 
-        // Color de fondo del panel
+        grupoGenero = new ButtonGroup();
+        grupoGenero.add(femeninoRadioButton);
+        grupoGenero.add(masculinoRadioButton);
+        grupoGenero.clearSelection();
+
+        grupoTipo = new ButtonGroup();
+        grupoTipo.add(temporalRadioButton);
+        grupoTipo.add(permanenteRadioButton);
+        grupoTipo.clearSelection();
+
         panel1.setBackground(Color.decode("#F5F5F5"));
+        panel2.setBackground(Color.decode("#F5F5F5"));
         panel3.setBackground(Color.decode("#F5F5F5"));
         panel4.setBackground(Color.decode("#F5F5F5"));
-
-        // Color de texto para los JTextField
-        Color textColor = Color.decode("#212121");
-
-        // Cargar los iconos en blanco
-        ImageIcon cancelIcon = new ImageIcon("cancel_icon_white.png");
-        ImageIcon saveIcon = new ImageIcon("save_icon_white.png");
-        ImageIcon updateIcon = new ImageIcon("update_icon_white.png");
-
-        // Colores para el botón "Cyan"
-        Color primaryColorCyan = new Color(0, 188, 212); // Cyan primario
-        Color lightColorCyan = new Color(77, 208, 225); // Cyan claro
-        Color darkColorCyan = new Color(0, 151, 167); // Cyan oscuro
-
-        // Colores para el botón "Aqua"
-        Color primaryColorAqua = new Color(0, 150, 136); // Aqua primario
-        Color lightColorAqua = new Color(77, 182, 172); // Aqua claro
-        Color darkColorAqua = new Color(0, 121, 107); // Aqua oscuro
-
-        // Colores para el botón "Rosado"
-        Color primaryColorRosado = new Color(233, 30, 99); // Rosado primario
-        Color lightColorRosado = new Color(240, 98, 146); // Rosado claro
-        Color darkColorRosado = new Color(194, 24, 91); // Rosado oscuro
-
-        // Crea un margen de 10 píxeles desde el borde inferior
-        EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
+        panel5.setBackground(Color.decode("#F5F5F5"));
+        panel6.setBackground(Color.decode("#F5F5F5"));
 
         // Color de texto para el JTextArea
         campoDireccion.setForeground(textColor);
-        // Color de texto de los botones
-        cancelarButton.setForeground(Color.WHITE);
-        guardarButton.setForeground(Color.WHITE);
 
-        // Color de fondo de los botones
-        cancelarButton.setBackground(darkColorCyan);
-        guardarButton.setBackground(darkColorAqua);
+        botonLimpiar.setForeground(Color.WHITE);
+        botonLimpiar.setBackground(darkColorRed);
+        botonLimpiar.setFocusPainted(false);
+        botonLimpiar.setBorder(margin);
 
-        cancelarButton.setFocusPainted(false);
-        guardarButton.setFocusPainted(false);
+        botonCancelar.setForeground(Color.WHITE);
+        botonCancelar.setBackground(darkColorBlue);
+        botonCancelar.setFocusPainted(false);
+        botonCancelar.setBorder(margin);
 
-        // Aplica el margen al botón
-        cancelarButton.setBorder(margin);
-        guardarButton.setBorder(margin);
+        botonGuardar.setForeground(Color.WHITE);
+        botonGuardar.setBackground(darkColorAqua);
+        botonGuardar.setFocusPainted(false);
+        botonGuardar.setBorder(margin);
 
-        temporalRadioButton.setBackground(Color.decode("#F5F5F5"));
         temporalRadioButton.setForeground(textColor);
-        permanenteRadioButton.setBackground(Color.decode("#F5F5F5"));
+        temporalRadioButton.setBackground(panel1.getBackground());
+        temporalRadioButton.setFocusPainted(false);
+
         permanenteRadioButton.setForeground(textColor);
-        femeninoRadioButton.setBackground(Color.decode("#F5F5F5"));
+        permanenteRadioButton.setBackground(panel1.getBackground());
+        permanenteRadioButton.setFocusPainted(false);
+
         femeninoRadioButton.setForeground(textColor);
-        masculinoRadioButton.setBackground(Color.decode("#F5F5F5"));
+        femeninoRadioButton.setBackground(panel1.getBackground());
+        femeninoRadioButton.setFocusPainted(false);
+
         masculinoRadioButton.setForeground(textColor);
+        masculinoRadioButton.setBackground(panel1.getBackground());
+        masculinoRadioButton.setFocusPainted(false);
 
         lbl0.setForeground(textColor);
         lbl1.setForeground(textColor);
@@ -377,13 +346,7 @@ public class CrearEmpleado extends JFrame {
 
         campoDireccion.setBackground(new Color(215, 215, 215));
 
-
-        // Crea un margen de 15 píxeles desde el borde inferior
-        EmptyBorder marginTitulo = new EmptyBorder(15, 0, 15, 0);
-        lbl0.setBorder(marginTitulo);
-
-        // Crear una fuente con un tamaño de 18 puntos
-        Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
+        lbl0.setBorder(margin);
         lbl0.setFont(fontTitulo);
 
         // Crea un margen de 15 píxeles desde el borde inferior
@@ -391,7 +354,7 @@ public class CrearEmpleado extends JFrame {
         campoIdentidad.setBorder(marginDNI);
 
         // Boton cancelar
-        cancelarButton.addActionListener(new ActionListener() {
+        botonCancelar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 ListaEmpleados listaEmpleados = new ListaEmpleados();
@@ -400,7 +363,7 @@ public class CrearEmpleado extends JFrame {
             }
         });
 
-        guardarButton.addActionListener(new ActionListener() {
+        botonGuardar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
 
@@ -634,6 +597,73 @@ public class CrearEmpleado extends JFrame {
                     listaEmpleados.setVisible(true);
                     crearEmpleado.dispose();
                 }
+            }
+        });
+
+        botonLimpiar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JButton btnYes = new JButton("Sí");
+                JButton btnNo = new JButton("No");
+
+                // Personaliza los botones aquí
+                btnYes.setBackground(darkColorAqua);
+                btnNo.setBackground(darkColorRed);
+
+                // Personaliza los fondos de los botones aquí
+                btnYes.setForeground(Color.WHITE);
+                btnNo.setForeground(Color.WHITE);
+
+                // Elimina el foco
+                btnYes.setFocusPainted(false);
+                btnNo.setFocusPainted(false);
+
+                // Crea un JOptionPane
+                JOptionPane optionPane = new JOptionPane(
+                        "¿Estás seguro de que deseas limpiar los datos del empleado?",
+                        JOptionPane.DEFAULT_OPTION,
+                        JOptionPane.DEFAULT_OPTION,
+                        null,
+                        new Object[]{}, // no options
+                        null
+                );
+
+                // Crea un JDialog
+                JDialog dialog = optionPane.createDialog("Limpiar");
+
+                // Añade ActionListener a los botones
+                btnYes.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        campoNombres.setText("");
+                        campoApellidos.setText("");
+                        campoTelefono.setText("");
+                        campoIdentidad.setText("");
+                        campoDireccion.setText("");
+                        campoContactoEmergencia.setText("");
+                        campoNombreContacto.setText("");
+                        campoCorreo.setText("");
+                        campoEdad.setText("");
+                        grupoGenero.clearSelection();
+                        grupoTipo.clearSelection();
+                        dialog.dispose();
+                    }
+                });
+
+                btnNo.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // Acciones para el botón No
+                        // No se hace nada, sólo se cierra el diálogo
+                        dialog.dispose();
+                    }
+                });
+
+                // Añade los botones al JOptionPane
+                optionPane.setOptions(new Object[]{btnYes, btnNo});
+
+                // Muestra el diálogo
+                dialog.setVisible(true);
             }
         });
     }
