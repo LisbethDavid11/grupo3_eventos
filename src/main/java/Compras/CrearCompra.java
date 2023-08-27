@@ -1,4 +1,5 @@
 package Compras;
+import Arreglos.ListaArreglos;
 import Clientes.ListaClientes;
 import Objetos.Conexion;
 import org.jdatepicker.impl.JDatePanelImpl;
@@ -321,6 +322,10 @@ public class CrearCompra extends JFrame {
                 }
 
                 guardarDatos(datePicker);
+
+                ListaCompras listaCompras = new ListaCompras();
+                listaCompras.setVisible(true);
+                crearCompra.dispose();
             }
         });
 

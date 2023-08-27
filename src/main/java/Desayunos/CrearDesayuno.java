@@ -1,4 +1,5 @@
 package Desayunos;
+import Compras.ListaCompras;
 import Manualidades.PreviewImagen;
 import Materiales.TextPrompt;
 import Modelos.*;
@@ -722,12 +723,10 @@ public class CrearDesayuno extends JFrame {
                     public void actionPerformed(ActionEvent e) {
                         // Acciones para el botón Sí
                         guardarManualidades();
-                        ListaDesayunos listaDesayuno = new ListaDesayunos();
-                        listaDesayuno.setVisible(true);
-                        actual.dispose();
-
-                        // Luego cierra el diálogo
                         dialog.dispose();
+                        ListaDesayunos listaDesayunos = new ListaDesayunos();
+                        listaDesayunos.setVisible(true);
+                        actual.dispose();
                     }
                 });
 

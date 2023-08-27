@@ -17,40 +17,54 @@ import java.sql.SQLException;
 import java.text.ParseException;
 
 public class EditarCliente extends  JFrame{
-    private JPanel panel1;
-    private JTextField campoNombre;
-    private JTextField campoApellido;
-    private JTextField campoTelefono;
+    private JTextField campoNombre, campoApellido, campoTelefono;
     private JFormattedTextField campoIdentidad;
     private JTextArea campoDomicilio;
-    private JLabel label1,label2,label3,label4,label5,label6,label7;
-    private JRadioButton mayoristaRadioButton;
-    private JRadioButton alDetalleRadioButton;
-    private ButtonGroup tipoClienteGroup;
-    private JButton cancelarButton;
-    private JButton guardarButton;
-    private final EditarCliente actual = this;
-    private Conexion sql;
+    private JRadioButton radioMayorista, radioAldetalle;
+    private JButton botonGuardar, botonCancelar, botonLimpiar;
+    private JPanel panel, panel1, panel2, panel3;
+    private JLabel label0, label1,label2,label3,label4,label5;
+    private EditarCliente actual = this;
     private Connection mysql;
+    private Conexion sql;
+    public EditarCliente editarCliente = this;
+    private JFrame ventanaAnterior;
+    Color darkColorRed = new Color(244, 67, 54);
+    Color darkColorBlue = new Color(33, 150, 243);
+
+    // Color de texto para los JTextField y JRadioButton
+    Color textColor = Color.decode("#212121");
+    Font fontTitulo = new Font("Century Gothic", Font.BOLD, 17);
+    Font font = new Font("Century Gothic", Font.BOLD, 17);
+    Font font2 = new Font("Century Gothic", Font.BOLD, 11);
+
+    // Colores para el botón "Cyan"
+    Color primaryColorCyan = new Color(0, 188, 212); // Cyan primario
+    Color lightColorCyan = new Color(77, 208, 225); // Cyan claro
+    Color darkColorCyan = new Color(0, 151, 167); // Cyan oscuro
+
+    // Colores para el botón "Aqua"
+    Color primaryColorAqua = new Color(0, 150, 136); // Aqua primario
+    Color lightColorAqua = new Color(77, 182, 172); // Aqua claro
+    Color darkColorAqua = new Color(0, 121, 107); // Aqua oscuro
+
+    // Colores para el botón "Rosado"
+    Color primaryColorRosado = new Color(233, 30, 99); // Rosado primario
+    Color lightColorRosado = new Color(240, 98, 146); // Rosado claro
+    Color darkColorRosado = new Color(194, 24, 91); // Rosado oscuro
+
+    // Crea un margen de 10 píxeles desde el borde inferior
+    EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
     private int id;
-    private JTextField[] campos = new JTextField[]{
-            campoNombre,
-            campoApellido,
-            campoIdentidad,
-            campoTelefono,
-    };
+
     public EditarCliente(int id) {
         super("");
         setSize(600,480);
         setLocationRelativeTo(null);
-        setContentPane(panel1);
+        setContentPane(panel);
 
         this.id = id;
         mostrar();
-
-        tipoClienteGroup = new ButtonGroup();
-        tipoClienteGroup.add(mayoristaRadioButton);
-        tipoClienteGroup.add(alDetalleRadioButton);
 
         campoDomicilio.setLineWrap(true);
         campoDomicilio.setWrapStyleWord(true);
@@ -181,78 +195,56 @@ public class EditarCliente extends  JFrame{
             }
         });
 
-        // Color de fondo del panel
+
+        ButtonGroup buttonGroup = new ButtonGroup();
+        buttonGroup.add(radioAldetalle);
+        buttonGroup.add(radioMayorista);
+
+        panel.setBackground(Color.decode("#F5F5F5"));
         panel1.setBackground(Color.decode("#F5F5F5"));
+        panel2.setBackground(Color.decode("#F5F5F5"));
+        panel3.setBackground(Color.decode("#F5F5F5"));
 
-        // Color de texto para los JTextField
-        Color textColor = Color.decode("#212121");
-
-        // Cargar los iconos en blanco
-        ImageIcon cancelIcon = new ImageIcon("cancel_icon_white.png");
-        ImageIcon saveIcon = new ImageIcon("save_icon_white.png");
-        ImageIcon updateIcon = new ImageIcon("update_icon_white.png");
-
-        // Colores para el botón "Cyan"
-        Color primaryColorCyan = new Color(0, 188, 212); // Cyan primario
-        Color lightColorCyan = new Color(77, 208, 225); // Cyan claro
-        Color darkColorCyan = new Color(0, 151, 167); // Cyan oscuro
-
-        // Colores para el botón "Aqua"
-        Color primaryColorAqua = new Color(0, 150, 136); // Aqua primario
-        Color lightColorAqua = new Color(77, 182, 172); // Aqua claro
-        Color darkColorAqua = new Color(0, 121, 107); // Aqua oscuro
-
-        // Colores para el botón "Rosado"
-        Color primaryColorRosado = new Color(233, 30, 99); // Rosado primario
-        Color lightColorRosado = new Color(240, 98, 146); // Rosado claro
-        Color darkColorRosado = new Color(194, 24, 91); // Rosado oscuro
-
-        // Crea un margen de 10 píxeles desde el borde inferior
-        EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
-
-        // Color de texto para el JTextArea
         campoDomicilio.setForeground(textColor);
-        // Color de texto de los botones
-        cancelarButton.setForeground(Color.WHITE);
-        guardarButton.setForeground(Color.WHITE);
 
-        // Color de fondo de los botones
-        cancelarButton.setBackground(darkColorCyan);
-        guardarButton.setBackground(darkColorAqua);
+        botonLimpiar.setForeground(Color.WHITE);
+        botonLimpiar.setBackground(darkColorRed);
+        botonLimpiar.setFocusPainted(false);
+        botonLimpiar.setBorder(margin);
 
-        cancelarButton.setFocusPainted(false);
-        guardarButton.setFocusPainted(false);
+        botonCancelar.setForeground(Color.WHITE);
+        botonCancelar.setBackground(darkColorBlue);
+        botonCancelar.setFocusPainted(false);
+        botonCancelar.setBorder(margin);
 
-        // Aplica el margen al botón
-        cancelarButton.setBorder(margin);
-        guardarButton.setBorder(margin);
+        botonGuardar.setForeground(Color.WHITE);
+        botonGuardar.setBackground(darkColorAqua);
+        botonGuardar.setFocusPainted(false);
+        botonGuardar.setBorder(margin);
 
-        alDetalleRadioButton.setBackground(Color.decode("#F5F5F5"));
-        alDetalleRadioButton.setForeground(textColor);
-        mayoristaRadioButton.setBackground(Color.decode("#F5F5F5"));
-        mayoristaRadioButton.setForeground(textColor);
+        radioAldetalle.setForeground(textColor);
+        radioAldetalle.setBackground(panel.getBackground());
+        radioAldetalle.setFocusPainted(false);
 
+        radioMayorista.setForeground(textColor);
+        radioMayorista.setBackground(panel.getBackground());
+        radioMayorista.setFocusPainted(false);
+
+        label0.setForeground(textColor);
         label1.setForeground(textColor);
         label2.setForeground(textColor);
         label3.setForeground(textColor);
         label4.setForeground(textColor);
         label5.setForeground(textColor);
-        label6.setForeground(textColor);
-        label7.setForeground(textColor);
 
         campoDomicilio.setBackground(new Color(215, 215, 215));
 
         // Crea un margen de 15 píxeles desde el borde inferior
-        EmptyBorder marginTitulo = new EmptyBorder(15, 0, 15, 0);
-        label1.setBorder(marginTitulo);
-
-        // Crear una fuente con un tamaño de 18 puntos
-        Font fontTitulo = new Font(label1.getFont().getName(), label1.getFont().getStyle(), 18);
-        label1.setFont(fontTitulo);
-
-        // Crea un margen de 15 píxeles desde el borde inferior
         EmptyBorder marginDNI = new EmptyBorder(10, 0, 10, 0);
         campoIdentidad.setBorder(marginDNI);
+
+        label1.setBorder(margin);
+        label0.setFont(fontTitulo);
 
         try {
             MaskFormatter dni = new MaskFormatter("####-####-#####");
@@ -261,7 +253,7 @@ public class EditarCliente extends  JFrame{
             throw new RuntimeException(e);
         }
 
-        cancelarButton.addActionListener(new ActionListener() {
+        botonCancelar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 ListaClientes cliente = new ListaClientes();
@@ -271,7 +263,7 @@ public class EditarCliente extends  JFrame{
             }
         });
 
-        guardarButton.addActionListener(new ActionListener() {
+        botonGuardar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int validacion = 0;
@@ -308,7 +300,7 @@ public class EditarCliente extends  JFrame{
                     mensaje += "Teléfono\n";
                 }
 
-                if (!mayoristaRadioButton.isSelected() && !alDetalleRadioButton.isSelected()) {
+                if (!radioMayorista.isSelected() && !radioAldetalle.isSelected()) {
                     validacion++;
                     mensaje += "Tipo de cliente\n";
                 }
@@ -432,14 +424,77 @@ public class EditarCliente extends  JFrame{
                 }
             }
         });
+
+        botonLimpiar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JButton btnYes = new JButton("Sí");
+                JButton btnNo = new JButton("No");
+
+                // Personaliza los botones aquí
+                btnYes.setBackground(darkColorAqua);
+                btnNo.setBackground(darkColorRed);
+
+                // Personaliza los fondos de los botones aquí
+                btnYes.setForeground(Color.WHITE);
+                btnNo.setForeground(Color.WHITE);
+
+                // Elimina el foco
+                btnYes.setFocusPainted(false);
+                btnNo.setFocusPainted(false);
+
+                // Crea un JOptionPane
+                JOptionPane optionPane = new JOptionPane(
+                        "¿Estás seguro de que deseas reestablecer los datos del cliente?",
+                        JOptionPane.DEFAULT_OPTION,
+                        JOptionPane.DEFAULT_OPTION,
+                        null,
+                        new Object[]{}, // no options
+                        null
+                );
+
+                // Crea un JDialog
+                JDialog dialog = optionPane.createDialog("Limpiar");
+
+                // Añade ActionListener a los botones
+                btnYes.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        campoNombre.setText("");
+                        campoApellido.setText("");
+                        campoTelefono.setText("");
+                        campoIdentidad.setText("");
+                        campoDomicilio.setText("");
+                        buttonGroup.clearSelection();
+                        mostrar();
+                        dialog.dispose();
+                    }
+                });
+
+                btnNo.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // Acciones para el botón No
+                        // No se hace nada, sólo se cierra el diálogo
+                        dialog.dispose();
+                    }
+                });
+
+                // Añade los botones al JOptionPane
+                optionPane.setOptions(new Object[]{btnYes, btnNo});
+
+                // Muestra el diálogo
+                dialog.setVisible(true);
+            }
+        });
     }
 
     private void mostrar() {
         sql = new Conexion();
         mysql = sql.conectamysql();
 
-        mayoristaRadioButton.setText("Mayorista");
-        alDetalleRadioButton.setText("Al Detalle");
+        radioMayorista.setText("Mayorista");
+        radioAldetalle.setText("Al Detalle");
 
         try {
             PreparedStatement statement = mysql.prepareStatement("SELECT * FROM " + Cliente.nombreTabla + " WHERE id = ?;");
@@ -460,19 +515,19 @@ public class EditarCliente extends  JFrame{
 
             if (tipoCliente.equals("Mayorista")) {
 
-                mayoristaRadioButton.setText("Mayorista");
-                mayoristaRadioButton.setSelected(true);
+                radioMayorista.setText("Mayorista");
+                radioMayorista.setSelected(true);
 
-                alDetalleRadioButton.setText("Al Detalle");
-                alDetalleRadioButton.setSelected(false);
+                radioAldetalle.setText("Al Detalle");
+                radioAldetalle.setSelected(false);
 
             } else if (tipoCliente.equals("Al Detalle")) {
 
-                mayoristaRadioButton.setText("Mayorista");
-                mayoristaRadioButton.setSelected(false);
+                radioMayorista.setText("Mayorista");
+                radioMayorista.setSelected(false);
 
-                alDetalleRadioButton.setText("Al Detalle");
-                alDetalleRadioButton.setSelected(true);
+                radioAldetalle.setText("Al Detalle");
+                radioAldetalle.setSelected(true);
 
             }
 
@@ -487,7 +542,7 @@ public class EditarCliente extends  JFrame{
         mysql = sql.conectamysql();
 
         String tipoCliente;
-        if (mayoristaRadioButton.isSelected()) {
+        if (radioMayorista.isSelected()) {
             tipoCliente = "Mayorista";
         } else {
             tipoCliente = "Al Detalle";

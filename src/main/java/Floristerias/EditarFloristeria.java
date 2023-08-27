@@ -25,11 +25,39 @@ public class EditarFloristeria extends JFrame {
     private JTextField campoNombre, campoPrecio;
     private JComboBox<String> comboBoxProveedor;
     private JButton botonGuardar, botonCancelar, botonCargarImagen;
-    private JPanel panel, panelImg;
-    private JLabel imagenLabel, lbl1, lbl2, lbl3, lbl0;
+    private JPanel panel, panelImg, panel1, panel2;
+    private JLabel imagenLabel, label1, label2, label3, label0;
+    private JButton botonLimpiar;
     private String imagePath = "";
     private EditarFloristeria actual = this;
     private Conexion sql;
+    Color darkColorRed = new Color(244, 67, 54);
+    Color darkColorBlue = new Color(33, 150, 243);
+
+    // Color de texto para los JTextField y JRadioButton
+    Color textColor = Color.decode("#212121");
+    Font fontTitulo = new Font("Century Gothic", Font.BOLD, 17);
+    Font font = new Font("Century Gothic", Font.BOLD, 17);
+    Font font2 = new Font("Century Gothic", Font.BOLD, 11);
+
+    // Colores para el botón "Cyan"
+    Color primaryColorCyan = new Color(0, 188, 212); // Cyan primario
+    Color lightColorCyan = new Color(77, 208, 225); // Cyan claro
+    Color darkColorCyan = new Color(0, 151, 167); // Cyan oscuro
+
+    // Colores para el botón "Aqua"
+    Color primaryColorAqua = new Color(0, 150, 136); // Aqua primario
+    Color lightColorAqua = new Color(77, 182, 172); // Aqua claro
+    Color darkColorAqua = new Color(0, 121, 107); // Aqua oscuro
+
+    // Colores para el botón "Rosado"
+    Color primaryColorRosado = new Color(233, 30, 99); // Rosado primario
+    Color lightColorRosado = new Color(240, 98, 146); // Rosado claro
+    Color darkColorRosado = new Color(194, 24, 91); // Rosado oscuro
+
+    // Crea un margen de 10 píxeles desde el borde inferior
+    EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
+
     private int idFloristeria;
     private int panelImgWidth = 200;
     private int panelImgHeight = 200;
@@ -71,60 +99,6 @@ public class EditarFloristeria extends JFrame {
         // Color de fondo del panel
         panel.setBackground(Color.decode("#F5F5F5"));
         panelImg.setBackground(Color.decode("#F5F5F5"));
-
-        // Color de texto para los JTextField
-        Color textColor = Color.decode("#212121");
-
-        // Cargar los iconos en blanco
-        ImageIcon cancelIcon = new ImageIcon("cancel_icon_white.png");
-        ImageIcon saveIcon = new ImageIcon("save_icon_white.png");
-        ImageIcon updateIcon = new ImageIcon("update_icon_white.png");
-
-        // Colores para el botón "Cyan"
-        Color primaryColorCyan = new Color(0, 188, 212); // Cyan primario
-        Color lightColorCyan = new Color(77, 208, 225); // Cyan claro
-        Color darkColorCyan = new Color(0, 151, 167); // Cyan oscuro
-
-        // Colores para el botón "Aqua"
-        Color primaryColorAqua = new Color(0, 150, 136); // Aqua primario
-        Color lightColorAqua = new Color(77, 182, 172); // Aqua claro
-        Color darkColorAqua = new Color(0, 121, 107); // Aqua oscuro
-
-        // Colores para el botón "Rosado"
-        Color primaryColorRosado = new Color(233, 30, 99); // Rosado primario
-        Color lightColorRosado = new Color(240, 98, 146); // Rosado claro
-        Color darkColorRosado = new Color(194, 24, 91); // Rosado oscuro
-
-        // Crea un margen de 10 píxeles desde el borde inferior
-        EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
-
-        // Color de texto de los botones
-        botonCancelar.setForeground(Color.WHITE);
-        botonGuardar.setForeground(Color.WHITE);
-        botonCargarImagen.setForeground(Color.WHITE);
-
-        // Color de fondo de los botones
-        botonCancelar.setBackground(darkColorCyan);
-        botonGuardar.setBackground(darkColorAqua);
-        botonCargarImagen.setBackground(primaryColorRosado);
-
-        botonCancelar.setFocusPainted(false);
-        botonGuardar.setFocusPainted(false);
-        botonCargarImagen.setFocusPainted(false);
-
-        // Aplica el margen al botón
-        botonGuardar.setBorder(margin);
-        botonCancelar.setBorder(margin);
-        botonCargarImagen.setBorder(margin);
-
-        lbl0.setForeground(textColor);
-        lbl1.setForeground(textColor);
-        lbl2.setForeground(textColor);
-        lbl3.setForeground(textColor);
-
-        // Crear una fuente con un tamaño de 18 puntos
-        Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
-        lbl0.setFont(fontTitulo);
 
         campoNombre.addKeyListener(new KeyAdapter() {
             @Override
@@ -197,6 +171,37 @@ public class EditarFloristeria extends JFrame {
                 }
             }
         });
+
+        panel.setBackground(Color.decode("#F5F5F5"));
+        panelImg.setBackground(Color.decode("#F5F5F5"));
+        panel1.setBackground(Color.decode("#F5F5F5"));
+        panel2.setBackground(Color.decode("#F5F5F5"));
+
+        botonLimpiar.setForeground(Color.WHITE);
+        botonLimpiar.setBackground(darkColorRed);
+        botonLimpiar.setFocusPainted(false);
+        botonLimpiar.setBorder(margin);
+
+        botonCancelar.setForeground(Color.WHITE);
+        botonCancelar.setBackground(darkColorBlue);
+        botonCancelar.setFocusPainted(false);
+        botonCancelar.setBorder(margin);
+
+        botonGuardar.setForeground(Color.WHITE);
+        botonGuardar.setBackground(darkColorAqua);
+        botonGuardar.setFocusPainted(false);
+        botonGuardar.setBorder(margin);
+
+        botonCargarImagen.setForeground(Color.WHITE);
+        botonCargarImagen.setBackground(darkColorRosado);
+        botonCargarImagen.setFocusPainted(false);
+        botonCargarImagen.setBorder(margin);
+
+        label0.setForeground(textColor);
+        label1.setForeground(textColor);
+        label2.setForeground(textColor);
+        label3.setForeground(textColor);
+        label0.setFont(fontTitulo);
 
         botonCancelar.addActionListener(new ActionListener() {
             @Override
@@ -355,19 +360,75 @@ public class EditarFloristeria extends JFrame {
             }
         });
 
+        botonLimpiar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JButton btnYes = new JButton("Sí");
+                JButton btnNo = new JButton("No");
+
+                // Personaliza los botones aquí
+                btnYes.setBackground(darkColorAqua);
+                btnNo.setBackground(darkColorRed);
+
+                // Personaliza los fondos de los botones aquí
+                btnYes.setForeground(Color.WHITE);
+                btnNo.setForeground(Color.WHITE);
+
+                // Elimina el foco
+                btnYes.setFocusPainted(false);
+                btnNo.setFocusPainted(false);
+
+                // Crea un JOptionPane
+                JOptionPane optionPane = new JOptionPane(
+                        "¿Estás seguro de que deseas reestablecer los datos de la flor?",
+                        JOptionPane.DEFAULT_OPTION,
+                        JOptionPane.DEFAULT_OPTION,
+                        null,
+                        new Object[]{}, // no options
+                        null
+                );
+
+                // Crea un JDialog
+                JDialog dialog = optionPane.createDialog("Limpiar");
+
+                // Añade ActionListener a los botones
+                btnYes.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        campoPrecio.setText("");
+                        campoNombre.setText("");
+                        comboBoxProveedor.setSelectedIndex(0);
+                        cargarDatosFloristeria(idFloristeria);
+                        dialog.dispose();
+                    }
+                });
+
+                btnNo.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // Acciones para el botón No
+                        // No se hace nada, sólo se cierra el diálogo
+                        dialog.dispose();
+                    }
+                });
+
+                // Añade los botones al JOptionPane
+                optionPane.setOptions(new Object[]{btnYes, btnNo});
+
+                // Muestra el diálogo
+                dialog.setVisible(true);
+            }
+        });
+
         cargarDatosFloristeria(idFloristeria);
     }
 
     private void cargarDatosFloristeria(int idFloristeria) {
-
-
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM floristeria WHERE id = ?")) {
 
             preparedStatement.setInt(1, idFloristeria);
             ResultSet resultSet = preparedStatement.executeQuery();
-
-
 
             if (resultSet.next()) {
                 String imagen = resultSet.getString("imagen");

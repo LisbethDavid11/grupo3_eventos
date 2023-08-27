@@ -27,11 +27,12 @@ public class CrearMobiliario extends JFrame {
     private JRadioButton radioButtonSiNecesita, radioButtonNoNecesita;
     private JButton botonGuardar, botonCancelar, botonLimpiar;
     private JPanel panel1, panel2, panel3, panel4, panel5, panelImg;
-    private JLabel lbl0, lbl1, lbl2,lbl3, lbl4, lbl5, lbl6, imagenLabel;
+    private JLabel lbl0, lbl1,lbl3, lbl4, lbl5, lbl6, imagenLabel;
     private String imagePath = "";
     private JButton botonCargarImagen;
     private JTextArea txtaDescripcion;
     private JComboBox comboColor;
+    private JLabel lbl2;
     private CrearMobiliario actual = this;
     private Conexion sql;
     Color darkColorRed = new Color(244, 67, 54);
@@ -66,6 +67,9 @@ public class CrearMobiliario extends JFrame {
         setLocationRelativeTo(null);
         setContentPane(panel1);
         sql = new Conexion();
+
+        txtaDescripcion.setLineWrap(true);
+        txtaDescripcion.setWrapStyleWord(true);
 
         // Establecer ancho y alto deseados para el panelImg
         int panelImgWidth = 200;
@@ -266,8 +270,8 @@ public class CrearMobiliario extends JFrame {
                 }
             }
         });
-        campoCantidad.addKeyListener(new KeyAdapter() {
 
+        campoCantidad.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
 

@@ -19,31 +19,42 @@ import java.sql.SQLException;
 import java.text.ParseException;
 
 public class EditarProveedores extends JFrame {
-    private JTextField campoEmpresaProveedora;
-    private JTextField campoCorreo;
-    private JTextField campoTelefono;
-    private JFormattedTextField campoRTN;
-    private JTextField campoNombreVendedor;
-    private JTextField campoTelefonoVendedor;
-    private JTextArea campoDireccion;
-    private JTextArea campoDescripcion;
-    private JButton guardarButton;
-    private JButton cancelarButton;
-    private JLabel lbl0, lbl4, lbl2, lbl1,lbl3, lbl8, lbl9, lbl6, lbl7, lbl5, lbl11;
-    private final EditarProveedores actual = this;
+    public JButton botonGuardar, botonCancelar, botonLimpiar;
+    public JTextField campoEmpresaProveedora, campoNombreVendedor,campoTelefonoVendedor, campoCorreo, campoTelefono;
+    public JFormattedTextField campoRTN;
+    public JTextArea campoDireccion, campoDescripcion;
+    private JPanel panel1, panel2, panel3;
+    private JLabel lbl0,lbl1,lbl2,lbl3,lbl4,lbl5,lbl6,lbl7,lbl8,lbl9, lbl11;
     private Conexion sql;
     private Connection mysql;
-    private int id;
-    private JPanel panel1;
+    public EditarProveedores actual = this;
+    Color darkColorRed = new Color(244, 67, 54);
+    Color darkColorBlue = new Color(33, 150, 243);
 
-    private JTextField[] campos = new JTextField[]{
-            campoEmpresaProveedora,
-            campoCorreo,
-            campoTelefono,
-            campoRTN,
-            campoNombreVendedor,
-            campoTelefonoVendedor,
-    };
+    // Color de texto para los JTextField y JRadioButton
+    Color textColor = Color.decode("#212121");
+    Font fontTitulo = new Font("Century Gothic", Font.BOLD, 17);
+    Font font = new Font("Century Gothic", Font.BOLD, 17);
+    Font font2 = new Font("Century Gothic", Font.BOLD, 11);
+
+    // Colores para el botón "Cyan"
+    Color primaryColorCyan = new Color(0, 188, 212); // Cyan primario
+    Color lightColorCyan = new Color(77, 208, 225); // Cyan claro
+    Color darkColorCyan = new Color(0, 151, 167); // Cyan oscuro
+
+    // Colores para el botón "Aqua"
+    Color primaryColorAqua = new Color(0, 150, 136); // Aqua primario
+    Color lightColorAqua = new Color(77, 182, 172); // Aqua claro
+    Color darkColorAqua = new Color(0, 121, 107); // Aqua oscuro
+
+    // Colores para el botón "Rosado"
+    Color primaryColorRosado = new Color(233, 30, 99); // Rosado primario
+    Color lightColorRosado = new Color(240, 98, 146); // Rosado claro
+    Color darkColorRosado = new Color(194, 24, 91); // Rosado oscuro
+
+    // Crea un margen de 10 píxeles desde el borde inferior
+    EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
+    private int id;
 
     public EditarProveedores(int id) {
         super("Editar Registro de Proveedores");
@@ -59,7 +70,6 @@ public class EditarProveedores extends JFrame {
 
         campoDescripcion.setLineWrap(true);
         campoDescripcion.setWrapStyleWord(true);
-
 
         campoEmpresaProveedora.addKeyListener(new KeyAdapter() {
             @Override
@@ -248,77 +258,45 @@ public class EditarProveedores extends JFrame {
             }
         });
 
-// Color de fondo del panel
+        // Color de fondo del panel
         panel1.setBackground(Color.decode("#F5F5F5"));
-
-        // Color de texto para los JTextField
-        Color textColor = Color.decode("#212121");
-
-        // Cargar los iconos en blanco
-        ImageIcon cancelIcon = new ImageIcon("cancel_icon_white.png");
-        ImageIcon saveIcon = new ImageIcon("save_icon_white.png");
-        ImageIcon updateIcon = new ImageIcon("update_icon_white.png");
-
-        // Colores para el botón "Cyan"
-        Color primaryColorCyan = new Color(0, 188, 212); // Cyan primario
-        Color lightColorCyan = new Color(77, 208, 225); // Cyan claro
-        Color darkColorCyan = new Color(0, 151, 167); // Cyan oscuro
-
-        // Colores para el botón "Aqua"
-        Color primaryColorAqua = new Color(0, 150, 136); // Aqua primario
-        Color lightColorAqua = new Color(77, 182, 172); // Aqua claro
-        Color darkColorAqua = new Color(0, 121, 107); // Aqua oscuro
-
-        // Colores para el botón "Rosado"
-        Color primaryColorRosado = new Color(233, 30, 99); // Rosado primario
-        Color lightColorRosado = new Color(240, 98, 146); // Rosado claro
-        Color darkColorRosado = new Color(194, 24, 91); // Rosado oscuro
-
-        // Crea un margen de 10 píxeles desde el borde inferior
-        EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
+        panel2.setBackground(Color.decode("#F5F5F5"));
 
         // Color de texto para el JTextArea
         campoDireccion.setForeground(textColor);
         campoDescripcion.setForeground(textColor);
 
-        // Color de texto de los botones
-        cancelarButton.setForeground(Color.WHITE);
-        guardarButton.setForeground(Color.WHITE);
+        botonLimpiar.setForeground(Color.WHITE);
+        botonLimpiar.setBackground(darkColorRed);
+        botonLimpiar.setFocusPainted(false);
+        botonLimpiar.setBorder(margin);
 
-        // Color de fondo de los botones
-        cancelarButton.setBackground(darkColorCyan);
-        guardarButton.setBackground(darkColorAqua);
+        botonCancelar.setForeground(Color.WHITE);
+        botonCancelar.setBackground(darkColorBlue);
+        botonCancelar.setFocusPainted(false);
+        botonCancelar.setBorder(margin);
 
-        cancelarButton.setFocusPainted(false);
-        guardarButton.setFocusPainted(false);
-
-        // Aplica el margen al botón
-        cancelarButton.setBorder(margin);
-        guardarButton.setBorder(margin);
+        botonGuardar.setForeground(Color.WHITE);
+        botonGuardar.setBackground(darkColorAqua);
+        botonGuardar.setFocusPainted(false);
+        botonGuardar.setBorder(margin);
 
         lbl0.setForeground(textColor);
-        lbl4.setForeground(textColor);
-        lbl2.setForeground(textColor);
         lbl1.setForeground(textColor);
-        lbl4.setForeground(textColor);
-        lbl4.setForeground(textColor);
         lbl2.setForeground(textColor);
         lbl3.setForeground(textColor);
+        lbl4.setForeground(textColor);
+        lbl5.setForeground(textColor);
+        lbl6.setForeground(textColor);
         lbl8.setForeground(textColor);
         lbl9.setForeground(textColor);
-        lbl6.setForeground(textColor);
         lbl7.setForeground(darkColorCyan);
         lbl11.setForeground(darkColorCyan);
 
         campoDireccion.setBackground(new Color(215, 215, 215));
         campoDescripcion.setBackground(new Color(215, 215, 215));
 
-        // Crea un margen de 15 píxeles desde el borde inferior
-        EmptyBorder marginTitulo = new EmptyBorder(15, 0, 15, 0);
-        lbl0.setBorder(marginTitulo);
-
-        // Crear una fuente con un tamaño de 18 puntos
-        Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
+        lbl0.setBorder(margin);
         lbl0.setFont(fontTitulo);
 
         // Crea un margen de 15 píxeles desde el borde inferior
@@ -333,7 +311,7 @@ public class EditarProveedores extends JFrame {
         }
 
         // Boton cancelar
-        cancelarButton.addActionListener(new ActionListener() {
+        botonCancelar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int respuesta = JOptionPane.showOptionDialog(
@@ -355,7 +333,7 @@ public class EditarProveedores extends JFrame {
             }
         });
 
-        guardarButton.addActionListener(new ActionListener() {
+        botonGuardar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                     int validacion = 0;
@@ -567,6 +545,71 @@ public class EditarProveedores extends JFrame {
                     }
                 }
             });
+
+        botonLimpiar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JButton btnYes = new JButton("Sí");
+                JButton btnNo = new JButton("No");
+
+                // Personaliza los botones aquí
+                btnYes.setBackground(darkColorAqua);
+                btnNo.setBackground(darkColorRed);
+
+                // Personaliza los fondos de los botones aquí
+                btnYes.setForeground(Color.WHITE);
+                btnNo.setForeground(Color.WHITE);
+
+                // Elimina el foco
+                btnYes.setFocusPainted(false);
+                btnNo.setFocusPainted(false);
+
+                // Crea un JOptionPane
+                JOptionPane optionPane = new JOptionPane(
+                        "¿Estás seguro de que deseas reestablecer los datos del proveedor?",
+                        JOptionPane.DEFAULT_OPTION,
+                        JOptionPane.DEFAULT_OPTION,
+                        null,
+                        new Object[]{}, // no options
+                        null
+                );
+
+                // Crea un JDialog
+                JDialog dialog = optionPane.createDialog("Limpiar");
+
+                // Añade ActionListener a los botones
+                btnYes.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        campoEmpresaProveedora.setText("");
+                        campoNombreVendedor.setText("");
+                        campoCorreo.setText("");
+                        campoTelefono.setText("");
+                        campoTelefonoVendedor.setText("");
+                        campoRTN.setText("");
+                        campoDireccion.setText("");
+                        campoDescripcion.setText("");
+                        mostrar();
+                        dialog.dispose();
+                    }
+                });
+
+                btnNo.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // Acciones para el botón No
+                        // No se hace nada, sólo se cierra el diálogo
+                        dialog.dispose();
+                    }
+                });
+
+                // Añade los botones al JOptionPane
+                optionPane.setOptions(new Object[]{btnYes, btnNo});
+
+                // Muestra el diálogo
+                dialog.setVisible(true);
+            }
+        });
         }
 
         private void mostrar() {
