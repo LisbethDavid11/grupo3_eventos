@@ -41,6 +41,7 @@ public class VerTarjeta extends JFrame {
     private JLabel lbl9;
     private JLabel lbl10;
     private JTextField jtOcasion;
+    private JLabel lbl13;
     private List<Material> materialList = new ArrayList<>();
     private String imagePath = "";
     private VerTarjeta actual = this;
@@ -158,7 +159,9 @@ public class VerTarjeta extends JFrame {
         radioButtonSi.setBackground(Color.decode("#F5F5F5"));
         radioButtonNo.setBackground(Color.decode("#F5F5F5"));
 
-        DefaultTableModel modeloProductos = new DefaultTableModel();
+        JTableHeader header = jtableMateriales.getTableHeader();
+        header.setForeground(Color.WHITE);
+        header.setBackground(darkColorPink);
 
 
 
@@ -189,7 +192,7 @@ public class VerTarjeta extends JFrame {
         botonCancelar.setForeground(Color.WHITE);
 
         // Color de fondo de los botones
-        botonCancelar.setBackground(darkColorCyan);
+        botonCancelar.setBackground(Color.decode("#263238"));
 
         botonCancelar.setFocusPainted(false);
 

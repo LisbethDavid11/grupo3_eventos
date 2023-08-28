@@ -58,9 +58,10 @@
               <model>
                 <item value="Seleccione el color"/>
                 <item value="Madera"/>
-                <item value="Transporte"/>
+                <item value="Transparente"/>
                 <item value="Dorado"/>
-                <item value="Platicando"/>
+                <item value="Plateado"/>
+                <item value="Gris"/>
                 <item value="Negro"/>
                 <item value="Rojo"/>
                 <item value="Azul"/>
