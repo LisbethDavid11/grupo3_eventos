@@ -121,12 +121,10 @@ public class EditarMaterial extends JFrame {
         ButtonGroup buttonGroup = new ButtonGroup();
         buttonGroup.add(radioButtonNo);
         buttonGroup.add(radioButtonSi);
-        buttonGroup.clearSelection();
 
         ButtonGroup buttonGroup2 = new ButtonGroup();
         buttonGroup2.add(radioButtonNoExento);
         buttonGroup2.add(radioButtonSiExento);
-        buttonGroup2.clearSelection();
 
         campoDescripcion.setForeground(textColor);
         campoDescripcion.setBackground(new Color(215, 215, 215));
