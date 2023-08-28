@@ -16,14 +16,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 
-public class EditarCliente extends  JFrame{
+public class EditarCliente extends  JFrame {
     private JTextField campoNombre, campoApellido, campoTelefono;
     private JFormattedTextField campoIdentidad;
     private JTextArea campoDomicilio;
     private JRadioButton radioMayorista, radioAldetalle;
     private JButton botonGuardar, botonCancelar, botonLimpiar;
     private JPanel panel, panel1, panel2, panel3;
-    private JLabel label0, label1,label2,label3,label4,label5;
+    private JLabel label0, label1, label2, label3, label4, label5;
     private EditarCliente actual = this;
     private Connection mysql;
     private Conexion sql;
@@ -59,7 +59,7 @@ public class EditarCliente extends  JFrame{
 
     public EditarCliente(int id) {
         super("");
-        setSize(600,480);
+        setSize(600, 480);
         setLocationRelativeTo(null);
         setContentPane(panel);
 
@@ -567,12 +567,19 @@ public class EditarCliente extends  JFrame{
             statement.setString(6, tipoCliente);
             statement.setInt(7, this.id);
 
-            String nombreCompleto = campoNombre.getText() + " " + campoApellido.getText();
-            System.out.println("Cliente " + nombreCompleto + " ha sido actualizado exitosamente.");
-            JOptionPane.showMessageDialog(null, "Cliente " + nombreCompleto + " ha sido actualizado exitosamente.", "Éxito", JOptionPane.DEFAULT_OPTION);
+            // Ejecutar la consulta y verificar si se realizó con éxito
+            int rowsUpdated = statement.executeUpdate();
+            if (rowsUpdated > 0) {
+                String nombreCompleto = campoNombre.getText() + " " + campoApellido.getText();
+                System.out.println("Cliente " + nombreCompleto + " ha sido actualizado exitosamente.");
+                JOptionPane.showMessageDialog(null, "Cliente " + nombreCompleto + " ha sido actualizado exitosamente.", "Éxito", JOptionPane.DEFAULT_OPTION);
+            } else {
+                JOptionPane.showMessageDialog(null, "No se pudo realizar la actualización del cliente", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
         } catch (SQLException e) {
             String mensajeError = "Error al actualizar el cliente: " + e.getMessage();
-            JOptionPane.showMessageDialog(null, "No se pudo realizar la actualización del cliente", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, mensajeError, "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
