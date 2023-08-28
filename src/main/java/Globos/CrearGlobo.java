@@ -525,12 +525,12 @@ public class CrearGlobo extends JFrame {
                     }
                 }
 
-                String colorText = campoForma.getText().trim();
+                String colorText = campoColor.getText().trim();
                 if (colorText.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Faltó ingresar el color.", "Validación", JOptionPane.ERROR_MESSAGE);
                     return;
                 } else {
-                    if (!colorText.matches("^[A-ZÑ][a-zA-ZñÑ ]*$") || colorText.length() < 2 || colorText.length() > 30) {
+                    if (!colorText.matches("^[A-ZÑÁÉÍÓÚÜ][a-zA-ZñáéíóúüÑ ]*$") || colorText.length() < 2 || colorText.length() > 30) {
                         JOptionPane.showMessageDialog(null, "Color inválido. Solo puede contener letras y un espacio entre palabras. Además, debe tener entre 2 y 30 caracteres.", "Validación", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
@@ -541,7 +541,7 @@ public class CrearGlobo extends JFrame {
                     JOptionPane.showMessageDialog(null, "Faltó ingresar la forma.", "Validación", JOptionPane.ERROR_MESSAGE);
                     return;
                 } else {
-                    if (!formaText.matches("^[A-ZÑ][a-zA-ZñÑ ]*$") || formaText.length() < 2 || formaText.length() > 30) {
+                    if (!formaText.matches("^[A-ZÑÁÉÍÓÚÜ][a-zA-ZñáéíóúüÑ ]*$") || formaText.length() < 2 || formaText.length() > 30) {
                         JOptionPane.showMessageDialog(null, "Forma inválida. Solo puede contener letras y un espacio entre palabras. Además, debe tener entre 2 y 30 caracteres.", "Validación", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
