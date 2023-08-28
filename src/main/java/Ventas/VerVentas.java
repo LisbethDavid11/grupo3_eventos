@@ -1,4 +1,5 @@
 package Ventas;
+import Modelos.ModeloVenta;
 import Modelos.ModeloVentaDetalle;
 import Objetos.Conexion;
 import Objetos.Venta;
@@ -182,89 +183,6 @@ public class VerVentas extends JFrame {
         configurarTablaMateriales();
     }
 
-
-
-    private void mostrar() {
-        sql = new Conexion();
-        mysql = sql.conectamysql();
-        DecimalFormat decimalFormat = new DecimalFormat("###,###.00");
-        double suma = 0;
-
-        try {
-            PreparedStatement statement = mysql.prepareStatement(
-                    "SELECT v.*, CONCAT(c.nombre, ' ', c.apellido)  AS nombre_cliente, CONCAT(e.Nombres, ' ', e.Apellidos) AS nombre_empleado " +
-                            "FROM ventas v " +
-                            "LEFT JOIN clientes c ON v.cliente_id = c.id " +
-                            "LEFT JOIN empleados e ON v.empleado_id = e.id " +
-                            "WHERE v.id = ?;"
-            );
-            statement.setInt(1, this.id);
-            ResultSet resultSet = statement.executeQuery();
-
-            if (resultSet.next()) {
-                // Llenar los campos de la interfaz con los datos de la venta
-                codigo_venta.setText(resultSet.getString("codigo_venta"));
-                fecha.setText(resultSet.getString("fecha"));
-
-                // Mostrar el nombre completo del cliente y del empleado
-                cliente.setText(resultSet.getString("nombre_cliente"));
-                empleado.setText(resultSet.getString("nombre_empleado"));
-
-                DefaultTableModel modeloProductos = new DefaultTableModel();
-                modeloProductos.addColumn("N°");
-                modeloProductos.addColumn("Producto");
-                modeloProductos.addColumn("Cantidad");
-                modeloProductos.addColumn("Precio");
-                modeloProductos.addColumn("Total");
-
-                PreparedStatement detallesStatement = mysql.prepareStatement("SELECT detalle_id, cantidad FROM detalles_ventas WHERE venta_id = ?");
-                detallesStatement.setInt(1, this.id);
-                ResultSet detallesResultSet = detallesStatement.executeQuery();
-
-                int numeroDetalle = 1;
-                while (detallesResultSet.next()) {
-                    int detalleId = detallesResultSet.getInt("detalle_id");
-                    int cantidad = detallesResultSet.getInt("cantidad");
-                    double precioDetalle = obtenerPrecioProducto(detalleId, sql);
-                    double subtotal = cantidad * precioDetalle; // Aplicar el factor 0.85 según tu lógica
-                    suma += subtotal;
-
-                    String nombreProducto = obtenerNombreProducto(detalleId, sql);
-
-                    Object[] fila = {numeroDetalle, "  " + nombreProducto, "  " + cantidad + " unidades", "  L. " + decimalFormat.format(precioDetalle), "  L. " +
-                            decimalFormat.format(subtotal)};
-                    modeloProductos.addRow(fila);
-
-                    numeroDetalle++;
-                }
-
-                // Llenar la tabla de productos con el modelo
-                productos.setModel(modeloProductos);
-
-                // Calcular los valores totales
-                double subtotal = suma * 0.85; // Aplicar el factor 0.85 según tu lógica
-                double isv = suma * 0.15; // Aplicar el factor 0.15 según tu lógica
-                double total = subtotal + isv;
-
-                // Actualizar etiquetas con los resultados de los cálculos
-                String formattedSuma = "L. " + decimalFormat.format(subtotal);
-                lbl8.setText(formattedSuma);
-
-                String formattedISV = "L. " + decimalFormat.format(isv);
-                lbl9.setText(formattedISV);
-
-                String formattedTotal = "L. " + decimalFormat.format(total);
-                lbl10.setText(formattedTotal);
-
-            } else {
-                JOptionPane.showMessageDialog(null, "La venta con el ID " + this.id + " no fue encontrada.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-
-        } catch (SQLException error) {
-            System.out.println(error.getMessage());
-        }
-    }
-
     private void configurarTablaMateriales() {
         int columnCount = productos.getColumnCount();
         if (columnCount > 0) {
@@ -308,6 +226,110 @@ public class VerVentas extends JFrame {
         }
     }
 
+    private void mostrar() {
+        sql = new Conexion();
+        mysql = sql.conectamysql();
+        DecimalFormat decimalFormat = new DecimalFormat("###,###.00");
+        double suma = 0;
+
+        try {
+            PreparedStatement statement = mysql.prepareStatement(
+                    "SELECT v.*, CONCAT(c.nombre, ' ', c.apellido) AS nombre_cliente, CONCAT(e.Nombres, ' ', e.Apellidos) AS nombre_empleado " +
+                            "FROM ventas v " +
+                            "LEFT JOIN clientes c ON v.cliente_id = c.id " +
+                            "LEFT JOIN empleados e ON v.empleado_id = e.id " +
+                            "WHERE v.id = ?;"
+            );
+            statement.setInt(1, this.id);
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                // Llenar los campos de la interfaz con los datos de la venta
+                codigo_venta.setText(resultSet.getString("codigo_venta"));
+                fecha.setText(resultSet.getString("fecha"));
+
+                // Mostrar el nombre completo del cliente y del empleado
+                cliente.setText(resultSet.getString("nombre_cliente"));
+                empleado.setText(resultSet.getString("nombre_empleado"));
+
+                DefaultTableModel modeloProductos = new DefaultTableModel();
+                modeloProductos.addColumn("N°");
+                modeloProductos.addColumn("Producto");
+                modeloProductos.addColumn("Cantidad");
+                modeloProductos.addColumn("Precio");
+                modeloProductos.addColumn("Total");
+
+                PreparedStatement detallesStatement = mysql.prepareStatement(
+                        "SELECT dv.cantidad, " +
+                                "CASE dv.tipo_detalle " +
+                                "   WHEN 'material' THEN m.nombre " +
+                                "   WHEN 'tarjeta' THEN t.ocasion " +
+                                "   WHEN 'floristeria' THEN f.nombre " +
+                                "   WHEN 'manualidad' THEN ma.nombre " +
+                                "   WHEN 'arreglo' THEN a.nombre " +
+                                "   WHEN 'desayuno' THEN d.nombre " +
+                                "END AS nombre_detalle, " +
+                                "CASE dv.tipo_detalle " +
+                                "   WHEN 'material' THEN m.precio " +
+                                "   WHEN 'tarjeta' THEN t.precio_tarjeta " +
+                                "   WHEN 'floristeria' THEN f.precio " +
+                                "   WHEN 'manualidad' THEN ma.precio_manualidad " +
+                                "   WHEN 'arreglo' THEN a.precio " +
+                                "   WHEN 'desayuno' THEN d.precio_desayuno " +
+                                "END AS precio_detalle " +
+                                "FROM detalles_ventas dv " +
+                                "LEFT JOIN materiales m ON dv.detalle_id = m.id AND dv.tipo_detalle = 'material' " +
+                                "LEFT JOIN tarjetas t ON dv.detalle_id = t.id AND dv.tipo_detalle = 'tarjeta' " +
+                                "LEFT JOIN floristeria f ON dv.detalle_id = f.id AND dv.tipo_detalle = 'floristeria' " +
+                                "LEFT JOIN manualidades ma ON dv.detalle_id = ma.id AND dv.tipo_detalle = 'manualidad' " +
+                                "LEFT JOIN arreglos a ON dv.detalle_id = a.id AND dv.tipo_detalle = 'arreglo' " +
+                                "LEFT JOIN desayunos d ON dv.detalle_id = d.id AND dv.tipo_detalle = 'desayuno' " +
+                                "WHERE dv.venta_id = ?;"
+                );
+                detallesStatement.setInt(1, this.id);
+                ResultSet detallesResultSet = detallesStatement.executeQuery();
+
+                int numeroDetalle = 1;
+                while (detallesResultSet.next()) {
+                    String nombreDetalle = detallesResultSet.getString("nombre_detalle");
+                    int cantidad = detallesResultSet.getInt("cantidad");
+                    double precioDetalle = detallesResultSet.getDouble("precio_detalle");
+                    double subtotal = cantidad * precioDetalle; // Aplicar el factor 0.85 según tu lógica
+                    suma += subtotal;
+
+                    Object[] fila = {numeroDetalle, nombreDetalle, cantidad + " unidades", "L. " + decimalFormat.format(precioDetalle), "L. " + decimalFormat.format(subtotal)};
+                    modeloProductos.addRow(fila);
+
+                    numeroDetalle++;
+                }
+
+                // Llenar la tabla de productos con el modelo
+                productos.setModel(modeloProductos);
+
+                // Calcular los valores totales
+                double subtotal = suma * 0.85; // Aplicar el factor 0.85 según tu lógica
+                double isv = suma * 0.15; // Aplicar el factor 0.15 según tu lógica
+                double total = subtotal + isv;
+
+                // Actualizar etiquetas con los resultados de los cálculos
+                String formattedSuma = "L. " + decimalFormat.format(subtotal);
+                lbl8.setText(formattedSuma);
+
+                String formattedISV = "L. " + decimalFormat.format(isv);
+                lbl9.setText(formattedISV);
+
+                String formattedTotal = "L. " + decimalFormat.format(total);
+                lbl10.setText(formattedTotal);
+
+            } else {
+                JOptionPane.showMessageDialog(null, "La venta con el ID " + this.id + " no fue encontrada.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+        } catch (SQLException error) {
+            System.out.println(error.getMessage());
+        }
+    }
+    
     public static double obtenerPrecioProducto(int detalleId, Conexion sql) {
         double precioProducto = 0.0;
 
@@ -423,7 +445,7 @@ public class VerVentas extends JFrame {
                 switch (tipoDetalle) {
                     case "floristeria":
                         query = "SELECT nombre FROM floristeria WHERE id = ?";
-                        columnName = "nombre";
+                        columnName = "nombre" + "aaa";
                         break;
                     case "tarjeta":
                         query = "SELECT ocasion FROM tarjetas WHERE id = ?";
@@ -464,244 +486,6 @@ public class VerVentas extends JFrame {
         }
 
         return nombreProducto;
-    }
-
-    public static void imprimirFactura(String codigo) {
-        Venta venta = new Venta();
-
-        try {
-            sql = new Conexion();
-            try (Connection mysql = sql.conectamysql();
-                 PreparedStatement preparedStatement = mysql.prepareStatement(
-                         "SELECT c.*, p.nombre, CONCAT(e.nombres, ' ', e.apellidos) AS apellido " +
-                                 "FROM ventas c " +
-                                 "JOIN clientes p ON c.cliente_id = p.id " +
-                                 "JOIN empleados e ON c.empleado_id = e.id " +
-                                 "WHERE c.codigo_venta LIKE CONCAT('%', ?, '%')")) {
-
-                SimpleDateFormat formatoFecha = new SimpleDateFormat("dd 'de' MMMM yyyy", new Locale("es"));
-
-                preparedStatement.setString(1, codigo);  // Búsqueda por código de venta
-
-                ResultSet resultSet = preparedStatement.executeQuery();
-
-                while (resultSet.next()) {
-                    venta.setId(resultSet.getInt("id"));
-                    venta.setCodigoVenta(resultSet.getString("codigo_venta"));
-                    java.util.Date fecha = resultSet.getDate("fecha");
-                    if (fecha != null) {
-                        venta.setFecha(formatoFecha.format(fecha));
-                    } else {
-                        venta.setFecha("");
-                    }
-                    venta.setClienteId(resultSet.getInt("cliente_id"));
-                    venta.setEmpleadoId(resultSet.getInt("empleado_id"));
-                }
-            }catch (Exception ignored){
-
-            }
-
-
-            // Crear un nuevo documento
-            PDDocument doc = new PDDocument();
-            PDPage page = new PDPage(PDRectangle.LETTER);
-            doc.addPage(page);
-
-            PDPageContentStream contentStream = new PDPageContentStream(doc, page);
-
-            // Establecer el tipo de letra y el tamaño para el encabezado
-            contentStream.setFont(PDType1Font.HELVETICA_BOLD, 16);
-            contentStream.setLeading(14.5f);
-
-            // Agregar encabezado
-            contentStream.beginText();
-            contentStream.newLineAtOffset(50, 750);
-            contentStream.showText("EMPRESA DE EVENTOS CHELSEA");
-            contentStream.setFont(PDType1Font.HELVETICA, 12);
-            contentStream.newLine();
-            contentStream.showText("Barrio Tierra Blanca, 100 mts adelante de Pintogama.");
-            contentStream.newLine();
-            contentStream.showText("Teléfono: 9699-1168");
-            contentStream.newLine();
-            contentStream.showText("Fecha: " + new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
-            contentStream.endText();
-
-            // Establecer el tipo de letra y el tamaño para el cuerpo
-            contentStream.setFont(PDType1Font.HELVETICA, 12);
-
-            // Calcular el ancho de las columnas
-            float[] columnWidths = {20, 200, 95, 95, 100};
-            float tableHeight = 600;
-            float tableWidth = page.getMediaBox().getWidth() - 100;
-            float yStart = 650;
-            float yPosition = yStart;
-            int rowsPerPage = 20;
-            int pageNumber = 1;
-            int rowNumber = 0;
-
-            // Agregar títulos de las columnas
-            contentStream.beginText();
-            contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
-            contentStream.newLineAtOffset(50, yPosition);
-            contentStream.showText("N°");
-            contentStream.newLineAtOffset(columnWidths[0], 0);
-            contentStream.showText("Producto");
-            contentStream.newLineAtOffset(columnWidths[1], 0);
-            contentStream.showText("Cantidad");
-            contentStream.newLineAtOffset(columnWidths[2], 0);
-            contentStream.showText("Precio");
-            contentStream.newLineAtOffset(columnWidths[3], 0);
-            contentStream.showText("Total");
-            contentStream.endText();
-
-            // Agregar línea por línea
-            Conexion sql = new Conexion();
-            ModeloVentaDetalle mdc = new ModeloVentaDetalle(new ArrayList<>(), sql);
-
-            List<VentaDetalle> detalles = mdc.getDetallesPorVenta(venta.getId());
-            for (VentaDetalle detalle : detalles) {
-                if (rowNumber == rowsPerPage) {
-                    contentStream.endText();
-                    contentStream.close();
-                    page = new PDPage(PDRectangle.LETTER);
-                    doc.addPage(page);
-                    contentStream = new PDPageContentStream(doc, page);
-                    contentStream.setFont(PDType1Font.HELVETICA, 12);
-                    contentStream.beginText();
-                    contentStream.newLineAtOffset(50, yStart);
-                    yPosition = yStart;
-                    pageNumber++;
-                    rowNumber = 0;
-                    contentStream.showText("N°");
-                    contentStream.newLineAtOffset(columnWidths[0], 0);
-                    contentStream.showText("Producto");
-                    contentStream.newLineAtOffset(columnWidths[1], 0);
-                    contentStream.showText("Cantidad");
-                    contentStream.newLineAtOffset(columnWidths[2], 0);
-                    contentStream.showText("Precio");
-                    contentStream.newLineAtOffset(columnWidths[3], 0);
-                    contentStream.showText("Total");
-                    contentStream.endText();
-                }
-
-                yPosition -= 20;
-                contentStream.beginText();
-                contentStream.setFont(PDType1Font.HELVETICA, 12);
-                contentStream.newLineAtOffset(50, yPosition);
-                contentStream.showText(String.valueOf(rowNumber + 1));
-                contentStream.newLineAtOffset(columnWidths[0], 0);
-                contentStream.showText(obtenerNombreProducto(detalle.getId(), sql));
-
-                contentStream.newLineAtOffset(columnWidths[1], 0);
-                contentStream.showText(String.valueOf(detalle.getCantidad()));
-                contentStream.newLineAtOffset(columnWidths[2], 0);
-                contentStream.showText(String.format("L. %.2f", obtenerPrecioProducto(detalle.getId(), sql)));
-
-
-                //contentStream.showText(String.format("L. %.2f", detalle.getPrecio()));
-                contentStream.newLineAtOffset(columnWidths[3], 0);
-                contentStream.showText(String.format("L. %.2f", detalle.getCantidad() * obtenerPrecioProducto(detalle.getId(), sql)));
-                contentStream.endText();
-
-
-                rowNumber++;
-            }
-
-            double subTotal = calcularSubtotal(detalles);
-            double isv = calcularISV(detalles);
-            double total = calcularTotal(detalles);
-
-            // Agregar línea de separación
-            contentStream.setLineWidth(1f);
-            contentStream.moveTo(50, yPosition - 10);
-            contentStream.lineTo(tableWidth, yPosition - 10);
-            contentStream.stroke();
-
-            // Agregar pie de página
-            contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
-            contentStream.beginText();
-            contentStream.newLineAtOffset(tableWidth - 250, yPosition - 30);
-            contentStream.showText("Total antes de Impuestos:");
-            contentStream.endText();
-            contentStream.beginText();
-            contentStream.setFont(PDType1Font.HELVETICA, 12);
-            contentStream.newLineAtOffset(tableWidth - 50, yPosition - 30);
-            contentStream.showText("L. " + String.format("%.2f", subTotal));
-            contentStream.endText();
-
-            contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
-            contentStream.beginText();
-            contentStream.newLineAtOffset(tableWidth - 250, yPosition - 50);
-            contentStream.showText("Impuestos sobre ventas (15%):");
-            contentStream.endText();
-            contentStream.beginText();
-            contentStream.setFont(PDType1Font.HELVETICA, 12);
-            contentStream.newLineAtOffset(tableWidth - 50, yPosition - 50);
-            contentStream.showText("L. " + String.format("%.2f", isv));
-            contentStream.endText();
-
-            contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
-            contentStream.beginText();
-            contentStream.newLineAtOffset(tableWidth - 250, yPosition - 70);
-            contentStream.showText("Total a pagar:");
-            contentStream.endText();
-            contentStream.beginText();
-            contentStream.setFont(PDType1Font.HELVETICA, 12);
-            contentStream.newLineAtOffset(tableWidth - 50, yPosition - 70);
-            contentStream.showText("L. " + String.format("%.2f", total));
-            contentStream.endText();
-
-            // Cerrar el flujo de contenido y guardar el documento
-            contentStream.close();
-
-            // Obtener la fecha y hora actual en el formato deseado
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy");
-            SimpleDateFormat timeFormat = new SimpleDateFormat("HH-mm-ss");
-            String fechaActual = dateFormat.format(new Date());
-            String horaActual = timeFormat.format(new Date());
-
-            // Generar un número aleatorio de cuatro dígitos entre 0001 y 9999
-            Random random = new Random();
-            int numeroAleatorio = random.nextInt(9999 - 1 + 1) + 1;
-            String numeroAleatorioFormateado = String.format("%04d", numeroAleatorio);
-
-            // Generar el nombre del archivo PDF
-            String nombreArchivo = "Factura de venta N° " + fechaActual + " " + horaActual + " " + numeroAleatorioFormateado + ".pdf";
-
-            // Reemplazar los caracteres no válidos en el nombre del archivo
-            nombreArchivo = nombreArchivo.replace(":", "-");
-
-            // Crear un objeto JFileChooser para permitir al usuario seleccionar dónde guardar el archivo PDF
-            JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setDialogTitle("Seleccione dónde guardar el archivo PDF");
-
-            // Establecer el directorio actual del JFileChooser a la ruta del escritorio
-            File desktopPath = new File(System.getProperty("user.home"), "Desktop");
-            fileChooser.setCurrentDirectory(desktopPath);
-
-            // Predeterminar el nombre del archivo PDF en el diálogo de selección de archivos
-            fileChooser.setSelectedFile(new File(desktopPath, nombreArchivo));
-
-            // Mostrar el diálogo de selección de archivos
-            int userSelection = fileChooser.showSaveDialog(null);
-
-            if (userSelection == JFileChooser.APPROVE_OPTION) {
-                // Si el usuario ha seleccionado una ubicación de almacenamiento, guardar el archivo PDF allí
-                File fileToSave = fileChooser.getSelectedFile();
-                doc.save(fileToSave.getAbsolutePath());
-
-                // Mostrar un JOptionPane para informar al usuario que el archivo se ha guardado correctamente
-                JOptionPane.showMessageDialog(null, "Archivo guardado exitosamente como: " + fileToSave.getName(), "Archivo guardado", JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                // Si el usuario ha cancelado el diálogo de selección de archivos, no guardar el archivo PDF
-                JOptionPane.showMessageDialog(null, "Guardado cancelado", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-
-            // Cerrar el documento
-            doc.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public static double calcularSubtotal(List<VentaDetalle> detalles) {
