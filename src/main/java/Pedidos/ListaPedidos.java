@@ -1,0 +1,286 @@
+package Pedidos;
+import Modelos.ModeloPedido;
+import Objetos.Conexion;
+import Objetos.Material;
+import Objetos.Pedido;
+import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ListaPedidos extends JFrame {
+    private JPanel panelPrincipal;
+    private JButton botonVer;
+    private JTable listaPedidos;
+    private JButton botonAtras;
+    private JButton botonAdelante;
+    private JTextField campoBusqueda;
+    private TextPrompt placeholder = new TextPrompt(" Buscar por código, fecha de entrega o cliente", campoBusqueda);
+    private JButton botonEditar;
+    private JButton botonCrear;
+    private JLabel lblPagina, lbl0, lblD;
+    private JCheckBox noCheckBox;
+    private JCheckBox siCheckBox;
+    private JPanel panelA;
+    private JPanel panelB;
+    private JPanel panelTitulo;
+    private List<Pedido> pedidoList;
+    private int pagina = 0;
+    private Connection mysql;
+    private Conexion sql;
+    private ListaPedidos actual = this;
+    private String busqueda = "";
+    Font fontTitulo = new Font("Century Gothic", Font.BOLD, 17);
+    Font font = new Font("Century Gothic", Font.BOLD, 11);
+    Color primaryColor = Color.decode("#37474f"); // Gris azul oscuro
+    Color lightColor = Color.decode("#cfd8dc"); // Gris azul claro
+    Color darkColor = Color.decode("#263238"); // Gris azul más oscuro
+    public ListaPedidos() {
+        super("");
+        setSize(850, 505);
+        setLocationRelativeTo(null);
+        setContentPane(panelPrincipal);
+        campoBusqueda.setText("");
+
+        //listaPedidos.setModel(cargarDatos());
+        //configurarTablaMateriales();
+
+        //lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+
+        botonAtras.setEnabled(false);
+        botonAtras.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (pagina > 0) {
+                    pagina--;
+                    botonAdelante.setEnabled(true);
+                    if (pagina == 0) {
+                        botonAtras.setEnabled(false);
+                    }
+                }
+                //listaPedidos.setModel(cargarDatos());
+                //configurarTablaMateriales();
+                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+            }
+        });
+
+        botonAdelante.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if ((pagina + 1) < getTotalPageCount()) {
+                    pagina++;
+                    botonAtras.setEnabled(true);
+                    if ((pagina + 1) == getTotalPageCount()) {
+                        botonAdelante.setEnabled(false);
+                    }
+                }
+                //listaPedidos.setModel(cargarDatos());
+                //configurarTablaMateriales();
+                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+            }
+        });
+
+        campoBusqueda.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                busqueda = campoBusqueda.getText();
+                pagina = 0;
+                botonAdelante.setEnabled((pagina + 1) < getTotalPageCount());
+                botonAtras.setEnabled(pagina > 0);
+                //listaPedidos.setModel(cargarDatos());
+                //configurarTablaMateriales();
+                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+            }
+        });
+
+        botonCrear.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                CrearPedido pedidos = new CrearPedido();
+                pedidos.setVisible(true);
+                actual.dispose();
+            }
+        });
+
+        /*
+        botonVer.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (listaPedidos.getSelectedRow() == -1) {
+                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                VerMaterial material = new VerMaterial(materialList.get(listaPedidos.getSelectedRow()).getId());
+                material.setVisible(true);
+                actual.dispose();
+            }
+        });
+
+        botonEditar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (listaPedidos.getSelectedRow() == -1) {
+                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                EditarMaterial material = new EditarMaterial(materialList.get(listaPedidos.getSelectedRow()).getId());
+                material.setVisible(true);
+                actual.dispose();
+            }
+        });
+         */
+
+        //JTableHeader header = listaPedidos.getTableHeader();
+        //header.setForeground(Color.WHITE);
+
+        int campoBusquedaHeight = 35;
+        campoBusqueda.setPreferredSize(new Dimension(campoBusqueda.getPreferredSize().width, campoBusquedaHeight));
+
+        panelPrincipal.setBackground(primaryColor);
+        panelTitulo.setBackground(primaryColor);
+        panelA.setBackground(primaryColor);
+        panelB.setBackground(primaryColor);
+        //header.setBackground(darkColor);
+        botonCrear.setBackground(darkColor);
+        botonEditar.setBackground(darkColor);
+        botonAdelante.setBackground(darkColor);
+        botonAtras.setBackground(darkColor);
+        botonVer.setBackground(darkColor);
+        campoBusqueda.setBackground(Color.WHITE);
+
+        placeholder.setForeground(darkColor);
+        botonVer.setForeground(Color.WHITE);
+        botonAtras.setForeground(Color.WHITE);
+        botonAdelante.setForeground(Color.WHITE);
+        botonCrear.setForeground(Color.WHITE);
+        botonEditar.setForeground(Color.WHITE);
+        campoBusqueda.setForeground(darkColor);
+        lblPagina.setForeground(Color.WHITE);
+
+        campoBusqueda.setFont(font);
+        botonAdelante.setFont(font);
+        botonVer.setFont(font);
+        botonEditar.setFont(font);
+        botonAtras.setFont(font);
+        botonCrear.setFont(font);
+        placeholder.setFont(font);
+        lbl0.setFont(fontTitulo);
+        lblPagina.setFont(font);
+
+        botonAdelante.setFocusable(false);
+        botonAtras.setFocusable(false);
+        botonAtras.setFocusable(false);
+        botonEditar.setFocusable(false);
+        botonVer.setFocusable(false);
+    }
+
+    /*
+    private void configurarTablaMateriales() {
+        TableColumnModel columnModel = listaPedidos.getColumnModel();
+
+        columnModel.getColumn(0).setPreferredWidth(20);
+        columnModel.getColumn(1).setPreferredWidth(200);
+        columnModel.getColumn(2).setPreferredWidth(130);
+        columnModel.getColumn(3).setPreferredWidth(50);
+        columnModel.getColumn(4).setPreferredWidth(80);
+        columnModel.getColumn(5).setPreferredWidth(60);
+        columnModel.getColumn(6).setPreferredWidth(60);
+
+        columnModel.getColumn(0).setCellRenderer(new ListaPedidos.CenterAlignedRenderer());
+        columnModel.getColumn(1).setCellRenderer(new ListaPedidos.LeftAlignedRenderer());
+        columnModel.getColumn(2).setCellRenderer(new ListaPedidos.LeftAlignedRenderer());
+        columnModel.getColumn(3).setCellRenderer(new ListaPedidos.CenterAlignedRenderer());
+        columnModel.getColumn(4).setCellRenderer(new ListaPedidos.LeftAlignedRenderer());
+        columnModel.getColumn(5).setCellRenderer(new ListaPedidos.LeftAlignedRenderer());
+        columnModel.getColumn(6).setCellRenderer(new ListaPedidos.LeftAlignedRenderer());
+    }
+     */
+
+    private void createUIComponents() {
+        // TODO: place custom component creation code here
+    }
+
+    class LeftAlignedRenderer extends DefaultTableCellRenderer {
+        public LeftAlignedRenderer() {
+            setHorizontalAlignment(LEFT);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            return cell;
+        }
+    }
+
+    class RightAlignedRenderer extends DefaultTableCellRenderer {
+        public RightAlignedRenderer() {
+            setHorizontalAlignment(RIGHT);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            return cell;
+        }
+    }
+
+    class CenterAlignedRenderer extends DefaultTableCellRenderer {
+        public CenterAlignedRenderer() {
+            setHorizontalAlignment(CENTER);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            return cell;
+        }
+    }
+
+    private int getTotalPageCount() {
+        int count = 0;
+        try (Connection mysql = sql.conectamysql();
+             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT COUNT(*) AS total FROM pedidos f WHERE f.codigo_pedido LIKE CONCAT('%', ?, '%')")) {
+            preparedStatement.setString(1, busqueda);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                count = resultSet.getInt("total");
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+        }
+
+        int totalPageCount = count / 20;
+
+        if (count % 20 > 0) {
+            totalPageCount++;
+        }
+
+        return totalPageCount;
+    }
+
+    private void actualizarTabla() {
+        //listaPedidos.setModel(cargarDatos());
+        //configurarTablaMateriales();
+        //lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+    }
+
+
+    public static void main(String[] args) {
+        ListaPedidos listaPedidos = new ListaPedidos();
+        listaPedidos.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        listaPedidos.setVisible(true);
+    }
+}
