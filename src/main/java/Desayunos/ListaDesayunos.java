@@ -1,4 +1,5 @@
 package Desayunos;
+import Manualidades.EditarManualidad;
 import Manualidades.TextPrompt;
 import Modelos.ModeloDesayuno;
 import Objetos.Conexion;
@@ -120,20 +121,18 @@ public class ListaDesayunos extends JFrame {
             }
         });
 
-        /*
         botonEditar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (listaManualidades.getSelectedRow() == -1) {
+                if (listaDesayunos.getSelectedRow() == -1) {
                     JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
                     return;
                 }
-                // EditarManualidad manualidad = new EditarManualidad(listaManualidad.get(listaManualidades.getSelectedRow()).getId());
-                // manualidad.setVisible(true);
-                // actual.dispose();
+                EditarDesayuno editarDesayuno = new EditarDesayuno(listaDesayuno.get(listaDesayunos.getSelectedRow()), listaDesayuno.get(listaDesayunos.getSelectedRow()).getId());
+                editarDesayuno.setVisible(true);
+                actual.dispose();
             }
         });
-         */
 
         JTableHeader header = listaDesayunos.getTableHeader();
         header.setForeground(Color.WHITE);
