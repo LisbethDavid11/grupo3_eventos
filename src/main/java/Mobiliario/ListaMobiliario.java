@@ -114,7 +114,7 @@ public class ListaMobiliario extends JFrame {
                 actual.dispose();
             }
         });
-/*
+
         botonVer.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -122,12 +122,12 @@ public class ListaMobiliario extends JFrame {
                     JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
                     return;
                 }
-                VerGlobo globo = new VerGlobo(listaGlobo.get(listaMobiliario.getSelectedRow()).getId());
-                globo.setVisible(true);
+                VerMobiliario mobiliario = new VerMobiliario(listadoMobiliario.get(listaMobiliario.getSelectedRow()));
+                mobiliario.setVisible(true);
                 actual.dispose();
             }
         });
-
+/*
         botonEditar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
