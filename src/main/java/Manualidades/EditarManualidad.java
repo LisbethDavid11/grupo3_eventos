@@ -477,7 +477,7 @@ public class EditarManualidad extends JFrame {
 
                 int respuesta = JOptionPane.showOptionDialog(
                         null,
-                        "¿Desea guardar la información de la manualidad?",
+                        "¿Desea actualizar la información de la manualidad?",
                         "Confirmación",
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.QUESTION_MESSAGE,
@@ -868,7 +868,7 @@ public class EditarManualidad extends JFrame {
             JOptionPane.showMessageDialog(null, "Manualidad actualizada exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al guardar la manualidad", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error al actualizar la manualidad", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 

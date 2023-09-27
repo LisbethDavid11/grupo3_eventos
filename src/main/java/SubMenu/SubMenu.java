@@ -5,12 +5,14 @@ import Clientes.ListaClientes;
 import Compras.ListaCompras;
 import Desayunos.ListaDesayunos;
 import Empleados.ListaEmpleados;
+import Eventos.ListaEventos;
 import Floristerias.ListaFloristerias;
 import Globos.ListaGlobos;
 import Manualidades.ListaManualidades;
 import Materiales.ListaMateriales;
 import Mobiliario.ListaMobiliario;
 import Pedidos.ListaPedidos;
+import Promociones.ListaPromociones;
 import Proveedores.ListaProveedores;
 import Tarjetas.ListaTarjetas;
 import Ventas.ListaVentas;
@@ -21,7 +23,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class SubMenu extends JFrame {
-    private JButton proveedoresButton, empleadosButton, clientesButton, floristeriaButton, arreglosButton, materialesButton, comprasButton,tarjetaButton, manualidadesButton, globosButton, desayunosButton, ventasButton, mobiliarioButton, pedidosButton;
+    private JButton proveedoresButton, empleadosButton, clientesButton, floristeriaButton, arreglosButton, materialesButton, comprasButton,tarjetaButton, manualidadesButton, globosButton, desayunosButton, ventasButton, mobiliarioButton, pedidosButton, eventosButton, promocionesButton;
     private JPanel panel, panel2, panel3;
     private ListaClientes listaCliente;
     private ListaEmpleados listaEmpleados;
@@ -37,6 +39,9 @@ public class SubMenu extends JFrame {
     private ListaVentas listaVentas;
     private ListaMobiliario listaMobiliario;
     private ListaPedidos listaPedidos;
+
+    private ListaPromociones listaPromociones;
+    private ListaEventos listaEventos;
 
     public SubMenu() {
         super("Menú Principal");
@@ -71,37 +76,52 @@ public class SubMenu extends JFrame {
         proveedoresButton.setPreferredSize(new Dimension(100, 40)); // Ajustar tamaño
 
         comprasButton = new JButton("Compras");
-        comprasButton.setBackground(Color.decode("#F44336"));
+        comprasButton.setBackground(Color.decode("#E91E63")); // Cambio de color
         comprasButton.setPreferredSize(new Dimension(100, 40)); // Ajustar tamaño
 
         tarjetaButton = new JButton("Tarjetas");
-        tarjetaButton.setBackground(Color.decode("#E81E63"));
+        tarjetaButton.setBackground(Color.decode("#E81E12"));
         tarjetaButton.setPreferredSize(new Dimension(100, 40)); // Ajustar tamaño
 
         manualidadesButton = new JButton("Manualidades");
-        manualidadesButton.setBackground(Color.decode("#E81E12"));
+        manualidadesButton.setBackground(Color.decode("#FF5733")); // Cambio de color
         manualidadesButton.setPreferredSize(new Dimension(100, 40)); // Ajustar tamaño
 
         globosButton = new JButton("Globos");
-        globosButton.setBackground(Color.decode("#4CAF50"));
+        globosButton.setBackground(Color.decode("#4CAF50")); // Cambio de color
         globosButton.setPreferredSize(new Dimension(100, 40)); // Ajustar tamaño
 
         desayunosButton = new JButton("Desayunos");
-        desayunosButton.setBackground(Color.decode("#FFC107"));
+        desayunosButton.setBackground(Color.decode("#FFC107")); // Cambio de color
         desayunosButton.setPreferredSize(new Dimension(100, 40)); // Ajustar tamaño
 
         ventasButton = new JButton("Ventas");
-        ventasButton.setBackground(Color.decode("#795548"));
+        ventasButton.setBackground(Color.decode("#795548")); // Cambio de color
         ventasButton.setPreferredSize(new Dimension(100, 40)); // Ajustar tamaño
 
         mobiliarioButton = new JButton("Mobiliario");
-        mobiliarioButton.setBackground(Color.decode("#17b5da"));
+        mobiliarioButton.setBackground(Color.decode("#17bb1a"));
         mobiliarioButton.setPreferredSize(new Dimension(100, 40)); // Ajustar tamaño
 
         pedidosButton = new JButton("Pedidos");
-        pedidosButton.setBackground(Color.decode("#17b5ff"));
+        pedidosButton.setBackground(Color.decode("#17ba5f"));
         pedidosButton.setPreferredSize(new Dimension(100, 40)); // Ajustar tamaño
 
+        promocionesButton = new JButton("Promociones");
+        promocionesButton.setBackground(Color.decode("#17c5aa"));
+        promocionesButton.setPreferredSize(new Dimension(100, 40)); // Ajustar tamaño
+
+        eventosButton = new JButton("Eventos");
+        eventosButton.setBackground(Color.decode("#15b5af"));
+        eventosButton.setPreferredSize(new Dimension(100, 40)); // Ajustar tamaño
+
+        // Crear un GridLayout con 2 filas y 8 columnas
+        GridLayout gridLayout = new GridLayout(2, 8);
+
+        // Establecer el diseño del panel
+        panel.setLayout(gridLayout);
+
+        // Agregar los botones al panel
         panel.add(clientesButton);
         panel.add(empleadosButton);
         panel.add(floristeriaButton);
@@ -116,6 +136,9 @@ public class SubMenu extends JFrame {
         panel.add(pedidosButton);
         panel.add(ventasButton);
         panel.add(mobiliarioButton);
+        panel.add(promocionesButton);
+        panel.add(eventosButton);
+
 
         // Crea el panel de imagen y lo coloca en el centro
         ImagePanel imagenPanel = new ImagePanel();
@@ -141,9 +164,11 @@ public class SubMenu extends JFrame {
         ventasButton.setFocusPainted(false);
         mobiliarioButton.setFocusPainted(false);
         pedidosButton.setFocusPainted(false);
+        promocionesButton.setFocusPainted(false);
+        eventosButton.setFocusPainted(false);
 
-        clientesButton.setForeground(Color.WHITE);
-        proveedoresButton.setForeground(Color.WHITE);
+        promocionesButton.setForeground(Color.WHITE);
+        eventosButton.setForeground(Color.WHITE);
         materialesButton.setForeground(Color.WHITE);
         floristeriaButton.setForeground(Color.WHITE);
         empleadosButton.setForeground(Color.WHITE);
@@ -174,6 +199,8 @@ public class SubMenu extends JFrame {
         listaVentas = new ListaVentas();
         listaMobiliario = new ListaMobiliario();
         listaPedidos = new ListaPedidos();
+        listaPromociones = new ListaPromociones();
+        listaEventos = new ListaEventos();
 
         clientesButton.addActionListener(new ActionListener() {
             @Override
@@ -270,6 +297,20 @@ public class SubMenu extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 listaPedidos.setVisible(true);
+            }
+        });
+
+        eventosButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                listaEventos.setVisible(true);
+            }
+        });
+
+        promocionesButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                listaPromociones.setVisible(true);
             }
         });
     }

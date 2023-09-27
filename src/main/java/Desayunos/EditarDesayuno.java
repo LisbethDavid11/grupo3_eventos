@@ -50,7 +50,6 @@ public class EditarDesayuno extends JFrame {
     private JLabel lbl9;
     private JLabel lbl10;
     private int selectTabla = 1;
-
     private List<PoliProducto> productosListTemporal = new ArrayList<>();
     private List<PoliMaterial> materialList = new ArrayList<>();
     private List<PoliMaterial> materialListTemporal = new ArrayList<>();
@@ -60,7 +59,6 @@ public class EditarDesayuno extends JFrame {
     private List<PoliTarjeta> tarjetaListTemporal = new ArrayList<>();
     private List<PoliGlobo> globoList = new ArrayList<>();
     private List<PoliGlobo> globolListTemporal = new ArrayList<>();
-
     private Map<String,String> tiposDescripcion = new HashMap<>();
     private Map<String,String> tiposTablas = new HashMap<>();
     private String imagePath = "";
@@ -107,6 +105,7 @@ public class EditarDesayuno extends JFrame {
     private int id;
     private String nombreArchivoImagen;
     private boolean imagenCambiada = false; // Variable de control
+    private List<PoliProductosGeneral> productosSeleccionados = new ArrayList<>();
 
     public EditarDesayuno(Desayuno desayuno, int id) {
         super("");
@@ -130,7 +129,6 @@ public class EditarDesayuno extends JFrame {
         tiposTablas.put("T","tarjetas");
         tiposTablas.put("G","globos");
         tiposTablas.put("M","materiales");
-
 
         jcbProveedores.addItem(new ProveedorDesayuno(0,"","")); // Agregar mensaje inicial
         cargarProveedores();
@@ -378,6 +376,8 @@ public class EditarDesayuno extends JFrame {
 
                         PoliModeloProducto nuevoModelo = new PoliModeloProducto(new ArrayList<>());
                         jtableMateriales.setModel(nuevoModelo);
+                        cargarDatosEditar();
+                        mostrar();
                         configurarTablaMateriales();
 
                         calcularTotalTabla();
@@ -403,7 +403,6 @@ public class EditarDesayuno extends JFrame {
                 dialog.setVisible(true);
             }
         });
-
 
         campoNombre.addKeyListener(new KeyAdapter() {
             @Override
@@ -561,8 +560,6 @@ public class EditarDesayuno extends JFrame {
             }
         });
 
-
-
         botonCancelar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -579,7 +576,7 @@ public class EditarDesayuno extends JFrame {
                 int validacion = 0;
                 String mensaje = "Faltó ingresar: \n";
 
-                if (imagePath.isEmpty()) {
+                if (imagenCambiada && imagePath.isEmpty()) {
                     validacion++;
                     mensaje += "Imagen\n";
                 }
@@ -667,7 +664,7 @@ public class EditarDesayuno extends JFrame {
                             if (!lbl10Text.isEmpty()) {
                                 double lbl10Value = Double.parseDouble(lbl10Text);
                                 if (precio <= lbl10Value) {
-                                    JOptionPane.showMessageDialog(null, "El precio debe ser mayor que el valor Total despues de gastos de materiales y mano de obra.", "Validación", JOptionPane.ERROR_MESSAGE);
+                                    JOptionPane.showMessageDialog(null, "El precio debe ser mayor que el valor total despues de gastos de materiales y mano de obra.", "Validación", JOptionPane.ERROR_MESSAGE);
                                     return;
                                 }
                             } else {
@@ -712,7 +709,7 @@ public class EditarDesayuno extends JFrame {
 
                 // Crea un JOptionPane
                 JOptionPane optionPane = new JOptionPane(
-                        "¿Desea guardar la información del desayuno sorpresa?",
+                        "¿Desea actualizar la información del desayuno sorpresa?",
                         JOptionPane.QUESTION_MESSAGE,
                         JOptionPane.DEFAULT_OPTION,
                         null,
@@ -728,7 +725,10 @@ public class EditarDesayuno extends JFrame {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         // Acciones para el botón Sí
-                        guardarDesayuno();
+                        if (!imagePath.isEmpty()) {
+                            imagenCambiada = true;
+                        }
+                        actualizarDesayuno();
                         dialog.dispose();
                         ListaDesayunos listaDesayunos = new ListaDesayunos();
                         listaDesayunos.setVisible(true);
@@ -850,12 +850,11 @@ public class EditarDesayuno extends JFrame {
         agregarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
-                Map<Integer,List> listas = new HashMap<>();
-                listas.put(2,floristeriaList);
-                listas.put(3,materialList);
-                listas.put(4,globoList);
-                listas.put(5,tarjetaList);
+                Map<Integer, List> listas = new HashMap<>();
+                listas.put(2, floristeriaList);
+                listas.put(3, materialList);
+                listas.put(4, globoList);
+                listas.put(5, tarjetaList);
 
                 if (jtableMateriales.getSelectedRow() == -1) {
                     // Crea un botón personalizado
@@ -910,31 +909,27 @@ public class EditarDesayuno extends JFrame {
 
                 boolean materialDuplicado = false;
 
-                if ( l instanceof PoliFlor p){
+                if (l instanceof PoliFlor p) {
                     id_materialEntero = p.getID();
-                    id_material = "F-"+p.getID();
-
-                }else  if ( l instanceof PoliMaterial p){
+                    id_material = "F-" + p.getID();
+                } else if (l instanceof PoliMaterial p) {
                     id_materialEntero = p.getID();
-                    id_material = "M-"+p.getID();
-
-                }else  if ( l instanceof PoliGlobo p){
+                    id_material = "M-" + p.getID();
+                } else if (l instanceof PoliGlobo p) {
                     id_materialEntero = p.getID();
-                    id_material = "G-"+p.getID();
-
-                }else  if ( l instanceof PoliTarjeta p){
+                    id_material = "G-" + p.getID();
+                } else if (l instanceof PoliTarjeta p) {
                     id_materialEntero = p.getID();
-                    id_material = "T-"+p.getID();
+                    id_material = "T-" + p.getID();
                 }
 
                 for (PoliProducto materialTemporal : productosListTemporal) {
-                    String id = materialTemporal.getTipo()+"-"+materialTemporal.getID();
-                        if ( id.equals(id_material)) {
-                            materialDuplicado = true;
-                            break;
-                        }
+                    String id = materialTemporal.getTipo() + "-" + materialTemporal.getID();
+                    if (id.equals(id_material)) {
+                        materialDuplicado = true;
+                        break;
+                    }
                 }
-
 
                 if (!materialDuplicado) {
                     // Llamar al método guardarDetalleDesayuno con los tres argumentos
@@ -943,7 +938,7 @@ public class EditarDesayuno extends JFrame {
                     // Crear el material temporal y agregarlo a la lista temporal
                     PoliProductosGeneral materialTemporal = new PoliMaterial();
                     materialTemporal.setID(id_materialEntero);
-                    materialTemporal.setNombre( l.getNombre());
+                    materialTemporal.setNombre(l.getNombre());
                     materialTemporal.setCantidad(cantidadMaterial);
                     materialTemporal.setPrecio(l.getPrecio());
                     materialTemporal.setTipo(l.getTipo());
@@ -972,7 +967,7 @@ public class EditarDesayuno extends JFrame {
 
                     // Crea un JOptionPane
                     JOptionPane optionPane = new JOptionPane(
-                            "El detalle, ya está presente en la tabla",
+                            "El detalle ya está presente en la tabla",
                             JOptionPane.DEFAULT_OPTION,
                             JOptionPane.DEFAULT_OPTION,
                             null,
@@ -997,7 +992,6 @@ public class EditarDesayuno extends JFrame {
 
                     // Muestra el diálogo
                     dialog.setVisible(true);
-
                 }
             }
         });
@@ -1061,73 +1055,38 @@ public class EditarDesayuno extends JFrame {
         }
     }
 
-    private void guardarDesayuno() {
+    private void actualizarDesayuno() {
         String nombre = campoNombre.getText().trim();
-
         String precioManualidadText = campoPrecioDesayuno.getText().replace("L ", "").replace(",", "").replace("_", "");
         double precio_manualidad = Double.parseDouble(precioManualidadText);
-
         String manoObraText = campoManoObra.getText().replace("L ", "").replace(",", "").replace("_", "");
         double mano_obra = Double.parseDouble(manoObraText);
-
         String descripcion = campoDescripcion.getText().trim();
 
-        int cantidad = 0;
-
         ProveedorDesayuno tipo = (ProveedorDesayuno) jcbProveedores.getModel().getSelectedItem();
-        try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO desayunos (imagen, nombre, descripcion, proveedor_id, cantidad, precio_desayuno, mano_obra) VALUES (?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
 
-            preparedStatement.setString(1, nombreFile); // Reemplaza "nombreFile" con el nombre de archivo de la imagen.
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "UPDATE desayunos SET imagen = ?, nombre = ?, descripcion = ?, proveedor_id = ?, precio_desayuno = ?, mano_obra = ? WHERE id = ?")) {
+
+            preparedStatement.setString(1, nombreArchivoImagen); // Reemplaza "nombreFile" con el nombre de archivo de la imagen.
             preparedStatement.setString(2, nombre);
             preparedStatement.setString(3, descripcion);
             preparedStatement.setInt(4, tipo.getIdProveedor());
-            preparedStatement.setInt(5, cantidad);
-            preparedStatement.setDouble(6, precio_manualidad);
-            preparedStatement.setDouble(7, mano_obra);
-            preparedStatement.executeUpdate();
+            preparedStatement.setDouble(5, precio_manualidad);
+            preparedStatement.setDouble(6, mano_obra);
+            preparedStatement.setInt(7, id); // Utiliza el ID proporcionado en el constructor.
 
-            ResultSet resultSet = preparedStatement.getGeneratedKeys();
-            int lastId = 0;
-            if (resultSet.next()) {
-                lastId = resultSet.getInt(1);
+            int rowsAffected = preparedStatement.executeUpdate();
+
+            if (rowsAffected > 0) {
+                JOptionPane.showMessageDialog(null, "Desayuno actualizado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(null, "No se encontró el desayuno para actualizar", "Error", JOptionPane.ERROR_MESSAGE);
             }
-
-            try (PreparedStatement prepared = connection.prepareStatement(
-                    "UPDATE detalles_desayunos SET desayuno_id = ? WHERE desayuno_id IS NULL")) {
-                prepared.setInt(1, lastId);
-                prepared.executeUpdate();
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-                JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
-                materialList = new ArrayList<>();
-            }
-
-           /* try (PreparedStatement prepared = connection.prepareStatement(
-                    "SELECT * FROM detalles_manualidades WHERE manualidad_id = ?")) {
-                prepared.setInt(1, lastId);
-                ResultSet rs = prepared.executeQuery();
-
-                while (rs.next()) {
-                    int id_material = rs.getInt("material_id");
-                    int cantidad_usada = rs.getInt("cantidad");
-
-                    try (PreparedStatement updateStmt = connection.prepareStatement(
-                            "UPDATE materiales SET cantidad = cantidad - ? WHERE id = ?")) {
-                        updateStmt.setInt(1, cantidad_usada);
-                        updateStmt.setInt(2, id_material);
-                        updateStmt.executeUpdate();
-                    }
-                }
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-                JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
-            }
-            */
-            JOptionPane.showMessageDialog(null, "Desayuno guardado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al guardar el desayuno", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error al actualizar el desayuno", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -1170,6 +1129,11 @@ public class EditarDesayuno extends JFrame {
         materialList.clear();
         DefaultTableModel emptyModel = new DefaultTableModel();
         jtableMateriales.setModel(emptyModel);
+        cargarDatosEditar();
+        mostrar();
+        calcularTotalTabla();
+        actualizarLbl8y10();
+        configurarTablaMateriales();
     }
 
     private void eliminarDetallesMaterial() {
@@ -1596,19 +1560,18 @@ public class EditarDesayuno extends JFrame {
         }
     }
 
-
     private double calcularTotalTabla() {
         double sumaTotal = 0.0;
         TableModel modelo = jtableMateriales.getModel();
+        boolean modeloValido = false; // Indicador para verificar si el modelo es válido
 
-        // Comprueba si el modelo es una instancia de PoliModeloProducto antes de realizar el casting
-        if (modelo instanceof PoliModeloProducto) {
-            PoliModeloProducto modeloProductos = (PoliModeloProducto) modelo;
+        if (modelo instanceof DefaultTableModel) {
+            DefaultTableModel modeloProductos = (DefaultTableModel) modelo;
+            int rowCount = modeloProductos.getRowCount();
+            modeloValido = true; // El modelo es válido
 
-            // Iterar por todas las filas del modelo
-            for (int i = 0; i < modeloProductos.getRowCount(); i++) {
+            for (int i = 0; i < rowCount; i++) {
                 try {
-                    // Obtener el total de la fila y sumarlo al total general
                     Object valorCelda = modeloProductos.getValueAt(i, 4); // Suponiendo que la columna "total" está en el índice 4 (índice basado en 0)
                     if (valorCelda != null) {
                         String totalStr = valorCelda.toString();
@@ -1620,14 +1583,16 @@ public class EditarDesayuno extends JFrame {
                     System.err.println("Valor que causa el error: " + modeloProductos.getValueAt(i, 4));
                 }
             }
-
-            // Actualizar el lbl8 con el total calculado
-            DecimalFormat decimalFormat = new DecimalFormat("#.00");
-            String sumaTotalFormateado = decimalFormat.format(sumaTotal);
-            lbl8.setText(" " + sumaTotalFormateado);
-        } else {
-            System.err.println("El modelo no es una instancia de PoliModeloProducto.");
         }
+
+        if (!modeloValido) {
+            //System.err.println("El modelo no es una instancia de DefaultTableModel.");
+        }
+
+        // Actualizar el lbl8 con el total calculado
+        DecimalFormat decimalFormat = new DecimalFormat("#.00");
+        String sumaTotalFormateado = decimalFormat.format(sumaTotal);
+        lbl8.setText(" " + sumaTotalFormateado);
 
         return sumaTotal;
     }
