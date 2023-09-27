@@ -1,73 +1,65 @@
 package Eventos;
-import Compras.ListaCompras;
-import Manualidades.PreviewImagen;
 import Materiales.TextPrompt;
 import Modelos.*;
 import Objetos.*;
-import Ventas.CrearVenta;
-
-import javax.imageio.ImageIO;
+import org.jdatepicker.impl.JDatePanelImpl;
+import org.jdatepicker.impl.JDatePickerImpl;
+import org.jdatepicker.impl.UtilDateModel;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.sql.*;
-import java.text.DecimalFormat;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.Date;
 import java.util.List;
+import java.util.*;
 
 public class CrearEvento extends JFrame {
-    private JTextField campoPrecioDesayuno, campoManoObra, campoNombre;
-    private JTextArea campoDescripcion;
+    private JTextField campoIdentidad, campoTelefono;
+    private JLabel lbl0, lbl1, lbl2, lbl3, lbl4, lbl5, lbl6, lbl7, lbl8, lbl9, lbl10, lbl11;
+    private JTextArea campoDireccion;
     private JButton botonGuardar;
     private JButton botonCancelar;
-    private JPanel jpanelImagen, panel1, panel2, panel3, panel5, panel6, panel7;
-    private JLabel lbl0;
-    private JLabel lbl2;
-    private JLabel lbl4;
-    private JButton botonCargarImagen;
-    private JButton agregarMaterialButton, agregarGloboButton, agregarTarjetasButton, agregarFloresButton;
-    private JTable jtableMateriales;
-    private JLabel jlabelImagen;
+    private JPanel panel1, panel2, panel3, panel5, panel6, panel7;
+    private JButton agregarMobiliarioButton, agregarGloboButton, agregarArregloButton, agregarFloresButton;
+    private JTable tablaProductos;
     private JScrollPane panel4;
     private JButton agregarButton;
     private JTextField campoBusquedaMateriales;
     private TextPrompt placeholder = new TextPrompt(" Buscar por nombre de producto", campoBusquedaMateriales);
-
     private JButton cancelarButton;
-    private JComboBox<ProveedorDesayuno> jcbProveedores;
-    private JPanel jpanelDescripcion;
+    private JComboBox<ClienteEvento> jbcClientes;
+    private JPanel jpanelDireccion;
     private JLabel jtextCatidadTotalMateriales;
-    private JLabel lbl8;
     private JButton botonLimpiar;
-    private JLabel lbl9;
-    private JLabel lbl10;
+    private JComboBox jbcTipoEvento;
+    private JPanel panelFecha, panelInicio, panelFin;
     private int selectTabla = 1;
-
     private List<PoliProducto> productosListTemporal = new ArrayList<>();
-    private List<PoliMaterial> materialList = new ArrayList<>();
-    private List<PoliMaterial> materialListTemporal = new ArrayList<>();
+    private List<PoliMobiliario> mobiliarioList = new ArrayList<>();
+    private List<PoliMobiliario> mobiliarioListTemporal = new ArrayList<>();
     private List<PoliFlor> floristeriaList = new ArrayList<>();
     private List<PoliFlor> floristeriaListTemporal = new ArrayList<>();
-    private List<PoliTarjeta> tarjetaList = new ArrayList<>();
-    private List<PoliTarjeta> tarjetaListTemporal = new ArrayList<>();
     private List<PoliGlobo> globoList = new ArrayList<>();
     private List<PoliGlobo> globolListTemporal = new ArrayList<>();
-
+    private List<PoliArreglo> arregloList = new ArrayList<>();
+    private List<PoliArreglo> arregloListTemporal = new ArrayList<>();
+    private List<PoliManualidad> manualidadList = new ArrayList<>();
+    private List<PoliManualidad> manualidadListTemporal = new ArrayList<>();
     private Map<String,String> tiposDescripcion = new HashMap<>();
     private Map<String,String> tiposTablas = new HashMap<>();
     private String imagePath = "";
     private CrearEvento actual = this;
     private Conexion sql;
+    private Connection mysql;
     private String nombreFile;
     private String urlDestino = "";
     private DefaultTableModel modeloProductos;
@@ -104,6 +96,7 @@ public class CrearEvento extends JFrame {
     Color darkColorRed = new Color(244, 67, 54);
     Color darkColorBlue = new Color(33, 150, 243);
     EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
+    private JDatePickerImpl datePicker; // Declare the datePicker variable at the class level
 
     public CrearEvento() {
         super("");
@@ -111,9 +104,42 @@ public class CrearEvento extends JFrame {
         setLocationRelativeTo(null);
         setContentPane(panel1);
         sql = new Conexion();
-        campoDescripcion.setLineWrap(true);
-        campoDescripcion.setWrapStyleWord(true);
+        campoDireccion.setLineWrap(true);
+        campoDireccion.setWrapStyleWord(true);
         configurarTablaMateriales();
+
+        UtilDateModel dateModel = new UtilDateModel();
+        Properties properties = new Properties();
+        properties.put("text.today", "Hoy");
+        properties.put("text.month", "Mes");
+        properties.put("text.year", "Año");
+
+        JDatePanelImpl datePanel = new JDatePanelImpl(dateModel, properties);
+        datePicker = new JDatePickerImpl(datePanel, new CrearEvento.SimpleDateFormatter());  // Proporcionar un formateador
+
+        Calendar tomorrow = getTomorrow(); // Obtén el día siguiente al actual
+
+        dateModel.addChangeListener(e -> {
+            handleDateChange(dateModel, tomorrow);
+        });
+
+        // Show initial date in date field (puede ser el día siguiente al actual)
+        handleDateChange(dateModel, tomorrow);
+
+        panelFecha.add(datePicker);
+
+        // Establecer ancho y alto deseados para el paneldescripcion
+        int panelDesWidth = 80;
+        int panelDesHeight = 100;
+
+        // Crear una instancia de Dimension con las dimensiones deseadas
+        Dimension panelDesSize = new Dimension(panelDesWidth, panelDesHeight);
+
+        // Establecer las dimensiones en el jpanelDireccion
+        jpanelDireccion.setPreferredSize(panelDesSize);
+        jpanelDireccion.setMaximumSize(panelDesSize);
+        jpanelDireccion.setMinimumSize(panelDesSize);
+        jpanelDireccion.setSize(panelDesSize);
 
         tiposDescripcion.put("F","floristeria");
         tiposDescripcion.put("T","tarjeta");
@@ -125,48 +151,49 @@ public class CrearEvento extends JFrame {
         tiposTablas.put("G","globos");
         tiposTablas.put("M","materiales");
 
+        jbcClientes.addItem(new ClienteEvento(0,"","")); // Agregar mensaje inicial
+        cargarClientes();
 
-        jcbProveedores.addItem(new ProveedorDesayuno(0,"","")); // Agregar mensaje inicial
-        cargarProveedores();
+        jbcClientes.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Obtener el cliente seleccionado del JComboBox
+                ClienteEvento clienteSeleccionado = (ClienteEvento) jbcClientes.getSelectedItem();
 
-        // Establecer ancho y alto deseados para el paneldescripcion
-        int panelDesWidth = 80;
-        int panelDesHeight = 100;
+                // Verificar si se seleccionó un cliente válido
+                if (clienteSeleccionado != null) {
+                    int idCliente = clienteSeleccionado.getIdCliente();
 
-        // Crear una instancia de Dimension con las dimensiones deseadas
-        Dimension panelDesSize = new Dimension(panelDesWidth, panelDesHeight);
+                    // Realizar una consulta SQL para obtener la información del cliente
+                    String consulta = "SELECT identidad, telefono, domicilio FROM clientes WHERE id = ?";
 
-        // Establecer las dimensiones en el jpanelDescripcion
-        jpanelDescripcion.setPreferredSize(panelDesSize);
-        jpanelDescripcion.setMaximumSize(panelDesSize);
-        jpanelDescripcion.setMinimumSize(panelDesSize);
-        jpanelDescripcion.setSize(panelDesSize);
+                    try (Connection connection = sql.conectamysql();
+                         PreparedStatement preparedStatement = connection.prepareStatement(consulta)) {
 
-        // Establecer ancho y alto deseados para el panelImg
-        int panelImgWidth = 70;
-        int panelImgHeight = 150;
+                        preparedStatement.setInt(1, idCliente);
+                        ResultSet resultSet = preparedStatement.executeQuery();
 
-        // Crear una instancia de Dimension con las dimensiones deseadas
-        Dimension panelImgSize = new Dimension(panelImgWidth, panelImgHeight);
+                        if (resultSet.next()) {
+                            // Asignar la identidad al campoIdentidad
+                            campoIdentidad.setText(resultSet.getString("identidad"));
 
-        // Establecer las dimensiones en el panelImg
-        jpanelImagen.setPreferredSize(panelImgSize);
-        jpanelImagen.setMaximumSize(panelImgSize);
-        jpanelImagen.setMinimumSize(panelImgSize);
-        jpanelImagen.setSize(panelImgSize);
+                            // Asignar el teléfono al campoTelefono
+                            campoTelefono.setText(resultSet.getString("telefono"));
 
-        // Configurar el layout del panelImg como GridBagLayout
-        jpanelImagen.setLayout(new GridBagLayout());
-
-        // Configurar restricciones de diseño para la etiqueta de imagen
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.weightx = 1.0;
-        gbc.weighty = 1.0;
-        jlabelImagen.setHorizontalAlignment(SwingConstants.CENTER);
-        jpanelImagen.add(jlabelImagen, gbc);
+                            // Asignar la dirección al campoDireccion
+                            campoDireccion.setText(resultSet.getString("domicilio"));
+                        }
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
+                } else {
+                    // Si se selecciona el mensaje inicial, limpiar los campos
+                    campoIdentidad.setText("");
+                    campoTelefono.setText("");
+                    campoDireccion.setText("");
+                }
+            }
+        });
 
         // Color de fondo del panel
         panel1.setBackground(Color.decode("#F5F5F5"));
@@ -176,22 +203,15 @@ public class CrearEvento extends JFrame {
         panel5.setBackground(Color.decode("#F5F5F5"));
         panel6.setBackground(Color.decode("#F5F5F5"));
         panel7.setBackground(Color.decode("#F5F5F5"));
-        jpanelDescripcion.setBackground(Color.decode("#F5F5F5"));
-        jpanelImagen.setBackground(Color.decode("#F5F5F5"));
 
         DefaultTableModel modeloProductos = new DefaultTableModel();
 
-        JTableHeader header = jtableMateriales.getTableHeader();
+        JTableHeader header = tablaProductos.getTableHeader();
         header.setForeground(Color.WHITE);
         header.setBackground(darkColorCyan);
 
         // Color de texto para los JTextField
         Color textColor = Color.decode("#212121");
-
-        // Cargar los iconos en blanco
-        ImageIcon cancelIcon = new ImageIcon("cancel_icon_white.png");
-        ImageIcon saveIcon = new ImageIcon("save_icon_white.png");
-        ImageIcon updateIcon = new ImageIcon("update_icon_white.png");
 
         // Crea un margen de 10 píxeles desde el borde inferior
         EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
@@ -199,32 +219,29 @@ public class CrearEvento extends JFrame {
         // Color de texto de los botones
         botonCancelar.setForeground(Color.WHITE);
         botonGuardar.setForeground(Color.WHITE);
-        agregarMaterialButton.setForeground(Color.DARK_GRAY);
-        botonCargarImagen.setForeground(Color.WHITE);
+        agregarMobiliarioButton.setForeground(Color.DARK_GRAY);
         botonLimpiar.setForeground(Color.WHITE);
         cancelarButton.setForeground(Color.WHITE);
         agregarButton.setForeground(Color.WHITE);
         agregarGloboButton.setForeground(Color.DARK_GRAY);
-        agregarTarjetasButton.setForeground(Color.DARK_GRAY);
+        agregarArregloButton.setForeground(Color.DARK_GRAY);
         agregarFloresButton.setForeground(Color.DARK_GRAY);
 
         // Color de fondo de los botones
         botonCancelar.setBackground(darkColorBlue);
         botonGuardar.setBackground(darkColorAqua);
-        botonCargarImagen.setBackground(darkColorPink);
-        agregarMaterialButton.setBackground(lightColorAmber);
+        agregarMobiliarioButton.setBackground(lightColorAmber);
         agregarFloresButton.setBackground(lightColorAqua);
         agregarGloboButton.setBackground(lightColorCyan);
-        agregarTarjetasButton.setBackground(lightColorRosado);
+        agregarArregloButton.setBackground(lightColorRosado);
         botonLimpiar.setBackground(darkColorRed);
         agregarButton.setBackground(darkColorCyan);
         cancelarButton.setBackground(darkColorRed);
 
         botonCancelar.setFocusPainted(false);
         botonGuardar.setFocusPainted(false);
-        botonCargarImagen.setFocusPainted(false);
-        agregarMaterialButton.setFocusPainted(false);
-        agregarTarjetasButton.setFocusPainted(false);
+        agregarMobiliarioButton.setFocusPainted(false);
+        agregarArregloButton.setFocusPainted(false);
         agregarFloresButton.setFocusPainted(false);
         agregarGloboButton.setFocusPainted(false);
         botonLimpiar.setFocusPainted(false);
@@ -239,33 +256,46 @@ public class CrearEvento extends JFrame {
         botonLimpiar.setBorder(margin);
 
         lbl0.setForeground(textColor);
+        lbl1.setForeground(textColor);
         lbl2.setForeground(textColor);
+        lbl3.setForeground(textColor);
         lbl4.setForeground(textColor);
+        lbl5.setForeground(textColor);
+        lbl6.setForeground(textColor);
+        lbl7.setForeground(textColor);
+        lbl8.setForeground(textColor);
+
+        campoDireccion.setEditable(false);
+        campoIdentidad.setEditable(false);
+        campoTelefono.setEditable(false);
+
+        campoDireccion.setFocusable(false);
+        campoIdentidad.setFocusable(false);
+        campoTelefono.setFocusable(false);
 
         // Crea un margen de 15 píxeles desde el borde inferior
         EmptyBorder marginTitulo = new EmptyBorder(15, 0, 15, 0);
         lbl0.setBorder(marginTitulo);
-
         lbl0.setFont(fontTitulo);
-        lbl8.setFont(font);
         lbl9.setFont(font);
         lbl10.setFont(font);
+        lbl11.setFont(font);
 
         // Color de texto para el JTextArea
-        campoDescripcion.setForeground(textColor);
-        campoDescripcion.setBackground(new Color(215, 215, 215));
+        campoDireccion.setForeground(textColor);
+        campoDireccion.setBackground(new Color(215, 215, 215));
 
-        agregarMaterialButton.addActionListener(new ActionListener() {
+        agregarMobiliarioButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 campoBusquedaMateriales.setVisible(true);
                 agregarButton.setVisible(true);
                 cancelarButton.setVisible(true);
-                agregarMaterialButton.setVisible(false);
+                agregarMobiliarioButton.setVisible(false);
                 agregarFloresButton.setVisible(false);
                 agregarGloboButton.setVisible(false);
-                agregarTarjetasButton.setVisible(false);
-                jtableMateriales.setModel(cargarDatosMaterial());
+                agregarArregloButton.setVisible(false);
+                tablaProductos.setModel(cargarDatosMobiliario());
             }
         });
 
@@ -275,11 +305,11 @@ public class CrearEvento extends JFrame {
                 campoBusquedaMateriales.setVisible(true);
                 agregarButton.setVisible(true);
                 cancelarButton.setVisible(true);
-                agregarMaterialButton.setVisible(false);
+                agregarMobiliarioButton.setVisible(false);
                 agregarFloresButton.setVisible(false);
                 agregarGloboButton.setVisible(false);
-                agregarTarjetasButton.setVisible(false);
-                jtableMateriales.setModel(cargarDatosFloristeria());
+                agregarArregloButton.setVisible(false);
+                tablaProductos.setModel(cargarDatosFloristeria());
             }
         });
 
@@ -289,25 +319,25 @@ public class CrearEvento extends JFrame {
                 campoBusquedaMateriales.setVisible(true);
                 agregarButton.setVisible(true);
                 cancelarButton.setVisible(true);
-                agregarMaterialButton.setVisible(false);
+                agregarMobiliarioButton.setVisible(false);
                 agregarFloresButton.setVisible(false);
                 agregarGloboButton.setVisible(false);
-                agregarTarjetasButton.setVisible(false);
-                jtableMateriales.setModel(cargarDatosGlobo());
+                agregarArregloButton.setVisible(false);
+                tablaProductos.setModel(cargarDatosGlobo());
             }
         });
 
-        agregarTarjetasButton.addActionListener(new ActionListener() {
+        agregarArregloButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 campoBusquedaMateriales.setVisible(true);
                 agregarButton.setVisible(true);
                 cancelarButton.setVisible(true);
-                agregarMaterialButton.setVisible(false);
+                agregarMobiliarioButton.setVisible(false);
                 agregarFloresButton.setVisible(false);
                 agregarGloboButton.setVisible(false);
-                agregarTarjetasButton.setVisible(false);
-                jtableMateriales.setModel(cargarDatosTarjeta());
+                agregarArregloButton.setVisible(false);
+                tablaProductos.setModel(cargarDatosArreglo());
             }
         });
 
@@ -317,12 +347,12 @@ public class CrearEvento extends JFrame {
                 campoBusquedaMateriales.setVisible(false);
                 agregarButton.setVisible(false);
                 cancelarButton.setVisible(false);
-                agregarMaterialButton.setVisible(true);
+                agregarMobiliarioButton.setVisible(true);
                 agregarFloresButton.setVisible(true);
                 agregarGloboButton.setVisible(true);
-                agregarTarjetasButton.setVisible(true);
-                jtableMateriales.setModel(cargarDetallesMateriales());
-                actualizarLbl8y10();
+                agregarArregloButton.setVisible(true);
+                tablaProductos.setModel(cargarDetallesMateriales());
+                //actualizarLbl8y10();
                 configurarTablaMateriales();
             }
         });
@@ -363,19 +393,19 @@ public class CrearEvento extends JFrame {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         // Acciones para el botón Sí
-                        materialListTemporal.clear();
+                        mobiliarioListTemporal.clear();
                         productosListTemporal.clear();
                         eliminarDetallesMaterial();
                         limpiarTablaMateriales();
-                        lbl8.setText("0.00");
-                        lbl10.setText("0.00");
+                        lbl9.setText("0.00");
+                        lbl11.setText("0.00");
 
                         PoliModeloProducto nuevoModelo = new PoliModeloProducto(new ArrayList<>());
-                        jtableMateriales.setModel(nuevoModelo);
+                        tablaProductos.setModel(nuevoModelo);
                         configurarTablaMateriales();
 
-                        calcularTotalTabla();
-                        actualizarLbl8y10();
+                        //calcularTotalTabla();
+                        //actualizarLbl8y10();
 
                         dialog.dispose();
                     }
@@ -398,120 +428,11 @@ public class CrearEvento extends JFrame {
             }
         });
 
-
-        campoNombre.addKeyListener(new KeyAdapter() {
+        campoDireccion.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                String text = campoNombre.getText();
-                int length = text.length();
-                int caretPosition = campoNombre.getCaretPosition();
-
-                // Verificar si se está ingresando un espacio en blanco
-                if (e.getKeyChar() == ' ') {
-                    // Verificar si es el primer espacio en blanco o si hay varios espacios consecutivos
-                    if (length == 0 || caretPosition == 0 || text.charAt(caretPosition - 1) == ' ') {
-                        e.consume(); // Ignorar el espacio en blanco adicional
-                    }
-                } else {
-                    // Verificar la longitud del texto después de eliminar espacios en blanco
-                    String trimmedText = text.replaceAll("\\s+", " ");
-                    int trimmedLength = trimmedText.length();
-
-                    // Verificar si se está ingresando una letra
-                    if (Character.isLetter(e.getKeyChar())) {
-                        // Verificar si se excede el límite de caracteres
-                        if (trimmedLength >= 100) {
-                            e.consume(); // Ignorar la letra
-                        } else {
-                            // Convertir solo la primera letra a mayúscula
-                            if (caretPosition == 0) {
-                                e.setKeyChar(Character.toUpperCase(e.getKeyChar()));
-                            }
-                        }
-                    } else {
-                        e.consume(); // Ignorar cualquier otro tipo de carácter
-                    }
-                }
-            }
-        });
-
-        campoPrecioDesayuno.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                char c = e.getKeyChar();
-                String text = campoPrecioDesayuno.getText();
-
-                // Permitir solo dígitos y el carácter de punto decimal
-                if (!Character.isDigit(c) && c != '.') {
-                    e.consume(); // Ignorar cualquier otro carácter
-                    return;
-                }
-
-                // Verificar si se excede el límite de caracteres
-                if (text.length() >= 5 && c != '.' && !text.contains(".")) {
-                    e.consume(); // Ignorar el carácter si se excede el límite de dígitos y no es un punto decimal
-                    return;
-                }
-
-                // Verificar si ya hay un punto decimal y se intenta ingresar otro
-                if (text.contains(".") && c == '.') {
-                    e.consume(); // Ignorar el carácter si ya hay un punto decimal
-                    return;
-                }
-
-                // Verificar la cantidad de dígitos después del punto decimal
-                if (text.contains(".")) {
-                    int dotIndex = text.indexOf(".");
-                    int decimalDigits = text.length() - dotIndex - 1;
-                    if (decimalDigits >= 2) {
-                        e.consume(); // Ignorar el carácter si se excede la cantidad de dígitos después del punto decimal
-                        return;
-                    }
-                }
-            }
-        });
-
-        campoManoObra.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                char c = e.getKeyChar();
-                String text = campoManoObra.getText();
-
-                // Permitir solo dígitos y el carácter de punto decimal
-                if (!Character.isDigit(c) && c != '.') {
-                    e.consume(); // Ignorar cualquier otro carácter
-                    return;
-                }
-
-                // Verificar si se excede el límite de caracteres
-                if (text.length() >= 5 && c != '.' && !text.contains(".")) {
-                    e.consume(); // Ignorar el carácter si se excede el límite de dígitos y no es un punto decimal
-                    return;
-                }
-
-                // Verificar si ya hay un punto decimal y se intenta ingresar otro
-                if (text.contains(".") && c == '.') {
-                    e.consume(); // Ignorar el carácter si ya hay un punto decimal
-                    return;
-                }
-
-                // Verificar la cantidad de dígitos después del punto decimal
-                if (text.contains(".")) {
-                    int dotIndex = text.indexOf(".");
-                    int decimalDigits = text.length() - dotIndex - 1;
-                    if (decimalDigits >= 2) {
-                        e.consume(); // Ignorar el carácter si se excede la cantidad de dígitos después del punto decimal
-                        return;
-                    }
-                }
-            }
-        });
-
-        campoDescripcion.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                String texto = campoDescripcion.getText();
-                int caretPosition = campoDescripcion.getCaretPosition();
+                String texto = campoDireccion.getText();
+                int caretPosition = campoDireccion.getCaretPosition();
 
                 // Verificar la longitud del texto
                 if (texto.length() >= 200) {
@@ -537,26 +458,6 @@ public class CrearEvento extends JFrame {
             }
         });
 
-        // Listener para el campoManoObra
-        campoManoObra.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                actualizarLbl8y10();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                actualizarLbl8y10();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                actualizarLbl8y10();
-            }
-        });
-
-
-
         botonCancelar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -573,37 +474,17 @@ public class CrearEvento extends JFrame {
                 int validacion = 0;
                 String mensaje = "Faltó ingresar: \n";
 
-                if (imagePath.isEmpty()) {
-                    validacion++;
-                    mensaje += "Imagen\n";
-                }
-
-                if (campoNombre.getText().trim().isEmpty()) {
-                    validacion++;
-                    mensaje += "Nombre del desayuno sorpresa\n";
-                }
-
-                if (campoDescripcion.getText().trim().isEmpty()) {
+                if (campoDireccion.getText().trim().isEmpty()) {
                     validacion++;
                     mensaje += "Descripción\n";
                 }
 
-                if (jcbProveedores.getSelectedIndex() == 0) {
+                if (jbcClientes.getSelectedIndex() == 0) {
                     validacion++;
-                    mensaje += "Seleccionar el proveedor\n";
+                    mensaje += "Seleccionar el cliente\n";
                 }
 
-                if (campoPrecioDesayuno.getText().trim().isEmpty()) {
-                    validacion++;
-                    mensaje += "Precio del desayuno\n";
-                }
-
-                if (campoManoObra.getText().trim().isEmpty()) {
-                    validacion++;
-                    mensaje += "Mano de obra\n";
-                }
-
-                if (jtableMateriales.getRowCount() == 0) {
+                if (tablaProductos.getRowCount() == 0) {
                     validacion++;
                     mensaje += "La lista de productos\n";
                 }
@@ -613,79 +494,12 @@ public class CrearEvento extends JFrame {
                     return;
                 }
 
-                if (!campoDescripcion.getText().trim().isEmpty()) {
-                    String texto = campoDescripcion.getText().trim();
+                if (!campoDireccion.getText().trim().isEmpty()) {
+                    String texto = campoDireccion.getText().trim();
                     int longitud = texto.length();
 
                     if (longitud < 2 || longitud > 200) {
-                        JOptionPane.showMessageDialog(null, "La descripción debe tener entre 2 y 200 caracteres.", "Validación", JOptionPane.ERROR_MESSAGE);
-                    }
-                }
-
-                String nombre = campoNombre.getText().trim();
-                if (!nombre.isEmpty()) {
-                    if (nombre.length() > 100) {
-                        JOptionPane.showMessageDialog(null, "El nombre debe tener como máximo 100 caracteres.", "Validación", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-
-                    if (!nombre.matches("[a-zA-ZñÑ]{2,}(\\s[a-zA-ZñÑ]+\\s*)*")) {
-                        JOptionPane.showMessageDialog(null, "El nombre debe tener mínimo 2 letras y máximo 1 espacio entre palabras.", "Validación", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(null, "El campo de nombre no puede estar vacío.", "Validación", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-                String precioText = campoPrecioDesayuno.getText().trim();
-                // Replace commas with periods to handle decimal separator
-                precioText = precioText.replaceAll(",", ".");
-
-                if (precioText.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Faltó ingresar el precio.", "Validación", JOptionPane.ERROR_MESSAGE);
-                    return;
-                } else {
-                    if (!precioText.matches("\\d{1,5}(\\.\\d{1,2})?")) {
-                        JOptionPane.showMessageDialog(null, "Precio inválido. Debe tener el formato correcto (ejemplo: 1234 o 1234.56).", "Validación", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    } else {
-                        double precio = Double.parseDouble(precioText);
-                        if (precio < 1.00 || precio > 99999.99) {
-                            JOptionPane.showMessageDialog(null, "Precio fuera del rango válido (1.00 - 99999.99).", "Validación", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        } else {
-                            // Get the value from the JLabel "lbl10" and replace commas with periods
-                            String lbl10Text = lbl10.getText().trim();
-                            lbl10Text = lbl10Text.replaceAll(",", ".");
-                            if (!lbl10Text.isEmpty()) {
-                                double lbl10Value = Double.parseDouble(lbl10Text);
-                                if (precio <= lbl10Value) {
-                                    JOptionPane.showMessageDialog(null, "El precio debe ser mayor que el valor Total despues de gastos de materiales y mano de obra.", "Validación", JOptionPane.ERROR_MESSAGE);
-                                    return;
-                                }
-                            } else {
-                                JOptionPane.showMessageDialog(null, "El valor en lbl10 no es válido.", "Validación", JOptionPane.ERROR_MESSAGE);
-                                return;
-                            }
-                        }
-                    }
-                }
-
-                String manoObraText = campoManoObra.getText().trim();
-                if (manoObraText.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Faltó ingresar el precio por mano de obra.", "Validación", JOptionPane.ERROR_MESSAGE);
-                    return;
-                } else {
-                    if (!manoObraText.matches("\\d{1,5}(\\.\\d{1,2})?")) {
-                        JOptionPane.showMessageDialog(null, "Precio por mano de obra inválido. Debe tener el formato correcto (ejemplo: 1234 o 1234.56).", "Validación", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    } else {
-                        double precio = Double.parseDouble(manoObraText);
-                        if (precio < 1.00 || precio > 99999.99) {
-                            JOptionPane.showMessageDialog(null, "Precio por mano de obra fuera del rango válido (1.00 - 99999.99).", "Validación", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
+                        JOptionPane.showMessageDialog(null, "La dirección debe tener entre 2 y 200 caracteres.", "Validación", JOptionPane.ERROR_MESSAGE);
                     }
                 }
 
@@ -706,7 +520,7 @@ public class CrearEvento extends JFrame {
 
                 // Crea un JOptionPane
                 JOptionPane optionPane = new JOptionPane(
-                        "¿Desea guardar la información del desayuno sorpresa?",
+                        "¿Desea guardar la información del evento?",
                         JOptionPane.QUESTION_MESSAGE,
                         JOptionPane.DEFAULT_OPTION,
                         null,
@@ -722,7 +536,32 @@ public class CrearEvento extends JFrame {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         // Acciones para el botón Sí
-                        guardarManualidades();
+
+
+
+
+
+
+                        //guardarEvento();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                         dialog.dispose();
                         ListaEventos listaEventos = new ListaEventos();
                         listaEventos.setVisible(true);
@@ -748,88 +587,11 @@ public class CrearEvento extends JFrame {
             }
         });
 
-        botonCargarImagen.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                UIManager.put("FileChooser.openButtonText", "Cargar");
-                UIManager.put("FileChooser.cancelButtonText", "Cancelar");
-                UIManager.put("FileChooser.lookInLabelText", "Ver en");
-                UIManager.put("FileChooser.fileNameLabelText", "Nombre del archivo");
-                UIManager.put("FileChooser.filesOfTypeLabelText", "Archivos del tipo");
-                UIManager.put("FileChooser.upFolderToolTipText", "Subir un nivel");
-                UIManager.put("FileChooser.homeFolderToolTipText", "Escritorio");
-                UIManager.put("FileChooser.newFolderToolTipText", "Crear nueva carpeta");
-                UIManager.put("FileChooser.listViewButtonToolTipText", "Lista");
-                UIManager.put("FileChooser.newFolderButtonText", "Crear nueva carpeta");
-                UIManager.put("FileChooser.renameFileButtonText", "Renombrar archivo");
-                UIManager.put("FileChooser.deleteFileButtonText", "Eliminar archivo");
-                UIManager.put("FileChooser.filterLabelText", "Tipo de archivo");
-                UIManager.put("FileChooser.detailsViewButtonToolTipText", "Detalles");
-                UIManager.put("FileChooser.fileSizeHeaderText", "Tamaño");
-                UIManager.put("FileChooser.fileDateHeaderText", "Fecha de modificación");
+        tablaProductos.setModel(cargarDetallesMateriales());
+        tablaProductos.getColumnModel().getColumn(5).setCellRenderer(new CrearEvento.ButtonRenderer());
+        tablaProductos.getColumnModel().getColumn(5).setCellEditor(new CrearEvento.ButtonEditor());
 
-                JFileChooser fileChooser = new JFileChooser();
-                fileChooser.setDialogTitle("Seleccionar imagen"); // Cambiar título del diálogo
-
-                fileChooser.setFileFilter(new FileNameExtensionFilter("Imágenes", "jpg", "jpeg", "png", "bmp", "gif"));
-
-                int seleccion = fileChooser.showOpenDialog(actual);
-                if (seleccion == JFileChooser.APPROVE_OPTION) {
-                    File file = fileChooser.getSelectedFile();
-                    imagePath = file.getAbsolutePath();
-
-                    String directorio = "img/desayunos/";
-
-                    Date fecha = new Date();
-                    SimpleDateFormat formatoFecha = new SimpleDateFormat("yyyyMMdd_HHmmss");
-                    
-                    nombreFile  = formatoFecha.format(fecha)+".jpg" ;
-                    urlDestino = directorio + nombreFile;
-
-                    try {
-                        File finalDirectorio = new File(urlDestino);
-
-                        BufferedImage imagen = ImageIO.read(new File(imagePath));
-
-                        ImageIO.write(imagen, "jpg", finalDirectorio);
-
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
-                    }
-
-                    ImageIcon originalIcon = new ImageIcon(imagePath);
-
-                    // Obtener las dimensiones originales de la imagen
-                    int originalWidth = originalIcon.getIconWidth();
-                    int originalHeight = originalIcon.getIconHeight();
-
-                    // Obtener las dimensiones del JPanel
-                    int panelImgWidth = jpanelImagen.getWidth();
-                    int panelImgHeight = jpanelImagen.getHeight();
-
-                    // Calcular la escala para ajustar la imagen al JPanel
-                    double scale = Math.min((double) panelImgWidth / originalWidth, (double) panelImgHeight / originalHeight);
-
-                    // Calcular las nuevas dimensiones de la imagen redimensionada
-                    int scaledWidth = (int) (originalWidth * scale);
-                    int scaledHeight = (int) (originalHeight * scale);
-
-                    // Redimensionar la imagen manteniendo su proporción
-                    Image resizedImage = originalIcon.getImage().getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH);
-
-                    // Crear un nuevo ImageIcon a partir de la imagen redimensionada
-                    ImageIcon scaledIcon = new ImageIcon(resizedImage);
-
-                    jlabelImagen.setIcon(scaledIcon);
-                }
-            }
-        });
-
-        jtableMateriales.setModel(cargarDetallesMateriales());
-        jtableMateriales.getColumnModel().getColumn(5).setCellRenderer(new CrearEvento.ButtonRenderer());
-        jtableMateriales.getColumnModel().getColumn(5).setCellEditor(new CrearEvento.ButtonEditor());
-
-        actualizarLbl8y10();
+        //actualizarLbl8y10();
         configurarTablaMateriales();
         agregarButton.setVisible(false);
         cancelarButton.setVisible(false);
@@ -837,7 +599,7 @@ public class CrearEvento extends JFrame {
         campoBusquedaMateriales.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
-                jtableMateriales.setModel(cargarDatosMaterial());
+                tablaProductos.setModel(cargarDatosMobiliario());
             }
         });
 
@@ -847,11 +609,11 @@ public class CrearEvento extends JFrame {
 
                 Map<Integer,List> listas = new HashMap<>();
                 listas.put(2,floristeriaList);
-                listas.put(3,materialList);
+                listas.put(3,mobiliarioList);
                 listas.put(4,globoList);
-                listas.put(5,tarjetaList);
+                listas.put(5,arregloList);
 
-                if (jtableMateriales.getSelectedRow() == -1) {
+                if (tablaProductos.getSelectedRow() == -1) {
                     // Crea un botón personalizado
                     JButton btnOK = new JButton("OK");
                     btnOK.setBackground(darkColorAqua);
@@ -898,7 +660,7 @@ public class CrearEvento extends JFrame {
                 }
 
                 // Verificar que el material ya está presente en la lista temporal
-                PoliProducto l = (PoliProducto) listas.get(selectTabla).get(jtableMateriales.getSelectedRow());
+                PoliProducto l = (PoliProducto) listas.get(selectTabla).get(tablaProductos.getSelectedRow());
                 String id_material = "";
                 int id_materialEntero = 0;
 
@@ -931,8 +693,24 @@ public class CrearEvento extends JFrame {
 
 
                 if (!materialDuplicado) {
-                    // Llamar al método guardarDetalleDesayuno con los tres argumentos
-                    guardarDetalleDesayuno(id_materialEntero, cantidadMaterial, l.getTipo());
+                    // Llamar al método guardarDetalleEvento con los tres argumentos
+
+
+
+
+
+
+
+                    //OJO
+                    // AQUI
+
+                    //guardarDetalleEvento(id_materialEntero, cantidadMaterial, l.getTipo());
+
+
+
+
+
+
 
                     // Crear el material temporal y agregarlo a la lista temporal
                     PoliProductosGeneral materialTemporal = new PoliMaterial();
@@ -946,17 +724,17 @@ public class CrearEvento extends JFrame {
                     campoBusquedaMateriales.setVisible(false);
                     agregarButton.setVisible(false);
                     cancelarButton.setVisible(false);
-                    agregarMaterialButton.setVisible(true);
+                    agregarMobiliarioButton.setVisible(true);
                     agregarFloresButton.setVisible(true);
                     agregarGloboButton.setVisible(true);
-                    agregarTarjetasButton.setVisible(true);
+                    agregarArregloButton.setVisible(true);
                     // Actualizar la tabla con los detalles actualizados
-                    jtableMateriales.setModel(cargarDetallesMateriales());
-                    jtableMateriales.getColumnModel().getColumn(5).setCellRenderer(new CrearEvento.ButtonRenderer());
-                    jtableMateriales.getColumnModel().getColumn(5).setCellEditor(new CrearEvento.ButtonEditor());
+                    tablaProductos.setModel(cargarDetallesMateriales());
+                    tablaProductos.getColumnModel().getColumn(5).setCellRenderer(new CrearEvento.ButtonRenderer());
+                    tablaProductos.getColumnModel().getColumn(5).setCellEditor(new CrearEvento.ButtonEditor());
 
                     configurarTablaMateriales();
-                    actualizarLbl8y10();
+                    //actualizarLbl8y10();
                 } else {
                     // Crea un botón personalizado
                     JButton btnOK = new JButton("OK");
@@ -995,31 +773,17 @@ public class CrearEvento extends JFrame {
                 }
             }
         });
-
-        jlabelImagen.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-
-                if(urlDestino.equals("")){
-
-                }else {
-                    JOptionPane.showMessageDialog(null, urlDestino);
-                    PreviewImagen imagen = new PreviewImagen(urlDestino);
-                    imagen.setVisible(true);
-                }
-            }
-        });
     }
 
     private void configurarTablaMateriales() {
-        int columnCount = jtableMateriales.getColumnCount();
+        int columnCount = tablaProductos.getColumnCount();
         if (columnCount > 0) {
-            TableColumnModel columnModel = jtableMateriales.getColumnModel();
+            TableColumnModel columnModel = tablaProductos.getColumnModel();
 
             columnModel.getColumn(0).setPreferredWidth(30); // Id
             columnModel.getColumn(1).setPreferredWidth(180); // Nombre
             columnModel.getColumn(2).setPreferredWidth(80);  // Precio
-            columnModel.getColumn(3).setPreferredWidth(100); // Proveedor
+            columnModel.getColumn(3).setPreferredWidth(100); // Cliente
 
             columnModel.getColumn(0).setCellRenderer(new CenterAlignedRenderer());
             columnModel.getColumn(1).setCellRenderer(new LeftAlignedRenderer());
@@ -1052,92 +816,6 @@ public class CrearEvento extends JFrame {
         }
     }
 
-    private void guardarManualidades() {
-        String nombre = campoNombre.getText().trim();
-
-        String precioManualidadText = campoPrecioDesayuno.getText().replace("L ", "").replace(",", "").replace("_", "");
-        double precio_manualidad = Double.parseDouble(precioManualidadText);
-
-        String manoObraText = campoManoObra.getText().replace("L ", "").replace(",", "").replace("_", "");
-        double mano_obra = Double.parseDouble(manoObraText);
-
-        String descripcion = campoDescripcion.getText().trim();
-
-        int cantidad = 0;
-
-        ProveedorDesayuno tipo = (ProveedorDesayuno) jcbProveedores.getModel().getSelectedItem();
-        try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO desayunos (imagen, nombre, descripcion, proveedor_id, cantidad, precio_desayuno, mano_obra) VALUES (?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
-
-            preparedStatement.setString(1, nombreFile); // Reemplaza "nombreFile" con el nombre de archivo de la imagen.
-            preparedStatement.setString(2, nombre);
-            preparedStatement.setString(3, descripcion);
-            preparedStatement.setInt(4, tipo.getIdProveedor());
-            preparedStatement.setInt(5, cantidad);
-            preparedStatement.setDouble(6, precio_manualidad);
-            preparedStatement.setDouble(7, mano_obra);
-            preparedStatement.executeUpdate();
-
-            ResultSet resultSet = preparedStatement.getGeneratedKeys();
-            int lastId = 0;
-            if (resultSet.next()) {
-                lastId = resultSet.getInt(1);
-            }
-
-            try (PreparedStatement prepared = connection.prepareStatement(
-                    "UPDATE detalles_desayunos SET desayuno_id = ? WHERE desayuno_id IS NULL")) {
-                prepared.setInt(1, lastId);
-                prepared.executeUpdate();
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-                JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
-                materialList = new ArrayList<>();
-            }
-
-           /* try (PreparedStatement prepared = connection.prepareStatement(
-                    "SELECT * FROM detalles_manualidades WHERE manualidad_id = ?")) {
-                prepared.setInt(1, lastId);
-                ResultSet rs = prepared.executeQuery();
-
-                while (rs.next()) {
-                    int id_material = rs.getInt("material_id");
-                    int cantidad_usada = rs.getInt("cantidad");
-
-                    try (PreparedStatement updateStmt = connection.prepareStatement(
-                            "UPDATE materiales SET cantidad = cantidad - ? WHERE id = ?")) {
-                        updateStmt.setInt(1, cantidad_usada);
-                        updateStmt.setInt(2, id_material);
-                        updateStmt.executeUpdate();
-                    }
-                }
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-                JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
-            }
-            */
-            JOptionPane.showMessageDialog(null, "Desayuno guardado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al guardar el desayuno", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    private void guardarDetalleDesayuno(int id_material, int cantidad, String tipo) {
-        try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO detalles_desayunos (tipo_detalle, detalle_id, cantidad,precio) VALUES (?, ?, ?, ?)")) {
-            preparedStatement.setString(1, tiposDescripcion.get(tipo));
-            preparedStatement.setInt(2, id_material);
-            preparedStatement.setInt(3, cantidad);
-            preparedStatement.setDouble(4, obtenerPrecioMaterialDesdeBD(id_material,tipo)); // Obtener el precio del material desde la base de datos
-            preparedStatement.executeUpdate();
-
-            JOptionPane.showMessageDialog(null, "Detalle agregado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al agregar el detalle de la manualidad", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
     private double obtenerPrecioMaterialDesdeBD(int id_material, String tipo) {
         double precio = 0.0;
 
@@ -1158,9 +836,9 @@ public class CrearEvento extends JFrame {
     }
 
     private void limpiarTablaMateriales() {
-        materialList.clear();
+        mobiliarioList.clear();
         DefaultTableModel emptyModel = new DefaultTableModel();
-        jtableMateriales.setModel(emptyModel);
+        tablaProductos.setModel(emptyModel);
     }
 
     private void eliminarDetallesMaterial() {
@@ -1172,9 +850,10 @@ public class CrearEvento extends JFrame {
         }
     }
 
+    /*
     private double calcularTotalTabla() {
         double sumaTotal = 0.0;
-        TableModel modelo = jtableMateriales.getModel();
+        TableModel modelo = tablaProductos.getModel();
         PoliModeloProducto modeloProductos = (PoliModeloProducto) modelo;
 
         // Iterar por todas las filas del modelo
@@ -1193,10 +872,10 @@ public class CrearEvento extends JFrame {
             }
         }
 
-        // Actualizar el lbl8 con el total calculado
+        // Actualizar el lbl9 con el total calculado
         DecimalFormat decimalFormat = new DecimalFormat("#.00");
         String sumaTotalFormateado = decimalFormat.format(sumaTotal);
-        lbl8.setText(" " + sumaTotalFormateado);
+        lbl9.setText(" " + sumaTotalFormateado);
 
         return sumaTotal;
     }
@@ -1211,11 +890,12 @@ public class CrearEvento extends JFrame {
         }
     }
 
+
     private void actualizarLbl8y10() {
         double totalTabla = calcularTotalTabla();
 
-        // Actualizar lbl8 con el total de la tabla
-        lbl8.setText(String.format("%.2f", totalTabla));
+        // Actualizar lbl9 con el total de la tabla
+        lbl9.setText(String.format("%.2f", totalTabla));
 
         double manoObra = 0.0;
         try {
@@ -1224,13 +904,15 @@ public class CrearEvento extends JFrame {
 
         }
 
-        // Actualizar lbl9 solo con el valor de mano de obra
-        lbl9.setText(String.format("%.2f", manoObra));
+        // Actualizar lbl10 solo con el valor de mano de obra
+        lbl10.setText(String.format("%.2f", manoObra));
 
-        // Calcular el total y actualizar lbl10
+        // Calcular el total y actualizar lbl11
         double total = totalTabla + manoObra;
-        lbl10.setText(String.format("%.2f", total));
+        lbl11.setText(String.format("%.2f", total));
     }
+
+     */
 
     private PoliModeloProducto cargarDetallesMateriales() {
         sql = new Conexion();
@@ -1288,16 +970,51 @@ public class CrearEvento extends JFrame {
         }
 
         // Configurar la tabla para mostrar los encabezados de las columnas
-        JTableHeader tableHeader = jtableMateriales.getTableHeader();
+        JTableHeader tableHeader = tablaProductos.getTableHeader();
         tableHeader.setVisible(true);
 
         // Configurar la tabla para mantener el ordenamiento de filas incluso sin encabezados visibles
-        jtableMateriales.setAutoCreateRowSorter(true);
+        tablaProductos.setAutoCreateRowSorter(true);
 
         // Configurar el ancho de las columnas y alineaciones de las celdas
         configurarTablaMateriales();
 
         return new PoliModeloProducto(productosListTemporal);
+    }
+
+    private PoliModeloMobiliario cargarDatosMobiliario() {
+        sql = new Conexion();
+        mobiliarioList.clear();
+        selectTabla = 6; // Puedes asignar un valor que represente la tabla de mobiliario en tu base de datos.
+        try (Connection mysql = sql.conectamysql();
+             PreparedStatement preparedStatement = mysql.prepareStatement(
+                     "SELECT * FROM mobiliario WHERE nombreMobiliario LIKE CONCAT('%', ?, '%')"
+             )
+        ) {
+            preparedStatement.setString(1, campoBusquedaMateriales.getText());
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                PoliMobiliario mobiliario = new PoliMobiliario();
+                mobiliario.setID(resultSet.getInt("id"));
+                mobiliario.setNombre(resultSet.getString("nombreMobiliario"));
+                mobiliario.setCantidad(resultSet.getInt("cantidad"));
+                mobiliario.setPrecio(resultSet.getDouble("precioUnitario"));
+                mobiliario.setTipo("MB"); // Puedes asignar un tipo específico para el mobiliario.
+                mobiliarioList.add(mobiliario);
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            mobiliarioList = new ArrayList<>();
+        }
+
+        PoliModeloMobiliario modeloMobiliario = new PoliModeloMobiliario(mobiliarioList, sql);
+        tablaProductos.setModel(modeloMobiliario);
+        configurarTablaMateriales(); // Asegúrate de que este método configure la tabla adecuada.
+        return modeloMobiliario;
     }
 
     private PoliModeloFlor cargarDatosFloristeria() {
@@ -1334,44 +1051,9 @@ public class CrearEvento extends JFrame {
         }
 
         PoliModeloFlor modeloFlor = new PoliModeloFlor(floristeriaList, sql);
-        jtableMateriales.setModel(modeloFlor);
+        tablaProductos.setModel(modeloFlor);
         configurarTablaMateriales();
         return modeloFlor;
-    }
-
-    private PoliModeloMaterial cargarDatosMaterial() {
-        sql = new Conexion();
-        materialList.clear();
-        selectTabla = 3;
-        try (Connection mysql = sql.conectamysql();
-             PreparedStatement preparedStatement = mysql.prepareStatement(
-                     "SELECT * FROM materiales WHERE nombre LIKE CONCAT('%', ?, '%')"
-             )
-        ) {
-            preparedStatement.setString(1, campoBusquedaMateriales.getText());
-
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            while (resultSet.next()) {
-                PoliMaterial material = new PoliMaterial();
-                material.setID(resultSet.getInt("id"));
-                material.setNombre(resultSet.getString("nombre"));
-                material.setCantidad(resultSet.getInt("cantidad"));
-                material.setPrecio(resultSet.getDouble("precio"));
-                material.setTipo("M");
-                materialList.add(material);
-            }
-
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
-            materialList = new ArrayList<>();
-        }
-
-        PoliModeloMaterial modeloMaterial = new PoliModeloMaterial(materialList, sql);
-        jtableMateriales.setModel(modeloMaterial);
-        configurarTablaMateriales();
-        return modeloMaterial;
     }
 
     private PoliModeloGlobo cargarDatosGlobo() {
@@ -1404,18 +1086,18 @@ public class CrearEvento extends JFrame {
         }
 
         PoliModeloGlobo modeloGlobo = new PoliModeloGlobo(globoList, sql);
-        jtableMateriales.setModel(modeloGlobo);
-        configurarTablaMateriales();
+        tablaProductos.setModel(modeloGlobo);
+        configurarTablaMateriales(); // Asegúrate de que este método configure la tabla adecuada.
         return modeloGlobo;
     }
 
-    private PoliModeloTarjeta cargarDatosTarjeta() {
+    private PoliModeloArreglo cargarDatosArreglo() {
         sql = new Conexion();
-        tarjetaList.clear();
-        selectTabla = 5;
+        arregloList.clear();
+        selectTabla = 7; // Puedes asignar un valor que represente la tabla de arreglos en tu base de datos.
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement(
-                     "SELECT * FROM tarjetas WHERE ocasion LIKE CONCAT('%', ?, '%')"
+                     "SELECT * FROM arreglos WHERE nombre LIKE CONCAT('%', ?, '%')"
              )
         ) {
             preparedStatement.setString(1, campoBusquedaMateriales.getText());
@@ -1423,26 +1105,60 @@ public class CrearEvento extends JFrame {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
-                PoliTarjeta tarjeta = new PoliTarjeta();
-                tarjeta.setID(resultSet.getInt("id"));
-                tarjeta.setNombre(resultSet.getString("descripcion"));
-                tarjeta.setOcasion(resultSet.getString("ocasion"));
-                tarjeta.setCantidad(resultSet.getInt("cantidad"));
-                tarjeta.setPrecio(resultSet.getDouble("precio_tarjeta"));
-                tarjeta.setTipo("T");
-                tarjetaList.add(tarjeta);
+                PoliArreglo arreglo = new PoliArreglo();
+                arreglo.setID(resultSet.getInt("id"));
+                arreglo.setNombre(resultSet.getString("nombre"));
+                arreglo.setCantidad(resultSet.getInt("cantidad"));
+                arreglo.setPrecio(resultSet.getDouble("precio"));
+                arreglo.setTipo("A"); // Puedes asignar un tipo específico para los arreglos.
+                arregloList.add(arreglo);
             }
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
-            tarjetaList = new ArrayList<>();
+            arregloList = new ArrayList<>();
         }
 
-        PoliModeloTarjeta modeloTarjeta = new PoliModeloTarjeta(tarjetaList, sql);
-        jtableMateriales.setModel(modeloTarjeta);
-        configurarTablaMateriales();
-        return modeloTarjeta;
+        PoliModeloArreglo modeloArreglo = new PoliModeloArreglo(arregloList, sql);
+        tablaProductos.setModel(modeloArreglo);
+        configurarTablaMateriales(); // Asegúrate de que este método configure la tabla adecuada.
+        return modeloArreglo;
+    }
+
+    private PoliModeloManualidad cargarDatosManualidad() {
+        sql = new Conexion();
+        manualidadList.clear();
+        selectTabla = 8; // Puedes asignar un valor que represente la tabla de manualidades en tu base de datos.
+        try (Connection mysql = sql.conectamysql();
+             PreparedStatement preparedStatement = mysql.prepareStatement(
+                     "SELECT * FROM manualidades WHERE nombre LIKE CONCAT('%', ?, '%')"
+             )
+        ) {
+            preparedStatement.setString(1, campoBusquedaMateriales.getText());
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                PoliManualidad manualidad = new PoliManualidad();
+                manualidad.setID(resultSet.getInt("id"));
+                manualidad.setNombre(resultSet.getString("nombre"));
+                manualidad.setCantidad(resultSet.getInt("cantidad"));
+                manualidad.setPrecio(resultSet.getDouble("precio_manualidad"));
+                manualidad.setTipo("M"); // Puedes asignar un tipo específico para las manualidades.
+                manualidadList.add(manualidad);
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            manualidadList = new ArrayList<>();
+        }
+
+        PoliModeloManualidad modeloManualidad = new PoliModeloManualidad(manualidadList, sql);
+        tablaProductos.setModel(modeloManualidad);
+        configurarTablaMateriales(); // Asegúrate de que este método configure la tabla adecuada.
+        return modeloManualidad;
     }
 
     private int obtenerCantidadMaterial() {
@@ -1536,21 +1252,6 @@ public class CrearEvento extends JFrame {
         dialog.setVisible(true);
     }
 
-    private void cargarProveedores() {
-        try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("SELECT id, empresaProveedora, nombreVendedor FROM Proveedores");
-             ResultSet resultSet = preparedStatement.executeQuery()) {
-
-            while (resultSet.next()) {
-                ProveedorDesayuno proveedorDesayuno = new ProveedorDesayuno(resultSet.getInt("id"),resultSet.getString("empresaProveedora"),resultSet.getString("nombreVendedor"));
-
-                jcbProveedores.addItem(proveedorDesayuno);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
     class ButtonRenderer extends JButton implements TableCellRenderer {
         public ButtonRenderer() {
             setOpaque(true);
@@ -1606,11 +1307,140 @@ public class CrearEvento extends JFrame {
                 }
 
                 fireEditingStopped(); // Mover esta línea aquí para asegurarte de que se complete la edición
-                calcularTotalTabla();
-                actualizarLbl8y10();
+                //calcularTotalTabla();
+                //actualizarLbl8y10();
             }
         }
     }
+
+    private void cargarClientes() {
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT id, nombre, apellido FROM clientes");
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+
+            while (resultSet.next()) {
+                ClienteEvento clienteEvento = new ClienteEvento(resultSet.getInt("id"), resultSet.getString("nombre"), resultSet.getString("apellido"));
+
+                jbcClientes.addItem(clienteEvento);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Calendar getTomorrow() {
+        Calendar tomorrow = Calendar.getInstance();
+        tomorrow.add(Calendar.DAY_OF_MONTH, 1);
+        tomorrow.set(Calendar.HOUR_OF_DAY, 0);
+        tomorrow.set(Calendar.MINUTE, 0);
+        tomorrow.set(Calendar.SECOND, 0);
+        tomorrow.set(Calendar.MILLISECOND, 0);
+        return tomorrow;
+    }
+
+    public void handleDateChange(UtilDateModel dateModel, Calendar tomorrow) {
+        java.util.Date selectedDate = dateModel.getValue();
+        if (selectedDate != null && isDateOutOfRange(selectedDate, tomorrow)) {
+            JOptionPane.showMessageDialog(null, "La fecha seleccionada está fuera del rango permitido", "Error", JOptionPane.ERROR_MESSAGE);
+            selectedDate = null; // Anula la selección en lugar de restablecerla a hoy
+            dateModel.setValue(selectedDate);
+        }
+        setFormattedDate(selectedDate);
+    }
+
+
+    public boolean isDateOutOfRange(java.util.Date selectedDate, Calendar tomorrow) {
+        Calendar selectedCal = Calendar.getInstance();
+        selectedCal.setTime(selectedDate);
+
+        // Compara con el día siguiente al actual
+        return selectedCal.before(tomorrow);
+    }
+
+
+    public void setFormattedDate(java.util.Date selectedDate) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd 'de' MMMM yyyy"); // Desired date format
+        String formattedDate = (selectedDate != null) ? dateFormat.format(selectedDate) : "";
+        datePicker.getJFormattedTextField().setText(formattedDate);
+    }
+
+    public class SimpleDateFormatter extends JFormattedTextField.AbstractFormatter {
+        private final String datePattern = "yyyy-MM-dd";
+        private final SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);
+
+        @Override
+        public Object stringToValue(String text) throws ParseException {
+            return dateFormatter.parse(text);
+        }
+
+        @Override
+        public String valueToString(Object value) throws ParseException {
+            if (value != null) {
+                if (value instanceof java.util.Date) {
+                    return dateFormatter.format((java.util.Date) value);
+                } else if (value instanceof Calendar) {
+                    return dateFormatter.format(((Calendar) value).getTime());
+                }
+            }
+            return "";
+        }
+    }
+
+
+    /*private void guardarEvento() {
+        String direccion = campoDireccion.getText().trim();
+        String tipo = campoTipo.getText().trim(); // Reemplaza con el campo correspondiente
+
+        ClienteEvento cliente = (ClienteEvento) jbcClientes.getModel().getSelectedItem();
+
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "INSERT INTO eventos (cliente_id, direccion, tipo, fecha, inicio, fin) VALUES (?, ?, ?, ?, ?, ?)",
+                     Statement.RETURN_GENERATED_KEYS)) {
+
+            preparedStatement.setInt(1, cliente.getIdCliente());
+            preparedStatement.setString(2, direccion);
+            preparedStatement.setString(3, tipo);
+            preparedStatement.setDate(4, java.sql.Date.valueOf(fecha)); // Reemplaza "fecha" con la fecha del evento.
+            preparedStatement.setTime(5, inicio); // Reemplaza "inicio" con la hora de inicio del evento.
+            preparedStatement.setTime(6, fin); // Reemplaza "fin" con la hora de fin del evento.
+            preparedStatement.executeUpdate();
+
+            ResultSet resultSet = preparedStatement.getGeneratedKeys();
+            int lastId = 0;
+            if (resultSet.next()) {
+                lastId = resultSet.getInt(1);
+            }
+
+            // Lógica adicional para detalles del evento si es necesario
+
+            JOptionPane.showMessageDialog(null, "Evento guardado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al guardar el evento", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void guardarDetalleEvento(int evento_id, String tipoDetalle, int detalle_id, int cantidad, double precio) {
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "INSERT INTO detalles_eventos (evento_id, tipo_detalle, detalle_id, cantidad, precio) VALUES (?, ?, ?, ?, ?)")) {
+            preparedStatement.setInt(1, evento_id); // Reemplaza "evento_id" con el ID del evento al que se agrega el detalle.
+            preparedStatement.setString(2, tipoDetalle); // Reemplaza "tipoDetalle" con el tipo de detalle.
+            preparedStatement.setInt(3, detalle_id); // Reemplaza "detalle_id" con el ID del material, mobiliario, etc.
+            preparedStatement.setInt(4, cantidad);
+            preparedStatement.setDouble(5, precio); // Precio debe ser proporcionado.
+            preparedStatement.executeUpdate();
+
+            JOptionPane.showMessageDialog(null, "Detalle de evento agregado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al agregar el detalle de evento", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+
+     */
 
 
     public static void main(String[] args) {
