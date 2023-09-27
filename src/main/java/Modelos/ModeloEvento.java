@@ -15,7 +15,7 @@ public class ModeloEvento extends AbstractTableModel {
     private final String[] columnas = {"N°", "Cliente", "Tipo", "Fecha", "Hora inicial", "Hora final"};
     private final List<Evento> eventos;
     private final Conexion sql;
-    private final SimpleDateFormat fechaFormat = new SimpleDateFormat("dd 'de' MMMM ', ' yyyy");
+    private final SimpleDateFormat fechaFormat = new SimpleDateFormat("dd 'de' MMMM',' yyyy");
     private final SimpleDateFormat horaFormat = new SimpleDateFormat("hh:mm a");
 
     public ModeloEvento(List<Evento> eventos, Conexion sql) {
