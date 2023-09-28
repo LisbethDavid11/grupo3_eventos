@@ -1,11 +1,9 @@
 package Promociones;
+
 import Manualidades.TextPrompt;
-import Modelos.ModeloEvento;
 import Modelos.ModeloPromocion;
 import Objetos.Conexion;
-import Objetos.Evento;
 import Objetos.Promocion;
-import Pedidos.CrearPedido;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -101,7 +99,7 @@ public class ListaPromociones extends JFrame {
             }
         });
 
-        /*
+
         botonCrear.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -111,6 +109,7 @@ public class ListaPromociones extends JFrame {
             }
         });
 
+           /*
         botonVer.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

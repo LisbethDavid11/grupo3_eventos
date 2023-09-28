@@ -38,7 +38,7 @@ public class PoliModeloManualidad extends AbstractTableModel {
 
         switch (columnIndex) {
             case 0: // ID
-                return "X-" + manualidad.getID();
+                return "W-" + manualidad.getID();
             case 1: // Código
                 return manualidad.getNombre();
             case 2: // Cantidad
