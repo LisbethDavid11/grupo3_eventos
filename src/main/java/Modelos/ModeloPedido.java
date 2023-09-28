@@ -8,12 +8,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class ModeloPedido extends AbstractTableModel {
-    private final String[] columnas = {"ID", "Código de Pedido", "Fecha de Pedido", "Fecha de Entrega", "Descripción", "Cliente ID", "Entrega"};
+    private final String[] columnas = {"ID", "Código de Pedido", "Fecha de Pedido", "Fecha de Entrega", "Cliente", "Entrega"};
     private final List<Pedido> pedidos;
     private final Conexion sql;
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd 'de' MMMM',' yyyy");
+
 
     public ModeloPedido(List<Pedido> pedidos, Conexion sql) {
         this.pedidos = pedidos;
@@ -45,36 +48,28 @@ public class ModeloPedido extends AbstractTableModel {
             case 1: // Código de Pedido
                 return pedido.getCodigoPedido();
             case 2: // Fecha de Pedido
-                return pedido.getFechaPedido();
+                return dateFormat.format(pedido.getFechaPedido());
             case 3: // Fecha de Entrega
-                return pedido.getFechaEntrega();
-            case 4: // Descripción
-                return pedido.getDescripcion();
-            case 5: // Cliente ID
-                /*
-                int clienteId = pedido.getClienteId();
-                String clienteNombre = obtenerNombreCliente(clienteId);
-                return "  " + clienteNombre;
-                 */
-            case 6: // Entrega
+                return dateFormat.format(pedido.getFechaEntrega());
+            case 4: // Cliente
+                return obtenerNombreCliente(pedido.getClienteId());
+            case 5: // Entrega
                 return pedido.getEntrega();
             default:
                 return null;
         }
     }
 
-    /*
-
     private String obtenerNombreCliente(int clienteId) {
         try (Connection mysql = sql.conectamysql();
-             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT id, nombre, apellido FROM clientes WHERE id = ?")) {
+             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT nombre, apellido FROM clientes WHERE id = ?")) {
             preparedStatement.setInt(1, clienteId);
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
-                String nombres = resultSet.getString("nombre");
-                String apellidos = resultSet.getString("apellido");
-                return nombres + " " + apellidos;
+                String nombre = resultSet.getString("nombre");
+                String apellido = resultSet.getString("apellido");
+                return nombre + " " + apellido;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -82,21 +77,4 @@ public class ModeloPedido extends AbstractTableModel {
 
         return null; // Devuelve null si no se encuentra el cliente o hay un error
     }
-
-    private void cargarClientes() {
-        try (Connection mysql = sql.conectamysql();
-             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT id, nombre, apellido FROM clientes")) {
-
-            ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()) {
-                int id = resultSet.getInt("id");
-                String nombreCompleto = resultSet.getString("nombre") + " " + resultSet.getString("apellido");
-                clientes.put(id, nombreCompleto);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-     */
 }

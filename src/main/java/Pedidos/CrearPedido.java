@@ -1,39 +1,64 @@
 package Pedidos;
 
-import Objetos.Conexion;
+import Modelos.*;
+import Objetos.*;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.sql.*;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.Properties;
-import java.util.Random;
+import java.util.List;
+import java.util.*;
 
 public class CrearPedido extends JFrame {
     private JTextField campoCodigo, campoFechaPedido, CampoTelefono;
     private JTextArea campoDescripcion, campoDireccion;
     private JRadioButton radioButtonDomicilio, radioButtonTienda;
     private JComboBox<String> comboBoxCliente;
-    private JButton botonGuardar, botonCancelar, botonLimpiar;
+    private JButton botonGuardar, botonCancelar, botonLimpiar, agregarArregloButton, agregarFlorButton, agregarManualidadButton, agregarTarjetaButton, agregarDesayunoButton, agregarMaterialButton;
     private JPanel panel;
-    private JLabel lbl0, lbl1, lbl2, lbl3,lbl4, lbl5, lbl6,lbl7, lbl8;
-    private JPanel panel1, panel2, panel3, panel4, campoFechaEntrega;
+    private JLabel lbl0, lbl1, lbl2, lbl3,lbl4,lbl5, lbl6,lbl7,lbl8,lbl9, lbl10, lbl11, lbl12, lbl13, lbl14;
+    private JPanel panel1, panel2, panel3, panel4,panel5, panel6, campoFechaEntrega;
     private JTextField campoTelefono;
-    private String imagePath = "";
+    private JButton cancelarButton;
+    private JButton agregarButton;
+    private JTextField campoBusquedaMateriales;
+    private JTable jtableMateriales;
+    private JPanel panelPrincipal;
+    private JPanel panelSecundario;
+    private JPanel panelOpcional;
     private CrearPedido actual = this;
     private Conexion sql;
-    private JDatePickerImpl datePicker; // Declare the datePicker variable at the class level
+    private JDatePickerImpl datePicker;
+    private List<PoliProducto> productosListTemporal = new ArrayList<>();
+    private List<PoliMaterial> materialList = new ArrayList<>();
+    private List<PoliMaterial> materialListTemporal = new ArrayList<>();
+    private List<PoliFlor> floristeriaList = new ArrayList<>();
+    private List<PoliFlor> floristeriaListTemporal = new ArrayList<>();
+    private List<PoliTarjeta> tarjetaList = new ArrayList<>();
+    private List<PoliTarjeta> tarjetaListTemporal = new ArrayList<>();
+    private List<PoliArreglo> arregloList = new ArrayList<>();
+    private List<PoliArreglo> arregloListTemporal = new ArrayList<>();
+    private List<PoliManualidad> manualidadList = new ArrayList<>();
+    private List<PoliManualidad> manualidadListTemporal = new ArrayList<>();
+    private List<PoliDesayuno> desayunoList = new ArrayList<>();
+    private List<PoliDesayuno> desayunoListTemporal = new ArrayList<>();
+    private Map<String,String> tiposDescripcion = new HashMap<>();
+    private Map<String,String> tiposTablas = new HashMap<>();
+    private int selectTabla = 1;
+
     Color darkColorRed = new Color(244, 67, 54);
     Color darkColorBlue = new Color(33, 150, 243);
 
@@ -58,15 +83,46 @@ public class CrearPedido extends JFrame {
     Color lightColorRosado = new Color(240, 98, 146); // Rosado claro
     Color darkColorRosado = new Color(194, 24, 91); // Rosado oscuro
 
+    // Colores para el botón "Amber"
+    Color primaryColorAmber = new Color(255, 193, 7); // Amber primario
+    Color lightColorAmber = new Color(255, 213, 79); // Amber claro
+    Color darkColorAmber = new Color(255, 160, 0); // Amber oscuro
+
+    // Colores para el botón "Verde lima"
+    Color primaryColorVerdeLima = new Color(205, 220, 57); // Verde lima primario
+    Color lightColorVerdeLima = new Color(220, 237, 200); // Verde lima claro
+    Color darkColorVerdeLima = new Color(139, 195, 74); // Verde lima oscuro
+
+    Color darkColorPink = new Color(233, 30, 99);
+
     // Crea un margen de 10 píxeles desde el borde inferior
     EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
 
     public CrearPedido() {
         super("");
-        setSize(600, 610);
+        setSize(990, 680);
         setLocationRelativeTo(null);
         setContentPane(panel);
         generarCamposAutomaticamente();
+        configurarTablaMateriales();
+
+        tiposDescripcion.put("A","arreglo");
+        tiposDescripcion.put("F","floristeria");
+        tiposDescripcion.put("T","tarjeta");
+        tiposDescripcion.put("M","material");
+        tiposDescripcion.put("W","manualidad");
+        tiposDescripcion.put("D","desayuno");
+
+        tiposTablas.put("A","arreglos");
+        tiposTablas.put("F","floristeria");
+        tiposTablas.put("T","tarjetas");
+        tiposTablas.put("M","materiales");
+        tiposTablas.put("W","manualidades");
+        tiposTablas.put("D","desayunos");
+
+        JTableHeader header = jtableMateriales.getTableHeader();
+        header.setForeground(Color.WHITE);
+        header.setBackground(darkColorCyan);
 
         UtilDateModel dateModel = new UtilDateModel();
         Properties properties = new Properties();
@@ -83,11 +139,8 @@ public class CrearPedido extends JFrame {
             handleDateChange(dateModel, tomorrow);
         });
 
-// Show initial date in date field (puede ser el día siguiente al actual)
         handleDateChange(dateModel, tomorrow);
-
         campoFechaEntrega.add(datePicker);
-
 
         campoDescripcion.setLineWrap(true);
         campoDescripcion.setWrapStyleWord(true);
@@ -114,6 +167,43 @@ public class CrearPedido extends JFrame {
         panel2.setBackground(Color.decode("#F5F5F5"));
         panel3.setBackground(Color.decode("#F5F5F5"));
         panel4.setBackground(Color.decode("#F5F5F5"));
+        panel5.setBackground(Color.decode("#F5F5F5"));
+        panel6.setBackground(Color.decode("#F5F5F5"));
+        panelPrincipal.setBackground(Color.decode("#F5F5F5"));
+        panelSecundario.setBackground(Color.decode("#F5F5F5"));
+        panelOpcional.setBackground(Color.decode("#F5F5F5"));
+
+        cancelarButton.setForeground(Color.WHITE);
+        cancelarButton.setBackground(darkColorRed);
+        cancelarButton.setFocusPainted(false);
+
+        agregarButton.setForeground(Color.WHITE);
+        agregarButton.setBackground(darkColorCyan);
+        agregarButton.setFocusPainted(false);
+
+        agregarArregloButton.setForeground(Color.DARK_GRAY);
+        agregarArregloButton.setBackground(lightColorCyan);
+        agregarArregloButton.setFocusPainted(false);
+
+        agregarMaterialButton.setForeground(Color.DARK_GRAY);
+        agregarMaterialButton.setBackground(Color.lightGray);
+        agregarMaterialButton.setFocusPainted(false);
+
+        agregarTarjetaButton.setForeground(Color.DARK_GRAY);
+        agregarTarjetaButton.setBackground(lightColorAmber);
+        agregarTarjetaButton.setFocusPainted(false);
+
+        agregarFlorButton.setForeground(Color.DARK_GRAY);
+        agregarFlorButton.setBackground(lightColorAqua);
+        agregarFlorButton.setFocusPainted(false);
+
+        agregarManualidadButton.setForeground(Color.DARK_GRAY);
+        agregarManualidadButton.setBackground(lightColorRosado);
+        agregarManualidadButton.setFocusPainted(false);
+
+        agregarDesayunoButton.setForeground(Color.DARK_GRAY);
+        agregarDesayunoButton.setBackground(lightColorVerdeLima);
+        agregarDesayunoButton.setFocusPainted(false);
 
         botonLimpiar.setForeground(Color.WHITE);
         botonLimpiar.setBackground(darkColorRed);
@@ -146,6 +236,9 @@ public class CrearPedido extends JFrame {
 
         lbl0.setBorder(margin);
         lbl0.setFont(fontTitulo);
+        lbl9.setFont(fontTitulo);
+        lbl10.setFont(fontTitulo);
+        lbl11.setFont(fontTitulo);
 
         // Inicializar JRadioButtons
         ButtonGroup buttonGroup = new ButtonGroup();
@@ -158,6 +251,120 @@ public class CrearPedido extends JFrame {
 
         campoDireccion.setForeground(textColor);
         campoDireccion.setBackground(new Color(215, 215, 215));
+
+        agregarMaterialButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                campoBusquedaMateriales.setVisible(true);
+                agregarButton.setVisible(true);
+                cancelarButton.setVisible(true);
+                agregarMaterialButton.setVisible(false);
+                agregarFlorButton.setVisible(false);
+                agregarArregloButton.setVisible(false);
+                agregarTarjetaButton.setVisible(false);
+                agregarManualidadButton.setVisible(false);
+                agregarDesayunoButton.setVisible(false);
+                jtableMateriales.setModel(cargarDatosMaterial());
+            }
+        });
+
+        agregarFlorButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                campoBusquedaMateriales.setVisible(true);
+                agregarButton.setVisible(true);
+                cancelarButton.setVisible(true);
+                agregarMaterialButton.setVisible(false);
+                agregarFlorButton.setVisible(false);
+                agregarArregloButton.setVisible(false);
+                agregarTarjetaButton.setVisible(false);
+                agregarManualidadButton.setVisible(false);
+                agregarDesayunoButton.setVisible(false);
+                jtableMateriales.setModel(cargarDatosFloristeria());
+            }
+        });
+
+        agregarArregloButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                campoBusquedaMateriales.setVisible(true);
+                agregarButton.setVisible(true);
+                cancelarButton.setVisible(true);
+                agregarMaterialButton.setVisible(false);
+                agregarFlorButton.setVisible(false);
+                agregarArregloButton.setVisible(false);
+                agregarTarjetaButton.setVisible(false);
+                agregarManualidadButton.setVisible(false);
+                agregarDesayunoButton.setVisible(false);
+                jtableMateriales.setModel(cargarDatosArreglo());
+            }
+        });
+
+        agregarTarjetaButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                campoBusquedaMateriales.setVisible(true);
+                agregarButton.setVisible(true);
+                cancelarButton.setVisible(true);
+                agregarMaterialButton.setVisible(false);
+                agregarFlorButton.setVisible(false);
+                agregarArregloButton.setVisible(false);
+                agregarTarjetaButton.setVisible(false);
+                agregarManualidadButton.setVisible(false);
+                agregarDesayunoButton.setVisible(false);
+                jtableMateriales.setModel(cargarDatosTarjeta());
+            }
+        });
+
+        agregarManualidadButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                campoBusquedaMateriales.setVisible(true);
+                agregarButton.setVisible(true);
+                cancelarButton.setVisible(true);
+                agregarMaterialButton.setVisible(false);
+                agregarFlorButton.setVisible(false);
+                agregarArregloButton.setVisible(false);
+                agregarTarjetaButton.setVisible(false);
+                agregarManualidadButton.setVisible(false);
+                agregarDesayunoButton.setVisible(false);
+                jtableMateriales.setModel(cargarDatosManualidad());
+            }
+        });
+
+        agregarDesayunoButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                campoBusquedaMateriales.setVisible(true);
+                agregarButton.setVisible(true);
+                cancelarButton.setVisible(true);
+                agregarMaterialButton.setVisible(false);
+                agregarFlorButton.setVisible(false);
+                agregarArregloButton.setVisible(false);
+                agregarTarjetaButton.setVisible(false);
+                agregarManualidadButton.setVisible(false);
+                agregarDesayunoButton.setVisible(false);
+                jtableMateriales.setModel(cargarDatosDesayuno());
+            }
+        });
+
+        cancelarButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                campoBusquedaMateriales.setVisible(false);
+                agregarButton.setVisible(false);
+                cancelarButton.setVisible(false);
+                agregarMaterialButton.setVisible(true);
+                agregarFlorButton.setVisible(true);
+                agregarArregloButton.setVisible(true);
+                agregarTarjetaButton.setVisible(true);
+                agregarManualidadButton.setVisible(true);
+                agregarDesayunoButton.setVisible(true);
+                jtableMateriales.setModel(cargarDetallesMateriales());
+                actualizarLbl8y10();
+                configurarTablaMateriales();
+            }
+        });
 
         comboBoxCliente.addActionListener(new ActionListener() {
             @Override
@@ -274,6 +481,7 @@ public class CrearPedido extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 ListaPedidos listaPedidos = new ListaPedidos();
                 listaPedidos.setVisible(true);
+                eliminarDetallesMaterial();
                 actual.dispose();
             }
         });
@@ -316,6 +524,11 @@ public class CrearPedido extends JFrame {
                     mensaje += "La descripción\n";
                 }
 
+                if (jtableMateriales.getRowCount() == 0) {
+                    validacion++;
+                    mensaje += "La lista de productos\n";
+                }
+
                 if (validacion > 0) {
                     JOptionPane.showMessageDialog(null, mensaje, "Validación", JOptionPane.ERROR_MESSAGE);
                     return;
@@ -335,23 +548,62 @@ public class CrearPedido extends JFrame {
                         JOptionPane.showMessageDialog(null, "La descripción debe tener entre 2 y 200 caracteres.", "Validación", JOptionPane.ERROR_MESSAGE);
                     }
                 }
-                int respuesta = JOptionPane.showOptionDialog(
-                        null,
+
+                JButton btnSave = new JButton("Sí");
+                JButton btnCancel = new JButton("No");
+
+                // Personaliza los botones aquí
+                btnSave.setBackground(darkColorAqua);
+                btnCancel.setBackground(darkColorPink);
+
+                // Personaliza los fondos de los botones aquí
+                btnSave.setForeground(Color.WHITE);
+                btnCancel.setForeground(Color.WHITE);
+
+                // Elimina el foco
+                btnSave.setFocusPainted(false);
+                btnCancel.setFocusPainted(false);
+
+                // Crea un JOptionPane
+                JOptionPane optionPane = new JOptionPane(
                         "¿Desea guardar la información del pedido?",
-                        "Confirmación",
-                        JOptionPane.YES_NO_OPTION,
                         JOptionPane.QUESTION_MESSAGE,
+                        JOptionPane.DEFAULT_OPTION,
                         null,
-                        new Object[]{"Sí", "No"},
-                        "No"
+                        new Object[]{}, // no options
+                        null
                 );
 
-                if (respuesta == JOptionPane.YES_OPTION) {
-                    guardarPedido();
-                    ListaPedidos listaPedidos = new ListaPedidos();
-                    listaPedidos.setVisible(true);
-                    actual.dispose();
-                }
+                // Crea un JDialog
+                JDialog dialog = optionPane.createDialog("Guardar");
+
+                // Añade ActionListener a los botones
+                btnSave.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // Acciones para el botón Sí
+                        guardarPedido();
+                        dialog.dispose();
+                        ListaPedidos listaPedidos = new ListaPedidos();
+                        listaPedidos.setVisible(true);
+                        actual.dispose();
+                    }
+                });
+
+                btnCancel.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // Acciones para el botón No
+                        // No se hace nada, sólo se cierra el diálogo
+                        dialog.dispose();
+                    }
+                });
+
+                // Añade los botones al JOptionPane
+                optionPane.setOptions(new Object[]{btnSave, btnCancel});
+
+                // Muestra el diálogo
+                dialog.setVisible(true);
             }
         });
 
@@ -390,12 +642,26 @@ public class CrearPedido extends JFrame {
                 btnYes.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        datePicker.getJFormattedTextField().setText("");
-                        comboBoxCliente.setSelectedIndex(0);
-                        buttonGroup.clearSelection();
-                        campoTelefono.setText("");
-                        campoDescripcion.setText("");
-                        campoDireccion.setText("");
+
+                        // Limpiar la lista de detalles
+                        materialListTemporal.clear();
+                        productosListTemporal.clear();
+                        // Eliminar detalles de la tabla (asumiendo que tienes un método eliminarDetallesMaterial)
+                        eliminarDetallesMaterial();
+
+                        // Actualizar la tabla y otros componentes relacionados
+                        PoliModeloProducto nuevoModelo = new PoliModeloProducto(new ArrayList<>());
+                        jtableMateriales.setModel(nuevoModelo);
+                        configurarTablaMateriales();
+                        calcularTotalTabla();
+                        actualizarLbl8y10();
+
+                        //datePicker.getJFormattedTextField().setText("");
+                        //comboBoxCliente.setSelectedIndex(0);
+                        //buttonGroup.clearSelection();
+                        //campoTelefono.setText("");
+                        //campoDescripcion.setText("");
+                        //campoDireccion.setText("");
                         dialog.dispose();
                     }
                 });
@@ -416,9 +682,190 @@ public class CrearPedido extends JFrame {
                 dialog.setVisible(true);
             }
         });
+
+        jtableMateriales.setModel(cargarDetallesMateriales());
+        jtableMateriales.getColumnModel().getColumn(5).setCellRenderer(new CrearPedido.ButtonRenderer());
+        jtableMateriales.getColumnModel().getColumn(5).setCellEditor(new CrearPedido.ButtonEditor());
+
+        actualizarLbl8y10();
+        configurarTablaMateriales();
+        agregarButton.setVisible(false);
+        cancelarButton.setVisible(false);
+        campoBusquedaMateriales.setVisible(false);
+        campoBusquedaMateriales.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                jtableMateriales.setModel(cargarDatosMaterial());
+            }
+        });
+
+        agregarButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                Map<Integer,List> listas = new HashMap<>();
+                listas.put(2,arregloList);
+                listas.put(3,floristeriaList);
+                listas.put(4,manualidadList);
+                listas.put(5,tarjetaList);
+                listas.put(6,desayunoList);
+                listas.put(7,materialList);
+
+                if (jtableMateriales.getSelectedRow() == -1) {
+                    // Crea un botón personalizado
+                    JButton btnOK = new JButton("OK");
+                    btnOK.setBackground(darkColorAqua);
+                    btnOK.setForeground(Color.WHITE);
+                    btnOK.setFocusPainted(false);
+
+                    // Crea un JOptionPane
+                    JOptionPane optionPane = new JOptionPane(
+                            "Seleccione una fila para continuar",
+                            JOptionPane.DEFAULT_OPTION,
+                            JOptionPane.DEFAULT_OPTION,
+                            null,
+                            new Object[]{}, // no options
+                            null
+                    );
+
+                    // Añade el botón al JOptionPane
+                    optionPane.setOptions(new Object[]{btnOK});
+
+                    // Crea un JDialog y muestra el JOptionPane
+                    JDialog dialog = optionPane.createDialog("Seleccionar");
+
+                    // Añade un ActionListener al botón
+                    btnOK.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            // Cuando se hace clic en el botón, simplemente se cierra el diálogo
+                            dialog.dispose();
+                        }
+                    });
+
+                    // Muestra el diálogo
+                    dialog.setVisible(true);
+
+                    return;
+                }
+
+                // Obtener la cantidad del material que deseas agregar (por ejemplo, mediante un cuadro de diálogo)
+                int cantidadMaterial = obtenerCantidadMaterial();
+
+                // Verifica si la cantidad es válida (por ejemplo, mayor que cero) antes de continuar
+                if (cantidadMaterial <= 0) {
+                    return;
+                }
+
+                // Verificar que el material ya está presente en la lista temporal
+                PoliProducto l = (PoliProducto) listas.get(selectTabla).get(jtableMateriales.getSelectedRow());
+                String id_material = "";
+                int id_materialEntero = 0;
+
+                boolean materialDuplicado = false;
+
+                if ( l instanceof PoliFlor p){
+                    id_materialEntero = p.getID();
+                    id_material = "F-"+p.getID();
+
+                }else  if ( l instanceof PoliMaterial p){
+                    id_materialEntero = p.getID();
+                    id_material = "M-"+p.getID();
+
+                }else  if ( l instanceof PoliArreglo p){
+                    id_materialEntero = p.getID();
+                    id_material = "A-"+p.getID();
+
+                }else  if ( l instanceof PoliTarjeta p){
+                    id_materialEntero = p.getID();
+                    id_material = "T-"+p.getID();
+
+                }else  if ( l instanceof PoliManualidad p){
+                    id_materialEntero = p.getID();
+                    id_material = "W-"+p.getID();
+
+                }else  if ( l instanceof PoliDesayuno p){
+                    id_materialEntero = p.getID();
+                    id_material = "D-"+p.getID();
+                }
+
+                for (PoliProducto materialTemporal : productosListTemporal) {
+                    String id = materialTemporal.getTipo()+"-"+materialTemporal.getID();
+                    if ( id.equals(id_material)) {
+                        materialDuplicado = true;
+                        break;
+                    }
+                }
+
+                if (!materialDuplicado) {
+                    // Llamar al método guardarDetallePedido con los tres argumentos
+                    guardarDetallePedido(id_materialEntero, cantidadMaterial, l.getTipo());
+
+                    // Crear el material temporal y agregarlo a la lista temporal
+                    PoliProductosGeneral materialTemporal = new PoliMaterial();
+                    materialTemporal.setID(id_materialEntero);
+                    materialTemporal.setNombre( l.getNombre());
+                    materialTemporal.setCantidad(cantidadMaterial);
+                    materialTemporal.setPrecio(l.getPrecio());
+                    materialTemporal.setTipo(l.getTipo());
+                    productosListTemporal.add(materialTemporal);
+
+                    campoBusquedaMateriales.setVisible(false);
+                    agregarButton.setVisible(false);
+                    cancelarButton.setVisible(false);
+                    agregarMaterialButton.setVisible(true);
+                    agregarFlorButton.setVisible(true);
+                    agregarArregloButton.setVisible(true);
+                    agregarTarjetaButton.setVisible(true);
+                    agregarManualidadButton.setVisible(true);
+                    agregarDesayunoButton.setVisible(true);
+                    // Actualizar la tabla con los detalles actualizados
+                    jtableMateriales.setModel(cargarDetallesMateriales());
+                    jtableMateriales.getColumnModel().getColumn(5).setCellRenderer(new CrearPedido.ButtonRenderer());
+                    jtableMateriales.getColumnModel().getColumn(5).setCellEditor(new CrearPedido.ButtonEditor());
+
+                    configurarTablaMateriales();
+                    actualizarLbl8y10();
+                } else {
+                    // Crea un botón personalizado
+                    JButton btnOK = new JButton("OK");
+                    btnOK.setBackground(darkColorAqua);
+                    btnOK.setForeground(Color.WHITE);
+                    btnOK.setFocusPainted(false);
+
+                    // Crea un JOptionPane
+                    JOptionPane optionPane = new JOptionPane(
+                            "El detalle, ya está presente en la tabla",
+                            JOptionPane.DEFAULT_OPTION,
+                            JOptionPane.DEFAULT_OPTION,
+                            null,
+                            new Object[]{}, // no options
+                            null
+                    );
+
+                    // Añade el botón al JOptionPane
+                    optionPane.setOptions(new Object[]{btnOK});
+
+                    // Crea un JDialog y muestra el JOptionPane
+                    JDialog dialog = optionPane.createDialog("Validación");
+
+                    // Añade un ActionListener al botón
+                    btnOK.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            // Cuando se hace clic en el botón, simplemente se cierra el diálogo
+                            dialog.dispose();
+                        }
+                    });
+
+                    // Muestra el diálogo
+                    dialog.setVisible(true);
+
+                }
+            }
+        });
     }
 
-    // Método para cargar los clientes en el JComboBox
     private void cargarClientes() {
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement("SELECT id, nombre, apellido FROM clientes");
@@ -477,6 +924,47 @@ public class CrearPedido extends JFrame {
         campoFechaPedido.setText(fecha);
     }
 
+    private void configurarTablaMateriales() {
+        int columnCount = jtableMateriales.getColumnCount();
+        if (columnCount > 0) {
+            TableColumnModel columnModel = jtableMateriales.getColumnModel();
+
+            columnModel.getColumn(0).setPreferredWidth(30); // Id
+            columnModel.getColumn(1).setPreferredWidth(180); // Nombre
+            columnModel.getColumn(2).setPreferredWidth(80);  // Precio
+            columnModel.getColumn(3).setPreferredWidth(100); // Proveedor
+
+            columnModel.getColumn(0).setCellRenderer(new CrearPedido.CenterAlignedRenderer());
+            columnModel.getColumn(1).setCellRenderer(new CrearPedido.LeftAlignedRenderer());
+            columnModel.getColumn(2).setCellRenderer(new CrearPedido.LeftAlignedRenderer());
+            columnModel.getColumn(3).setCellRenderer(new CrearPedido.LeftAlignedRenderer());
+        }
+    }
+
+    class CenterAlignedRenderer extends DefaultTableCellRenderer {
+        public CenterAlignedRenderer() {
+            setHorizontalAlignment(CENTER);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            return cell;
+        }
+    }
+
+    class LeftAlignedRenderer extends DefaultTableCellRenderer {
+        public LeftAlignedRenderer() {
+            setHorizontalAlignment(LEFT);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            return cell;
+        }
+    }
+
     private String generarCodigo() {
         // Obtener fecha actual
         java.util.Date fechaActual = new java.util.Date();
@@ -523,7 +1011,6 @@ public class CrearPedido extends JFrame {
         }
     }
 
-    // Método para guardar la información del pedido en la base de datos
     private void guardarPedido() {
         String fechaCampo = campoFechaPedido.getText();
         String fechaPedido = convertirFecha(fechaCampo);
@@ -536,14 +1023,13 @@ public class CrearPedido extends JFrame {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String fechaEntrega = dateFormat.format(fechaActual); // Formatea la fecha como una cadena "yyyy-MM-dd"
 
-
         String descripcion = campoDescripcion.getText().trim();
         String entrega = radioButtonDomicilio.isSelected() ? "Domicilio" : "Tienda";
         String clienteText = comboBoxCliente.getSelectedItem().toString();
         int clienteId = Integer.parseInt(clienteText.split(" - ")[0]);
 
         try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO pedidos (codigo_pedido, fecha_pedido, fecha_entrega, descripcion, cliente_id, entrega) VALUES (?, ?, ?, ?, ?, ?)")) {
+             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO pedidos (codigo_pedido, fecha_pedido, fecha_entrega, descripcion, cliente_id, entrega) VALUES (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, codigoPedido);
             preparedStatement.setString(2, fechaPedido);
             preparedStatement.setString(3, fechaEntrega);
@@ -552,10 +1038,604 @@ public class CrearPedido extends JFrame {
             preparedStatement.setString(6, entrega);
             preparedStatement.executeUpdate();
 
+            ResultSet resultSet = preparedStatement.getGeneratedKeys();
+            int lastId = 0;
+            if (resultSet.next()) {
+                lastId = resultSet.getInt(1);
+            }
+
+            try (PreparedStatement prepared = connection.prepareStatement(
+                    "UPDATE detalles_pedidos SET pedido_id = ? WHERE pedido_id IS NULL")) {
+                prepared.setInt(1, lastId);
+                prepared.executeUpdate();
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+                JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+                materialList = new ArrayList<>();
+            }
+
             JOptionPane.showMessageDialog(null, "Pedido guardado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error al guardar el pedido", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void guardarDetallePedido(int id_material, int cantidad, String tipo) {
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO detalles_pedidos (tipo_detalle, detalle_id, cantidad,precio) VALUES (?, ?, ?, ?)")) {
+            preparedStatement.setString(1, tiposDescripcion.get(tipo));
+            preparedStatement.setInt(2, id_material);
+            preparedStatement.setInt(3, cantidad);
+            preparedStatement.setDouble(4, obtenerPrecioMaterialDesdeBD(id_material, tipo)); // Obtener el precio del material desde la base de datos
+            preparedStatement.executeUpdate();
+
+            JOptionPane.showMessageDialog(null, "Detalle agregado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al agregar el detalle del pedido", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private double obtenerPrecioMaterialDesdeBD(int id_material, String tipo) {
+        double precio = 0.0;
+
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT " +
+                     (tipo.equals("T") ? "precio_tarjeta" :
+                             tipo.equals("D") ? "precio_desayuno" :
+                                     tipo.equals("W") ? "precio_manualidad" :
+                                             tipo.equals("F") ? "precio" :
+                                                     tipo.equals("A") ? "precio" :
+                                                             tipo.equals("M") ? "precio" :
+                                                                "precio_default") +
+                     " FROM " +
+                     (tipo.equals("T") ? "tarjetas" :
+                             tipo.equals("D") ? "desayunos" :
+                                     tipo.equals("W") ? "manualidades" :
+                                             tipo.equals("F") ? "floristeria" :
+                                                     tipo.equals("A") ? "arreglos" :
+                                                             tipo.equals("M") ? "materiales" :
+                                                                "default_table") +
+                     " WHERE id = ?")) {
+            preparedStatement.setInt(1, id_material);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                precio = resultSet.getDouble(
+                        tipo.equals("T") ? "precio_tarjeta" :
+                                tipo.equals("D") ? "precio_desayuno" :
+                                        tipo.equals("W") ? "precio_manualidad" :
+                                                tipo.equals("F") ? "precio" :
+                                                        tipo.equals("A") ? "precio" :
+                                                                tipo.equals("M") ? "precio" :
+                                                                    "precio_default");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al obtener el precio del material desde la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        return precio;
+    }
+
+    private PoliModeloProducto cargarDetallesMateriales() {
+        sql = new Conexion();
+        productosListTemporal.clear(); // Limpiar la lista antes de agregar los materiales
+        selectTabla = 1;
+
+        try (Connection mysql = sql.conectamysql();
+             PreparedStatement preparedStatement = mysql.prepareStatement(
+                     "SELECT detalles_pedidos.*,'F' AS 'tipo', floristeria.nombre AS 'nombre', (detalles_pedidos.cantidad * detalles_pedidos.precio) AS 'total' FROM detalles_pedidos "+
+                             " JOIN floristeria ON floristeria.id = detalles_pedidos.detalle_id "+
+                             " WHERE detalles_pedidos.pedido_id IS NULL AND detalles_pedidos.tipo_detalle = 'floristeria' "+
+
+                             " UNION "+
+
+                             " SELECT detalles_pedidos.*,'T' AS 'tipo',tarjetas.descripcion AS 'nombre', (detalles_pedidos.cantidad * detalles_pedidos.precio) AS 'total' FROM detalles_pedidos "+
+                             " JOIN tarjetas ON tarjetas.id = detalles_pedidos.detalle_id "+
+                             " WHERE detalles_pedidos.pedido_id IS NULL AND detalles_pedidos.tipo_detalle = 'tarjeta' "+
+
+                             " UNION "+
+
+                             " SELECT detalles_pedidos.*,'A' AS 'tipo',arreglos.nombre AS 'nombre', (detalles_pedidos.cantidad * detalles_pedidos.precio) AS 'total' FROM detalles_pedidos "+
+                             " JOIN arreglos ON arreglos.id = detalles_pedidos.detalle_id "+
+                             " WHERE detalles_pedidos.pedido_id IS NULL AND detalles_pedidos.tipo_detalle = 'arreglo' "+
+
+                             " UNION "+
+
+                             " SELECT detalles_pedidos.*,'M' AS 'tipo',materiales.nombre AS 'nombre', (detalles_pedidos.cantidad * detalles_pedidos.precio) AS 'total' FROM detalles_pedidos "+
+                             " JOIN materiales ON materiales.id = detalles_pedidos.detalle_id "+
+                             " WHERE detalles_pedidos.pedido_id IS NULL AND detalles_pedidos.tipo_detalle = 'material'"+
+
+                             " UNION "+
+
+                             " SELECT detalles_pedidos.*,'W' AS 'tipo',manualidades.nombre AS 'nombre', (detalles_pedidos.cantidad * detalles_pedidos.precio) AS 'total' FROM detalles_pedidos "+
+                             " JOIN manualidades ON manualidades.id = detalles_pedidos.detalle_id "+
+                             " WHERE detalles_pedidos.pedido_id IS NULL AND detalles_pedidos.tipo_detalle = 'manualidad' "+
+
+                             " UNION "+
+
+                             " SELECT detalles_pedidos.*,'D' AS 'tipo',desayunos.nombre AS 'nombre', (detalles_pedidos.cantidad * detalles_pedidos.precio) AS 'total' FROM detalles_pedidos "+
+                             " JOIN desayunos ON desayunos.id = detalles_pedidos.detalle_id "+
+                             " WHERE detalles_pedidos.pedido_id IS NULL AND detalles_pedidos.tipo_detalle = 'desayuno' ;"
+             )
+        ) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            double precioTotalMateriales = 0.00;
+
+            while (resultSet.next()) {
+                PoliProductosGeneral material = new PoliProductosGeneral();
+                material.setIdDetalle(resultSet.getInt("id"));
+                material.setID(resultSet.getInt("detalle_id"));
+                material.setNombre(resultSet.getString("nombre"));
+                material.setCantidad(resultSet.getInt("cantidad"));
+                material.setPrecio(resultSet.getDouble("precio"));
+                material.setTipo(resultSet.getString("tipo"));
+                double total = resultSet.getDouble("total");
+                precioTotalMateriales += total;
+                productosListTemporal.add(material);
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            productosListTemporal = new ArrayList<>();
+        }
+
+        // Configurar la tabla para mostrar los encabezados de las columnas
+        JTableHeader tableHeader = jtableMateriales.getTableHeader();
+        tableHeader.setVisible(true);
+
+        // Configurar la tabla para mantener el ordenamiento de filas incluso sin encabezados visibles
+        jtableMateriales.setAutoCreateRowSorter(true);
+
+        // Configurar el ancho de las columnas y alineaciones de las celdas
+        configurarTablaMateriales();
+
+        return new PoliModeloProducto(productosListTemporal);
+    }
+
+    private PoliModeloArreglo cargarDatosArreglo() {
+        sql = new Conexion();
+        arregloList.clear();
+        selectTabla = 2; // Puedes asignar un valor que represente la tabla de arreglos en tu base de datos.
+        try (Connection mysql = sql.conectamysql();
+             PreparedStatement preparedStatement = mysql.prepareStatement(
+                     "SELECT * FROM arreglos WHERE nombre LIKE CONCAT('%', ?, '%')"
+             )
+        ) {
+            preparedStatement.setString(1, campoBusquedaMateriales.getText());
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                PoliArreglo arreglo = new PoliArreglo();
+                arreglo.setID(resultSet.getInt("id"));
+                arreglo.setNombre(resultSet.getString("nombre"));
+                arreglo.setCantidad(resultSet.getInt("cantidad"));
+                arreglo.setPrecio(resultSet.getDouble("precio"));
+                arreglo.setTipo("A"); // Puedes asignar un tipo específico para los arreglos.
+                arregloList.add(arreglo);
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            arregloList = new ArrayList<>();
+        }
+
+        PoliModeloArreglo modeloArreglo = new PoliModeloArreglo(arregloList, sql);
+        jtableMateriales.setModel(modeloArreglo);
+        configurarTablaMateriales(); // Asegúrate de que este método configure la tabla adecuada.
+        return modeloArreglo;
+    }
+
+    private PoliModeloFlor cargarDatosFloristeria() {
+        sql = new Conexion();
+        floristeriaList.clear();
+        selectTabla = 3;
+        try (Connection mysql = sql.conectamysql();
+             PreparedStatement preparedStatement = mysql.prepareStatement(
+                     "SELECT f.*, p.empresaProveedora " +
+                             "FROM floristeria f " +
+                             "JOIN Proveedores p ON f.proveedor_id = p.id " +
+                             "WHERE f.nombre LIKE CONCAT('%', ?, '%') OR p.empresaProveedora LIKE CONCAT('%', ?, '%')"
+             )
+        ) {
+            preparedStatement.setString(1, campoBusquedaMateriales.getText());
+            preparedStatement.setString(2, campoBusquedaMateriales.getText());
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                PoliFlor floristeria = new PoliFlor();
+                floristeria.setID(resultSet.getInt("id"));
+                floristeria.setNombre(resultSet.getString("nombre"));
+                floristeria.setCantidad(resultSet.getInt("cantidad"));
+                floristeria.setPrecio(resultSet.getDouble("precio"));
+                floristeria.setTipo("F");
+                floristeriaList.add(floristeria);
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            floristeriaList = new ArrayList<>();
+        }
+
+        PoliModeloFlor modeloFlor = new PoliModeloFlor(floristeriaList, sql);
+        jtableMateriales.setModel(modeloFlor);
+        configurarTablaMateriales();
+        return modeloFlor;
+    }
+
+    private PoliModeloManualidad cargarDatosManualidad() {
+        sql = new Conexion();
+        manualidadList.clear();
+        selectTabla = 4; // Puedes asignar un valor que represente la tabla de manualidades en tu base de datos.
+        try (Connection mysql = sql.conectamysql();
+             PreparedStatement preparedStatement = mysql.prepareStatement(
+                     "SELECT * FROM manualidades WHERE nombre LIKE CONCAT('%', ?, '%')"
+             )
+        ) {
+            preparedStatement.setString(1, campoBusquedaMateriales.getText());
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                PoliManualidad manualidad = new PoliManualidad();
+                manualidad.setID(resultSet.getInt("id"));
+                manualidad.setNombre(resultSet.getString("nombre"));
+                manualidad.setCantidad(resultSet.getInt("cantidad"));
+                manualidad.setPrecio(resultSet.getDouble("precio_manualidad"));
+                manualidad.setTipo("M"); // Puedes asignar un tipo específico para las manualidades.
+                manualidadList.add(manualidad);
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            manualidadList = new ArrayList<>();
+        }
+
+        PoliModeloManualidad modeloManualidad = new PoliModeloManualidad(manualidadList, sql);
+        jtableMateriales.setModel(modeloManualidad);
+        configurarTablaMateriales(); // Asegúrate de que este método configure la tabla adecuada.
+        return modeloManualidad;
+    }
+
+    private PoliModeloTarjeta cargarDatosTarjeta() {
+        sql = new Conexion();
+        tarjetaList.clear();
+        selectTabla = 5;
+        try (Connection mysql = sql.conectamysql();
+             PreparedStatement preparedStatement = mysql.prepareStatement(
+                     "SELECT * FROM tarjetas WHERE ocasion LIKE CONCAT('%', ?, '%')"
+             )
+        ) {
+            preparedStatement.setString(1, campoBusquedaMateriales.getText());
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                PoliTarjeta tarjeta = new PoliTarjeta();
+                tarjeta.setID(resultSet.getInt("id"));
+                tarjeta.setNombre(resultSet.getString("descripcion"));
+                tarjeta.setOcasion(resultSet.getString("ocasion"));
+                tarjeta.setCantidad(resultSet.getInt("cantidad"));
+                tarjeta.setPrecio(resultSet.getDouble("precio_tarjeta"));
+                tarjeta.setTipo("T");
+                tarjetaList.add(tarjeta);
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            tarjetaList = new ArrayList<>();
+        }
+
+        PoliModeloTarjeta modeloTarjeta = new PoliModeloTarjeta(tarjetaList, sql);
+        jtableMateriales.setModel(modeloTarjeta);
+        configurarTablaMateriales();
+        return modeloTarjeta;
+    }
+
+    private PoliModeloDesayuno cargarDatosDesayuno() {
+        sql = new Conexion();
+        desayunoList.clear();
+        selectTabla = 6;
+        try (Connection mysql = sql.conectamysql();
+             PreparedStatement preparedStatement = mysql.prepareStatement(
+                     "SELECT * FROM desayunos WHERE nombre LIKE CONCAT('%', ?, '%')"
+             )
+        ) {
+            preparedStatement.setString(1, campoBusquedaMateriales.getText());
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                PoliDesayuno desayuno = new PoliDesayuno();
+                desayuno.setID(resultSet.getInt("id"));
+                desayuno.setNombre(resultSet.getString("nombre"));
+                desayuno.setCantidad(resultSet.getInt("cantidad"));
+                desayuno.setPrecio(resultSet.getDouble("precio_desayuno"));
+                desayuno.setTipo("D");
+                desayunoList.add(desayuno);
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            desayunoList = new ArrayList<>();
+        }
+
+        PoliModeloDesayuno modeloDesayuno = new PoliModeloDesayuno(desayunoList, sql);
+        jtableMateriales.setModel(modeloDesayuno);
+        configurarTablaMateriales();
+        return modeloDesayuno;
+    }
+
+    private PoliModeloMaterial cargarDatosMaterial() {
+        sql = new Conexion();
+        materialList.clear();
+        selectTabla = 7;
+        try (Connection mysql = sql.conectamysql();
+             PreparedStatement preparedStatement = mysql.prepareStatement(
+                     "SELECT * FROM materiales WHERE nombre LIKE CONCAT('%', ?, '%')"
+             )
+        ) {
+            preparedStatement.setString(1, campoBusquedaMateriales.getText());
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                PoliMaterial material = new PoliMaterial();
+                material.setID(resultSet.getInt("id"));
+                material.setNombre(resultSet.getString("nombre"));
+                material.setCantidad(resultSet.getInt("cantidad"));
+                material.setPrecio(resultSet.getDouble("precio"));
+                material.setTipo("M");
+                materialList.add(material);
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            materialList = new ArrayList<>();
+        }
+
+        PoliModeloMaterial modeloMaterial = new PoliModeloMaterial(materialList, sql);
+        jtableMateriales.setModel(modeloMaterial);
+        configurarTablaMateriales();
+        return modeloMaterial;
+    }
+
+    private int obtenerCantidadMaterial() {
+        final int[] cantidadMaterial = new int[] {-1};
+
+        JTextField field = new JTextField();
+
+        JButton btnOK = new JButton("Aceptar");
+        btnOK.setBackground(darkColorAqua);
+        btnOK.setForeground(Color.WHITE);
+        btnOK.setFocusPainted(false);
+
+        JButton btnCancel = new JButton("Cancelar");
+        btnCancel.setBackground(darkColorPink);
+        btnCancel.setForeground(Color.WHITE);
+        btnCancel.setFocusPainted(false);
+
+        Object[] message = {
+                "Ingrese la cantidad del detalle seleccionado:", field
+        };
+
+        Object[] options = {btnOK, btnCancel};
+
+        JOptionPane optionPane = new JOptionPane(
+                message,
+                JOptionPane.PLAIN_MESSAGE,
+                JOptionPane.DEFAULT_OPTION,
+                null,
+                options,
+                btnOK // default option is btnOK
+        );
+
+        JDialog dialog = optionPane.createDialog("Cantidad");
+
+        btnOK.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    cantidadMaterial[0] = Integer.parseInt(field.getText());
+
+                    if (cantidadMaterial[0] < 1) {
+                        showErrorDialog("La cantidad debe ser mayor o igual a 1");
+                        cantidadMaterial[0] = -1;
+                    }
+
+                    dialog.dispose();
+                } catch (NumberFormatException ex) {
+                    showErrorDialog("La cantidad debe ser un número válido");
+                }
+            }
+        });
+
+        btnCancel.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose();
+            }
+        });
+
+        dialog.setVisible(true);
+
+        return cantidadMaterial[0];
+    }
+
+    private void limpiarTablaMateriales() {
+        materialList.clear();
+        DefaultTableModel emptyModel = new DefaultTableModel();
+        jtableMateriales.setModel(emptyModel);
+    }
+
+    private void eliminarDetallesMaterial() {
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "DELETE FROM detalles_pedidos WHERE pedido_id IS NULL OR pedido_id NOT IN (SELECT id FROM pedidos)"
+             )) {
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private double extraerValorNumerico(String valor) {
+        String valorNumerico = valor.replace(',', '.');
+        try {
+            return Double.parseDouble(valorNumerico);
+        } catch (NumberFormatException e) {
+            System.err.println("Se encontró un formato de número no válido. No se puede convertir a double: " + valor);
+            return 0.0;
+        }
+    }
+
+    private double calcularTotalTabla() {
+        double sumaTotal = 0.0;
+        TableModel modelo = jtableMateriales.getModel();
+        PoliModeloProducto modeloProductos = (PoliModeloProducto) modelo;
+
+        // Iterar por todas las filas del modelo
+        for (int i = 0; i < modeloProductos.getRowCount(); i++) {
+            try {
+                // Obtener el total de la fila y sumarlo al total general
+                Object valorCelda = modeloProductos.getValueAt(i, 4); // Suponiendo que la columna "total" está en el índice 4 (índice basado en 0)
+                if (valorCelda != null) {
+                    String totalStr = valorCelda.toString();
+                    double total = extraerValorNumerico(totalStr);
+                    sumaTotal += total;
+                }
+            } catch (NumberFormatException e) {
+                System.err.println("Se encontró un formato de número no válido. Se omite el cálculo para la fila " + i);
+                System.err.println("Valor que causa el error: " + modeloProductos.getValueAt(i, 4));
+            }
+        }
+
+        // Actualizar el lbl8 con el total calculado
+        DecimalFormat decimalFormat = new DecimalFormat("#.00");
+        String sumaTotalFormateado = decimalFormat.format(sumaTotal);
+        lbl11.setText(" " + sumaTotalFormateado);
+
+        return sumaTotal;
+    }
+
+    private void actualizarLbl8y10() {
+        // Calcular el subtotal de la tabla (antes de aplicar el descuento)
+        double totalTabla = calcularTotalTabla();
+
+        // Calcular el total con el descuento y aumento
+        double subTotal = totalTabla * 0.85;
+        double ISV = totalTabla * 0.15;
+        double totalConAumento = totalTabla;
+
+        // Actualizar lbl8 con el subtotal con descuento
+        lbl9.setText(String.format("L. %.2f", subTotal));
+
+        // Actualizar lbl10 con el total sin descuento ni aumento (es decir, el subtotal original)
+        lbl10.setText(String.format("L. %.2f", ISV));
+
+        // Actualizar lbl11 con el total con aumento
+        lbl11.setText(String.format("L. %.2f", totalConAumento));
+    }
+
+    private void showErrorDialog(String message) {
+        JButton btnOK = new JButton("Aceptar");
+        btnOK.setBackground(darkColorAqua);
+        btnOK.setForeground(Color.WHITE);
+        btnOK.setFocusPainted(false);
+
+        JOptionPane optionPane = new JOptionPane(
+                message,
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.DEFAULT_OPTION,
+                null,
+                new Object[]{},
+                null
+        );
+
+        optionPane.setOptions(new Object[]{btnOK});
+
+        JDialog dialog = optionPane.createDialog("Error");
+
+        btnOK.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose();
+            }
+        });
+
+        dialog.setVisible(true);
+    }
+
+    class ButtonRenderer extends JButton implements TableCellRenderer {
+        public ButtonRenderer() {
+            setOpaque(true);
+            setForeground(Color.WHITE);
+            setBackground(darkColorPink);
+            setFocusPainted(false);
+        }
+
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            setText("X");
+            return this;
+        }
+    }
+
+    class ButtonEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
+        private JButton button;
+        private int row, col;
+        private JTable table;
+
+        public ButtonEditor() {
+            button = new JButton();
+            button.setOpaque(true);
+            button.addActionListener(this);
+            button.setForeground(Color.WHITE);
+            button.setBackground(darkColorPink);
+            button.setFocusPainted(false);
+            button.setBorder(margin);
+        }
+
+        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+            button.setText("X");
+            this.table = table;
+            this.row = row;
+            this.col = column;
+            return button;
+        }
+
+        public Object getCellEditorValue() {
+            return "X";
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            if (table != null) {
+                int modelRow = table.convertRowIndexToModel(row);
+                TableModel model = table.getModel();  // Obtener el modelo de la tabla
+
+                // Verificar si el modelo de la tabla es un PoliModeloProducto
+                if (model instanceof PoliModeloProducto) {
+                    PoliModeloProducto productoModel = (PoliModeloProducto) model;
+
+                    // Eliminar el producto tanto de la lista temporal como de la tabla
+                    productoModel.removeProductAtIndex(modelRow);
+                }
+
+                fireEditingStopped(); // Mover esta línea aquí para asegurarte de que se complete la edición
+                calcularTotalTabla();
+                actualizarLbl8y10();
+            }
         }
     }
 
@@ -579,7 +1659,6 @@ public class CrearPedido extends JFrame {
         setFormattedDate(selectedDate);
     }
 
-
     public boolean isDateOutOfRange(java.util.Date selectedDate, Calendar tomorrow) {
         Calendar selectedCal = Calendar.getInstance();
         selectedCal.setTime(selectedDate);
@@ -587,7 +1666,6 @@ public class CrearPedido extends JFrame {
         // Compara con el día siguiente al actual
         return selectedCal.before(tomorrow);
     }
-
 
     public void setFormattedDate(java.util.Date selectedDate) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd 'de' MMMM yyyy"); // Desired date format

@@ -1,8 +1,9 @@
 package Pedidos;
+
 import Modelos.ModeloPedido;
 import Objetos.Conexion;
-import Objetos.Material;
 import Objetos.Pedido;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
@@ -24,6 +25,7 @@ public class ListaPedidos extends JFrame {
     private JPanel panelPrincipal;
     private JButton botonVer;
     private JTable listaPedidos;
+    private List<Pedido> pedidoList;
     private JButton botonAtras;
     private JButton botonAdelante;
     private JTextField campoBusqueda;
@@ -36,7 +38,7 @@ public class ListaPedidos extends JFrame {
     private JPanel panelA;
     private JPanel panelB;
     private JPanel panelTitulo;
-    private List<Pedido> pedidoList;
+
     private int pagina = 0;
     private Connection mysql;
     private Conexion sql;
@@ -47,6 +49,7 @@ public class ListaPedidos extends JFrame {
     Color primaryColor = Color.decode("#37474f"); // Gris azul oscuro
     Color lightColor = Color.decode("#cfd8dc"); // Gris azul claro
     Color darkColor = Color.decode("#263238"); // Gris azul más oscuro
+
     public ListaPedidos() {
         super("");
         setSize(850, 505);
@@ -54,10 +57,10 @@ public class ListaPedidos extends JFrame {
         setContentPane(panelPrincipal);
         campoBusqueda.setText("");
 
-        //listaPedidos.setModel(cargarDatos());
-        //configurarTablaMateriales();
+        listaPedidos.setModel(cargarDatos());
+        configurarTablaMateriales();
 
-        //lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+        lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
 
         botonAtras.setEnabled(false);
         botonAtras.addActionListener(new ActionListener() {
@@ -70,9 +73,7 @@ public class ListaPedidos extends JFrame {
                         botonAtras.setEnabled(false);
                     }
                 }
-                //listaPedidos.setModel(cargarDatos());
-                //configurarTablaMateriales();
-                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+                actualizarTabla();
             }
         });
 
@@ -86,9 +87,7 @@ public class ListaPedidos extends JFrame {
                         botonAdelante.setEnabled(false);
                     }
                 }
-                //listaPedidos.setModel(cargarDatos());
-                //configurarTablaMateriales();
-                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+                actualizarTabla();
             }
         });
 
@@ -99,9 +98,7 @@ public class ListaPedidos extends JFrame {
                 pagina = 0;
                 botonAdelante.setEnabled((pagina + 1) < getTotalPageCount());
                 botonAtras.setEnabled(pagina > 0);
-                //listaPedidos.setModel(cargarDatos());
-                //configurarTablaMateriales();
-                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+                actualizarTabla();
             }
         });
 
@@ -114,36 +111,8 @@ public class ListaPedidos extends JFrame {
             }
         });
 
-        /*
-        botonVer.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (listaPedidos.getSelectedRow() == -1) {
-                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
-                VerMaterial material = new VerMaterial(materialList.get(listaPedidos.getSelectedRow()).getId());
-                material.setVisible(true);
-                actual.dispose();
-            }
-        });
-
-        botonEditar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (listaPedidos.getSelectedRow() == -1) {
-                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
-                EditarMaterial material = new EditarMaterial(materialList.get(listaPedidos.getSelectedRow()).getId());
-                material.setVisible(true);
-                actual.dispose();
-            }
-        });
-         */
-
-        //JTableHeader header = listaPedidos.getTableHeader();
-        //header.setForeground(Color.WHITE);
+        JTableHeader header = listaPedidos.getTableHeader();
+        header.setForeground(Color.WHITE);
 
         int campoBusquedaHeight = 35;
         campoBusqueda.setPreferredSize(new Dimension(campoBusqueda.getPreferredSize().width, campoBusquedaHeight));
@@ -152,7 +121,7 @@ public class ListaPedidos extends JFrame {
         panelTitulo.setBackground(primaryColor);
         panelA.setBackground(primaryColor);
         panelB.setBackground(primaryColor);
-        //header.setBackground(darkColor);
+        header.setBackground(darkColor);
         botonCrear.setBackground(darkColor);
         botonEditar.setBackground(darkColor);
         botonAdelante.setBackground(darkColor);
@@ -178,7 +147,6 @@ public class ListaPedidos extends JFrame {
         placeholder.setFont(font);
         lbl0.setFont(fontTitulo);
         lblPagina.setFont(font);
-
         botonAdelante.setFocusable(false);
         botonAtras.setFocusable(false);
         botonAtras.setFocusable(false);
@@ -186,27 +154,23 @@ public class ListaPedidos extends JFrame {
         botonVer.setFocusable(false);
     }
 
-    /*
     private void configurarTablaMateriales() {
         TableColumnModel columnModel = listaPedidos.getColumnModel();
 
         columnModel.getColumn(0).setPreferredWidth(20);
-        columnModel.getColumn(1).setPreferredWidth(200);
+        columnModel.getColumn(1).setPreferredWidth(120);
         columnModel.getColumn(2).setPreferredWidth(130);
-        columnModel.getColumn(3).setPreferredWidth(50);
+        columnModel.getColumn(3).setPreferredWidth(130);
         columnModel.getColumn(4).setPreferredWidth(80);
         columnModel.getColumn(5).setPreferredWidth(60);
-        columnModel.getColumn(6).setPreferredWidth(60);
 
         columnModel.getColumn(0).setCellRenderer(new ListaPedidos.CenterAlignedRenderer());
-        columnModel.getColumn(1).setCellRenderer(new ListaPedidos.LeftAlignedRenderer());
+        columnModel.getColumn(1).setCellRenderer(new ListaPedidos.CenterAlignedRenderer());
         columnModel.getColumn(2).setCellRenderer(new ListaPedidos.LeftAlignedRenderer());
-        columnModel.getColumn(3).setCellRenderer(new ListaPedidos.CenterAlignedRenderer());
+        columnModel.getColumn(3).setCellRenderer(new ListaPedidos.LeftAlignedRenderer());
         columnModel.getColumn(4).setCellRenderer(new ListaPedidos.LeftAlignedRenderer());
         columnModel.getColumn(5).setCellRenderer(new ListaPedidos.LeftAlignedRenderer());
-        columnModel.getColumn(6).setCellRenderer(new ListaPedidos.LeftAlignedRenderer());
     }
-     */
 
     private void createUIComponents() {
         // TODO: place custom component creation code here
@@ -248,11 +212,68 @@ public class ListaPedidos extends JFrame {
         }
     }
 
+    private ModeloPedido cargarDatos() {
+        sql = new Conexion();
+        try (Connection mysql = sql.conectamysql();
+             PreparedStatement preparedStatement = mysql.prepareStatement(
+                     "SELECT p.id, p.codigo_pedido, p.fecha_pedido, p.fecha_entrega, p.descripcion, p.cliente_id, p.entrega " +
+                             "FROM pedidos p " +
+                             "INNER JOIN clientes c ON p.cliente_id = c.id " +
+                             "WHERE p.codigo_pedido LIKE CONCAT('%', ?, '%') OR " + // Filtro por código de pedido
+                             "p.fecha_entrega LIKE CONCAT('%', ?, '%') OR " + // Filtro por fecha de entrega
+                             "c.nombre LIKE CONCAT('%', ?, '%') " + // Filtro por nombre de cliente
+                             "LIMIT ?, 20"
+                                )) {  // Límite de 20 registros por página
+
+            preparedStatement.setString(1, busqueda);
+            preparedStatement.setString(2, busqueda);
+            preparedStatement.setString(3, busqueda);
+            preparedStatement.setInt(4, pagina * 20); // Calcula el offset según la página actual
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            pedidoList = new ArrayList<>();
+
+            while (resultSet.next()) {
+                Pedido pedido = new Pedido();
+                pedido.setId(resultSet.getInt("id"));
+                pedido.setCodigoPedido(resultSet.getString("codigo_pedido"));
+                pedido.setFechaPedido(resultSet.getDate("fecha_pedido"));
+                pedido.setFechaEntrega(resultSet.getDate("fecha_entrega"));
+                pedido.setDescripcion(resultSet.getString("descripcion"));
+                pedido.setClienteId(resultSet.getInt("cliente_id"));
+                pedido.setEntrega(resultSet.getString("entrega"));
+                pedidoList.add(pedido);
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            pedidoList = new ArrayList<>();
+        }
+
+        if (listaPedidos.getColumnCount() > 0) {
+            TableColumn columnId = listaPedidos.getColumnModel().getColumn(0);
+            columnId.setPreferredWidth(50);
+        }
+
+        return new ModeloPedido(pedidoList, sql);
+    }
+
+
     private int getTotalPageCount() {
         int count = 0;
         try (Connection mysql = sql.conectamysql();
-             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT COUNT(*) AS total FROM pedidos f WHERE f.codigo_pedido LIKE CONCAT('%', ?, '%')")) {
+             PreparedStatement preparedStatement = mysql.prepareStatement(
+                     "SELECT COUNT(*) AS total FROM pedidos p " +
+                             "INNER JOIN clientes c ON p.cliente_id = c.id " +
+                             "WHERE p.codigo_pedido LIKE CONCAT('%', ?, '%') OR " + // Filtro por código de pedido
+                             "p.fecha_entrega LIKE CONCAT('%', ?, '%') OR " + // Filtro por fecha de entrega
+                             "c.nombre LIKE CONCAT('%', ?, '%')"
+                                )) { // Filtro por descripción
+
             preparedStatement.setString(1, busqueda);
+            preparedStatement.setString(2, busqueda);
+            preparedStatement.setString(3, busqueda);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 count = resultSet.getInt("total");
@@ -271,12 +292,12 @@ public class ListaPedidos extends JFrame {
         return totalPageCount;
     }
 
-    private void actualizarTabla() {
-        //listaPedidos.setModel(cargarDatos());
-        //configurarTablaMateriales();
-        //lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
-    }
 
+    private void actualizarTabla() {
+        listaPedidos.setModel(cargarDatos());
+        configurarTablaMateriales();
+        lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+    }
 
     public static void main(String[] args) {
         ListaPedidos listaPedidos = new ListaPedidos();
