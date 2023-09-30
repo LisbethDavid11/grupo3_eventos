@@ -51,6 +51,7 @@ public class EditarDesayuno extends JFrame {
     private JLabel lbl10;
     private int selectTabla = 1;
     private List<PoliProducto> productosListTemporal = new ArrayList<>();
+    private List<PoliProducto> productosListOrigina = new ArrayList<>();
     private List<PoliMaterial> materialList = new ArrayList<>();
     private List<PoliMaterial> materialListTemporal = new ArrayList<>();
     private List<PoliFlor> floristeriaList = new ArrayList<>();
@@ -325,9 +326,7 @@ public class EditarDesayuno extends JFrame {
                 agregarFloresButton.setVisible(true);
                 agregarGloboButton.setVisible(true);
                 agregarTarjetasButton.setVisible(true);
-                jtableMateriales.setModel(cargarDetallesMateriales());
-                actualizarLbl8y10();
-                configurarTablaMateriales();
+                cargarDatosEditar();
             }
         });
 
@@ -366,23 +365,7 @@ public class EditarDesayuno extends JFrame {
                 btnYes.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        // Acciones para el botón Sí
-                        materialListTemporal.clear();
-                        productosListTemporal.clear();
-                        eliminarDetallesMaterial();
                         limpiarTablaMateriales();
-                        lbl8.setText("0.00");
-                        lbl10.setText("0.00");
-
-                        PoliModeloProducto nuevoModelo = new PoliModeloProducto(new ArrayList<>());
-                        jtableMateriales.setModel(nuevoModelo);
-                        cargarDatosEditar();
-                        mostrar();
-                        configurarTablaMateriales();
-
-                        calcularTotalTabla();
-                        actualizarLbl8y10();
-
                         dialog.dispose();
                     }
                 });
@@ -563,7 +546,6 @@ public class EditarDesayuno extends JFrame {
         botonCancelar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
                     ListaDesayunos listaDesayuno = new ListaDesayunos();
                     listaDesayuno.setVisible(true);
                     actual.dispose();
@@ -831,12 +813,7 @@ public class EditarDesayuno extends JFrame {
             }
         });
 
-        jtableMateriales.setModel(cargarDetallesMateriales());
-        jtableMateriales.getColumnModel().getColumn(5).setCellRenderer(new EditarDesayuno.ButtonRenderer());
-        jtableMateriales.getColumnModel().getColumn(5).setCellEditor(new EditarDesayuno.ButtonEditor());
 
-        actualizarLbl8y10();
-        configurarTablaMateriales();
         agregarButton.setVisible(false);
         cancelarButton.setVisible(false);
         campoBusquedaMateriales.setVisible(false);
@@ -925,11 +902,13 @@ public class EditarDesayuno extends JFrame {
 
                 for (PoliProducto materialTemporal : productosListTemporal) {
                     String id = materialTemporal.getTipo() + "-" + materialTemporal.getID();
+                    // JOptionPane.showMessageDialog(null, id);
                     if (id.equals(id_material)) {
                         materialDuplicado = true;
                         break;
                     }
                 }
+
 
                 if (!materialDuplicado) {
                     // Llamar al método guardarDetalleDesayuno con los tres argumentos
@@ -1010,8 +989,10 @@ public class EditarDesayuno extends JFrame {
             }
         });
 
+        jtableMateriales.setModel(cargarDetallesMateriales());
         cargarDatosEditar();
-        mostrar();
+        productosListOrigina = cargarListaOrignal();
+
     }
 
     private void configurarTablaMateriales() {
@@ -1092,11 +1073,12 @@ public class EditarDesayuno extends JFrame {
 
     private void guardarDetalleDesayuno(int id_material, int cantidad, String tipo) {
         try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO detalles_desayunos (tipo_detalle, detalle_id, cantidad,precio) VALUES (?, ?, ?, ?)")) {
+             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO detalles_desayunos (tipo_detalle, detalle_id, cantidad,precio,desayuno_id) VALUES (?, ?, ?, ?, ?)")) {
             preparedStatement.setString(1, tiposDescripcion.get(tipo));
             preparedStatement.setInt(2, id_material);
             preparedStatement.setInt(3, cantidad);
-            preparedStatement.setDouble(4, obtenerPrecioMaterialDesdeBD(id_material,tipo)); // Obtener el precio del material desde la base de datos
+            preparedStatement.setDouble(4, obtenerPrecioMaterialDesdeBD(id_material,tipo));// Obtener el precio del material desde la base de datos
+            preparedStatement.setInt(5, this.id);
             preparedStatement.executeUpdate();
 
             JOptionPane.showMessageDialog(null, "Detalle agregado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
@@ -1126,20 +1108,32 @@ public class EditarDesayuno extends JFrame {
     }
 
     private void limpiarTablaMateriales() {
-        materialList.clear();
-        DefaultTableModel emptyModel = new DefaultTableModel();
+        PoliModeloProducto emptyModel = new PoliModeloProducto(this.productosListOrigina);
         jtableMateriales.setModel(emptyModel);
-        cargarDatosEditar();
-        mostrar();
+
         calcularTotalTabla();
         actualizarLbl8y10();
         configurarTablaMateriales();
+
+        jtableMateriales.getColumnModel().getColumn(5).setCellRenderer(new ButtonRenderer());
+        jtableMateriales.getColumnModel().getColumn(5).setCellEditor(new ButtonEditor());
     }
 
     private void eliminarDetallesMaterial() {
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM detalles_desayunos WHERE desayuno_id IS NULL")) {
             preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void eliminarDetallesMaterialID(int id) {
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM detalles_desayunos WHERE id = ?")) {
+            preparedStatement.setInt(1,id);
+            preparedStatement.executeUpdate();
+            // JOptionPane.showMessageDialog(null,"Eliminado con exito");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -1154,27 +1148,32 @@ public class EditarDesayuno extends JFrame {
              PreparedStatement preparedStatement = mysql.prepareStatement(
                      "SELECT detalles_desayunos.*,'F' AS 'tipo', floristeria.nombre AS 'nombre', (detalles_desayunos.cantidad * detalles_desayunos.precio) AS 'total' FROM detalles_desayunos "+
                      " JOIN floristeria ON floristeria.id = detalles_desayunos.detalle_id "+
-                     " WHERE detalles_desayunos.desayuno_id IS NULL AND detalles_desayunos.tipo_detalle = 'floristeria' "+
+                     " WHERE detalles_desayunos.desayuno_id = ? AND detalles_desayunos.tipo_detalle = 'floristeria' "+
 
                      " UNION "+
 
                      " SELECT detalles_desayunos.*,'T' AS 'tipo',tarjetas.descripcion AS 'nombre', (detalles_desayunos.cantidad * detalles_desayunos.precio) AS 'total' FROM detalles_desayunos "+
                      " JOIN tarjetas ON tarjetas.id = detalles_desayunos.detalle_id "+
-                     " WHERE detalles_desayunos.desayuno_id IS NULL AND detalles_desayunos.tipo_detalle = 'tarjeta' "+
+                     " WHERE detalles_desayunos.desayuno_id = ? AND detalles_desayunos.tipo_detalle = 'tarjeta' "+
 
                      " UNION "+
 
                      " SELECT detalles_desayunos.*,'G' AS 'tipo',globos.codigo_globo AS 'nombre', (detalles_desayunos.cantidad * detalles_desayunos.precio) AS 'total' FROM detalles_desayunos "+
                      " JOIN globos ON globos.id = detalles_desayunos.detalle_id "+
-                     " WHERE detalles_desayunos.desayuno_id IS NULL AND detalles_desayunos.tipo_detalle = 'globo' "+
+                     " WHERE detalles_desayunos.desayuno_id = ? AND detalles_desayunos.tipo_detalle = 'globo' "+
 
                      " UNION "+
 
                      " SELECT detalles_desayunos.*,'M' AS 'tipo',materiales.nombre AS 'nombre', (detalles_desayunos.cantidad * detalles_desayunos.precio) AS 'total' FROM detalles_desayunos "+
                      " JOIN materiales ON materiales.id = detalles_desayunos.detalle_id "+
-                     " WHERE detalles_desayunos.desayuno_id IS NULL AND detalles_desayunos.tipo_detalle = 'material';"
+                     " WHERE detalles_desayunos.desayuno_id = ? AND detalles_desayunos.tipo_detalle = 'material';"
              )
         ) {
+            preparedStatement.setInt(1,this.id);
+            preparedStatement.setInt(2,this.id);
+            preparedStatement.setInt(3,this.id);
+            preparedStatement.setInt(4,this.id);
+
             ResultSet resultSet = preparedStatement.executeQuery();
 
             double precioTotalMateriales = 0.00;
@@ -1213,6 +1212,62 @@ public class EditarDesayuno extends JFrame {
         return new PoliModeloProducto(productosListTemporal);
     }
 
+    private List<PoliProducto> cargarListaOrignal() {
+        sql = new Conexion();
+
+        try (Connection mysql = sql.conectamysql();
+             PreparedStatement preparedStatement = mysql.prepareStatement(
+                     "SELECT detalles_desayunos.*,'F' AS 'tipo', floristeria.nombre AS 'nombre', (detalles_desayunos.cantidad * detalles_desayunos.precio) AS 'total' FROM detalles_desayunos "+
+                             " JOIN floristeria ON floristeria.id = detalles_desayunos.detalle_id "+
+                             " WHERE detalles_desayunos.desayuno_id = ? AND detalles_desayunos.tipo_detalle = 'floristeria' "+
+
+                             " UNION "+
+
+                             " SELECT detalles_desayunos.*,'T' AS 'tipo',tarjetas.descripcion AS 'nombre', (detalles_desayunos.cantidad * detalles_desayunos.precio) AS 'total' FROM detalles_desayunos "+
+                             " JOIN tarjetas ON tarjetas.id = detalles_desayunos.detalle_id "+
+                             " WHERE detalles_desayunos.desayuno_id = ? AND detalles_desayunos.tipo_detalle = 'tarjeta' "+
+
+                             " UNION "+
+
+                             " SELECT detalles_desayunos.*,'G' AS 'tipo',globos.codigo_globo AS 'nombre', (detalles_desayunos.cantidad * detalles_desayunos.precio) AS 'total' FROM detalles_desayunos "+
+                             " JOIN globos ON globos.id = detalles_desayunos.detalle_id "+
+                             " WHERE detalles_desayunos.desayuno_id = ? AND detalles_desayunos.tipo_detalle = 'globo' "+
+
+                             " UNION "+
+
+                             " SELECT detalles_desayunos.*,'M' AS 'tipo',materiales.nombre AS 'nombre', (detalles_desayunos.cantidad * detalles_desayunos.precio) AS 'total' FROM detalles_desayunos "+
+                             " JOIN materiales ON materiales.id = detalles_desayunos.detalle_id "+
+                             " WHERE detalles_desayunos.desayuno_id = ? AND detalles_desayunos.tipo_detalle = 'material';"
+             )
+        ) {
+            preparedStatement.setInt(1,this.id);
+            preparedStatement.setInt(2,this.id);
+            preparedStatement.setInt(3,this.id);
+            preparedStatement.setInt(4,this.id);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<PoliProducto> li = new ArrayList<>();
+            while (resultSet.next()) {
+                PoliProducto material = new PoliProductosGeneral();
+                material.setIdDetalle(resultSet.getInt("id"));
+                material.setID(resultSet.getInt("detalle_id"));
+                material.setNombre(resultSet.getString("nombre"));
+                material.setCantidad(resultSet.getInt("cantidad"));
+                material.setPrecio(resultSet.getDouble("precio"));
+                material.setTipo(resultSet.getString("tipo"));
+                li.add(material);
+            }
+
+            return li;
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            return new ArrayList<>();
+        }
+
+
+    }
     private PoliModeloFlor cargarDatosFloristeria() {
         sql = new Conexion();
         floristeriaList.clear();
@@ -1508,40 +1563,20 @@ public class EditarDesayuno extends JFrame {
         public void actionPerformed(ActionEvent e) {
             if (table != null) {
                 int modelRow = table.convertRowIndexToModel(row);
-                DefaultTableModel model = (DefaultTableModel) table.getModel(); // Utiliza DefaultTableModel
-
-                // Obtén la columna "total" (suponiendo que está en el índice 4)
-                int totalColumnIndex = 4;
-
-                // Obtén el total antes de eliminar la fila
-                double totalAntesDeEliminar = calcularTotalColumna(model, totalColumnIndex);
-
-                // Elimina la fila del modelo sin afectar la base de datos
+                PoliModeloProducto model = (PoliModeloProducto) table.getModel();
+                PoliProducto producto = model.getProducto(modelRow);
                 model.removeRow(modelRow);
 
-                // Notifica a la tabla que hubo un cambio en los datos
-                model.fireTableDataChanged();
+                eliminarDetallesMaterialID(producto.getIdDetalle());
 
-                // Calcula el total después de eliminar la fila
-                double totalDespuésDeEliminar = calcularTotalColumna(model, totalColumnIndex);
+                jtableMateriales.setModel(model);
 
-                // Asigna el nuevo total a lbl8
-                lbl8.setText(String.format("%.2f", totalDespuésDeEliminar));
-
-                // Recalcula lbl9 y actualiza lbl10
-                double manoObra = 0.0;
-                try {
-                    manoObra = Double.parseDouble(campoManoObra.getText().replace(",", "."));
-                } catch (NumberFormatException ex) {
-                    // Manejar la excepción si la entrada de mano de obra no es válida
-                }
-                lbl9.setText(String.format("%.2f", manoObra));
-
-                // Calcula lbl10 como la suma de lbl8 y lbl9
-                double total = totalDespuésDeEliminar + manoObra;
-                lbl10.setText(String.format("%.2f", total));
-
+                calcularTotalTabla();
+                actualizarLbl8y10();
                 configurarTablaMateriales();
+
+                jtableMateriales.getColumnModel().getColumn(5).setCellRenderer(new ButtonRenderer());
+                jtableMateriales.getColumnModel().getColumn(5).setCellEditor(new ButtonEditor());
             }
         }
 
@@ -1562,31 +1597,19 @@ public class EditarDesayuno extends JFrame {
 
     private double calcularTotalTabla() {
         double sumaTotal = 0.0;
-        TableModel modelo = jtableMateriales.getModel();
-        boolean modeloValido = false; // Indicador para verificar si el modelo es válido
+        PoliModeloProducto modelo = (PoliModeloProducto) jtableMateriales.getModel();
 
-        if (modelo instanceof DefaultTableModel) {
-            DefaultTableModel modeloProductos = (DefaultTableModel) modelo;
-            int rowCount = modeloProductos.getRowCount();
-            modeloValido = true; // El modelo es válido
+        List<PoliProducto> lista = modelo.getList();
 
-            for (int i = 0; i < rowCount; i++) {
-                try {
-                    Object valorCelda = modeloProductos.getValueAt(i, 4); // Suponiendo que la columna "total" está en el índice 4 (índice basado en 0)
-                    if (valorCelda != null) {
-                        String totalStr = valorCelda.toString();
-                        double total = extraerValorNumerico(totalStr);
-                        sumaTotal += total;
-                    }
-                } catch (NumberFormatException e) {
-                    System.err.println("Se encontró un formato de número no válido. Se omite el cálculo para la fila " + i);
-                    System.err.println("Valor que causa el error: " + modeloProductos.getValueAt(i, 4));
-                }
+        for (PoliProducto p: lista) {
+            try {
+
+                sumaTotal += p.getCantidad() * p.getPrecio();
+
+            } catch (NumberFormatException e) {
+                System.err.println("Se encontró un formato de número no válido. Se omite el cálculo para la fila " + p.getID());
+                System.err.println("Valor que causa el error: " + p.getNombre());
             }
-        }
-
-        if (!modeloValido) {
-            //System.err.println("El modelo no es una instancia de DefaultTableModel.");
         }
 
         // Actualizar el lbl8 con el total calculado
@@ -1648,6 +1671,43 @@ public class EditarDesayuno extends JFrame {
 
         jtableMateriales.setModel(cargarDetallesMateriales());
 
+        String imagenNombre = this.originalDesayuno.getImagen();
+        nombreArchivoImagen = imagenNombre;  // Asigna el valor del nombre de la imagen
+        String imagenPath = "img/desayunos/" + imagenNombre;
+
+        try {
+            File imagenFile = new File(imagenPath);
+            if (imagenFile.exists()) {
+                Image imagenOriginal = ImageIO.read(imagenFile);
+
+                // Ajusta el tamaño de la imagen para que se ajuste al tamaño predeterminado del panel
+                int anchoPanelPredeterminado = 300;
+                int altoPanelPredeterminado = 300;
+
+                // Calcula las proporciones de escalamiento para ajustar la imagen al tamaño del panel
+                double proporcionAncho = (double) anchoPanelPredeterminado / imagenOriginal.getWidth(null);
+                double proporcionAlto = (double) altoPanelPredeterminado / imagenOriginal.getHeight(null);
+
+                // Escala la imagen utilizando la proporción más pequeña para evitar distorsiones
+                double proporcionEscalamiento = Math.min(proporcionAncho, proporcionAlto);
+                int anchoEscalado = (int) (imagenOriginal.getWidth(null) * proporcionEscalamiento);
+                int altoEscalado = (int) (imagenOriginal.getHeight(null) * proporcionEscalamiento);
+
+                // Crea una nueva imagen escalada con las dimensiones calculadas
+                Image imagenEscalada = imagenOriginal.getScaledInstance(anchoEscalado, altoEscalado, Image.SCALE_SMOOTH);
+
+                // Crea un ImageIcon a partir de la imagen escalada
+                ImageIcon imagenIcono = new ImageIcon(imagenEscalada);
+
+                // Actualiza la etiqueta lblImagen con el ImageIcon
+                jlabelImagen.setIcon(imagenIcono);
+            } else {
+                System.out.println("No se encontró la imagen: " + imagenPath);
+            }
+        } catch (Exception e) {
+            System.out.println("Error al cargar la imagen: " + e.getMessage());
+        }
+
         calcularTotalTabla();
         actualizarLbl8y10();
         configurarTablaMateriales();
@@ -1657,7 +1717,7 @@ public class EditarDesayuno extends JFrame {
 
     }
 
-    private void mostrar() {
+    /*private void mostrar() {
         sql = new Conexion();
         mysql = sql.conectamysql();
         DecimalFormat decimalFormat = new DecimalFormat("###,###.00");
@@ -1712,46 +1772,11 @@ public class EditarDesayuno extends JFrame {
                 JOptionPane.showMessageDialog(null, "El desayuno con el ID " + this.id + " no fue encontrado.", "Error", JOptionPane.ERROR_MESSAGE);
             }
 
-            String imagenNombre = resultSet.getString("imagen");
-            nombreArchivoImagen = imagenNombre;  // Asigna el valor del nombre de la imagen
-            String imagenPath = "img/desayunos/" + imagenNombre;
 
-            try {
-                File imagenFile = new File(imagenPath);
-                if (imagenFile.exists()) {
-                    Image imagenOriginal = ImageIO.read(imagenFile);
-
-                    // Ajusta el tamaño de la imagen para que se ajuste al tamaño predeterminado del panel
-                    int anchoPanelPredeterminado = 300;
-                    int altoPanelPredeterminado = 300;
-
-                    // Calcula las proporciones de escalamiento para ajustar la imagen al tamaño del panel
-                    double proporcionAncho = (double) anchoPanelPredeterminado / imagenOriginal.getWidth(null);
-                    double proporcionAlto = (double) altoPanelPredeterminado / imagenOriginal.getHeight(null);
-
-                    // Escala la imagen utilizando la proporción más pequeña para evitar distorsiones
-                    double proporcionEscalamiento = Math.min(proporcionAncho, proporcionAlto);
-                    int anchoEscalado = (int) (imagenOriginal.getWidth(null) * proporcionEscalamiento);
-                    int altoEscalado = (int) (imagenOriginal.getHeight(null) * proporcionEscalamiento);
-
-                    // Crea una nueva imagen escalada con las dimensiones calculadas
-                    Image imagenEscalada = imagenOriginal.getScaledInstance(anchoEscalado, altoEscalado, Image.SCALE_SMOOTH);
-
-                    // Crea un ImageIcon a partir de la imagen escalada
-                    ImageIcon imagenIcono = new ImageIcon(imagenEscalada);
-
-                    // Actualiza la etiqueta lblImagen con el ImageIcon
-                    jlabelImagen.setIcon(imagenIcono);
-                } else {
-                    System.out.println("No se encontró la imagen: " + imagenPath);
-                }
-            } catch (Exception e) {
-                System.out.println("Error al cargar la imagen: " + e.getMessage());
-            }
 
         } catch (SQLException error) {
             System.out.println(error.getMessage());
         }
     }
-
+*/
 }

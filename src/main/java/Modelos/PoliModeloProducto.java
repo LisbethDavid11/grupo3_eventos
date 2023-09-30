@@ -14,6 +14,12 @@ public class PoliModeloProducto extends AbstractTableModel {
         this.productos = productos;
     }
 
+    public List<PoliProducto> getList() {
+        return this.productos;
+    }
+    public PoliProducto getProducto(int id) {
+        return this.productos.get(id);
+    }
     @Override
     public int getRowCount() {
         return productos.size();

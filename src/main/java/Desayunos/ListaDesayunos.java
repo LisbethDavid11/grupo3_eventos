@@ -254,6 +254,7 @@ public class ListaDesayunos extends JFrame {
             while (resultSet.next()) {
                 Desayuno desayuno = new Desayuno();
                 desayuno.setId(resultSet.getInt("id"));
+                desayuno.setImagen(resultSet.getString("imagen"));
                 desayuno.setNombre(resultSet.getString("nombre"));
                 desayuno.setDescripcion(resultSet.getString("descripcion"));
                 desayuno.setProveedor_id(resultSet.getInt("proveedor_id"));

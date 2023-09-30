@@ -3,7 +3,7 @@ import javax.swing.*;
 
 public class Desayuno {
     private int id;
-    private ImageIcon imagen;
+    private String imagen;
     private String nombre;
     private String descripcion;
     private int proveedor_id;
@@ -20,7 +20,7 @@ public class Desayuno {
         return new Object[] {id, imagen, nombre, descripcion, proveedor_id, cantidad, precio_desayuno, mano_obra};
     }
 
-    public Desayuno(int id, ImageIcon imagen, String nombre, String descripcion, int proveedor_id, int cantidad, double precio_desayuno, double mano_obra) {
+    public Desayuno(int id, String imagen, String nombre, String descripcion, int proveedor_id, int cantidad, double precio_desayuno, double mano_obra) {
         this.id = id;
         this.imagen = imagen;
         this.nombre = nombre;
@@ -39,11 +39,11 @@ public class Desayuno {
         this.id = id;
     }
 
-    public ImageIcon getImagen() {
+    public String getImagen() {
         return imagen;
     }
 
-    public void setImagen(ImageIcon imagen) {
+    public void setImagen(String imagen) {
         this.imagen = imagen;
     }
 
