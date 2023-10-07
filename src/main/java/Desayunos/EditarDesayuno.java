@@ -326,7 +326,14 @@ public class EditarDesayuno extends JFrame {
                 agregarFloresButton.setVisible(true);
                 agregarGloboButton.setVisible(true);
                 agregarTarjetasButton.setVisible(true);
-                cargarDatosEditar();
+                // Actualizar la tabla con los detalles actualizados
+                jtableMateriales.setModel(cargarDetallesMateriales());
+                jtableMateriales.getColumnModel().getColumn(5).setCellRenderer(new EditarDesayuno.ButtonRenderer());
+                jtableMateriales.getColumnModel().getColumn(5).setCellEditor(new EditarDesayuno.ButtonEditor());
+
+                configurarTablaMateriales();
+                actualizarLbl8y10();
+
             }
         });
 

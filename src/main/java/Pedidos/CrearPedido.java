@@ -1,5 +1,6 @@
 package Pedidos;
 
+import Materiales.TextPrompt;
 import Modelos.*;
 import Objetos.*;
 import org.jdatepicker.impl.JDatePanelImpl;
@@ -58,6 +59,7 @@ public class CrearPedido extends JFrame {
     private Map<String,String> tiposDescripcion = new HashMap<>();
     private Map<String,String> tiposTablas = new HashMap<>();
     private int selectTabla = 1;
+    private Materiales.TextPrompt placeholder = new TextPrompt(" Buscar por nombre de producto", campoBusquedaMateriales);
 
     Color darkColorRed = new Color(244, 67, 54);
     Color darkColorBlue = new Color(33, 150, 243);
