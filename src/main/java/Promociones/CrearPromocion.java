@@ -182,6 +182,9 @@ public class CrearPromocion extends JFrame {
         panel5.setBackground(Color.decode("#F5F5F5"));
         panel6.setBackground(Color.decode("#F5F5F5"));
         panel7.setBackground(Color.decode("#F5F5F5"));
+        panelFechaFinal.setBackground(Color.decode("#F5F5F5"));
+        panelFechaInicial.setBackground(Color.decode("#F5F5F5"));
+        jpanelDescripcion.setBackground(Color.decode("#F5F5F5"));
 
         DefaultTableModel modeloProductos = new DefaultTableModel();
 
