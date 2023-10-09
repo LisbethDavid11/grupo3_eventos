@@ -1,24 +1,25 @@
 package Modelos;
 
 import Objetos.Conexion;
-import Objetos.PoliMaterial;
+import Objetos.PoliGlobo;
+import Objetos.PoliTarjeta;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
 
-public class PoliModeloMaterial extends AbstractTableModel {
+public class PoliModeloTargetas extends AbstractTableModel {
     private final String[] columnas = {"Id", "Nombre", "Cantidad", "Precio", "Total"};
-    private final List<PoliMaterial> materiales;
+    private final List<PoliTarjeta> targeta;
     private final Conexion sql;
 
-    public PoliModeloMaterial(List<PoliMaterial> materiales, Conexion sql) {
-        this.materiales = materiales;
+    public PoliModeloTargetas(List<PoliTarjeta> targeta, Conexion sql) {
+        this.targeta = targeta;
         this.sql = sql;
     }
 
     @Override
     public int getRowCount() {
-        return materiales.size();
+        return targeta.size();
     }
 
     @Override
@@ -33,26 +34,25 @@ public class PoliModeloMaterial extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        PoliMaterial material = materiales.get(rowIndex);
+        PoliTarjeta targeta = this.targeta.get(rowIndex);
 
         switch (columnIndex) {
             case 0: // ID
-                return "MA-" + material.getID();
-            case 1: // Nombre
-                return material.getNombre();
+                return "T-" + targeta.getID();
+            case 1: // Código
+                return targeta.getNombre();
             case 2: // Cantidad
-                return material.getCantidad();
+                return targeta.getCantidad();
             case 3: // Precio
-                double precio = material.getPrecio();
+                double precio = targeta.getPrecio();
                 if (precio < 0) {
                     precio = 0;
                 }
-                String precioFormateado = String.format("L. %.2f", precio);
+                String precioFormateado = String.format(" L. %,.2f", precio);
                 return precioFormateado;
-            case 4: // Total (Precio * Cantidad)
-                int cantidad = material.getCantidad();
-                double total = material.getPrecio() * cantidad;
-                String totalFormateado = String.format("%.2f", total);
+            case 4: // Total
+                double total = targeta.getPrecio() * targeta.getCantidad();
+                String totalFormateado = String.format(" L. %,.2f", total);
                 return totalFormateado;
             default:
                 return null;

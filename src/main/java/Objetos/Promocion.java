@@ -1,8 +1,11 @@
 package Objetos;
 
+import java.util.Date;
+
 public class Promocion {
     private int id;
     private String descripcion;
+    private double precio;
     private java.util.Date inicio;
     private java.util.Date fin;
 
@@ -15,9 +18,10 @@ public class Promocion {
         return new Object[]{id, descripcion, inicio, fin};
     }
 
-    public Promocion(int id, String descripcion, java.util.Date inicio, java.util.Date fin) {
+    public Promocion(int id, String descripcion, double precio, Date inicio, Date fin) {
         this.id = id;
         this.descripcion = descripcion;
+        this.precio = precio;
         this.inicio = inicio;
         this.fin = fin;
     }
@@ -52,5 +56,13 @@ public class Promocion {
 
     public void setFin(java.util.Date fin) {
         this.fin = fin;
+    }
+
+    public double getPrecio() {
+        return precio;
+    }
+
+    public void setPrecio(double precio) {
+        this.precio = precio;
     }
 }

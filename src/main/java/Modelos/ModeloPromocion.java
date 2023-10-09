@@ -12,7 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class ModeloPromocion extends AbstractTableModel {
-    private final String[] columnas = {"N°", "Descripción", "Fecha Inicial", "Fecha Final"};
+    private final String[] columnas = {"N°", "Descripción","Precio", "Fecha Inicial", "Fecha Final"};
     private final List<Promocion> promociones;
     private final Conexion sql;
     private final SimpleDateFormat fechaFormat = new SimpleDateFormat("dd 'de' MMMM',' yyyy");
@@ -45,9 +45,11 @@ public class ModeloPromocion extends AbstractTableModel {
                 return rowIndex + 1;
             case 1: // Descripción
                 return "   " + promocion.getDescripcion();
-            case 2: // Fecha de inicio
+            case 2: // precio
+                return String.format("L. %.2f",promocion.getPrecio());
+            case 3: // Fecha de inicio
                 return "   " + fechaFormat.format(promocion.getInicio());
-            case 3: // Fecha de fin
+            case 4: // Fecha de fin
                 return "   " + fechaFormat.format(promocion.getFin());
             default:
                 return null;

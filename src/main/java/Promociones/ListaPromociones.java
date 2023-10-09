@@ -4,6 +4,7 @@ import Manualidades.TextPrompt;
 import Modelos.ModeloPromocion;
 import Objetos.Conexion;
 import Objetos.Promocion;
+import com.toedter.calendar.JDateChooser;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -15,21 +16,29 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class ListaPromociones extends JFrame {
+    private final JDateChooser fecha_desde,fecha_hasta;
     private JPanel panelPrincipal, panelTitulo, panelA, panelB;
     private JButton botonEditar, botonCrear, botonVer, botonAdelante, botonAtras;
     private JTextField campoBusqueda;
-    private TextPrompt placeholder = new TextPrompt(" Buscar por descripción, fecha inicial o fecha final", campoBusqueda);
+    private TextPrompt placeholder = new TextPrompt(" Buscar por descripción y precio", campoBusqueda);
     private JLabel lblPagina;
     private JLabel lblTitulo;
     private JTable listaPromociones;
+    private JPanel panel_fecha;
     private List<Promocion> listaPromocion;
     private int pagina = 0;
     private Connection mysql;
@@ -44,10 +53,28 @@ public class ListaPromociones extends JFrame {
 
     public ListaPromociones() {
         super("");
-        setSize(850, 505);
+        setSize(950, 505);
         setLocationRelativeTo(null);
         setContentPane(panelPrincipal);
         campoBusqueda.setText("");
+
+
+
+        JLabel jl_desde = new JLabel("Desde");
+        panel_fecha.add(jl_desde);
+        fecha_desde = new JDateChooser(new Date());
+        fecha_desde.setDateFormatString("yyyy-MM-dd");
+        fecha_desde.setPreferredSize(new Dimension(90, 30));
+        panel_fecha.add(fecha_desde);
+
+        JLabel jl_hasta = new JLabel("Hasta");
+        panel_fecha.add(jl_hasta);
+        fecha_hasta = new JDateChooser(new Date());
+        fecha_hasta.setDateFormatString("yyyy-MM-dd");
+        fecha_hasta.setPreferredSize(new Dimension(90, 30));
+        panel_fecha.add(fecha_hasta);
+
+        panel_fecha.setPreferredSize(new Dimension(270, 30));
 
         listaPromociones.setModel(cargarDatos());
         configurarTablaManualidades();
@@ -98,6 +125,33 @@ public class ListaPromociones extends JFrame {
                 lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
+
+        fecha_desde.getDateEditor().getUiComponent().addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+                busqueda = campoBusqueda.getText();
+                pagina = 0;
+                botonAdelante.setEnabled((pagina + 1) < getTotalPageCount());
+                botonAtras.setEnabled(pagina > 0);
+                listaPromociones.setModel(cargarDatos());
+                configurarTablaManualidades();
+                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+            }
+        });
+
+        fecha_hasta.getDateEditor().getUiComponent().addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+                busqueda = campoBusqueda.getText();
+                pagina = 0;
+                botonAdelante.setEnabled((pagina + 1) < getTotalPageCount());
+                botonAtras.setEnabled(pagina > 0);
+                listaPromociones.setModel(cargarDatos());
+                configurarTablaManualidades();
+                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+            }
+        });
+
 
 
         botonCrear.addActionListener(new ActionListener() {
@@ -187,13 +241,15 @@ public class ListaPromociones extends JFrame {
 
         columnModel.getColumn(0).setPreferredWidth(20);
         columnModel.getColumn(1).setPreferredWidth(280);
-        columnModel.getColumn(2).setPreferredWidth(150);
+        columnModel.getColumn(2).setPreferredWidth(50);
         columnModel.getColumn(3).setPreferredWidth(150);
+        columnModel.getColumn(4).setPreferredWidth(150);
 
         columnModel.getColumn(0).setCellRenderer(new CenterAlignedRenderer());
         columnModel.getColumn(1).setCellRenderer(new LeftAlignedRenderer());
-        columnModel.getColumn(2).setCellRenderer(new LeftAlignedRenderer());
+        columnModel.getColumn(2).setCellRenderer(new RightAlignedRenderer());
         columnModel.getColumn(3).setCellRenderer(new LeftAlignedRenderer());
+        columnModel.getColumn(4).setCellRenderer(new LeftAlignedRenderer());
     }
 
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
@@ -236,16 +292,30 @@ public class ListaPromociones extends JFrame {
         sql = new Conexion();
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement(
-                     "SELECT * FROM promociones " +
-                             "WHERE descripcion LIKE CONCAT('%', ?, '%') OR " + // Filtro por descripción
-                             "inicio LIKE CONCAT('%', ?, '%') OR " + // Filtro por fecha de inicio
-                             "fin LIKE CONCAT('%', ?, '%') " + // Filtro por fecha de fin
+                     "SELECT promociones.*,de.total " +
+                             "FROM promociones " +
+                             "  INNER JOIN (SELECT detalles_promociones.promocion_id, " +
+                             " sum(detalles_promociones.cantidad * detalles_promociones.precio) AS total " +
+                             " FROM detalles_promociones" +
+                             " GROUP BY 1) AS de ON de.promocion_id = promociones.id " +
+                             "WHERE (descripcion LIKE CONCAT('%', ?, '%') or" +
+                             " de.total LIKE CONCAT('%', ?, '%')) and " +
+                             " if( ? = ? ,TRUE, promociones.inicio BETWEEN ? and ? )" +
                              "LIMIT ?, 20")) {  // Límite de 20 registros por página
 
             preparedStatement.setString(1, busqueda);
             preparedStatement.setString(2, busqueda);
-            preparedStatement.setString(3, busqueda);
-            preparedStatement.setInt(4, pagina * 20); // Calcula el offset según la página actual
+
+            SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd"); // Define el formato de fecha deseado
+            String fechaDesde = formato.format(fecha_desde.getDate()); // Convierte la fecha a una cadena de texto en el formato especificado
+            String fechaHasta = formato.format(fecha_hasta.getDate());
+
+            preparedStatement.setString(3, fechaDesde );
+            preparedStatement.setString(4, fechaHasta);
+            preparedStatement.setString(5, fechaDesde);
+            preparedStatement.setString(6, fechaHasta);
+
+            preparedStatement.setInt(7, pagina * 20); // Calcula el offset según la página actual
 
             ResultSet resultSet = preparedStatement.executeQuery();
             listaPromocion = new ArrayList<>();
@@ -254,6 +324,7 @@ public class ListaPromociones extends JFrame {
                 Promocion promocion = new Promocion();
                 promocion.setId(resultSet.getInt("id"));
                 promocion.setDescripcion(resultSet.getString("descripcion"));
+                promocion.setPrecio(resultSet.getDouble("total"));
                 promocion.setInicio(resultSet.getDate("inicio"));
                 promocion.setFin(resultSet.getDate("fin"));
                 listaPromocion.add(promocion);
@@ -277,18 +348,36 @@ public class ListaPromociones extends JFrame {
         int count = 0;
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement(
-                     "SELECT COUNT(*) AS total FROM promociones " +
-                             "WHERE descripcion LIKE CONCAT('%', ?, '%') OR " + // Filtro por descripción
-                             "inicio LIKE CONCAT('%', ?, '%') OR " + // Filtro por fecha de inicio
-                             "fin LIKE CONCAT('%', ?, '%') ")) { // Filtro por fecha de fin
+                     "SELECT promociones.*,de.total " +
+                             "FROM promociones " +
+                             "  INNER JOIN (SELECT detalles_promociones.promocion_id, " +
+                             " sum(detalles_promociones.cantidad * detalles_promociones.precio) AS total " +
+                             " FROM detalles_promociones" +
+                             " GROUP BY 1) AS de ON de.promocion_id = promociones.id " +
+                             "WHERE (descripcion LIKE CONCAT('%', ?, '%') or " +
+                             " de.total LIKE CONCAT('%', ?, '%')) and  " +
+                             " if( ? = ? ,TRUE, promociones.inicio BETWEEN ? and ? )")) { // Filtro por fecha de fin
 
             preparedStatement.setString(1, busqueda);
             preparedStatement.setString(2, busqueda);
-            preparedStatement.setString(3, busqueda);
+            SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd"); // Define el formato de fecha deseado
+            String fechaDesde = formato.format(fecha_desde.getDate()); // Convierte la fecha a una cadena de texto en el formato especificado
+            String fechaHasta = formato.format(fecha_hasta.getDate());
+
+            preparedStatement.setString(3, fechaDesde );
+            preparedStatement.setString(4, fechaHasta);
+            preparedStatement.setString(5, fechaDesde);
+            preparedStatement.setString(6, fechaHasta);
+
             ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                count = resultSet.getInt("total");
+
+            int rowCount = 0;
+
+            while (resultSet.next()) {
+                rowCount++;
             }
+            count = rowCount;
+
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
@@ -308,4 +397,5 @@ public class ListaPromociones extends JFrame {
         listaPromociones.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         listaPromociones.setVisible(true);
     }
+
 }

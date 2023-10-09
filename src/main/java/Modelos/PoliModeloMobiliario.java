@@ -39,7 +39,7 @@ public class PoliModeloMobiliario extends AbstractTableModel {
             case 0: // ID
                 return "M-" + mobiliarioItem.getID();
             case 1: // Nombre
-                return mobiliarioItem.getNombreMobiliario();
+                return mobiliarioItem.getNombre();
             case 2: // Color
                 return mobiliarioItem.getColor();
             case 3: // Tipo de Evento

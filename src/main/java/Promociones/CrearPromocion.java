@@ -2,6 +2,7 @@ package Promociones;
 import Materiales.TextPrompt;
 import Modelos.*;
 import Objetos.*;
+import com.toedter.calendar.JDateChooser;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
@@ -27,7 +28,6 @@ public class CrearPromocion extends JFrame {
     private JTextArea campoDescripcion;
     private JButton botonLimpiar, botonGuardar, botonCancelar, cancelarButton;
     private JPanel panel1, panel2, panel3, panel5, panel6, panel7, jpanelDescripcion;
-    private JButton agregarMobiliarioButton, agregarGloboButton, agregarArregloButton, agregarFloresButton;
     private JTable tablaProductos;
     private JScrollPane panel4;
     private JButton agregarButton;
@@ -35,17 +35,23 @@ public class CrearPromocion extends JFrame {
     private TextPrompt placeholder = new TextPrompt(" Buscar por nombre de producto", campoBusquedaMateriales);
     private JLabel jtextCatidadTotalMateriales;
     private JPanel panelFechaInicial, panelFechaFinal;
+    private JComboBox comboSeccion;
+    private JLabel lablePrecio;
+    private JTextField textField1;
     private int selectTabla = 1;
     private List<PoliProducto> productosListTemporal = new ArrayList<>();
     private List<PoliMobiliario> mobiliarioList = new ArrayList<>();
+    private List<PoliDesayuno> desayunoList = new ArrayList<>();
     private List<PoliMobiliario> mobiliarioListTemporal = new ArrayList<>();
     private List<PoliFlor> floristeriaList = new ArrayList<>();
     private List<PoliFlor> floristeriaListTemporal = new ArrayList<>();
     private List<PoliGlobo> globoList = new ArrayList<>();
     private List<PoliGlobo> globolListTemporal = new ArrayList<>();
     private List<PoliArreglo> arregloList = new ArrayList<>();
+    private List<PoliTarjeta> targetList = new ArrayList<>();
     private List<PoliArreglo> arregloListTemporal = new ArrayList<>();
     private List<PoliManualidad> manualidadList = new ArrayList<>();
+    private List<PoliMaterial> materialList = new ArrayList<>();
     private List<PoliManualidad> manualidadListTemporal = new ArrayList<>();
     private Map<String,String> tiposDescripcion = new HashMap<>();
     private Map<String,String> tiposTablas = new HashMap<>();
@@ -189,31 +195,19 @@ public class CrearPromocion extends JFrame {
         // Color de texto de los botones
         botonCancelar.setForeground(Color.WHITE);
         botonGuardar.setForeground(Color.WHITE);
-        agregarMobiliarioButton.setForeground(Color.DARK_GRAY);
         botonLimpiar.setForeground(Color.WHITE);
         cancelarButton.setForeground(Color.WHITE);
         agregarButton.setForeground(Color.WHITE);
-        agregarGloboButton.setForeground(Color.DARK_GRAY);
-        agregarArregloButton.setForeground(Color.DARK_GRAY);
-        agregarFloresButton.setForeground(Color.DARK_GRAY);
 
         // Color de fondo de los botones
         botonCancelar.setBackground(darkColorBlue);
         botonGuardar.setBackground(darkColorAqua);
-        agregarMobiliarioButton.setBackground(lightColorAmber);
-        agregarFloresButton.setBackground(lightColorAqua);
-        agregarGloboButton.setBackground(lightColorCyan);
-        agregarArregloButton.setBackground(lightColorRosado);
         botonLimpiar.setBackground(darkColorRed);
         agregarButton.setBackground(darkColorCyan);
         cancelarButton.setBackground(darkColorRed);
 
         botonCancelar.setFocusPainted(false);
         botonGuardar.setFocusPainted(false);
-        agregarMobiliarioButton.setFocusPainted(false);
-        agregarArregloButton.setFocusPainted(false);
-        agregarFloresButton.setFocusPainted(false);
-        agregarGloboButton.setFocusPainted(false);
         botonLimpiar.setFocusPainted(false);
         cancelarButton.setFocusPainted(false);
         agregarButton.setFocusPainted(false);
@@ -242,72 +236,12 @@ public class CrearPromocion extends JFrame {
         campoDescripcion.setForeground(textColor);
         campoDescripcion.setBackground(new Color(215, 215, 215));
 
-        agregarMobiliarioButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                campoBusquedaMateriales.setVisible(true);
-                agregarButton.setVisible(true);
-                cancelarButton.setVisible(true);
-                agregarMobiliarioButton.setVisible(false);
-                agregarFloresButton.setVisible(false);
-                agregarGloboButton.setVisible(false);
-                agregarArregloButton.setVisible(false);
-                tablaProductos.setModel(cargarDatosMobiliario());
-            }
-        });
-
-        agregarFloresButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                campoBusquedaMateriales.setVisible(true);
-                agregarButton.setVisible(true);
-                cancelarButton.setVisible(true);
-                agregarMobiliarioButton.setVisible(false);
-                agregarFloresButton.setVisible(false);
-                agregarGloboButton.setVisible(false);
-                agregarArregloButton.setVisible(false);
-                tablaProductos.setModel(cargarDatosFloristeria());
-            }
-        });
-
-        agregarGloboButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                campoBusquedaMateriales.setVisible(true);
-                agregarButton.setVisible(true);
-                cancelarButton.setVisible(true);
-                agregarMobiliarioButton.setVisible(false);
-                agregarFloresButton.setVisible(false);
-                agregarGloboButton.setVisible(false);
-                agregarArregloButton.setVisible(false);
-                tablaProductos.setModel(cargarDatosGlobo());
-            }
-        });
-
-        agregarArregloButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                campoBusquedaMateriales.setVisible(true);
-                agregarButton.setVisible(true);
-                cancelarButton.setVisible(true);
-                agregarMobiliarioButton.setVisible(false);
-                agregarFloresButton.setVisible(false);
-                agregarGloboButton.setVisible(false);
-                agregarArregloButton.setVisible(false);
-                tablaProductos.setModel(cargarDatosArreglo());
-            }
-        });
-
         cancelarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 campoBusquedaMateriales.setVisible(false);
                 agregarButton.setVisible(false);
                 cancelarButton.setVisible(false);
-                agregarMobiliarioButton.setVisible(true);
-                agregarFloresButton.setVisible(true);
-                agregarGloboButton.setVisible(true);
-                agregarArregloButton.setVisible(true);
                 tablaProductos.setModel(cargarDetallesMateriales());
                 //actualizarLbl8y10();
                 configurarTablaMateriales();
@@ -354,7 +288,7 @@ public class CrearPromocion extends JFrame {
                         productosListTemporal.clear();
                         eliminarDetallesMaterial();
                         limpiarTablaMateriales();
-                        lbl4.setText("0.00");
+                        lbl4.setText("");
                         lbl6.setText("0.00");
 
                         PoliModeloProducto nuevoModelo = new PoliModeloProducto(new ArrayList<>());
@@ -550,7 +484,17 @@ public class CrearPromocion extends JFrame {
         campoBusquedaMateriales.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
-                tablaProductos.setModel(cargarDatosMobiliario());
+                switch (selectTabla) {
+                    case 1 -> tablaProductos.setModel(cargarDatosDesayuno());
+                    case 2 -> tablaProductos.setModel(cargarDatosMobiliario());
+                    case 3 -> tablaProductos.setModel(cargarDatosFloristeria());
+                    case 4 -> tablaProductos.setModel(cargarDatosGlobo());
+                    case 5 -> tablaProductos.setModel(cargarDatosArreglo());
+                    case 6 -> tablaProductos.setModel(cargarDatosTargetas());
+                    case 7 -> tablaProductos.setModel(cargarDatosMaterial());
+
+                }
+
             }
         });
 
@@ -559,10 +503,13 @@ public class CrearPromocion extends JFrame {
             public void actionPerformed(ActionEvent e) {
 
                 Map<Integer,List> listas = new HashMap<>();
-                listas.put(2,floristeriaList);
-                listas.put(3,mobiliarioList);
+                listas.put(1,desayunoList);
+                listas.put(2,mobiliarioList);
+                listas.put(3,floristeriaList);
                 listas.put(4,globoList);
                 listas.put(5,arregloList);
+                listas.put(6,targetList);
+                listas.put(7,materialList);
 
                 if (tablaProductos.getSelectedRow() == -1) {
                     // Crea un botón personalizado
@@ -623,7 +570,7 @@ public class CrearPromocion extends JFrame {
 
                 }else  if ( l instanceof PoliMaterial p){
                     id_materialEntero = p.getID();
-                    id_material = "M-"+p.getID();
+                    id_material = "MA-"+p.getID();
 
                 }else  if ( l instanceof PoliGlobo p){
                     id_materialEntero = p.getID();
@@ -632,7 +579,21 @@ public class CrearPromocion extends JFrame {
                 }else  if ( l instanceof PoliTarjeta p){
                     id_materialEntero = p.getID();
                     id_material = "T-"+p.getID();
+
+                }else  if ( l instanceof PoliDesayuno p){
+                    id_materialEntero = p.getID();
+                    id_material = "D-"+p.getID();
+
+                }else  if ( l instanceof PoliArreglo p){
+                    id_materialEntero = p.getID();
+                    id_material = "A-"+p.getID();
+
+                }else  if ( l instanceof PoliMobiliario p){
+                    id_materialEntero = p.getID();
+                    id_material = "MO-"+p.getID();
+
                 }
+
 
                 for (PoliProducto materialTemporal : productosListTemporal) {
                     String id = materialTemporal.getTipo()+"-"+materialTemporal.getID();
@@ -666,7 +627,7 @@ public class CrearPromocion extends JFrame {
                     // Crear el material temporal y agregarlo a la lista temporal
                     PoliProductosGeneral materialTemporal = new PoliMaterial();
                     materialTemporal.setID(id_materialEntero);
-                    materialTemporal.setNombre( l.getNombre());
+                    materialTemporal.setNombre(l.getNombre());
                     materialTemporal.setCantidad(cantidadMaterial);
                     materialTemporal.setPrecio(l.getPrecio());
                     materialTemporal.setTipo(l.getTipo());
@@ -675,10 +636,6 @@ public class CrearPromocion extends JFrame {
                     campoBusquedaMateriales.setVisible(false);
                     agregarButton.setVisible(false);
                     cancelarButton.setVisible(false);
-                    agregarMobiliarioButton.setVisible(true);
-                    agregarFloresButton.setVisible(true);
-                    agregarGloboButton.setVisible(true);
-                    agregarArregloButton.setVisible(true);
                     // Actualizar la tabla con los detalles actualizados
                     tablaProductos.setModel(cargarDetallesMateriales());
                     tablaProductos.getColumnModel().getColumn(5).setCellRenderer(new CrearPromocion.ButtonRenderer());
@@ -721,6 +678,57 @@ public class CrearPromocion extends JFrame {
                     // Muestra el diálogo
                     dialog.setVisible(true);
 
+                }
+            }
+        });
+        comboSeccion.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                switch (comboSeccion.getSelectedItem().toString()) {
+                    case "MOBILIARIO" -> {
+                        campoBusquedaMateriales.setVisible(true);
+                        agregarButton.setVisible(true);
+                        cancelarButton.setVisible(true);
+                        tablaProductos.setModel(cargarDatosMobiliario());
+                    }
+                    case "FLORES" -> {
+                        campoBusquedaMateriales.setVisible(true);
+                        agregarButton.setVisible(true);
+                        cancelarButton.setVisible(true);
+                        tablaProductos.setModel(cargarDatosFloristeria());
+                    }
+                    case "ARREGLOS" -> {
+                        campoBusquedaMateriales.setVisible(true);
+                        agregarButton.setVisible(true);
+                        cancelarButton.setVisible(true);
+                        tablaProductos.setModel(cargarDatosArreglo());
+                    }
+                    case "GLOBOS" -> {
+                        campoBusquedaMateriales.setVisible(true);
+                        agregarButton.setVisible(true);
+                        cancelarButton.setVisible(true);
+                        tablaProductos.setModel(cargarDatosGlobo());
+                    }
+                    case "TARGETAS" -> {
+                        campoBusquedaMateriales.setVisible(true);
+                        agregarButton.setVisible(true);
+                        cancelarButton.setVisible(true);
+                        tablaProductos.setModel(cargarDatosTargetas());
+                    }
+                    case "MATERIALES" -> {
+                        campoBusquedaMateriales.setVisible(true);
+                        agregarButton.setVisible(true);
+                        cancelarButton.setVisible(true);
+                        tablaProductos.setModel(cargarDatosMaterial());
+                    }
+                    case "DESAYUNOS" -> {
+                        campoBusquedaMateriales.setVisible(true);
+                        agregarButton.setVisible(true);
+                        cancelarButton.setVisible(true);
+                        tablaProductos.setModel(cargarDatosDesayuno());
+                    }
+
+                    default -> JOptionPane.showMessageDialog(null, "Elija una opcion correcta");
                 }
             }
         });
@@ -864,66 +872,29 @@ public class CrearPromocion extends JFrame {
     }
 
      */
-
     private PoliModeloProducto cargarDetallesMateriales() {
         sql = new Conexion();
-        productosListTemporal.clear(); // Limpiar la lista antes de agregar los materiales
-        selectTabla = 1;
+        selectTabla = 0;
 
-        try (Connection mysql = sql.conectamysql();
-             PreparedStatement preparedStatement = mysql.prepareStatement(
-                     "SELECT detalles_desayunos.*,'F' AS 'tipo', floristeria.nombre AS 'nombre', (detalles_desayunos.cantidad * detalles_desayunos.precio) AS 'total' FROM detalles_desayunos "+
-                     " JOIN floristeria ON floristeria.id = detalles_desayunos.detalle_id "+
-                     " WHERE detalles_desayunos.desayuno_id IS NULL AND detalles_desayunos.tipo_detalle = 'floristeria' "+
+        double precioTotalMateriales = 0.00;
 
-                     " UNION "+
-
-                     " SELECT detalles_desayunos.*,'T' AS 'tipo',tarjetas.descripcion AS 'nombre', (detalles_desayunos.cantidad * detalles_desayunos.precio) AS 'total' FROM detalles_desayunos "+
-                     " JOIN tarjetas ON tarjetas.id = detalles_desayunos.detalle_id "+
-                     " WHERE detalles_desayunos.desayuno_id IS NULL AND detalles_desayunos.tipo_detalle = 'tarjeta' "+
-
-                     " UNION "+
-
-                     " SELECT detalles_desayunos.*,'G' AS 'tipo',globos.codigo_globo AS 'nombre', (detalles_desayunos.cantidad * detalles_desayunos.precio) AS 'total' FROM detalles_desayunos "+
-                     " JOIN globos ON globos.id = detalles_desayunos.detalle_id "+
-                     " WHERE detalles_desayunos.desayuno_id IS NULL AND detalles_desayunos.tipo_detalle = 'globo' "+
-
-                     " UNION "+
-
-                     " SELECT detalles_desayunos.*,'M' AS 'tipo',materiales.nombre AS 'nombre', (detalles_desayunos.cantidad * detalles_desayunos.precio) AS 'total' FROM detalles_desayunos "+
-                     " JOIN materiales ON materiales.id = detalles_desayunos.detalle_id "+
-                     " WHERE detalles_desayunos.desayuno_id IS NULL AND detalles_desayunos.tipo_detalle = 'material';"
-             )
-        ) {
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            double precioTotalMateriales = 0.00;
-
-            while (resultSet.next()) {
+        for (PoliProducto productosGeneral: productosListTemporal) {
                 PoliProductosGeneral material = new PoliProductosGeneral();
-                material.setIdDetalle(resultSet.getInt("id"));
-                material.setID(resultSet.getInt("detalle_id"));
-                material.setNombre(resultSet.getString("nombre"));
-                material.setCantidad(resultSet.getInt("cantidad"));
-                material.setPrecio(resultSet.getDouble("precio"));
-                material.setTipo(resultSet.getString("tipo"));
-                double total = resultSet.getDouble("total");
+                material.setIdDetalle(productosGeneral.getIdDetalle());
+                material.setID(productosGeneral.getID());
+                material.setNombre(productosGeneral.getNombre());
+                material.setCantidad(productosGeneral.getCantidad());
+                material.setPrecio(productosGeneral.getPrecio());
+                material.setTipo(productosGeneral.getTipo());
+                double total = productosGeneral.getPrecio() * productosGeneral.getCantidad();
                 precioTotalMateriales += total;
-                productosListTemporal.add(material);
             }
-
-
-
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
-            productosListTemporal = new ArrayList<>();
-        }
 
         // Configurar la tabla para mostrar los encabezados de las columnas
         JTableHeader tableHeader = tablaProductos.getTableHeader();
         tableHeader.setVisible(true);
 
+        lbl6.setText(String.format("%.2f",precioTotalMateriales));
         // Configurar la tabla para mantener el ordenamiento de filas incluso sin encabezados visibles
         tablaProductos.setAutoCreateRowSorter(true);
 
@@ -933,10 +904,45 @@ public class CrearPromocion extends JFrame {
         return new PoliModeloProducto(productosListTemporal);
     }
 
+    private PoliModeloDesayuno cargarDatosDesayuno() {
+        sql = new Conexion();
+        desayunoList.clear();
+        selectTabla = 1; // Puedes asignar un valor que represente la tabla de mobiliario en tu base de datos.
+        try (Connection mysql = sql.conectamysql();
+             PreparedStatement preparedStatement = mysql.prepareStatement(
+                     "SELECT * FROM desayunos WHERE nombre LIKE CONCAT('%', ?, '%')"
+             )
+        ) {
+            preparedStatement.setString(1, campoBusquedaMateriales.getText());
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                PoliDesayuno desayuno = new PoliDesayuno();
+                desayuno.setID(resultSet.getInt("id"));
+                desayuno.setNombre(resultSet.getString("nombre"));
+                desayuno.setCantidad(resultSet.getInt("cantidad"));
+                desayuno.setPrecio(resultSet.getDouble("precio_desayuno"));
+                desayuno.setTipo("D"); // Puedes asignar un tipo específico para el mobiliario.
+                desayunoList.add(desayuno);
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            desayunoList = new ArrayList<>();
+        }
+
+        PoliModeloDesayuno modeloDesayuno = new PoliModeloDesayuno(desayunoList, sql);
+        tablaProductos.setModel(modeloDesayuno);
+        configurarTablaMateriales(); // Asegúrate de que este método configure la tabla adecuada.
+        return modeloDesayuno;
+    }
+
     private PoliModeloMobiliario cargarDatosMobiliario() {
         sql = new Conexion();
         mobiliarioList.clear();
-        selectTabla = 6; // Puedes asignar un valor que represente la tabla de mobiliario en tu base de datos.
+        selectTabla = 2; // Puedes asignar un valor que represente la tabla de mobiliario en tu base de datos.
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement(
                      "SELECT * FROM mobiliario WHERE nombreMobiliario LIKE CONCAT('%', ?, '%')"
@@ -950,9 +956,11 @@ public class CrearPromocion extends JFrame {
                 PoliMobiliario mobiliario = new PoliMobiliario();
                 mobiliario.setID(resultSet.getInt("id"));
                 mobiliario.setNombre(resultSet.getString("nombreMobiliario"));
+                mobiliario.setColor(resultSet.getString("color"));
+                mobiliario.setTipoEvento(resultSet.getString("tipoEvento"));
                 mobiliario.setCantidad(resultSet.getInt("cantidad"));
                 mobiliario.setPrecio(resultSet.getDouble("precioUnitario"));
-                mobiliario.setTipo("MB"); // Puedes asignar un tipo específico para el mobiliario.
+                mobiliario.setTipo("MOb "); // Puedes asignar un tipo específico para el mobiliario.
                 mobiliarioList.add(mobiliario);
             }
 
@@ -971,7 +979,7 @@ public class CrearPromocion extends JFrame {
     private PoliModeloFlor cargarDatosFloristeria() {
         sql = new Conexion();
         floristeriaList.clear();
-        selectTabla = 2;
+        selectTabla = 3;
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement(
                      "SELECT f.*, p.empresaProveedora " +
@@ -1045,7 +1053,7 @@ public class CrearPromocion extends JFrame {
     private PoliModeloArreglo cargarDatosArreglo() {
         sql = new Conexion();
         arregloList.clear();
-        selectTabla = 7; // Puedes asignar un valor que represente la tabla de arreglos en tu base de datos.
+        selectTabla = 5; // Puedes asignar un valor que represente la tabla de arreglos en tu base de datos.
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement(
                      "SELECT * FROM arreglos WHERE nombre LIKE CONCAT('%', ?, '%')"
@@ -1077,13 +1085,13 @@ public class CrearPromocion extends JFrame {
         return modeloArreglo;
     }
 
-    private PoliModeloManualidad cargarDatosManualidad() {
+    private PoliModeloTargetas cargarDatosTargetas() {
         sql = new Conexion();
-        manualidadList.clear();
-        selectTabla = 8; // Puedes asignar un valor que represente la tabla de manualidades en tu base de datos.
+        targetList.clear();
+        selectTabla = 6; // Puedes asignar un valor que represente la tabla de arreglos en tu base de datos.
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement(
-                     "SELECT * FROM manualidades WHERE nombre LIKE CONCAT('%', ?, '%')"
+                     "SELECT * FROM tarjetas WHERE descripcion LIKE CONCAT('%', ?, '%')"
              )
         ) {
             preparedStatement.setString(1, campoBusquedaMateriales.getText());
@@ -1091,25 +1099,96 @@ public class CrearPromocion extends JFrame {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
-                PoliManualidad manualidad = new PoliManualidad();
-                manualidad.setID(resultSet.getInt("id"));
-                manualidad.setNombre(resultSet.getString("nombre"));
-                manualidad.setCantidad(resultSet.getInt("cantidad"));
-                manualidad.setPrecio(resultSet.getDouble("precio_manualidad"));
-                manualidad.setTipo("M"); // Puedes asignar un tipo específico para las manualidades.
-                manualidadList.add(manualidad);
+                PoliTarjeta targeta = new PoliTarjeta();
+                targeta.setID(resultSet.getInt("id"));
+                targeta.setNombre(resultSet.getString("descripcion"));
+                targeta.setCantidad(resultSet.getInt("cantidad"));
+                targeta.setPrecio(resultSet.getDouble("precio_tarjeta"));
+                targeta.setTipo("T"); // Puedes asignar un tipo específico para los arreglos.
+                targetList.add(targeta);
             }
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
-            manualidadList = new ArrayList<>();
+            targetList = new ArrayList<>();
         }
 
-        PoliModeloManualidad modeloManualidad = new PoliModeloManualidad(manualidadList, sql);
-        tablaProductos.setModel(modeloManualidad);
+        PoliModeloTargetas modeloTargetas = new PoliModeloTargetas(targetList, sql);
+        tablaProductos.setModel(modeloTargetas);
         configurarTablaMateriales(); // Asegúrate de que este método configure la tabla adecuada.
-        return modeloManualidad;
+        return modeloTargetas;
+    }
+
+//    private PoliModeloManualidad cargarDatosManualidad() {
+//        sql = new Conexion();
+//        manualidadList.clear();
+//        selectTabla = 9; // Puedes asignar un valor que represente la tabla de manualidades en tu base de datos.
+//        try (Connection mysql = sql.conectamysql();
+//             PreparedStatement preparedStatement = mysql.prepareStatement(
+//                     "SELECT * FROM manualidades WHERE nombre LIKE CONCAT('%', ?, '%')"
+//             )
+//        ) {
+//            preparedStatement.setString(1, campoBusquedaMateriales.getText());
+//
+//            ResultSet resultSet = preparedStatement.executeQuery();
+//
+//            while (resultSet.next()) {
+//                PoliManualidad manualidad = new PoliManualidad();
+//                manualidad.setID(resultSet.getInt("id"));
+//                manualidad.setNombre(resultSet.getString("nombre"));
+//                manualidad.setCantidad(resultSet.getInt("cantidad"));
+//                manualidad.setPrecio(resultSet.getDouble("precio_manualidad"));
+//                manualidad.setTipo("M"); // Puedes asignar un tipo específico para las manualidades.
+//                manualidadList.add(manualidad);
+//            }
+//
+//        } catch (SQLException e) {
+//            System.out.println(e.getMessage());
+//            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+//            manualidadList = new ArrayList<>();
+//        }
+//
+//        PoliModeloManualidad modeloManualidad = new PoliModeloManualidad(manualidadList, sql);
+//        tablaProductos.setModel(modeloManualidad);
+//        configurarTablaMateriales(); // Asegúrate de que este método configure la tabla adecuada.
+//        return modeloManualidad;
+//    }
+
+    private PoliModeloMaterial cargarDatosMaterial() {
+        sql = new Conexion();
+        materialList.clear();
+
+        selectTabla = 7; // Puedes asignar un valor que represente la tabla de manualidades en tu base de datos.
+        try (Connection mysql = sql.conectamysql();
+             PreparedStatement preparedStatement = mysql.prepareStatement(
+                     "SELECT * FROM materiales WHERE nombre LIKE CONCAT('%', ?, '%')"
+             )
+        ) {
+            preparedStatement.setString(1, campoBusquedaMateriales.getText());
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                PoliMaterial manualidad = new PoliMaterial();
+                manualidad.setID(resultSet.getInt("id"));
+                manualidad.setNombre(resultSet.getString("nombre"));
+                manualidad.setCantidad(resultSet.getInt("cantidad"));
+                manualidad.setPrecio(resultSet.getDouble("precio"));
+                manualidad.setTipo("MA"); // Puedes asignar un tipo específico para las manualidades.
+                materialList.add(manualidad);
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            materialList = new ArrayList<>();
+        }
+
+        PoliModeloMaterial modeloMaterial = new PoliModeloMaterial(materialList, sql);
+        tablaProductos.setModel(modeloMaterial);
+        configurarTablaMateriales(); // Asegúrate de que este método configure la tabla adecuada.
+        return modeloMaterial;
     }
 
     private int obtenerCantidadMaterial() {
@@ -1255,6 +1334,20 @@ public class CrearPromocion extends JFrame {
 
                     // Eliminar el producto tanto de la lista temporal como de la tabla
                     productoModel.removeProductAtIndex(modelRow);
+
+                    double precioTotalMateriales = 0.00;
+                    for (PoliProducto productosGeneral: productosListTemporal) {
+                        PoliProductosGeneral material = new PoliProductosGeneral();
+                        material.setIdDetalle(productosGeneral.getIdDetalle());
+                        material.setID(productosGeneral.getID());
+                        material.setNombre(productosGeneral.getNombre());
+                        material.setCantidad(productosGeneral.getCantidad());
+                        material.setPrecio(productosGeneral.getPrecio());
+                        material.setTipo(productosGeneral.getTipo());
+                        double total = productosGeneral.getPrecio() * productosGeneral.getCantidad();
+                        precioTotalMateriales += total;
+                    }
+                    lbl6.setText(String.format("%.2f",precioTotalMateriales));
                 }
 
                 fireEditingStopped(); // Mover esta línea aquí para asegurarte de que se complete la edición
