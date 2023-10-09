@@ -1,25 +1,24 @@
 package Modelos;
 
 import Objetos.Conexion;
-import Objetos.PoliGlobo;
 import Objetos.PoliTarjeta;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
 
-public class PoliModeloTargetas extends AbstractTableModel {
+public class PoliModeloTarjetas extends AbstractTableModel {
     private final String[] columnas = {"Id", "Nombre", "Cantidad", "Precio", "Total"};
-    private final List<PoliTarjeta> targeta;
+    private final List<PoliTarjeta> tarjeta;
     private final Conexion sql;
 
-    public PoliModeloTargetas(List<PoliTarjeta> targeta, Conexion sql) {
-        this.targeta = targeta;
+    public PoliModeloTarjetas(List<PoliTarjeta> tarjeta, Conexion sql) {
+        this.tarjeta = tarjeta;
         this.sql = sql;
     }
 
     @Override
     public int getRowCount() {
-        return targeta.size();
+        return tarjeta.size();
     }
 
     @Override
@@ -34,24 +33,24 @@ public class PoliModeloTargetas extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        PoliTarjeta targeta = this.targeta.get(rowIndex);
+        PoliTarjeta tarjeta = this.tarjeta.get(rowIndex);
 
         switch (columnIndex) {
             case 0: // ID
-                return "T-" + targeta.getID();
+                return "T-" + tarjeta.getID();
             case 1: // Código
-                return targeta.getNombre();
+                return tarjeta.getNombre();
             case 2: // Cantidad
-                return targeta.getCantidad();
+                return tarjeta.getCantidad();
             case 3: // Precio
-                double precio = targeta.getPrecio();
+                double precio = tarjeta.getPrecio();
                 if (precio < 0) {
                     precio = 0;
                 }
                 String precioFormateado = String.format(" L. %,.2f", precio);
                 return precioFormateado;
             case 4: // Total
-                double total = targeta.getPrecio() * targeta.getCantidad();
+                double total = tarjeta.getPrecio() * tarjeta.getCantidad();
                 String totalFormateado = String.format(" L. %,.2f", total);
                 return totalFormateado;
             default:

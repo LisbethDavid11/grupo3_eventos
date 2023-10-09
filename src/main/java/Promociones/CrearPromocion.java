@@ -2,7 +2,6 @@ package Promociones;
 import Materiales.TextPrompt;
 import Modelos.*;
 import Objetos.*;
-import com.toedter.calendar.JDateChooser;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
@@ -14,12 +13,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.*;
 
@@ -37,7 +34,7 @@ public class CrearPromocion extends JFrame {
     private JPanel panelFechaInicial, panelFechaFinal;
     private JComboBox comboSeccion;
     private JLabel lablePrecio;
-    private JTextField textField1;
+    private JTextField precio;
     private int selectTabla = 1;
     private List<PoliProducto> productosListTemporal = new ArrayList<>();
     private List<PoliMobiliario> mobiliarioList = new ArrayList<>();
@@ -135,16 +132,16 @@ public class CrearPromocion extends JFrame {
         properties2.put("text.year", "Año");
 
         JDatePanelImpl datePanel2 = new JDatePanelImpl(dateModel2, properties2);
-        datePicker2 = new JDatePickerImpl(datePanel2, new CrearPromocion.SimpleDateFormatter());  // Proporcionar un formateador
+        datePicker2 = new JDatePickerImpl(datePanel2, new CrearPromocion.SimpleDateFormatter2());  // Proporcionar un formateador
 
         Calendar tomorrow2 = getTomorrow(); // Obtén el día siguiente al actual
 
         dateModel2.addChangeListener(e -> {
-            handleDateChange(dateModel2, tomorrow2);
+            handleDateChange2(dateModel2, tomorrow2);
         });
 
         // Show initial date in date field (puede ser el día siguiente al actual)
-        handleDateChange(dateModel2, tomorrow2);
+        handleDateChange2(dateModel2, tomorrow2);
 
         panelFechaFinal.add(datePicker2);
 
@@ -165,11 +162,17 @@ public class CrearPromocion extends JFrame {
         tiposDescripcion.put("T","tarjeta");
         tiposDescripcion.put("G","globo");
         tiposDescripcion.put("M","material");
+        tiposDescripcion.put("W","mobiliario");
+        tiposDescripcion.put("A","arreglo");
+        tiposDescripcion.put("D","desayuno");
 
         tiposTablas.put("F","floristeria");
         tiposTablas.put("T","tarjetas");
         tiposTablas.put("G","globos");
         tiposTablas.put("M","materiales");
+        tiposTablas.put("W","mobiliario");
+        tiposTablas.put("A","arreglos");
+        tiposTablas.put("D","desayunos");
 
         // Color de fondo del panel
         panel1.setBackground(Color.decode("#F5F5F5"));
@@ -371,7 +374,31 @@ public class CrearPromocion extends JFrame {
 
                 if (tablaProductos.getRowCount() == 0) {
                     validacion++;
-                    mensaje += "La lista de productos\n";
+                    mensaje += "Lista de productos\n";
+                }
+
+                if (datePicker.getJFormattedTextField().getText().trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "Fecha inicial\n";
+                }
+
+                if (datePicker2.getJFormattedTextField().getText().trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "Fecha final\n";
+                }
+
+                if (precio.getText().trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "Precio\n";
+                }
+
+                // Nueva validación para verificar que la fecha final sea mayor que la inicial
+                java.util.Date fechaInicial = dateModel.getValue();
+                java.util.Date fechaFinal = dateModel2.getValue();
+
+                if (fechaInicial != null && fechaFinal != null && fechaInicial.after(fechaFinal)) {
+                    JOptionPane.showMessageDialog(null, "La fecha final debe ser mayor que la fecha inicial.", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return;
                 }
 
                 if (validacion > 0) {
@@ -420,33 +447,7 @@ public class CrearPromocion extends JFrame {
                 btnSave.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        // Acciones para el botón Sí
-
-
-
-
-
-
-                        //guardarEvento();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                        guardarPromocion();
                         dialog.dispose();
                         ListaPromociones listaPromociones = new ListaPromociones();
                         listaPromociones.setVisible(true);
@@ -490,7 +491,7 @@ public class CrearPromocion extends JFrame {
                     case 3 -> tablaProductos.setModel(cargarDatosFloristeria());
                     case 4 -> tablaProductos.setModel(cargarDatosGlobo());
                     case 5 -> tablaProductos.setModel(cargarDatosArreglo());
-                    case 6 -> tablaProductos.setModel(cargarDatosTargetas());
+                    case 6 -> tablaProductos.setModel(cargarDatosTarjetas());
                     case 7 -> tablaProductos.setModel(cargarDatosMaterial());
 
                 }
@@ -570,7 +571,7 @@ public class CrearPromocion extends JFrame {
 
                 }else  if ( l instanceof PoliMaterial p){
                     id_materialEntero = p.getID();
-                    id_material = "MA-"+p.getID();
+                    id_material = "M-"+p.getID();
 
                 }else  if ( l instanceof PoliGlobo p){
                     id_materialEntero = p.getID();
@@ -590,10 +591,9 @@ public class CrearPromocion extends JFrame {
 
                 }else  if ( l instanceof PoliMobiliario p){
                     id_materialEntero = p.getID();
-                    id_material = "MO-"+p.getID();
+                    id_material = "W-"+p.getID();
 
                 }
-
 
                 for (PoliProducto materialTemporal : productosListTemporal) {
                     String id = materialTemporal.getTipo()+"-"+materialTemporal.getID();
@@ -603,27 +603,8 @@ public class CrearPromocion extends JFrame {
                         }
                 }
 
-
                 if (!materialDuplicado) {
-                    // Llamar al método guardarDetalleEvento con los tres argumentos
-
-
-
-
-
-
-
-                    //OJO
-                    // AQUI
-
-                    //guardarDetalleEvento(id_materialEntero, cantidadMaterial, l.getTipo());
-
-
-
-
-
-
-
+                    guardarDetallePromocion(id_materialEntero, cantidadMaterial, l.getTipo());
                     // Crear el material temporal y agregarlo a la lista temporal
                     PoliProductosGeneral materialTemporal = new PoliMaterial();
                     materialTemporal.setID(id_materialEntero);
@@ -713,7 +694,7 @@ public class CrearPromocion extends JFrame {
                         campoBusquedaMateriales.setVisible(true);
                         agregarButton.setVisible(true);
                         cancelarButton.setVisible(true);
-                        tablaProductos.setModel(cargarDatosTargetas());
+                        tablaProductos.setModel(cargarDatosTarjetas());
                     }
                     case "MATERIALES" -> {
                         campoBusquedaMateriales.setVisible(true);
@@ -779,12 +760,38 @@ public class CrearPromocion extends JFrame {
         double precio = 0.0;
 
         try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("SELECT "+(tipo.equals("T")?"precio_tarjeta":"precio")+" FROM "+tiposTablas.get(tipo)+" WHERE id = ?")) {
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT " +
+                     (tipo.equals("T") ? "precio_tarjeta" :
+                             tipo.equals("D") ? "precio_desayuno" :
+                                     tipo.equals("M") ? "precio" :
+                                             tipo.equals("F") ? "precio" :
+                                                     tipo.equals("A") ? "precio" :
+                                                             tipo.equals("W") ? "precioUnitario" :
+                                                                     tipo.equals("G") ? "precio" :
+                                                                     "precio_default") +
+                     " FROM " +
+                     (tipo.equals("T") ? "tarjetas" :
+                             tipo.equals("D") ? "desayunos" :
+                                     tipo.equals("M") ? "materiales" :
+                                             tipo.equals("F") ? "floristeria" :
+                                                     tipo.equals("A") ? "arreglos" :
+                                                                     tipo.equals("W") ? "mobiliario" :
+                                                                             tipo.equals("G") ? "globos" :
+                                                                     "default_table") +
+                     " WHERE id = ?")) {
             preparedStatement.setInt(1, id_material);
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
-                precio = resultSet.getDouble(tipo.equals("T")?"precio_tarjeta":"precio");
+                precio = resultSet.getDouble(
+                        tipo.equals("T") ? "precio_tarjeta" :
+                                tipo.equals("D") ? "precio_desayuno" :
+                                        tipo.equals("M") ? "precio" :
+                                                tipo.equals("F") ? "precio" :
+                                                        tipo.equals("A") ? "precio" :
+                                                                        tipo.equals("W") ? "precioUnitario" :
+                                                                                tipo.equals("G") ? "precio" :
+                                                                        "precio_default");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -960,7 +967,7 @@ public class CrearPromocion extends JFrame {
                 mobiliario.setTipoEvento(resultSet.getString("tipoEvento"));
                 mobiliario.setCantidad(resultSet.getInt("cantidad"));
                 mobiliario.setPrecio(resultSet.getDouble("precioUnitario"));
-                mobiliario.setTipo("MOb "); // Puedes asignar un tipo específico para el mobiliario.
+                mobiliario.setTipo("W"); // Puedes asignar un tipo específico para el mobiliario.
                 mobiliarioList.add(mobiliario);
             }
 
@@ -1085,7 +1092,7 @@ public class CrearPromocion extends JFrame {
         return modeloArreglo;
     }
 
-    private PoliModeloTargetas cargarDatosTargetas() {
+    private PoliModeloTarjetas cargarDatosTarjetas() {
         sql = new Conexion();
         targetList.clear();
         selectTabla = 6; // Puedes asignar un valor que represente la tabla de arreglos en tu base de datos.
@@ -1099,13 +1106,13 @@ public class CrearPromocion extends JFrame {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
-                PoliTarjeta targeta = new PoliTarjeta();
-                targeta.setID(resultSet.getInt("id"));
-                targeta.setNombre(resultSet.getString("descripcion"));
-                targeta.setCantidad(resultSet.getInt("cantidad"));
-                targeta.setPrecio(resultSet.getDouble("precio_tarjeta"));
-                targeta.setTipo("T"); // Puedes asignar un tipo específico para los arreglos.
-                targetList.add(targeta);
+                PoliTarjeta tarjeta = new PoliTarjeta();
+                tarjeta.setID(resultSet.getInt("id"));
+                tarjeta.setNombre(resultSet.getString("descripcion"));
+                tarjeta.setCantidad(resultSet.getInt("cantidad"));
+                tarjeta.setPrecio(resultSet.getDouble("precio_tarjeta"));
+                tarjeta.setTipo("T"); // Puedes asignar un tipo específico para los arreglos.
+                targetList.add(tarjeta);
             }
 
         } catch (SQLException e) {
@@ -1114,10 +1121,10 @@ public class CrearPromocion extends JFrame {
             targetList = new ArrayList<>();
         }
 
-        PoliModeloTargetas modeloTargetas = new PoliModeloTargetas(targetList, sql);
-        tablaProductos.setModel(modeloTargetas);
+        PoliModeloTarjetas modeloTarjetas = new PoliModeloTarjetas(targetList, sql);
+        tablaProductos.setModel(modeloTarjetas);
         configurarTablaMateriales(); // Asegúrate de que este método configure la tabla adecuada.
-        return modeloTargetas;
+        return modeloTarjetas;
     }
 
 //    private PoliModeloManualidad cargarDatosManualidad() {
@@ -1170,13 +1177,13 @@ public class CrearPromocion extends JFrame {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
-                PoliMaterial manualidad = new PoliMaterial();
-                manualidad.setID(resultSet.getInt("id"));
-                manualidad.setNombre(resultSet.getString("nombre"));
-                manualidad.setCantidad(resultSet.getInt("cantidad"));
-                manualidad.setPrecio(resultSet.getDouble("precio"));
-                manualidad.setTipo("MA"); // Puedes asignar un tipo específico para las manualidades.
-                materialList.add(manualidad);
+                PoliMaterial material = new PoliMaterial();
+                material.setID(resultSet.getInt("id"));
+                material.setNombre(resultSet.getString("nombre"));
+                material.setCantidad(resultSet.getInt("cantidad"));
+                material.setPrecio(resultSet.getDouble("precio"));
+                material.setTipo("M"); // Puedes asignar un tipo específico para las manualidades.
+                materialList.add(material);
             }
 
         } catch (SQLException e) {
@@ -1377,6 +1384,15 @@ public class CrearPromocion extends JFrame {
         setFormattedDate(selectedDate);
     }
 
+    public void handleDateChange2(UtilDateModel dateModel, Calendar tomorrow) {
+        java.util.Date selectedDate2 = dateModel.getValue();
+        if (selectedDate2 != null && isDateOutOfRange2(selectedDate2, tomorrow)) {
+            JOptionPane.showMessageDialog(null, "La fecha seleccionada está fuera del rango permitido", "Error", JOptionPane.ERROR_MESSAGE);
+            selectedDate2 = null; // Anula la selección en lugar de restablecerla a hoy
+            dateModel.setValue(selectedDate2);
+        }
+        setFormattedDate2(selectedDate2);
+    }
 
     public boolean isDateOutOfRange(java.util.Date selectedDate, Calendar tomorrow) {
         Calendar selectedCal = Calendar.getInstance();
@@ -1386,11 +1402,24 @@ public class CrearPromocion extends JFrame {
         return selectedCal.before(tomorrow);
     }
 
+    public boolean isDateOutOfRange2(java.util.Date selectedDate, Calendar tomorrow) {
+        Calendar selectedCal2 = Calendar.getInstance();
+        selectedCal2.setTime(selectedDate);
+
+        // Compara con el día siguiente al actual
+        return selectedCal2.before(tomorrow);
+    }
 
     public void setFormattedDate(java.util.Date selectedDate) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd 'de' MMMM yyyy"); // Desired date format
         String formattedDate = (selectedDate != null) ? dateFormat.format(selectedDate) : "";
         datePicker.getJFormattedTextField().setText(formattedDate);
+    }
+
+    public void setFormattedDate2(java.util.Date selectedDate) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd 'de' MMMM yyyy"); // Desired date format
+        String formattedDate = (selectedDate != null) ? dateFormat.format(selectedDate) : "";
+        datePicker2.getJFormattedTextField().setText(formattedDate);
     }
 
     public class SimpleDateFormatter extends JFormattedTextField.AbstractFormatter {
@@ -1405,8 +1434,8 @@ public class CrearPromocion extends JFrame {
         @Override
         public String valueToString(Object value) throws ParseException {
             if (value != null) {
-                if (value instanceof java.util.Date) {
-                    return dateFormatter.format((java.util.Date) value);
+                if (value instanceof Date) {
+                    return dateFormatter.format((Date) value);
                 } else if (value instanceof Calendar) {
                     return dateFormatter.format(((Calendar) value).getTime());
                 }
@@ -1415,24 +1444,50 @@ public class CrearPromocion extends JFrame {
         }
     }
 
+    public class SimpleDateFormatter2 extends JFormattedTextField.AbstractFormatter {
+        private final String datePattern = "yyyy-MM-dd";
+        private final SimpleDateFormat dateFormatter2 = new SimpleDateFormat(datePattern);
 
-    /*private void guardarEvento() {
-        String direccion = campoDescripcion.getText().trim();
-        String tipo = campoTipo.getText().trim(); // Reemplaza con el campo correspondiente
+        @Override
+        public Object stringToValue(String text) throws ParseException {
+            return dateFormatter2.parse(text);
+        }
 
-        ClienteEvento cliente = (ClienteEvento) jbcClientes.getModel().getSelectedItem();
+        @Override
+        public String valueToString(Object value) throws ParseException {
+            if (value != null) {
+                if (value instanceof Date) {
+                    return dateFormatter2.format((Date) value);
+                } else if (value instanceof Calendar) {
+                    return dateFormatter2.format(((Calendar) value).getTime());
+                }
+            }
+            return "";
+        }
+    }
+
+
+    private void guardarPromocion() {
+        String precioText = precio.getText().replace("L ", "").replace(",", "").replace("_", "");
+        double precio = Double.parseDouble(precioText);
+
+        String descripcion = campoDescripcion.getText().trim();
+
+        Date fechaInicial = (Date) datePicker.getModel().getValue(); // Explicitly cast the value to Date
+        String fechaI = new SimpleDateFormat("yyyy-MM-dd").format(fechaInicial);
+
+
+        Date fechaFinal = (Date) datePicker2.getModel().getValue(); // Explicitly cast the value to Date
+        String fechaF = new SimpleDateFormat("yyyy-MM-dd").format(fechaFinal);
+
 
         try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement(
-                     "INSERT INTO eventos (cliente_id, direccion, tipo, fecha, inicio, fin) VALUES (?, ?, ?, ?, ?, ?)",
-                     Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO promociones (descripcion, inicio, fin, precio) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+            preparedStatement.setString(1, descripcion);
+            preparedStatement.setString(2, fechaI);
+            preparedStatement.setString(3, fechaF);
+            preparedStatement.setDouble(4, precio);
 
-            preparedStatement.setInt(1, cliente.getIdCliente());
-            preparedStatement.setString(2, direccion);
-            preparedStatement.setString(3, tipo);
-            preparedStatement.setDate(4, java.sql.Date.valueOf(fecha)); // Reemplaza "fecha" con la fecha del evento.
-            preparedStatement.setTime(5, inicio); // Reemplaza "inicio" con la hora de inicio del evento.
-            preparedStatement.setTime(6, fin); // Reemplaza "fin" con la hora de fin del evento.
             preparedStatement.executeUpdate();
 
             ResultSet resultSet = preparedStatement.getGeneratedKeys();
@@ -1441,36 +1496,38 @@ public class CrearPromocion extends JFrame {
                 lastId = resultSet.getInt(1);
             }
 
-            // Lógica adicional para detalles del evento si es necesario
+            try (PreparedStatement prepared = connection.prepareStatement(
+                    "UPDATE detalles_promociones SET promocion_id = ? WHERE promocion_id IS NULL")) {
+                prepared.setInt(1, lastId);
+                prepared.executeUpdate();
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+                JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+                materialList = new ArrayList<>();
+            }
 
-            JOptionPane.showMessageDialog(null, "Evento guardado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Promoción guardada exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al guardar el evento", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error al guardar la promoción", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    private void guardarDetalleEvento(int evento_id, String tipoDetalle, int detalle_id, int cantidad, double precio) {
+    private void guardarDetallePromocion(int id_material, int cantidad, String tipo) {
         try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement(
-                     "INSERT INTO detalles_eventos (evento_id, tipo_detalle, detalle_id, cantidad, precio) VALUES (?, ?, ?, ?, ?)")) {
-            preparedStatement.setInt(1, evento_id); // Reemplaza "evento_id" con el ID del evento al que se agrega el detalle.
-            preparedStatement.setString(2, tipoDetalle); // Reemplaza "tipoDetalle" con el tipo de detalle.
-            preparedStatement.setInt(3, detalle_id); // Reemplaza "detalle_id" con el ID del material, mobiliario, etc.
-            preparedStatement.setInt(4, cantidad);
-            preparedStatement.setDouble(5, precio); // Precio debe ser proporcionado.
+             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO detalles_promociones (tipo_detalle, detalle_id, cantidad,precio) VALUES (?, ?, ?, ?)")) {
+            preparedStatement.setString(1, tiposDescripcion.get(tipo));
+            preparedStatement.setInt(2, id_material);
+            preparedStatement.setInt(3, cantidad);
+            preparedStatement.setDouble(4, obtenerPrecioMaterialDesdeBD(id_material,tipo)); // Obtener el precio del material desde la base de datos
             preparedStatement.executeUpdate();
 
-            JOptionPane.showMessageDialog(null, "Detalle de evento agregado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Detalle agregado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al agregar el detalle de evento", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error al agregar el detalle de la promoción", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
-
-     */
-
 
     public static void main(String[] args) {
         CrearPromocion crearPromocion = new CrearPromocion();

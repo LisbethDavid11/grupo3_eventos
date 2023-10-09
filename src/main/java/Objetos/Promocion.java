@@ -5,25 +5,24 @@ import java.util.Date;
 public class Promocion {
     private int id;
     private String descripcion;
-    private double precio;
     private java.util.Date inicio;
     private java.util.Date fin;
-
+    private double precio;
     public static String nombreTabla = "promociones";
 
     public Promocion() {
     }
 
     public Object[] toTableRow() {
-        return new Object[]{id, descripcion, inicio, fin};
+        return new Object[]{id, descripcion, inicio, fin, precio};
     }
 
-    public Promocion(int id, String descripcion, double precio, Date inicio, Date fin) {
+    public Promocion(int id, String descripcion, Date inicio, Date fin, double precio) {
         this.id = id;
         this.descripcion = descripcion;
-        this.precio = precio;
         this.inicio = inicio;
         this.fin = fin;
+        this.precio = precio;
     }
 
     public int getId() {

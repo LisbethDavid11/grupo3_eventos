@@ -1099,12 +1099,38 @@ public class EditarDesayuno extends JFrame {
         double precio = 0.0;
 
         try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("SELECT "+(tipo.equals("T")?"precio_tarjeta":"precio")+" FROM "+tiposTablas.get(tipo)+" WHERE id = ?")) {
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT " +
+                     (tipo.equals("T") ? "precio_tarjeta" :
+                             tipo.equals("D") ? "precio_desayuno" :
+                                     tipo.equals("W") ? "precio_manualidad" :
+                                             tipo.equals("F") ? "precio" :
+                                                     tipo.equals("A") ? "precio" :
+                                                             tipo.equals("M") ? "precio" :
+                                                                     tipo.equals("G") ? "precio" :
+                                                                             "precio_default") +
+                     " FROM " +
+                     (tipo.equals("T") ? "tarjetas" :
+                             tipo.equals("D") ? "desayunos" :
+                                     tipo.equals("W") ? "manualidades" :
+                                             tipo.equals("F") ? "floristeria" :
+                                                     tipo.equals("A") ? "arreglos" :
+                                                             tipo.equals("M") ? "materiales" :
+                                                                     tipo.equals("G") ? "globos" :
+                                                                             "default_table") +
+                     " WHERE id = ?")) {
             preparedStatement.setInt(1, id_material);
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
-                precio = resultSet.getDouble(tipo.equals("T")?"precio_tarjeta":"precio");
+                precio = resultSet.getDouble(
+                        tipo.equals("T") ? "precio_tarjeta" :
+                                tipo.equals("D") ? "precio_desayuno" :
+                                        tipo.equals("W") ? "precio_manualidad" :
+                                                tipo.equals("F") ? "precio" :
+                                                        tipo.equals("A") ? "precio" :
+                                                                tipo.equals("M") ? "precio" :
+                                                                        tipo.equals("G") ? "precio" :
+                                                                                "precio_default");
             }
         } catch (SQLException e) {
             e.printStackTrace();
