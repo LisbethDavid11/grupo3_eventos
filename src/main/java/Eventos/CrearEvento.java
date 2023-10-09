@@ -13,12 +13,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.*;
 
@@ -28,9 +26,9 @@ public class CrearEvento extends JFrame {
     private JTextArea campoDireccion;
     private JButton botonGuardar;
     private JButton botonCancelar;
+    private JTable tablaProductos;
     private JPanel panel1, panel2, panel3, panel5, panel6, panel7;
     private JButton agregarMobiliarioButton, agregarGloboButton, agregarArregloButton, agregarFloresButton;
-    private JTable tablaProductos;
     private JScrollPane panel4;
     private JButton agregarButton;
     private JTextField campoBusquedaMateriales;
@@ -42,6 +40,13 @@ public class CrearEvento extends JFrame {
     private JButton botonLimpiar;
     private JComboBox jbcTipoEvento;
     private JPanel panelFecha, panelInicio, panelFin;
+    private JSpinner spinnerHora1;
+    private JSpinner spinnerMin1;
+    private JSpinner spinnerHora2;
+    private JSpinner spinnerMin2;
+    private JComboBox comboBox1;
+    private JComboBox comboBox2;
+    private JButton agregarManualidadesButton;
     private int selectTabla = 1;
     private List<PoliProducto> productosListTemporal = new ArrayList<>();
     private List<PoliMobiliario> mobiliarioList = new ArrayList<>();
@@ -108,6 +113,16 @@ public class CrearEvento extends JFrame {
         campoDireccion.setWrapStyleWord(true);
         configurarTablaMateriales();
 
+        SpinnerModel hourModel = new SpinnerNumberModel(0, 0, 23, 1);
+        SpinnerModel hourModel1 = new SpinnerNumberModel(0, 0, 23, 1);
+        SpinnerModel minuteModel = new SpinnerNumberModel(0, 0, 59, 1);
+        SpinnerModel minuteModel1 = new SpinnerNumberModel(0, 0, 59, 1);
+        spinnerHora1.setModel(hourModel);
+        spinnerHora2.setModel(hourModel1);
+
+        spinnerMin1.setModel(minuteModel);
+        spinnerMin2.setModel(minuteModel1);
+
         UtilDateModel dateModel = new UtilDateModel();
         Properties properties = new Properties();
         properties.put("text.today", "Hoy");
@@ -145,11 +160,17 @@ public class CrearEvento extends JFrame {
         tiposDescripcion.put("T","tarjeta");
         tiposDescripcion.put("G","globo");
         tiposDescripcion.put("M","material");
+        tiposDescripcion.put("N","manualidad");
+        tiposDescripcion.put("A","arreglo");
+        tiposDescripcion.put("W","mobiliario");
 
         tiposTablas.put("F","floristeria");
         tiposTablas.put("T","tarjetas");
         tiposTablas.put("G","globos");
         tiposTablas.put("M","materiales");
+        tiposTablas.put("N","manualidades");
+        tiposTablas.put("A","arreglos");
+        tiposTablas.put("W","mobiliario");
 
         jbcClientes.addItem(new ClienteEvento(0,"","")); // Agregar mensaje inicial
         cargarClientes();
@@ -203,6 +224,10 @@ public class CrearEvento extends JFrame {
         panel5.setBackground(Color.decode("#F5F5F5"));
         panel6.setBackground(Color.decode("#F5F5F5"));
         panel7.setBackground(Color.decode("#F5F5F5"));
+        jpanelDireccion.setBackground(Color.decode("#F5F5F5"));
+        panelFecha.setBackground(Color.decode("#F5F5F5"));
+        panelInicio.setBackground(Color.decode("#F5F5F5"));
+        panelFin.setBackground(Color.decode("#F5F5F5"));
 
         DefaultTableModel modeloProductos = new DefaultTableModel();
 
@@ -226,6 +251,7 @@ public class CrearEvento extends JFrame {
         agregarGloboButton.setForeground(Color.DARK_GRAY);
         agregarArregloButton.setForeground(Color.DARK_GRAY);
         agregarFloresButton.setForeground(Color.DARK_GRAY);
+        agregarManualidadesButton.setForeground(Color.DARK_GRAY);
 
         // Color de fondo de los botones
         botonCancelar.setBackground(darkColorBlue);
@@ -234,6 +260,7 @@ public class CrearEvento extends JFrame {
         agregarFloresButton.setBackground(lightColorAqua);
         agregarGloboButton.setBackground(lightColorCyan);
         agregarArregloButton.setBackground(lightColorRosado);
+        agregarManualidadesButton.setBackground(lightColorVerdeLima);
         botonLimpiar.setBackground(darkColorRed);
         agregarButton.setBackground(darkColorCyan);
         cancelarButton.setBackground(darkColorRed);
@@ -244,6 +271,7 @@ public class CrearEvento extends JFrame {
         agregarArregloButton.setFocusPainted(false);
         agregarFloresButton.setFocusPainted(false);
         agregarGloboButton.setFocusPainted(false);
+        agregarManualidadesButton.setFocusPainted(false);
         botonLimpiar.setFocusPainted(false);
         cancelarButton.setFocusPainted(false);
         agregarButton.setFocusPainted(false);
@@ -295,6 +323,7 @@ public class CrearEvento extends JFrame {
                 agregarFloresButton.setVisible(false);
                 agregarGloboButton.setVisible(false);
                 agregarArregloButton.setVisible(false);
+                agregarManualidadesButton.setVisible(false);
                 tablaProductos.setModel(cargarDatosMobiliario());
             }
         });
@@ -309,6 +338,7 @@ public class CrearEvento extends JFrame {
                 agregarFloresButton.setVisible(false);
                 agregarGloboButton.setVisible(false);
                 agregarArregloButton.setVisible(false);
+                agregarManualidadesButton.setVisible(false);
                 tablaProductos.setModel(cargarDatosFloristeria());
             }
         });
@@ -323,6 +353,7 @@ public class CrearEvento extends JFrame {
                 agregarFloresButton.setVisible(false);
                 agregarGloboButton.setVisible(false);
                 agregarArregloButton.setVisible(false);
+                agregarManualidadesButton.setVisible(false);
                 tablaProductos.setModel(cargarDatosGlobo());
             }
         });
@@ -337,9 +368,26 @@ public class CrearEvento extends JFrame {
                 agregarFloresButton.setVisible(false);
                 agregarGloboButton.setVisible(false);
                 agregarArregloButton.setVisible(false);
+                agregarManualidadesButton.setVisible(false);
                 tablaProductos.setModel(cargarDatosArreglo());
             }
         });
+
+        agregarManualidadesButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                campoBusquedaMateriales.setVisible(true);
+                agregarButton.setVisible(true);
+                cancelarButton.setVisible(true);
+                agregarMobiliarioButton.setVisible(false);
+                agregarFloresButton.setVisible(false);
+                agregarGloboButton.setVisible(false);
+                agregarArregloButton.setVisible(false);
+                agregarManualidadesButton.setVisible(false);
+                tablaProductos.setModel(cargarDatosManualidad());
+            }
+        });
+
 
         cancelarButton.addActionListener(new ActionListener() {
             @Override
@@ -351,6 +399,7 @@ public class CrearEvento extends JFrame {
                 agregarFloresButton.setVisible(true);
                 agregarGloboButton.setVisible(true);
                 agregarArregloButton.setVisible(true);
+                agregarManualidadesButton.setVisible(true);
                 tablaProductos.setModel(cargarDetallesMateriales());
                 //actualizarLbl8y10();
                 configurarTablaMateriales();
@@ -489,8 +538,36 @@ public class CrearEvento extends JFrame {
                     mensaje += "La lista de productos\n";
                 }
 
+                if (datePicker.getJFormattedTextField().getText().trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "Fecha\n";
+                }
+
+                // Obtener los valores de los selectores de hora y minuto para la hora inicial
+                int horaInicial = (int) spinnerHora1.getValue();
+                int minutoInicial = (int) spinnerMin1.getValue();
+
+                // Obtener los valores de los selectores de hora y minuto para la hora final
+                int horaFinal = (int) spinnerHora2.getValue();
+                int minutoFinal = (int) spinnerMin2.getValue();
+
+                if (horaInicial == 0 && minutoInicial == 0) {
+                    validacion++;
+                    mensaje += "La hora inicial\n";
+                }
+
+                if (horaFinal == 0 && minutoFinal == 0) {
+                    validacion++;
+                    mensaje += "La hora final\n";
+                }
+
                 if (validacion > 0) {
                     JOptionPane.showMessageDialog(null, mensaje, "Validación", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                if (horaInicial > horaFinal || (horaInicial == horaFinal && minutoInicial >= minutoFinal)) {
+                    JOptionPane.showMessageDialog(null, "La hora final debe ser mayor que la hora inicial", "Validación", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
@@ -536,31 +613,7 @@ public class CrearEvento extends JFrame {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         // Acciones para el botón Sí
-
-
-
-
-
-
-                        //guardarEvento();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                        guardarEvento();
 
                         dialog.dispose();
                         ListaEventos listaEventos = new ListaEventos();
@@ -608,10 +661,11 @@ public class CrearEvento extends JFrame {
             public void actionPerformed(ActionEvent e) {
 
                 Map<Integer,List> listas = new HashMap<>();
+                listas.put(1,mobiliarioList);
                 listas.put(2,floristeriaList);
-                listas.put(3,mobiliarioList);
-                listas.put(4,globoList);
-                listas.put(5,arregloList);
+                listas.put(3,globoList);
+                listas.put(4,arregloList);
+                listas.put(5,manualidadList);
 
                 if (tablaProductos.getSelectedRow() == -1) {
                     // Crea un botón personalizado
@@ -681,6 +735,10 @@ public class CrearEvento extends JFrame {
                 }else  if ( l instanceof PoliTarjeta p){
                     id_materialEntero = p.getID();
                     id_material = "T-"+p.getID();
+
+                }else  if ( l instanceof PoliManualidad p){
+                    id_materialEntero = p.getID();
+                    id_material = "W-"+p.getID();
                 }
 
                 for (PoliProducto materialTemporal : productosListTemporal) {
@@ -694,23 +752,7 @@ public class CrearEvento extends JFrame {
 
                 if (!materialDuplicado) {
                     // Llamar al método guardarDetalleEvento con los tres argumentos
-
-
-
-
-
-
-
-                    //OJO
-                    // AQUI
-
-                    //guardarDetalleEvento(id_materialEntero, cantidadMaterial, l.getTipo());
-
-
-
-
-
-
+                    guardarDetalleEvento(id_materialEntero, cantidadMaterial, l.getTipo());
 
                     // Crear el material temporal y agregarlo a la lista temporal
                     PoliProductosGeneral materialTemporal = new PoliMaterial();
@@ -728,6 +770,7 @@ public class CrearEvento extends JFrame {
                     agregarFloresButton.setVisible(true);
                     agregarGloboButton.setVisible(true);
                     agregarArregloButton.setVisible(true);
+                    agregarManualidadesButton.setVisible(true);
                     // Actualizar la tabla con los detalles actualizados
                     tablaProductos.setModel(cargarDetallesMateriales());
                     tablaProductos.getColumnModel().getColumn(5).setCellRenderer(new CrearEvento.ButtonRenderer());
@@ -820,12 +863,41 @@ public class CrearEvento extends JFrame {
         double precio = 0.0;
 
         try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("SELECT "+(tipo.equals("T")?"precio_tarjeta":"precio")+" FROM "+tiposTablas.get(tipo)+" WHERE id = ?")) {
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT " +
+                     (tipo.equals("T") ? "precio_tarjeta" :
+                             tipo.equals("D") ? "precio_desayuno" :
+                                     tipo.equals("M") ? "precio" :
+                                             tipo.equals("F") ? "precio" :
+                                                     tipo.equals("A") ? "precio" :
+                                                             tipo.equals("W") ? "precioUnitario" :
+                                                                     tipo.equals("N") ? "precio_manualidad" :
+                                                                        tipo.equals("G") ? "precio" :
+                                                                             "precio_default") +
+                     " FROM " +
+                     (tipo.equals("T") ? "tarjetas" :
+                             tipo.equals("D") ? "desayunos" :
+                                     tipo.equals("M") ? "materiales" :
+                                             tipo.equals("F") ? "floristeria" :
+                                                     tipo.equals("A") ? "arreglos" :
+                                                             tipo.equals("W") ? "mobiliario" :
+                                                                     tipo.equals("N") ? "manualidades" :
+                                                                     tipo.equals("G") ? "globos" :
+                                                                             "default_table") +
+                     " WHERE id = ?")) {
             preparedStatement.setInt(1, id_material);
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
-                precio = resultSet.getDouble(tipo.equals("T")?"precio_tarjeta":"precio");
+                precio = resultSet.getDouble(
+                        tipo.equals("T") ? "precio_tarjeta" :
+                                tipo.equals("D") ? "precio_desayuno" :
+                                        tipo.equals("M") ? "precio" :
+                                                tipo.equals("F") ? "precio" :
+                                                        tipo.equals("A") ? "precio" :
+                                                                tipo.equals("W") ? "precioUnitario" :
+                                                                        tipo.equals("N") ? "precio_manualidad" :
+                                                                        tipo.equals("G") ? "precio" :
+                                                                                "precio_default");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -915,59 +987,20 @@ public class CrearEvento extends JFrame {
      */
 
     private PoliModeloProducto cargarDetallesMateriales() {
-        sql = new Conexion();
-        productosListTemporal.clear(); // Limpiar la lista antes de agregar los materiales
-        selectTabla = 1;
+        selectTabla = 0;
 
-        try (Connection mysql = sql.conectamysql();
-             PreparedStatement preparedStatement = mysql.prepareStatement(
-                     "SELECT detalles_desayunos.*,'F' AS 'tipo', floristeria.nombre AS 'nombre', (detalles_desayunos.cantidad * detalles_desayunos.precio) AS 'total' FROM detalles_desayunos "+
-                     " JOIN floristeria ON floristeria.id = detalles_desayunos.detalle_id "+
-                     " WHERE detalles_desayunos.desayuno_id IS NULL AND detalles_desayunos.tipo_detalle = 'floristeria' "+
+        double precioTotalMateriales = 0.00;
 
-                     " UNION "+
+        System.out.println(productosListTemporal.size());
+        for (PoliProducto productosGeneral : productosListTemporal) {
 
-                     " SELECT detalles_desayunos.*,'T' AS 'tipo',tarjetas.descripcion AS 'nombre', (detalles_desayunos.cantidad * detalles_desayunos.precio) AS 'total' FROM detalles_desayunos "+
-                     " JOIN tarjetas ON tarjetas.id = detalles_desayunos.detalle_id "+
-                     " WHERE detalles_desayunos.desayuno_id IS NULL AND detalles_desayunos.tipo_detalle = 'tarjeta' "+
-
-                     " UNION "+
-
-                     " SELECT detalles_desayunos.*,'G' AS 'tipo',globos.codigo_globo AS 'nombre', (detalles_desayunos.cantidad * detalles_desayunos.precio) AS 'total' FROM detalles_desayunos "+
-                     " JOIN globos ON globos.id = detalles_desayunos.detalle_id "+
-                     " WHERE detalles_desayunos.desayuno_id IS NULL AND detalles_desayunos.tipo_detalle = 'globo' "+
-
-                     " UNION "+
-
-                     " SELECT detalles_desayunos.*,'M' AS 'tipo',materiales.nombre AS 'nombre', (detalles_desayunos.cantidad * detalles_desayunos.precio) AS 'total' FROM detalles_desayunos "+
-                     " JOIN materiales ON materiales.id = detalles_desayunos.detalle_id "+
-                     " WHERE detalles_desayunos.desayuno_id IS NULL AND detalles_desayunos.tipo_detalle = 'material';"
-             )
-        ) {
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            double precioTotalMateriales = 0.00;
-
-            while (resultSet.next()) {
-                PoliProductosGeneral material = new PoliProductosGeneral();
-                material.setIdDetalle(resultSet.getInt("id"));
-                material.setID(resultSet.getInt("detalle_id"));
-                material.setNombre(resultSet.getString("nombre"));
-                material.setCantidad(resultSet.getInt("cantidad"));
-                material.setPrecio(resultSet.getDouble("precio"));
-                material.setTipo(resultSet.getString("tipo"));
-                double total = resultSet.getDouble("total");
-                precioTotalMateriales += total;
-                productosListTemporal.add(material);
-            }
-
-
-
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
-            productosListTemporal = new ArrayList<>();
+            double total = productosGeneral.getCantidad() * productosGeneral.getPrecio();
+            precioTotalMateriales += total;
         }
+
+
+
+        lbl11.setText(String.format("%.2f",precioTotalMateriales));
 
         // Configurar la tabla para mostrar los encabezados de las columnas
         JTableHeader tableHeader = tablaProductos.getTableHeader();
@@ -982,10 +1015,11 @@ public class CrearEvento extends JFrame {
         return new PoliModeloProducto(productosListTemporal);
     }
 
+
     private PoliModeloMobiliario cargarDatosMobiliario() {
         sql = new Conexion();
         mobiliarioList.clear();
-        selectTabla = 6; // Puedes asignar un valor que represente la tabla de mobiliario en tu base de datos.
+        selectTabla = 1; // Puedes asignar un valor que represente la tabla de mobiliario en tu base de datos.
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement(
                      "SELECT * FROM mobiliario WHERE nombreMobiliario LIKE CONCAT('%', ?, '%')"
@@ -1001,7 +1035,7 @@ public class CrearEvento extends JFrame {
                 mobiliario.setNombre(resultSet.getString("nombreMobiliario"));
                 mobiliario.setCantidad(resultSet.getInt("cantidad"));
                 mobiliario.setPrecio(resultSet.getDouble("precioUnitario"));
-                mobiliario.setTipo("MB"); // Puedes asignar un tipo específico para el mobiliario.
+                mobiliario.setTipo("W"); // Puedes asignar un tipo específico para el mobiliario.
                 mobiliarioList.add(mobiliario);
             }
 
@@ -1059,7 +1093,7 @@ public class CrearEvento extends JFrame {
     private PoliModeloGlobo cargarDatosGlobo() {
         sql = new Conexion();
         globoList.clear();
-        selectTabla = 4;
+        selectTabla = 3;
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement(
                      "SELECT * FROM globos WHERE codigo_globo LIKE CONCAT('%', ?, '%')"
@@ -1094,7 +1128,8 @@ public class CrearEvento extends JFrame {
     private PoliModeloArreglo cargarDatosArreglo() {
         sql = new Conexion();
         arregloList.clear();
-        selectTabla = 7; // Puedes asignar un valor que represente la tabla de arreglos en tu base de datos.
+
+        selectTabla = 4; // Puedes asignar un valor que represente la tabla de arreglos en tu base de datos.
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement(
                      "SELECT * FROM arreglos WHERE nombre LIKE CONCAT('%', ?, '%')"
@@ -1129,7 +1164,8 @@ public class CrearEvento extends JFrame {
     private PoliModeloManualidad cargarDatosManualidad() {
         sql = new Conexion();
         manualidadList.clear();
-        selectTabla = 8; // Puedes asignar un valor que represente la tabla de manualidades en tu base de datos.
+
+        selectTabla = 5; // Puedes asignar un valor que represente la tabla de manualidades en tu base de datos.
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement(
                      "SELECT * FROM manualidades WHERE nombre LIKE CONCAT('%', ?, '%')"
@@ -1145,7 +1181,7 @@ public class CrearEvento extends JFrame {
                 manualidad.setNombre(resultSet.getString("nombre"));
                 manualidad.setCantidad(resultSet.getInt("cantidad"));
                 manualidad.setPrecio(resultSet.getDouble("precio_manualidad"));
-                manualidad.setTipo("M"); // Puedes asignar un tipo específico para las manualidades.
+                manualidad.setTipo("N"); // Puedes asignar un tipo específico para las manualidades.
                 manualidadList.add(manualidad);
             }
 
@@ -1387,23 +1423,36 @@ public class CrearEvento extends JFrame {
     }
 
 
-    /*private void guardarEvento() {
+    private void guardarEvento() {
         String direccion = campoDireccion.getText().trim();
-        String tipo = campoTipo.getText().trim(); // Reemplaza con el campo correspondiente
 
-        ClienteEvento cliente = (ClienteEvento) jbcClientes.getModel().getSelectedItem();
+        Date fechaInicial = (Date) datePicker.getModel().getValue(); // Explicitly cast the value to Date
+        String fecha = new SimpleDateFormat("yyyy-MM-dd").format(fechaInicial);
+
+        int cliente_id = Integer.parseInt(jbcClientes.getSelectedItem().toString().split(" - ")[0]);
+        String tipo  = jbcTipoEvento.getSelectedItem().toString().trim();
+
+
+        // Obtener los valores de los selectores de hora y minuto para la hora inicial
+        int horaInicial = (int) spinnerHora1.getValue();
+        int minutoInicial = (int) spinnerMin1.getValue();
+
+        // Obtener los valores de los selectores de hora y minuto para la hora final
+        int horaFinal = (int) spinnerHora2.getValue();
+        int minutoFinal = (int) spinnerMin2.getValue();
+
+        // Crear objetos Time para la hora inicial y final
+        Time inicio = new Time(horaInicial, minutoInicial, 0);
+        Time fin = new Time(horaFinal, minutoFinal, 0);
 
         try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement(
-                     "INSERT INTO eventos (cliente_id, direccion, tipo, fecha, inicio, fin) VALUES (?, ?, ?, ?, ?, ?)",
-                     Statement.RETURN_GENERATED_KEYS)) {
-
-            preparedStatement.setInt(1, cliente.getIdCliente());
+             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO eventos (cliente_id, direccion, tipo, fecha, inicio, fin) VALUES (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+            preparedStatement.setInt(1, cliente_id); // Reemplaza cliente_id con el valor adecuado
             preparedStatement.setString(2, direccion);
             preparedStatement.setString(3, tipo);
-            preparedStatement.setDate(4, java.sql.Date.valueOf(fecha)); // Reemplaza "fecha" con la fecha del evento.
-            preparedStatement.setTime(5, inicio); // Reemplaza "inicio" con la hora de inicio del evento.
-            preparedStatement.setTime(6, fin); // Reemplaza "fin" con la hora de fin del evento.
+            preparedStatement.setString(4, fecha);
+            preparedStatement.setTime(5, inicio);
+            preparedStatement.setTime(6, fin);
             preparedStatement.executeUpdate();
 
             ResultSet resultSet = preparedStatement.getGeneratedKeys();
@@ -1412,35 +1461,38 @@ public class CrearEvento extends JFrame {
                 lastId = resultSet.getInt(1);
             }
 
-            // Lógica adicional para detalles del evento si es necesario
+            try (PreparedStatement prepared = connection.prepareStatement(
+                    "UPDATE detalles_eventos SET evento_id = ? WHERE evento_id IS NULL")) {
+                prepared.setInt(1, lastId);
+                prepared.executeUpdate();
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+                JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+                mobiliarioList = new ArrayList<>();
+            }
 
-            JOptionPane.showMessageDialog(null, "Evento guardado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Evento o exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error al guardar el evento", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    private void guardarDetalleEvento(int evento_id, String tipoDetalle, int detalle_id, int cantidad, double precio) {
+    private void guardarDetalleEvento(int id_material, int cantidad, String tipo) {
         try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement(
-                     "INSERT INTO detalles_eventos (evento_id, tipo_detalle, detalle_id, cantidad, precio) VALUES (?, ?, ?, ?, ?)")) {
-            preparedStatement.setInt(1, evento_id); // Reemplaza "evento_id" con el ID del evento al que se agrega el detalle.
-            preparedStatement.setString(2, tipoDetalle); // Reemplaza "tipoDetalle" con el tipo de detalle.
-            preparedStatement.setInt(3, detalle_id); // Reemplaza "detalle_id" con el ID del material, mobiliario, etc.
-            preparedStatement.setInt(4, cantidad);
-            preparedStatement.setDouble(5, precio); // Precio debe ser proporcionado.
+             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO detalles_eventos (tipo_detalle, detalle_id, cantidad,precio) VALUES (?, ?, ?, ?)")) {
+            preparedStatement.setString(1, tiposDescripcion.get(tipo));
+            preparedStatement.setInt(2, id_material);
+            preparedStatement.setInt(3, cantidad);
+            preparedStatement.setDouble(4, obtenerPrecioMaterialDesdeBD(id_material,tipo)); // Obtener el precio del material desde la base de datos
             preparedStatement.executeUpdate();
 
-            JOptionPane.showMessageDialog(null, "Detalle de evento agregado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Detalle agregado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al agregar el detalle de evento", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error al agregar el detalle del evento", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
-
-     */
 
 
     public static void main(String[] args) {
