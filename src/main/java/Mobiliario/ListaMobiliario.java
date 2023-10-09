@@ -127,7 +127,7 @@ public class ListaMobiliario extends JFrame {
                 actual.dispose();
             }
         });
-/*
+
         botonEditar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -135,11 +135,11 @@ public class ListaMobiliario extends JFrame {
                     JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
                     return;
                 }
-                EditarGlobo globo = new EditarGlobo(listaGlobo.get(listaMobiliario.getSelectedRow()).getId());
-                globo.setVisible(true);
+                EditarMobiliario mo  = new EditarMobiliario(listadoMobiliario.get(listaMobiliario.getSelectedRow()));
+                mo.setVisible(true);
                 actual.dispose();
             }
-        });**/
+        });
 
         JTableHeader header = listaMobiliario.getTableHeader();
         header.setForeground(Color.WHITE);

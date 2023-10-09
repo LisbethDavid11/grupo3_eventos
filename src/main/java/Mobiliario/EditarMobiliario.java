@@ -1,6 +1,7 @@
 package Mobiliario;
 
 import Objetos.Conexion;
+import Objetos.Mobiliario;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -22,17 +23,20 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
 
-public class CrearMobiliario extends JFrame {
+public class EditarMobiliario extends JFrame {
     private JTextField campoNombreMobiliario, campoCantidad, campoPrecioU;
-    private JButton botonGuardar, botonCancelar, botonLimpiar;
+    private JRadioButton radioButtonSiNecesita, radioButtonNoNecesita;
+    private JButton botonVolver;
     private JPanel panel1, panel2, panel3, panel4, panel5, panelImg;
-    private JLabel lbl0, lbl1,lbl3, lbl4, lbl5, imagenLabel;
+    private JLabel lbl0, lbl1,lbl3, lbl4, lbl5,imagenLabel;
     private String imagePath = "";
-    private JButton botonCargarImagen;
     private JTextArea txtaDescripcion;
-    private JComboBox comboColor;
     private JLabel lbl2;
-    private CrearMobiliario actual = this;
+    private JComboBox<String> comboColor;
+    private JButton botonCargarImagen;
+    private JButton botonGuardar;
+    private JButton botonLimpiar;
+    private EditarMobiliario actual = this;
     private Conexion sql;
     Color darkColorRed = new Color(244, 67, 54);
     Color darkColorBlue = new Color(33, 150, 243);
@@ -60,8 +64,8 @@ public class CrearMobiliario extends JFrame {
 
     // Crea un margen de 10 píxeles desde el borde inferior
     EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
-    public CrearMobiliario() {
-        super("");
+    public EditarMobiliario(Mobiliario mobiliario) {
+        super("Ver datos de mobiliario");
         setSize(700, 650);
         setLocationRelativeTo(null);
         setContentPane(panel1);
@@ -99,7 +103,6 @@ public class CrearMobiliario extends JFrame {
         panelImg.setBackground(Color.decode("#F5F5F5"));
         panel1.setBackground(Color.decode("#F5F5F5"));
         panel2.setBackground(Color.decode("#F5F5F5"));
-        panel3.setBackground(Color.decode("#F5F5F5"));
         panel4.setBackground(Color.decode("#F5F5F5"));
         panel5.setBackground(Color.decode("#F5F5F5"));
 
@@ -107,11 +110,6 @@ public class CrearMobiliario extends JFrame {
         botonLimpiar.setBackground(darkColorRed);
         botonLimpiar.setFocusPainted(false);
         botonLimpiar.setBorder(margin);
-
-        botonCancelar.setForeground(Color.WHITE);
-        botonCancelar.setBackground(darkColorBlue);
-        botonCancelar.setFocusPainted(false);
-        botonCancelar.setBorder(margin);
 
         botonGuardar.setForeground(Color.WHITE);
         botonGuardar.setBackground(darkColorAqua);
@@ -123,11 +121,15 @@ public class CrearMobiliario extends JFrame {
         botonCargarImagen.setFocusPainted(false);
         botonCargarImagen.setBorder(margin);
 
+        botonVolver.setForeground(Color.WHITE);
+        botonVolver.setBackground(darkColorAqua);
+        botonVolver.setFocusPainted(false);
+        botonVolver.setBorder(margin);
+
 
         lbl0.setForeground(textColor);
         lbl0.setBorder(margin);
         lbl0.setFont(fontTitulo);
-
 
         campoPrecioU.addKeyListener(new KeyAdapter() {
             @Override
@@ -283,12 +285,91 @@ public class CrearMobiliario extends JFrame {
             }
         });
 
-        botonCancelar.addActionListener(new ActionListener() {
+        botonVolver.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ListaMobiliario listaMobiliario = new ListaMobiliario();
-                listaMobiliario.setVisible(true);
+                ListaMobiliario mobiliario1 = new ListaMobiliario();
+                mobiliario1.setVisible(true);
                 actual.dispose();
+            }
+        });
+
+
+        botonLimpiar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JButton btnYes = new JButton("Sí");
+                JButton btnNo = new JButton("No");
+
+                // Personaliza los botones aquí
+                btnYes.setBackground(darkColorAqua);
+                btnNo.setBackground(darkColorRed);
+
+                // Personaliza los fondos de los botones aquí
+                btnYes.setForeground(Color.WHITE);
+                btnNo.setForeground(Color.WHITE);
+
+                // Elimina el foco
+                btnYes.setFocusPainted(false);
+                btnNo.setFocusPainted(false);
+
+                // Crea un JOptionPane
+                JOptionPane optionPane = new JOptionPane(
+                        "¿Estás seguro de que deseas restablecer los datos del mobiliario?",
+                        JOptionPane.DEFAULT_OPTION,
+                        JOptionPane.DEFAULT_OPTION,
+                        null,
+                        new Object[]{}, // no options
+                        null
+                );
+
+                // Crea un JDialog
+                JDialog dialog = optionPane.createDialog("Limpiar");
+
+                btnYes.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+
+                        txtaDescripcion.setText(mobiliario.getDescripcion());
+                        campoNombreMobiliario.setText(mobiliario.getNombreMobiliario());
+                        campoCantidad.setText(String.valueOf(mobiliario.getCantidad()));
+                        comboColor.setSelectedItem(mobiliario.getColor().toString());
+                        campoPrecioU.setText(String.valueOf(mobiliario.getPrecioUnitario()));
+
+
+                        ImageIcon originalIcon = new ImageIcon(mobiliario.getImagen());
+                        imagePath = mobiliario.getImagen();
+
+                        // Obtener las dimensiones originales de la imagen
+                        int originalWidth = originalIcon.getIconWidth();
+                        int originalHeight = originalIcon.getIconHeight();
+
+                        // Calcular la escala para ajustar la imagen al JPanel
+                        double scale = Math.min((double) panelImgWidth / originalWidth, (double) panelImgHeight / originalHeight);
+
+                        // Calcular las nuevas dimensiones de la imagen redimensionada
+                        int scaledWidth = (int) (originalWidth * scale);
+                        int scaledHeight = (int) (originalHeight * scale);
+
+                        // Redimensionar la imagen manteniendo su proporción
+                        Image resizedImage = originalIcon.getImage().getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH);
+
+                        // Crear un nuevo ImageIcon a partir de la imagen redimensionada
+                        ImageIcon scaledIcon = new ImageIcon(resizedImage);
+
+                        imagenLabel.setIcon(scaledIcon);
+                        dialog.dispose();
+                    }
+                });
+
+                btnNo.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        dialog.dispose();
+                    }
+                });
+                optionPane.setOptions(new Object[]{btnYes, btnNo});
+                dialog.setVisible(true);
             }
         });
 
@@ -372,7 +453,7 @@ public class CrearMobiliario extends JFrame {
 
                 int respuesta = JOptionPane.showOptionDialog(
                         null,
-                        "¿Desea guardar la información del mobiliario?",
+                        "¿Desea actualizar la información del mobiliario?",
                         "Confirmación",
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.QUESTION_MESSAGE,
@@ -382,8 +463,7 @@ public class CrearMobiliario extends JFrame {
                 );
 
                 if (respuesta == JOptionPane.YES_OPTION) {
-                    guardarMobiliario();
-
+                   guardarMobiliario(mobiliario);
                 }
             }
         });
@@ -445,64 +525,61 @@ public class CrearMobiliario extends JFrame {
             }
         });
 
-        botonLimpiar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JButton btnYes = new JButton("Sí");
-                JButton btnNo = new JButton("No");
-
-                // Personaliza los botones aquí
-                btnYes.setBackground(darkColorAqua);
-                btnNo.setBackground(darkColorRed);
-
-                // Personaliza los fondos de los botones aquí
-                btnYes.setForeground(Color.WHITE);
-                btnNo.setForeground(Color.WHITE);
-
-                // Elimina el foco
-                btnYes.setFocusPainted(false);
-                btnNo.setFocusPainted(false);
-
-                // Crea un JOptionPane
-                JOptionPane optionPane = new JOptionPane(
-                        "¿Estás seguro de que deseas limpiar los datos del mobiliario?",
-                        JOptionPane.DEFAULT_OPTION,
-                        JOptionPane.DEFAULT_OPTION,
-                        null,
-                        new Object[]{}, // no options
-                        null
-                );
-
-                // Crea un JDialog
-                JDialog dialog = optionPane.createDialog("Limpiar");
-
-                btnYes.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        campoPrecioU.setText("");
-                        campoNombreMobiliario.setText("");
-                        comboColor.setSelectedIndex(0);
-                        txtaDescripcion.setText("");
-                        campoCantidad.setText("");
-                        dialog.dispose();
-                    }
-                });
-
-                btnNo.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        dialog.dispose();
-                    }
-                });
-                optionPane.setOptions(new Object[]{btnYes, btnNo});
-                dialog.setVisible(true);
-            }
-        });
 
         txtaDescripcion.setBackground(new Color(215, 215, 215));
+
+
+        txtaDescripcion.setText(mobiliario.getDescripcion());
+        campoNombreMobiliario.setText(mobiliario.getNombreMobiliario());
+        campoCantidad.setText(String.valueOf(mobiliario.getCantidad()));
+        comboColor.setSelectedItem(mobiliario.getColor().toString());
+        campoPrecioU.setText(String.valueOf(mobiliario.getPrecioUnitario()));
+
+
+        ImageIcon originalIcon = new ImageIcon(mobiliario.getImagen());
+        imagePath = mobiliario.getImagen();
+
+        // Obtener las dimensiones originales de la imagen
+        int originalWidth = originalIcon.getIconWidth();
+        int originalHeight = originalIcon.getIconHeight();
+
+        // Calcular la escala para ajustar la imagen al JPanel
+        double scale = Math.min((double) panelImgWidth / originalWidth, (double) panelImgHeight / originalHeight);
+
+        // Calcular las nuevas dimensiones de la imagen redimensionada
+        int scaledWidth = (int) (originalWidth * scale);
+        int scaledHeight = (int) (originalHeight * scale);
+
+        // Redimensionar la imagen manteniendo su proporción
+        Image resizedImage = originalIcon.getImage().getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH);
+
+        // Crear un nuevo ImageIcon a partir de la imagen redimensionada
+        ImageIcon scaledIcon = new ImageIcon(resizedImage);
+
+        imagenLabel.setIcon(scaledIcon);
     }
 
-    private void guardarMobiliario() {
+
+    private String obtenerExtensionImagen(String imagePath) {
+        int extensionIndex = imagePath.lastIndexOf(".");
+        if (extensionIndex != -1) {
+            return imagePath.substring(extensionIndex);
+        }
+        return "";
+    }
+
+    private String generarNumeroAleatorio(int min, int max) {
+        Random random = new Random();
+        int numeroAleatorio = random.nextInt(max - min + 1) + min;
+        return String.format("%04d", numeroAleatorio);
+    }
+
+    private void createUIComponents() {
+        // TODO: place custom component creation code here
+    }
+
+
+    private void guardarMobiliario(Mobiliario mobiliario) {
 
         double precio =Double.parseDouble(campoPrecioU.getText().trim());
         String nombreMobiliario = campoNombreMobiliario.getText().trim();
@@ -514,7 +591,7 @@ public class CrearMobiliario extends JFrame {
 
 
         try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO mobiliario (nombreMobiliario,color,descripcion,cantidad,precioUnitario,image) VALUES (?,?,?,?,?,?)")) {
+             PreparedStatement preparedStatement = connection.prepareStatement("UPDATE mobiliario SET nombreMobiliario = ?,color = ?,descripcion = ?,cantidad = ?,precioUnitario = ?,image = ? WHERE id = ?")) {
 
             // Generar el nombre de la imagen
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH-mm-ss");
@@ -531,7 +608,7 @@ public class CrearMobiliario extends JFrame {
                 Files.copy(origenPath, destino.toPath(), StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Error al guardar la imagen", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Error al actualizar la imagen", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
@@ -541,39 +618,16 @@ public class CrearMobiliario extends JFrame {
             preparedStatement.setInt(4, Integer.parseInt(cantidad));
             preparedStatement.setDouble(5, precio);
             preparedStatement.setString(6, image);
+            preparedStatement.setInt(7, mobiliario.getId());
             preparedStatement.executeUpdate();
 
-            JOptionPane.showMessageDialog(null, "Mobiliario guardado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Mobiliario actualizado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
             ListaMobiliario listaMobiliario = new ListaMobiliario();
             listaMobiliario.setVisible(true);
             actual.dispose();
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al guardar el mobiliario", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error al actualizar el mobiliario", "Error", JOptionPane.ERROR_MESSAGE);
         }
-    }
-
-    private String obtenerExtensionImagen(String imagePath) {
-        int extensionIndex = imagePath.lastIndexOf(".");
-        if (extensionIndex != -1) {
-            return imagePath.substring(extensionIndex);
-        }
-        return "";
-    }
-
-    private String generarNumeroAleatorio(int min, int max) {
-        Random random = new Random();
-        int numeroAleatorio = random.nextInt(max - min + 1) + min;
-        return String.format("%04d", numeroAleatorio);
-    }
-
-    public static void main(String[] args) {
-        CrearMobiliario crearMobiliario = new CrearMobiliario();
-        crearMobiliario.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        crearMobiliario.setVisible(true);
-    }
-
-    private void createUIComponents() {
-        // TODO: place custom component creation code here
     }
 }

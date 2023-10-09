@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="Mobiliario.CrearMobiliario">
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="Mobiliario.EditarMobiliario">
   <grid id="27dc6" binding="panel1" layout-manager="GridLayoutManager" row-count="5" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="10" left="10" bottom="10" right="10"/>
     <constraints>
@@ -36,6 +36,7 @@
             </constraints>
             <properties>
               <background color="-2631721"/>
+              <editable value="true"/>
               <font name="Arial" size="12" style="0"/>
               <foreground color="-16119289"/>
             </properties>
@@ -50,7 +51,74 @@
               <text value="Color:"/>
             </properties>
           </component>
-          <component id="9010f" class="javax.swing.JComboBox" binding="comboColor">
+          <component id="3483f" class="javax.swing.JLabel" binding="lbl4">
+            <constraints>
+              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <font name="Arial" size="12" style="1"/>
+              <foreground color="-16315129"/>
+              <text value="Precio unitario:"/>
+            </properties>
+          </component>
+          <component id="64cdc" class="javax.swing.JTextField" binding="campoPrecioU">
+            <constraints>
+              <grid row="3" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="174" height="36"/>
+              </grid>
+            </constraints>
+            <properties>
+              <background color="-2631721"/>
+              <editable value="true"/>
+              <font name="Arial" size="12" style="0"/>
+              <foreground color="-16119289"/>
+            </properties>
+          </component>
+          <component id="807a6" class="javax.swing.JLabel" binding="lbl3">
+            <constraints>
+              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <font name="Arial" size="12" style="1"/>
+              <foreground color="-16315129"/>
+              <text value="Descripción"/>
+            </properties>
+          </component>
+          <component id="31a94" class="javax.swing.JTextArea" binding="txtaDescripcion">
+            <constraints>
+              <grid row="1" column="2" row-span="3" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                <preferred-size width="150" height="50"/>
+              </grid>
+            </constraints>
+            <properties>
+              <editable value="true"/>
+            </properties>
+          </component>
+          <component id="ca4" class="javax.swing.JLabel" binding="lbl2">
+            <constraints>
+              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <font name="Arial" size="12" style="1"/>
+              <foreground color="-16315129"/>
+              <text value="Cantidad:"/>
+            </properties>
+          </component>
+          <component id="f035c" class="javax.swing.JTextField" binding="campoCantidad">
+            <constraints>
+              <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="174" height="36"/>
+              </grid>
+            </constraints>
+            <properties>
+              <background color="-2631721"/>
+              <editable value="true"/>
+              <font name="Arial" size="12" style="0"/>
+              <foreground color="-16119289"/>
+              <text value=""/>
+            </properties>
+          </component>
+          <component id="90b3c" class="javax.swing.JComboBox" binding="comboColor">
             <constraints>
               <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
@@ -74,78 +142,6 @@
               </model>
             </properties>
           </component>
-          <grid id="18351" binding="panel3" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-            <margin top="0" left="0" bottom="0" right="0"/>
-            <constraints>
-              <grid row="4" column="2" row-span="2" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties/>
-            <border type="none"/>
-            <children/>
-          </grid>
-          <component id="3483f" class="javax.swing.JLabel" binding="lbl4">
-            <constraints>
-              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <font name="Arial" size="12" style="1"/>
-              <foreground color="-16315129"/>
-              <text value="Precio unitario:"/>
-            </properties>
-          </component>
-          <component id="64cdc" class="javax.swing.JTextField" binding="campoPrecioU">
-            <constraints>
-              <grid row="3" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                <preferred-size width="174" height="36"/>
-              </grid>
-            </constraints>
-            <properties>
-              <background color="-2631721"/>
-              <font name="Arial" size="12" style="0"/>
-              <foreground color="-16119289"/>
-            </properties>
-          </component>
-          <component id="807a6" class="javax.swing.JLabel" binding="lbl3">
-            <constraints>
-              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <font name="Arial" size="12" style="1"/>
-              <foreground color="-16315129"/>
-              <text value="Descripción"/>
-            </properties>
-          </component>
-          <component id="31a94" class="javax.swing.JTextArea" binding="txtaDescripcion">
-            <constraints>
-              <grid row="1" column="2" row-span="3" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
-                <preferred-size width="150" height="50"/>
-              </grid>
-            </constraints>
-            <properties/>
-          </component>
-          <component id="ca4" class="javax.swing.JLabel" binding="lbl2">
-            <constraints>
-              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <font name="Arial" size="12" style="1"/>
-              <foreground color="-16315129"/>
-              <text value="Cantidad:"/>
-            </properties>
-          </component>
-          <component id="f035c" class="javax.swing.JTextField" binding="campoCantidad">
-            <constraints>
-              <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                <preferred-size width="174" height="36"/>
-              </grid>
-            </constraints>
-            <properties>
-              <background color="-2631721"/>
-              <font name="Arial" size="12" style="0"/>
-              <foreground color="-16119289"/>
-              <text value=""/>
-            </properties>
-          </component>
         </children>
       </grid>
       <grid id="cf6a9" binding="panel4" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
@@ -163,12 +159,12 @@
             <properties>
               <font name="Arial" size="12" style="1"/>
               <foreground color="-16315129"/>
-              <text value="INGRESAR DATOS DEL MOBILIARIO"/>
+              <text value="EDITAR DATOS DEL MOBILIARIO"/>
             </properties>
           </component>
         </children>
       </grid>
-      <grid id="66c88" binding="panel5" layout-manager="GridLayoutManager" row-count="2" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+      <grid id="66c88" binding="panel5" layout-manager="GridLayoutManager" row-count="2" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
           <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -176,28 +172,9 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="6f1c3" class="javax.swing.JButton" binding="botonGuardar">
+          <component id="6f1c3" class="javax.swing.JButton" binding="botonVolver">
             <constraints>
-              <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <font name="Arial" size="12" style="1"/>
-              <icon value="IconosBotones/guardarP.png"/>
-              <text value="GUARDAR"/>
-            </properties>
-          </component>
-          <component id="94dfd" class="javax.swing.JButton" binding="botonCargarImagen">
-            <constraints>
-              <grid row="0" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <icon value="IconosBotones/subir.png"/>
-              <text value="CARGAR IMAGEN"/>
-            </properties>
-          </component>
-          <component id="7a648" class="javax.swing.JButton" binding="botonCancelar">
-            <constraints>
-              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="1" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <font name="Arial" size="12" style="1"/>
@@ -205,13 +182,32 @@
               <text value="CANCELAR"/>
             </properties>
           </component>
-          <component id="3c85e" class="javax.swing.JButton" binding="botonLimpiar">
+          <component id="a384" class="javax.swing.JButton" binding="botonCargarImagen">
             <constraints>
-              <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="0" column="0" row-span="1" col-span="5" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <icon value="IconosBotones/subir.png"/>
+              <text value="CARGAR IMAGEN"/>
+            </properties>
+          </component>
+          <component id="8d673" class="javax.swing.JButton" binding="botonGuardar">
+            <constraints>
+              <grid row="1" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <font name="Arial" size="12" style="1"/>
+              <icon value="IconosBotones/guardarP.png"/>
+              <text value="ACTUALIZAR"/>
+            </properties>
+          </component>
+          <component id="671a3" class="javax.swing.JButton" binding="botonLimpiar">
+            <constraints>
+              <grid row="1" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <icon value="IconosBotones/icon_limpiar_16x16.png"/>
-              <text value="LIMPIAR"/>
+              <text value="RESTABLECER"/>
             </properties>
           </component>
         </children>
