@@ -7,7 +7,7 @@ import javax.swing.table.AbstractTableModel;
 import java.util.List;
 
 public class PoliModeloMobiliario extends AbstractTableModel {
-    private final String[] columnas = {"Id", "Nombre", "Color", "Tipo de Evento", "Cantidad", "Precio Unitario", "Total"};
+    private final String[] columnas = {"Id", "Nombre", "Color", "Cantidad", "Precio Unitario", "Total"};
     private final List<PoliMobiliario> mobiliario;
     private final Conexion sql;
 
@@ -42,18 +42,16 @@ public class PoliModeloMobiliario extends AbstractTableModel {
                 return mobiliarioItem.getNombre();
             case 2: // Color
                 return mobiliarioItem.getColor();
-            case 3: // Tipo de Evento
-                return mobiliarioItem.getTipoEvento();
-            case 4: // Cantidad
+            case 3: // Cantidad
                 return mobiliarioItem.getCantidad();
-            case 5: // Precio Unitario
+            case 4: // Precio Unitario
                 double precioUnitario = mobiliarioItem.getPrecioUnitario();
                 if (precioUnitario < 0) {
                     precioUnitario = 0;
                 }
                 String precioUnitarioFormateado = String.format("L. %.2f", precioUnitario);
                 return precioUnitarioFormateado;
-            case 6: // Total (Precio Unitario * Cantidad)
+            case 5: // Total (Precio Unitario * Cantidad)
                 int cantidad = mobiliarioItem.getCantidad();
                 double total = mobiliarioItem.getPrecioUnitario() * cantidad;
                 String totalFormateado = String.format("L. %.2f", total);
