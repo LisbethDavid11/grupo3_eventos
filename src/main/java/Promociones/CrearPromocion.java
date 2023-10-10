@@ -967,9 +967,8 @@ public class CrearPromocion extends JFrame {
                 mobiliario.setID(resultSet.getInt("id"));
                 mobiliario.setNombre(resultSet.getString("nombreMobiliario"));
                 mobiliario.setColor(resultSet.getString("color"));
-                //mobiliario.setTipoEvento(resultSet.getString("tipoEvento"));
                 mobiliario.setCantidad(resultSet.getInt("cantidad"));
-                mobiliario.setPrecio(resultSet.getDouble("precioUnitario"));
+                mobiliario.setPrecioUnitario(resultSet.getFloat("precioUnitario"));
                 mobiliario.setTipo("W"); // Puedes asignar un tipo específico para el mobiliario.
                 mobiliarioList.add(mobiliario);
             }
