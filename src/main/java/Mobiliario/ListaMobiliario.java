@@ -262,7 +262,7 @@ public class ListaMobiliario extends JFrame {
                 mobiliario.setCantidad(resultSet.getInt("cantidad"));
                 mobiliario.setPrecioUnitario(resultSet.getFloat("precioUnitario"));
                 mobiliario.setImagen(resultSet.getString("image"));
-                mobiliario.setDisponibilidad(resultSet.getBoolean("disponibilidad"));
+                //mobiliario.setDisponibilidad(resultSet.getBoolean("disponibilidad"));
                 listadoMobiliario.add(mobiliario);
             }
         } catch (SQLException e) {
