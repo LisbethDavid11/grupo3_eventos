@@ -4,7 +4,7 @@ import Clientes.ListaClientes;
 import Materiales.TextPrompt;
 import Modelos.*;
 import Objetos.*;
-import org.jdatepicker.impl.JDatePickerImpl;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.*;
@@ -30,12 +30,13 @@ public class CrearVenta extends JFrame {
     public JComboBox<String> boxCliente, boxEmpleado;
     private JLabel lbl0, lbl1, lbl2, lbl3, lbl4, lbl8, lbl9, lbl10;
     private JButton botonCrear, imprimirButton, agregarMaterialButton, agregarArregloButton, agregarTarjetasButton, agregarFloresButton, agregarManualidadButton, agregarDesayunoButton, agregarProductoButton, cancelarProductoButton;
-    private JTextField campoBusquedaMateriales;
+    private JTextField filtroBusqueda;
+    private int categoriaSeleccionada = 0;
     private JButton botonLimpiar;
     private JTextField buscarCliente;
     private Conexion sql;
     public CrearVenta crearVenta = this;
-    private Materiales.TextPrompt placeholder = new TextPrompt(" Buscar por nombre de producto", campoBusquedaMateriales);
+    private Materiales.TextPrompt placeholder = new TextPrompt(" Buscar por nombre de producto", filtroBusqueda);
     private Materiales.TextPrompt placeholderCliente = new TextPrompt(" Buscar cliente por nombre o apellido", buscarCliente);
     private List<PoliProducto> productosListTemporal = new ArrayList<>();
     private List<PoliMaterial> materialList = new ArrayList<>();
@@ -218,7 +219,7 @@ public class CrearVenta extends JFrame {
                     materialTemporal.setTipo(l.getTipo());
                     productosListTemporal.add(materialTemporal);
 
-                    campoBusquedaMateriales.setVisible(false);
+                    filtroBusqueda.setVisible(false);
                     agregarProductoButton.setVisible(false);
                     cancelarProductoButton.setVisible(false);
                     agregarMaterialButton.setVisible(true);
@@ -375,7 +376,8 @@ public class CrearVenta extends JFrame {
         agregarMaterialButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                campoBusquedaMateriales.setVisible(true);
+                categoriaSeleccionada = 1;
+                filtroBusqueda.setVisible(true);
                 agregarProductoButton.setVisible(true);
                 cancelarProductoButton.setVisible(true);
                 agregarMaterialButton.setVisible(false);
@@ -391,7 +393,8 @@ public class CrearVenta extends JFrame {
         agregarArregloButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                campoBusquedaMateriales.setVisible(true);
+                categoriaSeleccionada = 2;
+                filtroBusqueda.setVisible(true);
                 agregarProductoButton.setVisible(true);
                 cancelarProductoButton.setVisible(true);
                 agregarMaterialButton.setVisible(false);
@@ -407,7 +410,8 @@ public class CrearVenta extends JFrame {
         agregarFloresButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                campoBusquedaMateriales.setVisible(true);
+                categoriaSeleccionada = 3;
+                filtroBusqueda.setVisible(true);
                 agregarProductoButton.setVisible(true);
                 cancelarProductoButton.setVisible(true);
                 agregarMaterialButton.setVisible(false);
@@ -423,7 +427,8 @@ public class CrearVenta extends JFrame {
         agregarTarjetasButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                campoBusquedaMateriales.setVisible(true);
+                categoriaSeleccionada = 4;
+                filtroBusqueda.setVisible(true);
                 agregarProductoButton.setVisible(true);
                 cancelarProductoButton.setVisible(true);
                 agregarMaterialButton.setVisible(false);
@@ -439,7 +444,8 @@ public class CrearVenta extends JFrame {
         agregarDesayunoButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                campoBusquedaMateriales.setVisible(true);
+                categoriaSeleccionada = 5;
+                filtroBusqueda.setVisible(true);
                 agregarProductoButton.setVisible(true);
                 cancelarProductoButton.setVisible(true);
                 agregarMaterialButton.setVisible(false);
@@ -455,7 +461,8 @@ public class CrearVenta extends JFrame {
         agregarManualidadButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                campoBusquedaMateriales.setVisible(true);
+                categoriaSeleccionada = 6;
+                filtroBusqueda.setVisible(true);
                 agregarProductoButton.setVisible(true);
                 cancelarProductoButton.setVisible(true);
                 agregarMaterialButton.setVisible(false);
@@ -471,7 +478,7 @@ public class CrearVenta extends JFrame {
         cancelarProductoButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                campoBusquedaMateriales.setVisible(false);
+                filtroBusqueda.setVisible(false);
                 agregarProductoButton.setVisible(false);
                 cancelarProductoButton.setVisible(false);
                 agregarMaterialButton.setVisible(true);
@@ -747,11 +754,34 @@ public class CrearVenta extends JFrame {
         configurarTablaMateriales();
         agregarProductoButton.setVisible(false);
         cancelarProductoButton.setVisible(false);
-        campoBusquedaMateriales.setVisible(false);
-        campoBusquedaMateriales.addKeyListener(new KeyAdapter() {
+        filtroBusqueda.setVisible(false);
+        // Configuración del evento keyReleased del filtro de búsqueda
+        filtroBusqueda.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
-                tablaProductos.setModel(cargarDatosMaterial());
+                // Llama a la función correspondiente a la categoría actualmente seleccionada
+                switch (categoriaSeleccionada) {
+                    case 1:
+                        tablaProductos.setModel(cargarDatosMaterial());
+                        break;
+                    case 2:
+                        tablaProductos.setModel(cargarDatosArreglo());
+                        break;
+                    case 3:
+                        tablaProductos.setModel(cargarDatosFloristeria());
+                        break;
+                    case 4:
+                        tablaProductos.setModel(cargarDatosTarjeta());
+                        break;
+                    case 5:
+                        tablaProductos.setModel(cargarDatosDesayuno());
+                        break;
+                    case 6:
+                        tablaProductos.setModel(cargarDatosManualidad());
+                        break;
+                    default:
+                        break;
+                }
             }
         });
     }
@@ -1329,8 +1359,8 @@ public class CrearVenta extends JFrame {
                              "WHERE f.nombre LIKE CONCAT('%', ?, '%') OR p.empresaProveedora LIKE CONCAT('%', ?, '%')"
              )
         ) {
-            preparedStatement.setString(1, campoBusquedaMateriales.getText());
-            preparedStatement.setString(2, campoBusquedaMateriales.getText());
+            preparedStatement.setString(1, filtroBusqueda.getText());
+            preparedStatement.setString(2, filtroBusqueda.getText());
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -1365,7 +1395,7 @@ public class CrearVenta extends JFrame {
                      "SELECT * FROM materiales WHERE nombre LIKE CONCAT('%', ?, '%')"
              )
         ) {
-            preparedStatement.setString(1, campoBusquedaMateriales.getText());
+            preparedStatement.setString(1, filtroBusqueda.getText());
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -1400,7 +1430,7 @@ public class CrearVenta extends JFrame {
                      "SELECT * FROM manualidades WHERE nombre LIKE CONCAT('%', ?, '%')"
              )
         ) {
-            preparedStatement.setString(1, campoBusquedaMateriales.getText());
+            preparedStatement.setString(1, filtroBusqueda.getText());
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 PoliManualidad manualidad = new PoliManualidad();
@@ -1433,7 +1463,7 @@ public class CrearVenta extends JFrame {
                      "SELECT * FROM tarjetas WHERE ocasion LIKE CONCAT('%', ?, '%')"
              )
         ) {
-            preparedStatement.setString(1, campoBusquedaMateriales.getText());
+            preparedStatement.setString(1, filtroBusqueda.getText());
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -1469,7 +1499,7 @@ public class CrearVenta extends JFrame {
                      "SELECT * FROM arreglos WHERE nombre LIKE CONCAT('%', ?, '%')"
              )
         ) {
-            preparedStatement.setString(1, campoBusquedaMateriales.getText());
+            preparedStatement.setString(1, filtroBusqueda.getText());
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -1504,7 +1534,7 @@ public class CrearVenta extends JFrame {
                      "SELECT * FROM desayunos WHERE nombre LIKE CONCAT('%', ?, '%')"
              )
         ) {
-            preparedStatement.setString(1, campoBusquedaMateriales.getText());
+            preparedStatement.setString(1, filtroBusqueda.getText());
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
