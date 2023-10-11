@@ -1351,19 +1351,32 @@ public class CrearEvento extends JFrame {
         public void actionPerformed(ActionEvent e) {
             if (table != null) {
                 int modelRow = table.convertRowIndexToModel(row);
-                TableModel model = table.getModel();  // Obtener el modelo de la tabla
+                TableModel model = table.getModel();
 
-                // Verificar si el modelo de la tabla es un PoliModeloProducto
                 if (model instanceof PoliModeloProducto) {
                     PoliModeloProducto productoModel = (PoliModeloProducto) model;
+                    PoliProducto producto = productoModel.getProducto(modelRow);
 
-                    // Eliminar el producto tanto de la lista temporal como de la tabla
+                    // Obtén el ID del detalle de pedido utilizando getIdDetalle
+                    int detallePedidoId = producto.getIdDetalle();
+
+                    try (Connection connection = sql.conectamysql();
+                         PreparedStatement preparedStatement = connection.prepareStatement(
+                                 "DELETE FROM detalles_eventos WHERE id = ?")) {
+                        preparedStatement.setInt(1, detallePedidoId);
+                        preparedStatement.executeUpdate();
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                        // Manejo de excepciones en caso de error en la eliminación en la base de datos.
+                    }
+
+                    // Elimina el elemento tanto de la lista temporal como de la tabla
                     productoModel.removeProductAtIndex(modelRow);
-                }
 
-                fireEditingStopped(); // Mover esta línea aquí para asegurarte de que se complete la edición
-                //calcularTotalTabla();
-                //actualizarLbl8y10();
+                    fireEditingStopped();
+
+
+                }
             }
         }
     }

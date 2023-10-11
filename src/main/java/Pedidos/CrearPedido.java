@@ -36,6 +36,7 @@ public class CrearPedido extends JFrame {
     private JButton cancelarButton;
     private JButton agregarButton;
     private JTextField campoBusquedaMateriales;
+    private int categoriaSeleccionada = 0;
     private JTable jtableMateriales;
     private JPanel panelPrincipal;
     private JPanel panelSecundario;
@@ -267,6 +268,7 @@ public class CrearPedido extends JFrame {
                 agregarManualidadButton.setVisible(false);
                 agregarDesayunoButton.setVisible(false);
                 jtableMateriales.setModel(cargarDatosMaterial());
+                categoriaSeleccionada = 6;
             }
         });
 
@@ -283,6 +285,7 @@ public class CrearPedido extends JFrame {
                 agregarManualidadButton.setVisible(false);
                 agregarDesayunoButton.setVisible(false);
                 jtableMateriales.setModel(cargarDatosFloristeria());
+                categoriaSeleccionada = 3;
             }
         });
 
@@ -299,6 +302,7 @@ public class CrearPedido extends JFrame {
                 agregarManualidadButton.setVisible(false);
                 agregarDesayunoButton.setVisible(false);
                 jtableMateriales.setModel(cargarDatosArreglo());
+                categoriaSeleccionada = 2;
             }
         });
 
@@ -315,6 +319,7 @@ public class CrearPedido extends JFrame {
                 agregarManualidadButton.setVisible(false);
                 agregarDesayunoButton.setVisible(false);
                 jtableMateriales.setModel(cargarDatosTarjeta());
+                categoriaSeleccionada = 4;
             }
         });
 
@@ -331,6 +336,7 @@ public class CrearPedido extends JFrame {
                 agregarManualidadButton.setVisible(false);
                 agregarDesayunoButton.setVisible(false);
                 jtableMateriales.setModel(cargarDatosManualidad());
+                categoriaSeleccionada = 1;
             }
         });
 
@@ -347,6 +353,7 @@ public class CrearPedido extends JFrame {
                 agregarManualidadButton.setVisible(false);
                 agregarDesayunoButton.setVisible(false);
                 jtableMateriales.setModel(cargarDatosDesayuno());
+                categoriaSeleccionada = 5;
             }
         });
 
@@ -700,7 +707,29 @@ public class CrearPedido extends JFrame {
         campoBusquedaMateriales.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
-                jtableMateriales.setModel(cargarDatosMaterial());
+                // Llama a la función correspondiente a la categoría actualmente seleccionada
+                switch (categoriaSeleccionada) {
+                    case 1:
+                        jtableMateriales.setModel(cargarDatosManualidad());
+                        break;
+                    case 2:
+                        jtableMateriales.setModel(cargarDatosArreglo());
+                        break;
+                    case 3:
+                        jtableMateriales.setModel(cargarDatosFloristeria());
+                        break;
+                    case 4:
+                        jtableMateriales.setModel(cargarDatosTarjeta());
+                        break;
+                    case 5:
+                        jtableMateriales.setModel(cargarDatosDesayuno());
+                        break;
+                    case 6:
+                        jtableMateriales.setModel(cargarDatosMaterial());
+                        break;
+                    default:
+                        break;
+                }
             }
         });
 
@@ -1279,7 +1308,7 @@ public class CrearPedido extends JFrame {
     private PoliModeloManualidad cargarDatosManualidad() {
         sql = new Conexion();
         manualidadList.clear();
-        selectTabla = 4; // Puedes asignar un valor que represente la tabla de manualidades en tu base de datos.
+        selectTabla = 4;
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement(
                      "SELECT * FROM manualidades WHERE nombre LIKE CONCAT('%', ?, '%')"
@@ -1295,7 +1324,7 @@ public class CrearPedido extends JFrame {
                 manualidad.setNombre(resultSet.getString("nombre"));
                 manualidad.setCantidad(resultSet.getInt("cantidad"));
                 manualidad.setPrecio(resultSet.getDouble("precio_manualidad"));
-                manualidad.setTipo("M"); // Puedes asignar un tipo específico para las manualidades.
+                manualidad.setTipo("W"); // Puedes asignar un tipo específico para las manualidades.
                 manualidadList.add(manualidad);
             }
 
@@ -1479,23 +1508,6 @@ public class CrearPedido extends JFrame {
         return cantidadMaterial[0];
     }
 
-    private void limpiarTablaMateriales() {
-        materialList.clear();
-        DefaultTableModel emptyModel = new DefaultTableModel();
-        jtableMateriales.setModel(emptyModel);
-    }
-
-    private void eliminarDetallesMaterial() {
-        try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement(
-                     "DELETE FROM detalles_pedidos WHERE pedido_id IS NULL OR pedido_id NOT IN (SELECT id FROM pedidos)"
-             )) {
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
     private double extraerValorNumerico(String valor) {
         String valorNumerico = valor.replace(',', '.');
         try {
@@ -1583,6 +1595,17 @@ public class CrearPedido extends JFrame {
         dialog.setVisible(true);
     }
 
+    private void eliminarDetallesMaterial() {
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "DELETE FROM detalles_pedidos WHERE pedido_id IS NULL OR pedido_id NOT IN (SELECT id FROM pedidos)"
+             )) {
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     class ButtonRenderer extends JButton implements TableCellRenderer {
         public ButtonRenderer() {
             setOpaque(true);
@@ -1627,21 +1650,35 @@ public class CrearPedido extends JFrame {
         public void actionPerformed(ActionEvent e) {
             if (table != null) {
                 int modelRow = table.convertRowIndexToModel(row);
-                TableModel model = table.getModel();  // Obtener el modelo de la tabla
+                TableModel model = table.getModel();
 
-                // Verificar si el modelo de la tabla es un PoliModeloProducto
                 if (model instanceof PoliModeloProducto) {
                     PoliModeloProducto productoModel = (PoliModeloProducto) model;
+                    PoliProducto producto = productoModel.getProducto(modelRow);
 
-                    // Eliminar el producto tanto de la lista temporal como de la tabla
+                    // Obtén el ID del detalle de pedido utilizando getIdDetalle
+                    int detallePedidoId = producto.getIdDetalle();
+
+                    try (Connection connection = sql.conectamysql();
+                         PreparedStatement preparedStatement = connection.prepareStatement(
+                                 "DELETE FROM detalles_pedidos WHERE id = ?")) {
+                        preparedStatement.setInt(1, detallePedidoId);
+                        preparedStatement.executeUpdate();
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                        // Manejo de excepciones en caso de error en la eliminación en la base de datos.
+                    }
+
+                    // Elimina el elemento tanto de la lista temporal como de la tabla
                     productoModel.removeProductAtIndex(modelRow);
-                }
 
-                fireEditingStopped(); // Mover esta línea aquí para asegurarte de que se complete la edición
-                calcularTotalTabla();
-                actualizarLbl8y10();
+                    fireEditingStopped();
+                    calcularTotalTabla();
+                    actualizarLbl8y10();
+                }
             }
         }
+
     }
 
     public Calendar getTomorrow() {
