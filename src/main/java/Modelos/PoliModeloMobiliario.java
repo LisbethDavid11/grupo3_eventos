@@ -44,17 +44,17 @@ public class PoliModeloMobiliario extends AbstractTableModel {
                 return mobiliarioItem.getColor();
             case 3: // Cantidad
                 return mobiliarioItem.getCantidad();
-            case 4: // Precio Unitario
-                double precioUnitario = mobiliarioItem.getPrecioUnitario();
-                if (precioUnitario < 0) {
-                    precioUnitario = 0;
+            case 4: // Precio
+                double precio = mobiliarioItem.getPrecioUnitario();
+                if (precio < 0) {
+                    precio = 0;
                 }
-                String precioUnitarioFormateado = String.format("L. %.2f", precioUnitario);
-                return precioUnitarioFormateado;
-            case 5: // Total (Precio Unitario * Cantidad)
+                String precioFormateado = String.format("L. %.2f", precio);
+                return precioFormateado;
+            case 5: // Total (Precio * Cantidad)
                 int cantidad = mobiliarioItem.getCantidad();
                 double total = mobiliarioItem.getPrecioUnitario() * cantidad;
-                String totalFormateado = String.format("L. %.2f", total);
+                String totalFormateado = String.format("%.2f", total);
                 return totalFormateado;
             default:
                 return null;

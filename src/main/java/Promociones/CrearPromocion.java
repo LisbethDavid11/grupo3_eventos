@@ -1,4 +1,5 @@
 package Promociones;
+import Eventos.CrearEvento;
 import Materiales.TextPrompt;
 import Modelos.*;
 import Objetos.*;
@@ -29,6 +30,7 @@ public class CrearPromocion extends JFrame {
     private JScrollPane panel4;
     private JButton agregarButton;
     private JTextField campoBusquedaMateriales;
+    private int categoriaSeleccionada = 0;
     private TextPrompt placeholder = new TextPrompt(" Buscar por nombre de producto", campoBusquedaMateriales);
     private JLabel jtextCatidadTotalMateriales;
     private JPanel panelFechaInicial, panelFechaFinal;
@@ -251,6 +253,9 @@ public class CrearPromocion extends JFrame {
                 tablaProductos.setModel(cargarDetallesMateriales());
                 //actualizarLbl8y10();
                 configurarTablaMateriales();
+                tablaProductos.getColumnModel().getColumn(5).setCellRenderer(new CrearPromocion.ButtonRenderer());
+                tablaProductos.getColumnModel().getColumn(5).setCellEditor(new CrearPromocion.ButtonEditor());
+
             }
         });
 
@@ -485,22 +490,7 @@ public class CrearPromocion extends JFrame {
         agregarButton.setVisible(false);
         cancelarButton.setVisible(false);
         campoBusquedaMateriales.setVisible(false);
-        campoBusquedaMateriales.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyReleased(KeyEvent e) {
-                switch (selectTabla) {
-                    case 1 -> tablaProductos.setModel(cargarDatosDesayuno());
-                    case 2 -> tablaProductos.setModel(cargarDatosMobiliario());
-                    case 3 -> tablaProductos.setModel(cargarDatosFloristeria());
-                    case 4 -> tablaProductos.setModel(cargarDatosGlobo());
-                    case 5 -> tablaProductos.setModel(cargarDatosArreglo());
-                    case 6 -> tablaProductos.setModel(cargarDatosTarjetas());
-                    case 7 -> tablaProductos.setModel(cargarDatosMaterial());
 
-                }
-
-            }
-        });
 
         agregarButton.addActionListener(new ActionListener() {
             @Override
@@ -674,45 +664,84 @@ public class CrearPromocion extends JFrame {
                         agregarButton.setVisible(true);
                         cancelarButton.setVisible(true);
                         tablaProductos.setModel(cargarDatosMobiliario());
+                        categoriaSeleccionada = 4;
                     }
                     case "FLORES" -> {
                         campoBusquedaMateriales.setVisible(true);
                         agregarButton.setVisible(true);
                         cancelarButton.setVisible(true);
                         tablaProductos.setModel(cargarDatosFloristeria());
+                        categoriaSeleccionada = 3;
                     }
                     case "ARREGLOS" -> {
                         campoBusquedaMateriales.setVisible(true);
                         agregarButton.setVisible(true);
                         cancelarButton.setVisible(true);
                         tablaProductos.setModel(cargarDatosArreglo());
+                        categoriaSeleccionada = 2;
                     }
                     case "GLOBOS" -> {
                         campoBusquedaMateriales.setVisible(true);
                         agregarButton.setVisible(true);
                         cancelarButton.setVisible(true);
                         tablaProductos.setModel(cargarDatosGlobo());
+                        categoriaSeleccionada = 7;
                     }
                     case "TARGETAS" -> {
                         campoBusquedaMateriales.setVisible(true);
                         agregarButton.setVisible(true);
                         cancelarButton.setVisible(true);
                         tablaProductos.setModel(cargarDatosTarjetas());
+                        categoriaSeleccionada = 6;
                     }
                     case "MATERIALES" -> {
                         campoBusquedaMateriales.setVisible(true);
                         agregarButton.setVisible(true);
                         cancelarButton.setVisible(true);
                         tablaProductos.setModel(cargarDatosMaterial());
+                        categoriaSeleccionada = 1;
                     }
                     case "DESAYUNOS" -> {
                         campoBusquedaMateriales.setVisible(true);
                         agregarButton.setVisible(true);
                         cancelarButton.setVisible(true);
                         tablaProductos.setModel(cargarDatosDesayuno());
+                        categoriaSeleccionada = 5;
                     }
 
                     default -> JOptionPane.showMessageDialog(null, "Elija una opcion correcta");
+                }
+            }
+        });
+
+        campoBusquedaMateriales.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                // Llama a la función correspondiente a la categoría actualmente seleccionada
+                switch (categoriaSeleccionada) {
+                    case 1:
+                        tablaProductos.setModel(cargarDatosMaterial());
+                        break;
+                    case 2:
+                        tablaProductos.setModel(cargarDatosArreglo());
+                        break;
+                    case 3:
+                        tablaProductos.setModel(cargarDatosFloristeria());
+                        break;
+                    case 4:
+                        tablaProductos.setModel(cargarDatosMobiliario());
+                        break;
+                    case 5:
+                        tablaProductos.setModel(cargarDatosDesayuno());
+                        break;
+                    case 6:
+                        tablaProductos.setModel(cargarDatosTarjetas());
+                        break;
+                    case 7:
+                        tablaProductos.setModel(cargarDatosGlobo());
+                        break;
+                    default:
+                        break;
                 }
             }
         });
@@ -968,7 +997,8 @@ public class CrearPromocion extends JFrame {
                 mobiliario.setNombre(resultSet.getString("nombreMobiliario"));
                 mobiliario.setColor(resultSet.getString("color"));
                 mobiliario.setCantidad(resultSet.getInt("cantidad"));
-                mobiliario.setPrecioUnitario(resultSet.getFloat("precioUnitario"));
+                mobiliario.setPrecio(resultSet.getDouble("precioUnitario"));
+                mobiliario.setPrecioUnitario(resultSet.getDouble("precioUnitario"));
                 mobiliario.setTipo("W"); // Puedes asignar un tipo específico para el mobiliario.
                 mobiliarioList.add(mobiliario);
             }

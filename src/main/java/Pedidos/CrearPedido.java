@@ -365,6 +365,9 @@ public class CrearPedido extends JFrame {
                 jtableMateriales.setModel(cargarDetallesMateriales());
                 actualizarLbl8y10();
                 configurarTablaMateriales();
+                jtableMateriales.getColumnModel().getColumn(5).setCellRenderer(new CrearPedido.ButtonRenderer());
+                jtableMateriales.getColumnModel().getColumn(5).setCellEditor(new CrearPedido.ButtonEditor());
+
             }
         });
 

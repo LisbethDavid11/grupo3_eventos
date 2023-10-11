@@ -32,6 +32,7 @@ public class CrearEvento extends JFrame {
     private JScrollPane panel4;
     private JButton agregarButton;
     private JTextField campoBusquedaMateriales;
+    int categoriaSeleccionada = 0;
     private TextPrompt placeholder = new TextPrompt(" Buscar por nombre de producto", campoBusquedaMateriales);
     private JButton cancelarButton;
     private JComboBox<ClienteEvento> jbcClientes;
@@ -156,21 +157,17 @@ public class CrearEvento extends JFrame {
         jpanelDireccion.setMinimumSize(panelDesSize);
         jpanelDireccion.setSize(panelDesSize);
 
-        tiposDescripcion.put("F","floristeria");
-        tiposDescripcion.put("T","tarjeta");
-        tiposDescripcion.put("G","globo");
-        tiposDescripcion.put("M","material");
-        tiposDescripcion.put("N","manualidad");
-        tiposDescripcion.put("A","arreglo");
         tiposDescripcion.put("W","mobiliario");
+        tiposDescripcion.put("G","globo");
+        tiposDescripcion.put("A","arreglo");
+        tiposDescripcion.put("F","floristeria");
+        tiposDescripcion.put("M","manualidad");
 
-        tiposTablas.put("F","floristeria");
-        tiposTablas.put("T","tarjetas");
-        tiposTablas.put("G","globos");
-        tiposTablas.put("M","materiales");
-        tiposTablas.put("N","manualidades");
-        tiposTablas.put("A","arreglos");
         tiposTablas.put("W","mobiliario");
+        tiposTablas.put("G","globos");
+        tiposTablas.put("A","arreglos");
+        tiposTablas.put("F","floristeria");
+        tiposTablas.put("M","manualidades");
 
         jbcClientes.addItem(new ClienteEvento(0,"","")); // Agregar mensaje inicial
         cargarClientes();
@@ -316,6 +313,7 @@ public class CrearEvento extends JFrame {
         agregarMobiliarioButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                categoriaSeleccionada = 4;
                 campoBusquedaMateriales.setVisible(true);
                 agregarButton.setVisible(true);
                 cancelarButton.setVisible(true);
@@ -331,6 +329,7 @@ public class CrearEvento extends JFrame {
         agregarFloresButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                categoriaSeleccionada = 3;
                 campoBusquedaMateriales.setVisible(true);
                 agregarButton.setVisible(true);
                 cancelarButton.setVisible(true);
@@ -346,6 +345,7 @@ public class CrearEvento extends JFrame {
         agregarGloboButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                categoriaSeleccionada = 5;
                 campoBusquedaMateriales.setVisible(true);
                 agregarButton.setVisible(true);
                 cancelarButton.setVisible(true);
@@ -361,6 +361,7 @@ public class CrearEvento extends JFrame {
         agregarArregloButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                categoriaSeleccionada = 2;
                 campoBusquedaMateriales.setVisible(true);
                 agregarButton.setVisible(true);
                 cancelarButton.setVisible(true);
@@ -376,6 +377,7 @@ public class CrearEvento extends JFrame {
         agregarManualidadesButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                categoriaSeleccionada = 1;
                 campoBusquedaMateriales.setVisible(true);
                 agregarButton.setVisible(true);
                 cancelarButton.setVisible(true);
@@ -387,7 +389,6 @@ public class CrearEvento extends JFrame {
                 tablaProductos.setModel(cargarDatosManualidad());
             }
         });
-
 
         cancelarButton.addActionListener(new ActionListener() {
             @Override
@@ -403,6 +404,8 @@ public class CrearEvento extends JFrame {
                 tablaProductos.setModel(cargarDetallesMateriales());
                 //actualizarLbl8y10();
                 configurarTablaMateriales();
+                tablaProductos.getColumnModel().getColumn(5).setCellRenderer(new CrearEvento.ButtonRenderer());
+                tablaProductos.getColumnModel().getColumn(5).setCellEditor(new CrearEvento.ButtonEditor());
             }
         });
 
@@ -652,7 +655,26 @@ public class CrearEvento extends JFrame {
         campoBusquedaMateriales.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
-                tablaProductos.setModel(cargarDatosMobiliario());
+                // Llama a la función correspondiente a la categoría actualmente seleccionada
+                switch (categoriaSeleccionada) {
+                    case 1:
+                        tablaProductos.setModel(cargarDatosManualidad());
+                        break;
+                    case 2:
+                        tablaProductos.setModel(cargarDatosArreglo());
+                        break;
+                    case 3:
+                        tablaProductos.setModel(cargarDatosFloristeria());
+                        break;
+                    case 4:
+                        tablaProductos.setModel(cargarDatosMobiliario());
+                        break;
+                    case 5:
+                        tablaProductos.setModel(cargarDatosGlobo());
+                        break;
+                    default:
+                        break;
+                }
             }
         });
 
@@ -724,19 +746,19 @@ public class CrearEvento extends JFrame {
                     id_materialEntero = p.getID();
                     id_material = "F-"+p.getID();
 
-                }else  if ( l instanceof PoliMaterial p){
+                } else  if ( l instanceof PoliMobiliario p){
                     id_materialEntero = p.getID();
                     id_material = "M-"+p.getID();
 
-                }else  if ( l instanceof PoliGlobo p){
+                } else  if ( l instanceof PoliGlobo p){
                     id_materialEntero = p.getID();
                     id_material = "G-"+p.getID();
 
-                }else  if ( l instanceof PoliTarjeta p){
+                } else  if ( l instanceof PoliArreglo p){
                     id_materialEntero = p.getID();
-                    id_material = "T-"+p.getID();
+                    id_material = "A-"+p.getID();
 
-                }else  if ( l instanceof PoliManualidad p){
+                } else  if ( l instanceof PoliManualidad p){
                     id_materialEntero = p.getID();
                     id_material = "W-"+p.getID();
                 }
@@ -748,7 +770,6 @@ public class CrearEvento extends JFrame {
                             break;
                         }
                 }
-
 
                 if (!materialDuplicado) {
                     // Llamar al método guardarDetalleEvento con los tres argumentos
@@ -866,22 +887,20 @@ public class CrearEvento extends JFrame {
              PreparedStatement preparedStatement = connection.prepareStatement("SELECT " +
                      (tipo.equals("T") ? "precio_tarjeta" :
                              tipo.equals("D") ? "precio_desayuno" :
-                                     tipo.equals("M") ? "precio" :
                                              tipo.equals("F") ? "precio" :
                                                      tipo.equals("A") ? "precio" :
                                                              tipo.equals("W") ? "precioUnitario" :
-                                                                     tipo.equals("N") ? "precio_manualidad" :
+                                                                     tipo.equals("M") ? "precio_manualidad" :
                                                                         tipo.equals("G") ? "precio" :
                                                                              "precio_default") +
                      " FROM " +
                      (tipo.equals("T") ? "tarjetas" :
                              tipo.equals("D") ? "desayunos" :
-                                     tipo.equals("M") ? "materiales" :
                                              tipo.equals("F") ? "floristeria" :
                                                      tipo.equals("A") ? "arreglos" :
                                                              tipo.equals("W") ? "mobiliario" :
-                                                                     tipo.equals("N") ? "manualidades" :
-                                                                     tipo.equals("G") ? "globos" :
+                                                                     tipo.equals("M") ? "manualidades" :
+                                                                             tipo.equals("G") ? "globos" :
                                                                              "default_table") +
                      " WHERE id = ?")) {
             preparedStatement.setInt(1, id_material);
@@ -891,12 +910,11 @@ public class CrearEvento extends JFrame {
                 precio = resultSet.getDouble(
                         tipo.equals("T") ? "precio_tarjeta" :
                                 tipo.equals("D") ? "precio_desayuno" :
-                                        tipo.equals("M") ? "precio" :
                                                 tipo.equals("F") ? "precio" :
                                                         tipo.equals("A") ? "precio" :
                                                                 tipo.equals("W") ? "precioUnitario" :
-                                                                        tipo.equals("N") ? "precio_manualidad" :
-                                                                        tipo.equals("G") ? "precio" :
+                                                                        tipo.equals("M") ? "precio_manualidad" :
+                                                                            tipo.equals("G") ? "precio" :
                                                                                 "precio_default");
             }
         } catch (SQLException e) {
@@ -1015,7 +1033,6 @@ public class CrearEvento extends JFrame {
         return new PoliModeloProducto(productosListTemporal);
     }
 
-
     private PoliModeloMobiliario cargarDatosMobiliario() {
         sql = new Conexion();
         mobiliarioList.clear();
@@ -1033,8 +1050,10 @@ public class CrearEvento extends JFrame {
                 PoliMobiliario mobiliario = new PoliMobiliario();
                 mobiliario.setID(resultSet.getInt("id"));
                 mobiliario.setNombre(resultSet.getString("nombreMobiliario"));
+                mobiliario.setColor(resultSet.getString("color"));
                 mobiliario.setCantidad(resultSet.getInt("cantidad"));
                 mobiliario.setPrecio(resultSet.getDouble("precioUnitario"));
+                mobiliario.setPrecioUnitario(resultSet.getDouble("precioUnitario"));
                 mobiliario.setTipo("W"); // Puedes asignar un tipo específico para el mobiliario.
                 mobiliarioList.add(mobiliario);
             }
@@ -1181,7 +1200,7 @@ public class CrearEvento extends JFrame {
                 manualidad.setNombre(resultSet.getString("nombre"));
                 manualidad.setCantidad(resultSet.getInt("cantidad"));
                 manualidad.setPrecio(resultSet.getDouble("precio_manualidad"));
-                manualidad.setTipo("N"); // Puedes asignar un tipo específico para las manualidades.
+                manualidad.setTipo("M"); // Puedes asignar un tipo específico para las manualidades.
                 manualidadList.add(manualidad);
             }
 
