@@ -3,7 +3,7 @@
   <grid id="27dc6" binding="panel1" layout-manager="GridLayoutManager" row-count="5" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="10" left="10" bottom="10" right="10"/>
     <constraints>
-      <xy x="20" y="20" width="1739" height="745"/>
+      <xy x="20" y="20" width="1845" height="745"/>
     </constraints>
     <properties>
       <background color="-8545088"/>
@@ -78,9 +78,21 @@
                     <constraints/>
                     <properties/>
                   </component>
+                  <component id="6097c" class="javax.swing.JLabel">
+                    <constraints/>
+                    <properties>
+                      <text value="h"/>
+                    </properties>
+                  </component>
                   <component id="a19cf" class="javax.swing.JSpinner" binding="spinnerMin1">
                     <constraints/>
                     <properties/>
+                  </component>
+                  <component id="55d5a" class="javax.swing.JLabel">
+                    <constraints/>
+                    <properties>
+                      <text value="m"/>
+                    </properties>
                   </component>
                   <component id="c77" class="javax.swing.JComboBox" binding="comboBox1" default-binding="true">
                     <constraints/>
@@ -104,9 +116,21 @@
                     <constraints/>
                     <properties/>
                   </component>
+                  <component id="bc412" class="javax.swing.JLabel">
+                    <constraints/>
+                    <properties>
+                      <text value="h"/>
+                    </properties>
+                  </component>
                   <component id="2e286" class="javax.swing.JSpinner" binding="spinnerMin2">
                     <constraints/>
                     <properties/>
+                  </component>
+                  <component id="56c56" class="javax.swing.JLabel">
+                    <constraints/>
+                    <properties>
+                      <text value="m"/>
+                    </properties>
                   </component>
                   <component id="40f43" class="javax.swing.JComboBox" binding="comboBox2" default-binding="true">
                     <constraints/>
@@ -155,7 +179,7 @@
             </constraints>
             <properties>
               <model>
-                <item value="Seleccione un tipo de evento:"/>
+                <item value="Seleccione un tipo de evento"/>
                 <item value="Baby shower"/>
                 <item value="Bautizo"/>
                 <item value="Boda"/>

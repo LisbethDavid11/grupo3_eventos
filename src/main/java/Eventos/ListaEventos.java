@@ -28,7 +28,7 @@ public class ListaEventos extends JFrame {
     private JPanel panelPrincipal, panelTitulo, panelA, panelB;
     private JButton botonEditar, botonCrear, botonVer, botonAdelante, botonAtras;
     private JTextField campoBusqueda;
-    private TextPrompt placeholder = new TextPrompt(" Buscar por nombre del cliente ó tipo", campoBusqueda);
+    private TextPrompt placeholder = new TextPrompt(" Buscar por nombre del cliente, fecha ó tipo", campoBusqueda);
     private JLabel lblPagina;
     private JLabel lblTitulo;
     private JTable listaEventos;
@@ -248,14 +248,15 @@ public class ListaEventos extends JFrame {
                              "WHERE e.tipo LIKE CONCAT('%', ?, '%') " +
                              "OR CONCAT(c.nombre, ' ', c.apellido) LIKE CONCAT('%', ?, '%') " +
                              "OR e.direccion LIKE CONCAT('%', ?, '%') " +
+                             "OR DATE_FORMAT(e.fecha, '%d de %M %Y') LIKE CONCAT('%', ?, '%') " +
                              "LIMIT ?, 20"
-
              )
         ){
             preparedStatement.setString(1, busqueda);
             preparedStatement.setString(2, busqueda);
             preparedStatement.setString(3, busqueda);
-            preparedStatement.setInt(4, pagina * 20);
+            preparedStatement.setString(4, busqueda);
+            preparedStatement.setInt(5, pagina * 20);
 
             ResultSet resultSet = preparedStatement.executeQuery();
             listaEvento = new ArrayList<>();
@@ -295,11 +296,13 @@ public class ListaEventos extends JFrame {
                              "JOIN clientes c ON e.cliente_id = c.id " +
                              "WHERE e.tipo LIKE CONCAT('%', ?, '%') " +
                              "OR CONCAT(c.nombre, ' ', c.apellido) LIKE CONCAT('%', ?, '%') " +
-                             "OR e.direccion LIKE CONCAT('%', ?, '%')"
+                             "OR e.direccion LIKE CONCAT('%', ?, '%')" +
+                             "OR DATE_FORMAT(e.fecha, '%d de %M %Y') LIKE CONCAT('%', ?, '%')"
              )) {
             preparedStatement.setString(1, busqueda);
             preparedStatement.setString(2, busqueda);
             preparedStatement.setString(3, busqueda);
+            preparedStatement.setString(4, busqueda);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 count = resultSet.getInt("total");
@@ -317,6 +320,7 @@ public class ListaEventos extends JFrame {
 
         return totalPageCount;
     }
+
 
     public static void main(String[] args) {
         ListaEventos listaEventos = new ListaEventos();

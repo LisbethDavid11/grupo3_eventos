@@ -114,8 +114,8 @@ public class CrearEvento extends JFrame {
         campoDireccion.setWrapStyleWord(true);
         configurarTablaMateriales();
 
-        SpinnerModel hourModel = new SpinnerNumberModel(0, 0, 23, 1);
-        SpinnerModel hourModel1 = new SpinnerNumberModel(0, 0, 23, 1);
+        SpinnerModel hourModel = new SpinnerNumberModel(1, 1, 12, 1);
+        SpinnerModel hourModel1 = new SpinnerNumberModel(1, 1, 12, 1);
         SpinnerModel minuteModel = new SpinnerNumberModel(0, 0, 59, 1);
         SpinnerModel minuteModel1 = new SpinnerNumberModel(0, 0, 59, 1);
         spinnerHora1.setModel(hourModel);
@@ -536,6 +536,11 @@ public class CrearEvento extends JFrame {
                     mensaje += "Seleccionar el cliente\n";
                 }
 
+                if (jbcTipoEvento.getSelectedIndex() == 0) {
+                    validacion++;
+                    mensaje += "Seleccionar el evento\n";
+                }
+
                 if (tablaProductos.getRowCount() == 0) {
                     validacion++;
                     mensaje += "La lista de productos\n";
@@ -569,9 +574,10 @@ public class CrearEvento extends JFrame {
                     return;
                 }
 
+                // Verifica si la hora final es al menos 1 minuto después de la hora inicial
                 if (horaInicial > horaFinal || (horaInicial == horaFinal && minutoInicial >= minutoFinal)) {
-                    JOptionPane.showMessageDialog(null, "La hora final debe ser mayor que la hora inicial", "Validación", JOptionPane.ERROR_MESSAGE);
-                    return;
+                    JOptionPane.showMessageDialog(null, "La hora final debe ser al menos 1 minuto después de la hora inicial", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return; // Sale del método sin guardar si la validación no se cumple
                 }
 
                 if (!campoDireccion.getText().trim().isEmpty()) {
@@ -1417,12 +1423,15 @@ public class CrearEvento extends JFrame {
     }
 
 
-    public boolean isDateOutOfRange(java.util.Date selectedDate, Calendar tomorrow) {
+    public boolean isDateOutOfRange(Date selectedDate, Calendar tomorrow) {
         Calendar selectedCal = Calendar.getInstance();
         selectedCal.setTime(selectedDate);
 
-        // Compara con el día siguiente al actual
-        return selectedCal.before(tomorrow);
+        // Calcula la fecha límite (30 días después de mañana)
+        Calendar maxDate = (Calendar) tomorrow.clone();
+        maxDate.add(Calendar.DAY_OF_MONTH, 30);
+
+        return selectedCal.before(tomorrow) || selectedCal.after(maxDate);
     }
 
 
@@ -1464,18 +1473,35 @@ public class CrearEvento extends JFrame {
         int cliente_id = Integer.parseInt(jbcClientes.getSelectedItem().toString().split(" - ")[0]);
         String tipo  = jbcTipoEvento.getSelectedItem().toString().trim();
 
+// Obtener los valores de los JComboBox de AM/PM
+        String amPmInicial = comboBox1.getSelectedItem().toString();
+        String amPmFinal = comboBox2.getSelectedItem().toString();
 
         // Obtener los valores de los selectores de hora y minuto para la hora inicial
         int horaInicial = (int) spinnerHora1.getValue();
         int minutoInicial = (int) spinnerMin1.getValue();
 
+        // Convertir a formato de 24 horas
+        if (amPmInicial.equals("PM")) {
+            if (horaInicial < 12) {
+                horaInicial += 12;
+            }
+        }
+
         // Obtener los valores de los selectores de hora y minuto para la hora final
         int horaFinal = (int) spinnerHora2.getValue();
         int minutoFinal = (int) spinnerMin2.getValue();
 
+        // Convertir a formato de 24 horas
+        if (amPmFinal.equals("PM")) {
+            if (horaFinal < 12) {
+                horaFinal += 12;
+            }
+        }
+
         // Crear objetos Time para la hora inicial y final
-        Time inicio = new Time(horaInicial, minutoInicial, 0);
-        Time fin = new Time(horaFinal, minutoFinal, 0);
+        Time inicio = Time.valueOf(String.format("%02d:%02d:00", horaInicial, minutoInicial));
+        Time fin = Time.valueOf(String.format("%02d:%02d:00", horaFinal, minutoFinal));
 
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO eventos (cliente_id, direccion, tipo, fecha, inicio, fin) VALUES (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
@@ -1502,8 +1528,7 @@ public class CrearEvento extends JFrame {
                 JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
                 mobiliarioList = new ArrayList<>();
             }
-
-            JOptionPane.showMessageDialog(null, "Evento o exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Evento guardado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error al guardar el evento", "Error", JOptionPane.ERROR_MESSAGE);

@@ -105,7 +105,7 @@ public class CrearPedido extends JFrame {
 
     public CrearPedido() {
         super("");
-        setSize(990, 680);
+        setSize(1005, 680);
         setLocationRelativeTo(null);
         setContentPane(panel);
         generarCamposAutomaticamente();
@@ -172,7 +172,6 @@ public class CrearPedido extends JFrame {
         panel2.setBackground(Color.decode("#F5F5F5"));
         panel3.setBackground(Color.decode("#F5F5F5"));
         panel4.setBackground(Color.decode("#F5F5F5"));
-        panel5.setBackground(Color.decode("#F5F5F5"));
         panel6.setBackground(Color.decode("#F5F5F5"));
         panelPrincipal.setBackground(Color.decode("#F5F5F5"));
         panelSecundario.setBackground(Color.decode("#F5F5F5"));
@@ -1823,7 +1822,7 @@ public class CrearPedido extends JFrame {
 
         return selectedCal.before(tomorrow) || selectedCal.after(maxDate);
     }
-    
+
     public void setFormattedDate(java.util.Date selectedDate) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd 'de' MMMM yyyy"); // Desired date format
         String formattedDate = (selectedDate != null) ? dateFormat.format(selectedDate) : "";
