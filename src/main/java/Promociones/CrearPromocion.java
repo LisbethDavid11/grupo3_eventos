@@ -1,11 +1,12 @@
 package Promociones;
-import Eventos.CrearEvento;
+
 import Materiales.TextPrompt;
 import Modelos.*;
 import Objetos.*;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.*;
@@ -15,6 +16,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.sql.*;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -35,10 +37,9 @@ public class CrearPromocion extends JFrame {
     private JLabel jtextCatidadTotalMateriales;
     private JPanel panelFechaInicial, panelFechaFinal;
     private JComboBox comboSeccion;
-    private JLabel lablePrecio;
     private JTextField precio;
     private int selectTabla = 1;
-    private List<PoliProducto> productosListTemporal = new ArrayList<>();
+    private List<PoliProductoPromocion> productosListTemporal = new ArrayList<>();
     private List<PoliMobiliario> mobiliarioList = new ArrayList<>();
     private List<PoliDesayuno> desayunoList = new ArrayList<>();
     private List<PoliMobiliario> mobiliarioListTemporal = new ArrayList<>();
@@ -99,7 +100,7 @@ public class CrearPromocion extends JFrame {
 
     public CrearPromocion() {
         super("");
-        setSize(1050, 680);
+        setSize(1150, 680);
         setLocationRelativeTo(null);
         setContentPane(panel1);
         sql = new Conexion();
@@ -253,8 +254,8 @@ public class CrearPromocion extends JFrame {
                 tablaProductos.setModel(cargarDetallesMateriales());
                 //actualizarLbl8y10();
                 configurarTablaMateriales();
-                tablaProductos.getColumnModel().getColumn(5).setCellRenderer(new CrearPromocion.ButtonRenderer());
-                tablaProductos.getColumnModel().getColumn(5).setCellEditor(new CrearPromocion.ButtonEditor());
+                tablaProductos.getColumnModel().getColumn(7).setCellRenderer(new CrearPromocion.ButtonRenderer());
+                tablaProductos.getColumnModel().getColumn(7).setCellEditor(new CrearPromocion.ButtonEditor());
 
             }
         });
@@ -299,7 +300,7 @@ public class CrearPromocion extends JFrame {
                         productosListTemporal.clear();
                         eliminarDetallesMaterial();
                         limpiarTablaMateriales();
-                        lbl4.setText("");
+                        lbl5.setText("0.00");
                         lbl6.setText("0.00");
 
                         PoliModeloProducto nuevoModelo = new PoliModeloProducto(new ArrayList<>());
@@ -395,11 +396,6 @@ public class CrearPromocion extends JFrame {
                     mensaje += "Fecha final\n";
                 }
 
-                if (precio.getText().trim().isEmpty()) {
-                    validacion++;
-                    mensaje += "Precio\n";
-                }
-
                 // Nueva validación para verificar que la fecha final sea mayor que la inicial
                 java.util.Date fechaInicial = dateModel.getValue();
                 java.util.Date fechaFinal = dateModel2.getValue();
@@ -440,7 +436,7 @@ public class CrearPromocion extends JFrame {
 
                 // Crea un JOptionPane
                 JOptionPane optionPane = new JOptionPane(
-                        "¿Desea guardar la información del evento?",
+                        "¿Desea guardar la información de la promoción?",
                         JOptionPane.QUESTION_MESSAGE,
                         JOptionPane.DEFAULT_OPTION,
                         null,
@@ -482,15 +478,14 @@ public class CrearPromocion extends JFrame {
         });
 
         tablaProductos.setModel(cargarDetallesMateriales());
-        tablaProductos.getColumnModel().getColumn(5).setCellRenderer(new CrearPromocion.ButtonRenderer());
-        tablaProductos.getColumnModel().getColumn(5).setCellEditor(new CrearPromocion.ButtonEditor());
+        tablaProductos.getColumnModel().getColumn(7).setCellRenderer(new CrearPromocion.ButtonRenderer());
+        tablaProductos.getColumnModel().getColumn(7).setCellEditor(new CrearPromocion.ButtonEditor());
 
         //actualizarLbl8y10();
         configurarTablaMateriales();
         agregarButton.setVisible(false);
         cancelarButton.setVisible(false);
         campoBusquedaMateriales.setVisible(false);
-
 
         agregarButton.addActionListener(new ActionListener() {
             @Override
@@ -551,6 +546,13 @@ public class CrearPromocion extends JFrame {
                     return;
                 }
 
+                double precioMaterial = obtenerPrecioPromocion();
+
+                // Verifica si la promoción es válida (por ejemplo, mayor que cero) antes de continuar
+                if (precioMaterial <= 0) {
+                    return;
+                }
+
                 // Verificar que el material ya está presente en la lista temporal
                 PoliProducto l = (PoliProducto) listas.get(selectTabla).get(tablaProductos.getSelectedRow());
                 String id_material = "";
@@ -588,7 +590,7 @@ public class CrearPromocion extends JFrame {
 
                 }
 
-                for (PoliProducto materialTemporal : productosListTemporal) {
+                for (PoliProductoPromocion materialTemporal : productosListTemporal) {
                     String id = materialTemporal.getTipo()+"-"+materialTemporal.getID();
                         if ( id.equals(id_material)) {
                             materialDuplicado = true;
@@ -597,12 +599,13 @@ public class CrearPromocion extends JFrame {
                 }
 
                 if (!materialDuplicado) {
-                    guardarDetallePromocion(id_materialEntero, cantidadMaterial, l.getTipo());
+                    guardarDetallePromocion(id_materialEntero, cantidadMaterial, l.getTipo(), precioMaterial);
                     // Crear el material temporal y agregarlo a la lista temporal
-                    PoliProductosGeneral materialTemporal = new PoliMaterial();
+                    PoliProductosGeneralPromocion materialTemporal = new PoliMaterialPromocion();
                     materialTemporal.setID(id_materialEntero);
                     materialTemporal.setNombre(l.getNombre());
                     materialTemporal.setCantidad(cantidadMaterial);
+                    materialTemporal.setPromocion(precioMaterial);
                     materialTemporal.setPrecio(l.getPrecio());
                     materialTemporal.setTipo(l.getTipo());
                     productosListTemporal.add(materialTemporal);
@@ -612,8 +615,8 @@ public class CrearPromocion extends JFrame {
                     cancelarButton.setVisible(false);
                     // Actualizar la tabla con los detalles actualizados
                     tablaProductos.setModel(cargarDetallesMateriales());
-                    tablaProductos.getColumnModel().getColumn(5).setCellRenderer(new CrearPromocion.ButtonRenderer());
-                    tablaProductos.getColumnModel().getColumn(5).setCellEditor(new CrearPromocion.ButtonEditor());
+                    tablaProductos.getColumnModel().getColumn(7).setCellRenderer(new CrearPromocion.ButtonRenderer());
+                    tablaProductos.getColumnModel().getColumn(7).setCellEditor(new CrearPromocion.ButtonEditor());
 
                     configurarTablaMateriales();
                     //actualizarLbl8y10();
@@ -655,6 +658,7 @@ public class CrearPromocion extends JFrame {
                 }
             }
         });
+
         comboSeccion.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -788,51 +792,6 @@ public class CrearPromocion extends JFrame {
         }
     }
 
-    private double obtenerPrecioMaterialDesdeBD(int id_material, String tipo) {
-        double precio = 0.0;
-
-        try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("SELECT " +
-                     (tipo.equals("T") ? "precio_tarjeta" :
-                             tipo.equals("D") ? "precio_desayuno" :
-                                     tipo.equals("M") ? "precio" :
-                                             tipo.equals("F") ? "precio" :
-                                                     tipo.equals("A") ? "precio" :
-                                                             tipo.equals("W") ? "precioUnitario" :
-                                                                     tipo.equals("G") ? "precio" :
-                                                                     "precio_default") +
-                     " FROM " +
-                     (tipo.equals("T") ? "tarjetas" :
-                             tipo.equals("D") ? "desayunos" :
-                                     tipo.equals("M") ? "materiales" :
-                                             tipo.equals("F") ? "floristeria" :
-                                                     tipo.equals("A") ? "arreglos" :
-                                                                     tipo.equals("W") ? "mobiliario" :
-                                                                             tipo.equals("G") ? "globos" :
-                                                                     "default_table") +
-                     " WHERE id = ?")) {
-            preparedStatement.setInt(1, id_material);
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next()) {
-                precio = resultSet.getDouble(
-                        tipo.equals("T") ? "precio_tarjeta" :
-                                tipo.equals("D") ? "precio_desayuno" :
-                                        tipo.equals("M") ? "precio" :
-                                                tipo.equals("F") ? "precio" :
-                                                        tipo.equals("A") ? "precio" :
-                                                                        tipo.equals("W") ? "precioUnitario" :
-                                                                                tipo.equals("G") ? "precio" :
-                                                                        "precio_default");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al obtener el precio del material desde la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-
-        return precio;
-    }
-
     private void limpiarTablaMateriales() {
         mobiliarioList.clear();
         DefaultTableModel emptyModel = new DefaultTableModel();
@@ -848,99 +807,40 @@ public class CrearPromocion extends JFrame {
         }
     }
 
-    /*
-    private double calcularTotalTabla() {
-        double sumaTotal = 0.0;
-        TableModel modelo = tablaProductos.getModel();
-        PoliModeloProducto modeloProductos = (PoliModeloProducto) modelo;
-
-        // Iterar por todas las filas del modelo
-        for (int i = 0; i < modeloProductos.getRowCount(); i++) {
-            try {
-                // Obtener el total de la fila y sumarlo al total general
-                Object valorCelda = modeloProductos.getValueAt(i, 4); // Suponiendo que la columna "total" está en el índice 4 (índice basado en 0)
-                if (valorCelda != null) {
-                    String totalStr = valorCelda.toString();
-                    double total = extraerValorNumerico(totalStr);
-                    sumaTotal += total;
-                }
-            } catch (NumberFormatException e) {
-                System.err.println("Se encontró un formato de número no válido. Se omite el cálculo para la fila " + i);
-                System.err.println("Valor que causa el error: " + modeloProductos.getValueAt(i, 4));
-            }
-        }
-
-        // Actualizar el lbl9 con el total calculado
-        DecimalFormat decimalFormat = new DecimalFormat("#.00");
-        String sumaTotalFormateado = decimalFormat.format(sumaTotal);
-        lbl9.setText(" " + sumaTotalFormateado);
-
-        return sumaTotal;
-    }
-
-    private double extraerValorNumerico(String valor) {
-        String valorNumerico = valor.replace(',', '.');
-        try {
-            return Double.parseDouble(valorNumerico);
-        } catch (NumberFormatException e) {
-            System.err.println("Se encontró un formato de número no válido. No se puede convertir a double: " + valor);
-            return 0.0;
-        }
-    }
-
-
-    private void actualizarLbl8y10() {
-        double totalTabla = calcularTotalTabla();
-
-        // Actualizar lbl9 con el total de la tabla
-        lbl9.setText(String.format("%.2f", totalTabla));
-
-        double manoObra = 0.0;
-        try {
-            manoObra = Double.parseDouble(campoManoObra.getText().replace(",", "."));
-        } catch (NumberFormatException e) {
-
-        }
-
-        // Actualizar lbl10 solo con el valor de mano de obra
-        lbl10.setText(String.format("%.2f", manoObra));
-
-        // Calcular el total y actualizar lbl11
-        double total = totalTabla + manoObra;
-        lbl11.setText(String.format("%.2f", total));
-    }
-
-     */
-    private PoliModeloProducto cargarDetallesMateriales() {
-        sql = new Conexion();
+    private PoliModeloProductoPromocion cargarDetallesMateriales() {
         selectTabla = 0;
 
         double precioTotalMateriales = 0.00;
+        double precioTotalMaterialesPromocion = 0.00;
 
-        for (PoliProducto productosGeneral: productosListTemporal) {
-                PoliProductosGeneral material = new PoliProductosGeneral();
-                material.setIdDetalle(productosGeneral.getIdDetalle());
-                material.setID(productosGeneral.getID());
-                material.setNombre(productosGeneral.getNombre());
-                material.setCantidad(productosGeneral.getCantidad());
-                material.setPrecio(productosGeneral.getPrecio());
-                material.setTipo(productosGeneral.getTipo());
-                double total = productosGeneral.getPrecio() * productosGeneral.getCantidad();
-                precioTotalMateriales += total;
-            }
+        //System.out.println(productosListTemporal.size());
+        for (PoliProductoPromocion productosGeneral : productosListTemporal) {
+
+            double total = productosGeneral.getCantidad() * productosGeneral.getPrecio();
+            precioTotalMateriales += total;
+        }
+
+        //System.out.println(productosListTemporal.size());
+        for (PoliProductoPromocion productosGeneral : productosListTemporal) {
+
+            double total = productosGeneral.getCantidad() * productosGeneral.getPromocion();
+            precioTotalMaterialesPromocion += total;
+        }
+
+        lbl6.setText(String.format("%.2f",precioTotalMaterialesPromocion));
+        lbl5.setText(String.format("%.2f",precioTotalMateriales));
 
         // Configurar la tabla para mostrar los encabezados de las columnas
         JTableHeader tableHeader = tablaProductos.getTableHeader();
         tableHeader.setVisible(true);
 
-        lbl6.setText(String.format("%.2f",precioTotalMateriales));
         // Configurar la tabla para mantener el ordenamiento de filas incluso sin encabezados visibles
         tablaProductos.setAutoCreateRowSorter(true);
 
         // Configurar el ancho de las columnas y alineaciones de las celdas
         configurarTablaMateriales();
 
-        return new PoliModeloProducto(productosListTemporal);
+        return new PoliModeloProductoPromocion(productosListTemporal);
     }
 
     private PoliModeloDesayuno cargarDatosDesayuno() {
@@ -1159,41 +1059,6 @@ public class CrearPromocion extends JFrame {
         return modeloTarjetas;
     }
 
-//    private PoliModeloManualidad cargarDatosManualidad() {
-//        sql = new Conexion();
-//        manualidadList.clear();
-//        selectTabla = 9; // Puedes asignar un valor que represente la tabla de manualidades en tu base de datos.
-//        try (Connection mysql = sql.conectamysql();
-//             PreparedStatement preparedStatement = mysql.prepareStatement(
-//                     "SELECT * FROM manualidades WHERE nombre LIKE CONCAT('%', ?, '%')"
-//             )
-//        ) {
-//            preparedStatement.setString(1, campoBusquedaMateriales.getText());
-//
-//            ResultSet resultSet = preparedStatement.executeQuery();
-//
-//            while (resultSet.next()) {
-//                PoliManualidad manualidad = new PoliManualidad();
-//                manualidad.setID(resultSet.getInt("id"));
-//                manualidad.setNombre(resultSet.getString("nombre"));
-//                manualidad.setCantidad(resultSet.getInt("cantidad"));
-//                manualidad.setPrecio(resultSet.getDouble("precio_manualidad"));
-//                manualidad.setTipo("M"); // Puedes asignar un tipo específico para las manualidades.
-//                manualidadList.add(manualidad);
-//            }
-//
-//        } catch (SQLException e) {
-//            System.out.println(e.getMessage());
-//            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
-//            manualidadList = new ArrayList<>();
-//        }
-//
-//        PoliModeloManualidad modeloManualidad = new PoliModeloManualidad(manualidadList, sql);
-//        tablaProductos.setModel(modeloManualidad);
-//        configurarTablaMateriales(); // Asegúrate de que este método configure la tabla adecuada.
-//        return modeloManualidad;
-//    }
-
     private PoliModeloMaterial cargarDatosMaterial() {
         sql = new Conexion();
         materialList.clear();
@@ -1228,6 +1093,170 @@ public class CrearPromocion extends JFrame {
         tablaProductos.setModel(modeloMaterial);
         configurarTablaMateriales(); // Asegúrate de que este método configure la tabla adecuada.
         return modeloMaterial;
+    }
+
+    private double obtenerPrecioMaterialDesdeBD(int id_material, String tipo) {
+        double precio = 0.0;
+
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT " +
+                     (tipo.equals("T") ? "precio_tarjeta" :
+                             tipo.equals("D") ? "precio_desayuno" :
+                                     tipo.equals("M") ? "precio" :
+                                             tipo.equals("F") ? "precio" :
+                                                     tipo.equals("A") ? "precio" :
+                                                             tipo.equals("W") ? "precioUnitario" :
+                                                                     tipo.equals("G") ? "precio" :
+                                                                             "precio_default") +
+                     " FROM " +
+                     (tipo.equals("T") ? "tarjetas" :
+                             tipo.equals("D") ? "desayunos" :
+                                     tipo.equals("M") ? "materiales" :
+                                             tipo.equals("F") ? "floristeria" :
+                                                     tipo.equals("A") ? "arreglos" :
+                                                             tipo.equals("W") ? "mobiliario" :
+                                                                     tipo.equals("G") ? "globos" :
+                                                                             "default_table") +
+                     " WHERE id = ?")) {
+            preparedStatement.setInt(1, id_material);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                precio = resultSet.getDouble(
+                        tipo.equals("T") ? "precio_tarjeta" :
+                                tipo.equals("D") ? "precio_desayuno" :
+                                        tipo.equals("M") ? "precio" :
+                                                tipo.equals("F") ? "precio" :
+                                                        tipo.equals("A") ? "precio" :
+                                                                tipo.equals("W") ? "precioUnitario" :
+                                                                        tipo.equals("G") ? "precio" :
+                                                                                "precio_default");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al obtener el precio del material desde la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        return precio;
+    }
+
+    private void guardarPromocion() {
+        String descripcion = campoDescripcion.getText().trim();
+
+        Date fechaInicial = (Date) datePicker.getModel().getValue(); // Explicitly cast the value to Date
+        String fechaI = new SimpleDateFormat("yyyy-MM-dd").format(fechaInicial);
+
+        Date fechaFinal = (Date) datePicker2.getModel().getValue(); // Explicitly cast the value to Date
+        String fechaF = new SimpleDateFormat("yyyy-MM-dd").format(fechaFinal);
+
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO promociones (descripcion, inicio, fin) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+            preparedStatement.setString(1, descripcion);
+            preparedStatement.setString(2, fechaI);
+            preparedStatement.setString(3, fechaF);
+
+            preparedStatement.executeUpdate();
+
+            ResultSet resultSet = preparedStatement.getGeneratedKeys();
+            int lastId = 0;
+            if (resultSet.next()) {
+                lastId = resultSet.getInt(1);
+            }
+
+            try (PreparedStatement prepared = connection.prepareStatement(
+                    "UPDATE detalles_promociones SET promocion_id = ? WHERE promocion_id IS NULL")) {
+                prepared.setInt(1, lastId);
+                prepared.executeUpdate();
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+                JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+                materialList = new ArrayList<>();
+            }
+
+            JOptionPane.showMessageDialog(null, "Promoción guardada exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al guardar la promoción", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void guardarDetallePromocion(int id_material, int cantidad, String tipo, double promocion) {
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO detalles_promociones (tipo_detalle, detalle_id, cantidad,precio, promocion) VALUES (?, ?, ?, ?, ?)")) {
+            preparedStatement.setString(1, tiposDescripcion.get(tipo));
+            preparedStatement.setInt(2, id_material);
+            preparedStatement.setInt(3, cantidad);
+            preparedStatement.setDouble(4, obtenerPrecioMaterialDesdeBD(id_material,tipo)); // Obtener el precio del material desde la base de datos
+            preparedStatement.setDouble(5, promocion);
+            preparedStatement.executeUpdate();
+
+            JOptionPane.showMessageDialog(null, "Detalle agregado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al agregar el detalle de la promoción", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private double obtenerPrecioPromocion() {
+        final double[] precioPromocion = new double[] {-1.0};
+
+        JTextField field = new JTextField();
+
+        JButton btnOK = new JButton("Aceptar");
+        btnOK.setBackground(darkColorAqua);
+        btnOK.setForeground(Color.WHITE);
+        btnOK.setFocusPainted(false);
+
+        JButton btnCancel = new JButton("Cancelar");
+        btnCancel.setBackground(darkColorPink);
+        btnCancel.setForeground(Color.WHITE);
+        btnCancel.setFocusPainted(false);
+
+        Object[] message = {
+                "Ingrese el precio de promoción:", field
+        };
+
+        Object[] options = {btnOK, btnCancel};
+
+        JOptionPane optionPane = new JOptionPane(
+                message,
+                JOptionPane.PLAIN_MESSAGE,
+                JOptionPane.DEFAULT_OPTION,
+                null,
+                options,
+                btnOK // default option is btnOK
+        );
+
+        JDialog dialog = optionPane.createDialog("Precio de Promoción");
+
+        btnOK.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    precioPromocion[0] = Double.parseDouble(field.getText());
+
+                    if (precioPromocion[0] < 1.0 || precioPromocion[0] > 99999.99) {
+                        showErrorDialog("El precio de promoción debe estar entre 1.00 y 99999.99");
+                        precioPromocion[0] = -1.0;
+                    }
+
+                    dialog.dispose();
+                } catch (NumberFormatException ex) {
+                    showErrorDialog("El precio de promoción debe ser un número válido");
+                }
+            }
+        });
+
+        btnCancel.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose();
+            }
+        });
+
+        dialog.setVisible(true);
+
+        return precioPromocion[0];
     }
 
     private int obtenerCantidadMaterial() {
@@ -1365,33 +1394,31 @@ public class CrearPromocion extends JFrame {
         public void actionPerformed(ActionEvent e) {
             if (table != null) {
                 int modelRow = table.convertRowIndexToModel(row);
-                TableModel model = table.getModel();  // Obtener el modelo de la tabla
+                TableModel model = table.getModel();
 
-                // Verificar si el modelo de la tabla es un PoliModeloProducto
-                if (model instanceof PoliModeloProducto) {
-                    PoliModeloProducto productoModel = (PoliModeloProducto) model;
+                if (model instanceof PoliModeloProductoPromocion) {
+                    PoliModeloProductoPromocion productoModel = (PoliModeloProductoPromocion) model;
+                    PoliProductoPromocion producto = productoModel.getProducto(modelRow);
 
-                    // Eliminar el producto tanto de la lista temporal como de la tabla
-                    productoModel.removeProductAtIndex(modelRow);
+                    // Obtén el ID del detalle de pedido utilizando getIdDetalle
+                    int detallePedidoId = producto.getIdDetalle();
 
-                    double precioTotalMateriales = 0.00;
-                    for (PoliProducto productosGeneral: productosListTemporal) {
-                        PoliProductosGeneral material = new PoliProductosGeneral();
-                        material.setIdDetalle(productosGeneral.getIdDetalle());
-                        material.setID(productosGeneral.getID());
-                        material.setNombre(productosGeneral.getNombre());
-                        material.setCantidad(productosGeneral.getCantidad());
-                        material.setPrecio(productosGeneral.getPrecio());
-                        material.setTipo(productosGeneral.getTipo());
-                        double total = productosGeneral.getPrecio() * productosGeneral.getCantidad();
-                        precioTotalMateriales += total;
+                    try (Connection connection = sql.conectamysql();
+                         PreparedStatement preparedStatement = connection.prepareStatement(
+                                 "DELETE FROM detalles_promociones WHERE id = ?")) {
+                        preparedStatement.setInt(1, detallePedidoId);
+                        preparedStatement.executeUpdate();
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                        // Manejo de excepciones en caso de error en la eliminación en la base de datos.
                     }
-                    lbl6.setText(String.format("%.2f",precioTotalMateriales));
-                }
 
-                fireEditingStopped(); // Mover esta línea aquí para asegurarte de que se complete la edición
-                //calcularTotalTabla();
-                //actualizarLbl8y10();
+                    // Elimina el elemento tanto de la lista temporal como de la tabla
+                    productoModel.removeProductAtIndex(modelRow);
+                    calcularTotalTabla();
+                    configurarTablaMateriales();
+                    fireEditingStopped();
+                }
             }
         }
     }
@@ -1434,12 +1461,15 @@ public class CrearPromocion extends JFrame {
         return selectedCal.before(tomorrow);
     }
 
-    public boolean isDateOutOfRange2(java.util.Date selectedDate, Calendar tomorrow) {
-        Calendar selectedCal2 = Calendar.getInstance();
-        selectedCal2.setTime(selectedDate);
+    public boolean isDateOutOfRange2(Date selectedDate, Calendar tomorrow) {
+        Calendar selectedCal = Calendar.getInstance();
+        selectedCal.setTime(selectedDate);
 
-        // Compara con el día siguiente al actual
-        return selectedCal2.before(tomorrow);
+        // Calcula la fecha límite (30 días después de mañana)
+        Calendar maxDate = (Calendar) tomorrow.clone();
+        maxDate.add(Calendar.DAY_OF_MONTH, 30);
+
+        return selectedCal.before(tomorrow) || selectedCal.after(maxDate);
     }
 
     public void setFormattedDate(java.util.Date selectedDate) {
@@ -1498,66 +1528,62 @@ public class CrearPromocion extends JFrame {
         }
     }
 
+    private double calcularTotalTabla() {
+        double sumaTotalPromocion = 0.0;
+        double sumaTotal = 0.0;
+        TableModel modelo = tablaProductos.getModel();
+        PoliModeloProductoPromocion modeloProductos = (PoliModeloProductoPromocion) modelo;
 
-    private void guardarPromocion() {
-        String precioText = precio.getText().replace("L ", "").replace(",", "").replace("_", "");
-        double precio = Double.parseDouble(precioText);
-
-        String descripcion = campoDescripcion.getText().trim();
-
-        Date fechaInicial = (Date) datePicker.getModel().getValue(); // Explicitly cast the value to Date
-        String fechaI = new SimpleDateFormat("yyyy-MM-dd").format(fechaInicial);
-
-
-        Date fechaFinal = (Date) datePicker2.getModel().getValue(); // Explicitly cast the value to Date
-        String fechaF = new SimpleDateFormat("yyyy-MM-dd").format(fechaFinal);
-
-
-        try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO promociones (descripcion, inicio, fin, precio) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setString(1, descripcion);
-            preparedStatement.setString(2, fechaI);
-            preparedStatement.setString(3, fechaF);
-            preparedStatement.setDouble(4, precio);
-
-            preparedStatement.executeUpdate();
-
-            ResultSet resultSet = preparedStatement.getGeneratedKeys();
-            int lastId = 0;
-            if (resultSet.next()) {
-                lastId = resultSet.getInt(1);
+        // Iterar por todas las filas del modelo
+        for (int i = 0; i < modeloProductos.getRowCount(); i++) {
+            try {
+                // Obtener el total de la fila y sumarlo al total general
+                Object valorCelda = modeloProductos.getValueAt(i, 4); // Suponiendo que la columna "total" está en el índice 4 (índice basado en 0)
+                if (valorCelda != null) {
+                    String totalStr = valorCelda.toString();
+                    double total = extraerValorNumerico(totalStr);
+                    sumaTotal += total;
+                }
+            } catch (NumberFormatException e) {
+                System.err.println("Se encontró un formato de número no válido. Se omite el cálculo para la fila " + i);
+                System.err.println("Valor que causa el error: " + modeloProductos.getValueAt(i, 4));
             }
-
-            try (PreparedStatement prepared = connection.prepareStatement(
-                    "UPDATE detalles_promociones SET promocion_id = ? WHERE promocion_id IS NULL")) {
-                prepared.setInt(1, lastId);
-                prepared.executeUpdate();
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-                JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
-                materialList = new ArrayList<>();
-            }
-
-            JOptionPane.showMessageDialog(null, "Promoción guardada exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al guardar la promoción", "Error", JOptionPane.ERROR_MESSAGE);
         }
+
+        // Iterar por todas las filas del modelo
+        for (int i = 0; i < modeloProductos.getRowCount(); i++) {
+            try {
+                // Obtener el total de la fila y sumarlo al total general
+                Object valorCelda = modeloProductos.getValueAt(i, 6); // Suponiendo que la columna "total" está en el índice 4 (índice basado en 0)
+                if (valorCelda != null) {
+                    String totalStr = valorCelda.toString();
+                    double total = extraerValorNumerico(totalStr);
+                    sumaTotalPromocion += total;
+                }
+            } catch (NumberFormatException e) {
+                System.err.println("Se encontró un formato de número no válido. Se omite el cálculo para la fila " + i);
+                System.err.println("Valor que causa el error: " + modeloProductos.getValueAt(i, 4));
+            }
+        }
+
+        // Actualizar el lbl9 con el total calculado
+        DecimalFormat decimalFormat = new DecimalFormat("#.00");
+        String sumaTotalFormateado = decimalFormat.format(sumaTotal);
+        String sumaTotalFormateadoPromocion = decimalFormat.format(sumaTotalPromocion);
+
+        lbl6.setText(" " + sumaTotalFormateadoPromocion);
+        lbl5.setText(" " + sumaTotalFormateado);
+
+        return sumaTotal;
     }
 
-    private void guardarDetallePromocion(int id_material, int cantidad, String tipo) {
-        try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO detalles_promociones (tipo_detalle, detalle_id, cantidad,precio) VALUES (?, ?, ?, ?)")) {
-            preparedStatement.setString(1, tiposDescripcion.get(tipo));
-            preparedStatement.setInt(2, id_material);
-            preparedStatement.setInt(3, cantidad);
-            preparedStatement.setDouble(4, obtenerPrecioMaterialDesdeBD(id_material,tipo)); // Obtener el precio del material desde la base de datos
-            preparedStatement.executeUpdate();
-
-            JOptionPane.showMessageDialog(null, "Detalle agregado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al agregar el detalle de la promoción", "Error", JOptionPane.ERROR_MESSAGE);
+    private double extraerValorNumerico(String valor) {
+        String valorNumerico = valor.replace(',', '.');
+        try {
+            return Double.parseDouble(valorNumerico);
+        } catch (NumberFormatException e) {
+            System.err.println("Se encontró un formato de número no válido. No se puede convertir a double: " + valor);
+            return 0.0;
         }
     }
 

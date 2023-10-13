@@ -8,21 +8,23 @@ public class Promocion {
     private java.util.Date inicio;
     private java.util.Date fin;
     private double precio;
+    private double promocion;
     public static String nombreTabla = "promociones";
 
     public Promocion() {
     }
 
     public Object[] toTableRow() {
-        return new Object[]{id, descripcion, inicio, fin, precio};
+        return new Object[]{id, descripcion, inicio, fin, precio, promocion};
     }
 
-    public Promocion(int id, String descripcion, Date inicio, Date fin, double precio) {
+    public Promocion(int id, String descripcion, Date inicio, Date fin, double precio, double promocion) {
         this.id = id;
         this.descripcion = descripcion;
         this.inicio = inicio;
         this.fin = fin;
         this.precio = precio;
+        this.promocion = promocion;
     }
 
     public int getId() {
@@ -63,5 +65,13 @@ public class Promocion {
 
     public void setPrecio(double precio) {
         this.precio = precio;
+    }
+
+    public double getPromocion() {
+        return promocion;
+    }
+
+    public void setPromocion(double promocion) {
+        this.promocion = promocion;
     }
 }
