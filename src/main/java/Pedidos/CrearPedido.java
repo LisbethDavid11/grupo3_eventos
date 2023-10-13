@@ -9,12 +9,11 @@ import org.jdatepicker.impl.UtilDateModel;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.sql.*;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -41,6 +40,9 @@ public class CrearPedido extends JFrame {
     private JPanel panelPrincipal;
     private JPanel panelSecundario;
     private JPanel panelOpcional;
+    private JTextField campoPrecioEnvio;
+    private JPanel panelEntrega;
+    private JLabel lbl15;
     private CrearPedido actual = this;
     private Conexion sql;
     private JDatePickerImpl datePicker;
@@ -231,6 +233,35 @@ public class CrearPedido extends JFrame {
         radioButtonTienda.setBackground(panel.getBackground());
         radioButtonTienda.setFocusPainted(false);
 
+        // Agregar ActionListener al JRadioButton de domicilio
+        radioButtonDomicilio.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (radioButtonDomicilio.isSelected()) {
+                    panelEntrega.setVisible(true);
+                }
+            }
+        });
+
+        // Agregar ActionListener al JRadioButton de tienda
+        radioButtonTienda.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (radioButtonTienda.isSelected()) {
+                    panelEntrega.setVisible(false);
+                    campoPrecioEnvio.setText("0.0");
+                }
+            }
+        });
+
+        // Inicializar JRadioButtons
+        ButtonGroup buttonGroup = new ButtonGroup();
+        buttonGroup.add(radioButtonTienda);
+        buttonGroup.add(radioButtonDomicilio);
+        buttonGroup.clearSelection();
+
+        panelEntrega.setVisible(false); // Inicialmente oculto
+
         lbl0.setForeground(textColor);
         lbl1.setForeground(textColor);
         lbl3.setForeground(textColor);
@@ -242,12 +273,7 @@ public class CrearPedido extends JFrame {
         lbl9.setFont(fontTitulo);
         lbl10.setFont(fontTitulo);
         lbl11.setFont(fontTitulo);
-
-        // Inicializar JRadioButtons
-        ButtonGroup buttonGroup = new ButtonGroup();
-        buttonGroup.add(radioButtonTienda);
-        buttonGroup.add(radioButtonDomicilio);
-        buttonGroup.clearSelection();
+        lbl15.setFont(fontTitulo);
 
         campoDescripcion.setForeground(textColor);
         campoDescripcion.setBackground(new Color(215, 215, 215));
@@ -488,6 +514,42 @@ public class CrearPedido extends JFrame {
             }
         });
 
+        campoPrecioEnvio.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                String text = campoPrecioEnvio.getText();
+
+                // Permitir solo dígitos y el carácter de punto decimal
+                if (!Character.isDigit(c) && c != '.') {
+                    e.consume(); // Ignorar cualquier otro carácter
+                    return;
+                }
+
+                // Verificar si se excede el límite de caracteres
+                if (text.length() >= 5 && c != '.' && !text.contains(".")) {
+                    e.consume(); // Ignorar el carácter si se excede el límite de dígitos y no es un punto decimal
+                    return;
+                }
+
+                // Verificar si ya hay un punto decimal y se intenta ingresar otro
+                if (text.contains(".") && c == '.') {
+                    e.consume(); // Ignorar el carácter si ya hay un punto decimal
+                    return;
+                }
+
+                // Verificar la cantidad de dígitos después del punto decimal
+                if (text.contains(".")) {
+                    int dotIndex = text.indexOf(".");
+                    int decimalDigits = text.length() - dotIndex - 1;
+                    if (decimalDigits >= 2) {
+                        e.consume(); // Ignorar el carácter si se excede la cantidad de dígitos después del punto decimal
+                        return;
+                    }
+                }
+            }
+        });
+
         botonCancelar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -507,38 +569,57 @@ public class CrearPedido extends JFrame {
 
                 if (campoCodigo.getText().trim().isEmpty()) {
                     validacion++;
-                    mensaje += "Nombre\n";
+                    mensaje += "Código\n";
                 }
 
                 if (campoFechaPedido.getText().trim().isEmpty()) {
                     validacion++;
-                    mensaje += "Precio\n";
+                    mensaje += "Fecha de pedido\n";
                 }
 
                 if (!radioButtonDomicilio.isSelected() && !radioButtonTienda.isSelected()) {
                     validacion++;
-                    mensaje += "La entrega\n";
+                    mensaje += "Tipo de entrega\n";
+                }
+
+                String precioText = campoPrecioEnvio.getText().trim();
+                if (radioButtonDomicilio.isSelected()){
+                    if (campoPrecioEnvio.getText().trim().isEmpty()) {
+                        validacion++;
+                        mensaje += "Precio del envío\n";
+                    }  else {
+                        if (!precioText.matches("\\d{1,5}(\\.\\d{1,2})?")) {
+                            JOptionPane.showMessageDialog(null, "Precio de envío inválido. Debe tener el formato correcto (ejemplo: 1234 o 1234.56).", "Validación", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        } else {
+                            double precio = Double.parseDouble(precioText);
+                            if (precio < 1.00 || precio > 99999.99) {
+                                JOptionPane.showMessageDialog(null, "Precio de envío fuera del rango válido (1.00 - 99999.99).", "Validación", JOptionPane.ERROR_MESSAGE);
+                                return;
+                            }
+                        }
+                    }
                 }
 
                 if (datePicker.getJFormattedTextField().getText().trim().isEmpty()) {
                     validacion++;
-                    mensaje += "La fecha\n";
+                    mensaje += "Fecha de entrega\n";
                 }
 
                 String clienteText = comboBoxCliente.getSelectedItem().toString();
                 if (clienteText.equals("Seleccione un cliente")) {
                     validacion++;
-                    mensaje += "El cliente\n";
+                    mensaje += "Cliente\n";
                 }
 
                 if (campoDescripcion.getText().trim().isEmpty()) {
                     validacion++;
-                    mensaje += "La descripción\n";
+                    mensaje += "Descripción\n";
                 }
 
                 if (jtableMateriales.getRowCount() == 0) {
                     validacion++;
-                    mensaje += "La lista de productos\n";
+                    mensaje += "Lista de productos\n";
                 }
 
                 if (validacion > 0) {
@@ -692,6 +773,23 @@ public class CrearPedido extends JFrame {
 
                 // Muestra el diálogo
                 dialog.setVisible(true);
+            }
+        });
+
+        campoPrecioEnvio.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                actualizarLbl8y10();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                actualizarLbl8y10();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                actualizarLbl8y10();
             }
         });
 
@@ -1060,16 +1158,19 @@ public class CrearPedido extends JFrame {
         String descripcion = campoDescripcion.getText().trim();
         String entrega = radioButtonDomicilio.isSelected() ? "Domicilio" : "Tienda";
         String clienteText = comboBoxCliente.getSelectedItem().toString();
+        String precioText = campoPrecioEnvio.getText().replace("L ", "").replace(",", "").replace("_", "");
+        double precioEnvio = Double.parseDouble(precioText);
         int clienteId = Integer.parseInt(clienteText.split(" - ")[0]);
 
         try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO pedidos (codigo_pedido, fecha_pedido, fecha_entrega, descripcion, cliente_id, entrega) VALUES (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO pedidos (codigo_pedido, fecha_pedido, fecha_entrega, descripcion, cliente_id, entrega, precio_envio) VALUES (?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, codigoPedido);
             preparedStatement.setString(2, fechaPedido);
             preparedStatement.setString(3, fechaEntrega);
             preparedStatement.setString(4, descripcion);
             preparedStatement.setInt(5, clienteId);
             preparedStatement.setString(6, entrega);
+            preparedStatement.setDouble(7, precioEnvio);
             preparedStatement.executeUpdate();
 
             ResultSet resultSet = preparedStatement.getGeneratedKeys();
@@ -1551,10 +1652,21 @@ public class CrearPedido extends JFrame {
         // Calcular el subtotal de la tabla (antes de aplicar el descuento)
         double totalTabla = calcularTotalTabla();
 
+        double costoEnvio = 0.0;
+        try {
+            costoEnvio = Double.parseDouble(campoPrecioEnvio.getText().replace(",", "."));
+        } catch (NumberFormatException e) {
+
+        }
+
+        // Actualizar lbl9 solo con el valor de mano de obra
+        lbl15.setText(String.format("%.2f", costoEnvio));
+
         // Calcular el total con el descuento y aumento
-        double subTotal = totalTabla * 0.85;
-        double ISV = totalTabla * 0.15;
-        double totalConAumento = totalTabla;
+        double subTotal = (totalTabla + costoEnvio) * 0.85;
+        double ISV = (totalTabla + costoEnvio) * 0.15;
+        double totalConAumento = totalTabla + costoEnvio;
+
 
         // Actualizar lbl8 con el subtotal con descuento
         lbl9.setText(String.format("L. %.2f", subTotal));
@@ -1701,14 +1813,17 @@ public class CrearPedido extends JFrame {
         setFormattedDate(selectedDate);
     }
 
-    public boolean isDateOutOfRange(java.util.Date selectedDate, Calendar tomorrow) {
+    public boolean isDateOutOfRange(Date selectedDate, Calendar tomorrow) {
         Calendar selectedCal = Calendar.getInstance();
         selectedCal.setTime(selectedDate);
 
-        // Compara con el día siguiente al actual
-        return selectedCal.before(tomorrow);
-    }
+        // Calcula la fecha límite (30 días después de mañana)
+        Calendar maxDate = (Calendar) tomorrow.clone();
+        maxDate.add(Calendar.DAY_OF_MONTH, 30);
 
+        return selectedCal.before(tomorrow) || selectedCal.after(maxDate);
+    }
+    
     public void setFormattedDate(java.util.Date selectedDate) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd 'de' MMMM yyyy"); // Desired date format
         String formattedDate = (selectedDate != null) ? dateFormat.format(selectedDate) : "";
