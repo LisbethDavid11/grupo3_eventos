@@ -6,6 +6,7 @@ import Modelos.ModeloEvento;
 import Objetos.Conexion;
 import Objetos.Desayuno;
 import Objetos.Evento;
+import com.toedter.calendar.JDateChooser;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -17,21 +18,27 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class ListaEventos extends JFrame {
     private JPanel panelPrincipal, panelTitulo, panelA, panelB;
+    private final JDateChooser fecha_desde,fecha_hasta;
     private JButton botonEditar, botonCrear, botonVer, botonAdelante, botonAtras;
     private JTextField campoBusqueda;
     private TextPrompt placeholder = new TextPrompt(" Buscar por nombre del cliente, fecha ó tipo", campoBusqueda);
     private JLabel lblPagina;
     private JLabel lblTitulo;
     private JTable listaEventos;
+    private JPanel panel_fecha;
     private List<Evento> listaEvento;
     private int pagina = 0;
     private Connection mysql;
@@ -50,6 +57,22 @@ public class ListaEventos extends JFrame {
         setLocationRelativeTo(null);
         setContentPane(panelPrincipal);
         campoBusqueda.setText("");
+
+        JLabel jl_desde = new JLabel("Desde");
+        panel_fecha.add(jl_desde);
+        fecha_desde = new JDateChooser(new Date());
+        fecha_desde.setDateFormatString("yyyy-MM-dd");
+        fecha_desde.setPreferredSize(new Dimension(90, 30));
+        panel_fecha.add(fecha_desde);
+
+        JLabel jl_hasta = new JLabel("Hasta");
+        panel_fecha.add(jl_hasta);
+        fecha_hasta = new JDateChooser(new Date());
+        fecha_hasta.setDateFormatString("yyyy-MM-dd");
+        fecha_hasta.setPreferredSize(new Dimension(90, 30));
+        panel_fecha.add(fecha_hasta);
+
+        panel_fecha.setPreferredSize(new Dimension(270, 30));
 
         listaEventos.setModel(cargarDatos());
         configurarTablaManualidades();
@@ -91,6 +114,32 @@ public class ListaEventos extends JFrame {
         campoBusqueda.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
+                busqueda = campoBusqueda.getText();
+                pagina = 0;
+                botonAdelante.setEnabled((pagina + 1) < getTotalPageCount());
+                botonAtras.setEnabled(pagina > 0);
+                listaEventos.setModel(cargarDatos());
+                configurarTablaManualidades();
+                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+            }
+        });
+
+        fecha_desde.getDateEditor().getUiComponent().addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+                busqueda = campoBusqueda.getText();
+                pagina = 0;
+                botonAdelante.setEnabled((pagina + 1) < getTotalPageCount());
+                botonAtras.setEnabled(pagina > 0);
+                listaEventos.setModel(cargarDatos());
+                configurarTablaManualidades();
+                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+            }
+        });
+
+        fecha_hasta.getDateEditor().getUiComponent().addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
                 busqueda = campoBusqueda.getText();
                 pagina = 0;
                 botonAdelante.setEnabled((pagina + 1) < getTotalPageCount());
@@ -245,10 +294,11 @@ public class ListaEventos extends JFrame {
                      "SELECT e.*, CONCAT(c.nombre, ' ', c.apellido) AS nombre_completo " +
                              "FROM eventos e " +
                              "JOIN clientes c ON e.cliente_id = c.id " +
-                             "WHERE e.tipo LIKE CONCAT('%', ?, '%') " +
+                             "WHERE (e.tipo LIKE CONCAT('%', ?, '%') " +
                              "OR CONCAT(c.nombre, ' ', c.apellido) LIKE CONCAT('%', ?, '%') " +
                              "OR e.direccion LIKE CONCAT('%', ?, '%') " +
-                             "OR DATE_FORMAT(e.fecha, '%d de %M %Y') LIKE CONCAT('%', ?, '%') " +
+                             "OR DATE_FORMAT(e.fecha, '%d de %M %Y') LIKE CONCAT('%', ?, '%')) " +
+                             "AND (e.fecha BETWEEN ? AND ?) " +
                              "LIMIT ?, 20"
              )
         ){
@@ -256,7 +306,12 @@ public class ListaEventos extends JFrame {
             preparedStatement.setString(2, busqueda);
             preparedStatement.setString(3, busqueda);
             preparedStatement.setString(4, busqueda);
-            preparedStatement.setInt(5, pagina * 20);
+            SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd"); // Define el formato de fecha deseado
+            String fechaDesde = formato.format(fecha_desde.getDate()); // Convierte la fecha a una cadena de texto en el formato especificado
+            String fechaHasta = formato.format(fecha_hasta.getDate());
+            preparedStatement.setString(5, fechaDesde);
+            preparedStatement.setString(6, fechaHasta);
+            preparedStatement.setInt(7, pagina * 20);
 
             ResultSet resultSet = preparedStatement.executeQuery();
             listaEvento = new ArrayList<>();
@@ -294,16 +349,24 @@ public class ListaEventos extends JFrame {
                      "SELECT COUNT(*) AS total " +
                              "FROM eventos e " +
                              "JOIN clientes c ON e.cliente_id = c.id " +
-                             "WHERE e.tipo LIKE CONCAT('%', ?, '%') " +
+                             "WHERE (e.tipo LIKE CONCAT('%', ?, '%') " +
                              "OR CONCAT(c.nombre, ' ', c.apellido) LIKE CONCAT('%', ?, '%') " +
-                             "OR e.direccion LIKE CONCAT('%', ?, '%')" +
-                             "OR DATE_FORMAT(e.fecha, '%d de %M %Y') LIKE CONCAT('%', ?, '%')"
+                             "OR e.direccion LIKE CONCAT('%', ?, '%') " +
+                             "OR DATE_FORMAT(e.fecha, '%d de %M %Y') LIKE CONCAT('%', ?, '%')) " +
+                             "AND (e.fecha BETWEEN ? AND ?)"
              )) {
             preparedStatement.setString(1, busqueda);
             preparedStatement.setString(2, busqueda);
             preparedStatement.setString(3, busqueda);
             preparedStatement.setString(4, busqueda);
+            SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
+            String fechaDesde = formato.format(fecha_desde.getDate());
+            String fechaHasta = formato.format(fecha_hasta.getDate());
+            preparedStatement.setString(5, fechaDesde);
+            preparedStatement.setString(6, fechaHasta);
+
             ResultSet resultSet = preparedStatement.executeQuery();
+
             if (resultSet.next()) {
                 count = resultSet.getInt("total");
             }
@@ -320,7 +383,6 @@ public class ListaEventos extends JFrame {
 
         return totalPageCount;
     }
-
 
     public static void main(String[] args) {
         ListaEventos listaEventos = new ListaEventos();

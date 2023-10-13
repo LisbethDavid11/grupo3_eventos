@@ -14,6 +14,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.sql.*;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -449,14 +450,14 @@ public class CrearEvento extends JFrame {
                         productosListTemporal.clear();
                         eliminarDetallesMaterial();
                         limpiarTablaMateriales();
-                        lbl9.setText("0.00");
                         lbl11.setText("0.00");
 
                         PoliModeloProducto nuevoModelo = new PoliModeloProducto(new ArrayList<>());
                         tablaProductos.setModel(nuevoModelo);
                         configurarTablaMateriales();
 
-                        //calcularTotalTabla();
+                        calcularTotalTabla();
+                        configurarTablaMateriales();
                         //actualizarLbl8y10();
 
                         dialog.dispose();
@@ -946,7 +947,7 @@ public class CrearEvento extends JFrame {
         }
     }
 
-    /*
+
     private double calcularTotalTabla() {
         double sumaTotal = 0.0;
         TableModel modelo = tablaProductos.getModel();
@@ -971,7 +972,7 @@ public class CrearEvento extends JFrame {
         // Actualizar el lbl9 con el total calculado
         DecimalFormat decimalFormat = new DecimalFormat("#.00");
         String sumaTotalFormateado = decimalFormat.format(sumaTotal);
-        lbl9.setText(" " + sumaTotalFormateado);
+        lbl11.setText(" " + sumaTotalFormateado);
 
         return sumaTotal;
     }
@@ -987,29 +988,6 @@ public class CrearEvento extends JFrame {
     }
 
 
-    private void actualizarLbl8y10() {
-        double totalTabla = calcularTotalTabla();
-
-        // Actualizar lbl9 con el total de la tabla
-        lbl9.setText(String.format("%.2f", totalTabla));
-
-        double manoObra = 0.0;
-        try {
-            manoObra = Double.parseDouble(campoManoObra.getText().replace(",", "."));
-        } catch (NumberFormatException e) {
-
-        }
-
-        // Actualizar lbl10 solo con el valor de mano de obra
-        lbl10.setText(String.format("%.2f", manoObra));
-
-        // Calcular el total y actualizar lbl11
-        double total = totalTabla + manoObra;
-        lbl11.setText(String.format("%.2f", total));
-    }
-
-     */
-
     private PoliModeloProducto cargarDetallesMateriales() {
         selectTabla = 0;
 
@@ -1021,8 +999,6 @@ public class CrearEvento extends JFrame {
             double total = productosGeneral.getCantidad() * productosGeneral.getPrecio();
             precioTotalMateriales += total;
         }
-
-
 
         lbl11.setText(String.format("%.2f",precioTotalMateriales));
 
@@ -1378,7 +1354,8 @@ public class CrearEvento extends JFrame {
 
                     // Elimina el elemento tanto de la lista temporal como de la tabla
                     productoModel.removeProductAtIndex(modelRow);
-
+                    calcularTotalTabla();
+                    configurarTablaMateriales();
                     fireEditingStopped();
 
 
