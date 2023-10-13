@@ -281,14 +281,14 @@
         </constraints>
         <properties>
           <model>
-            <item value="SELECCIONE LA SECCION"/>
-            <item value="MOBILIARIO"/>
-            <item value="GLOBOS"/>
-            <item value="ARREGLOS"/>
-            <item value="FLORES"/>
-            <item value="TARGETAS"/>
-            <item value="MATERIALES"/>
-            <item value="DESAYUNOS"/>
+            <item value="Seleccione la sección"/>
+            <item value="Mobiliario"/>
+            <item value="Globo"/>
+            <item value="Arreglo"/>
+            <item value="Floristería"/>
+            <item value="Tarjeta"/>
+            <item value="Material"/>
+            <item value="Desayuno"/>
           </model>
         </properties>
       </component>

@@ -663,49 +663,49 @@ public class CrearPromocion extends JFrame {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 switch (comboSeccion.getSelectedItem().toString()) {
-                    case "MOBILIARIO" -> {
+                    case "Mobiliario" -> {
                         campoBusquedaMateriales.setVisible(true);
                         agregarButton.setVisible(true);
                         cancelarButton.setVisible(true);
                         tablaProductos.setModel(cargarDatosMobiliario());
                         categoriaSeleccionada = 4;
                     }
-                    case "FLORES" -> {
+                    case "Floristería" -> {
                         campoBusquedaMateriales.setVisible(true);
                         agregarButton.setVisible(true);
                         cancelarButton.setVisible(true);
                         tablaProductos.setModel(cargarDatosFloristeria());
                         categoriaSeleccionada = 3;
                     }
-                    case "ARREGLOS" -> {
+                    case "Arreglo" -> {
                         campoBusquedaMateriales.setVisible(true);
                         agregarButton.setVisible(true);
                         cancelarButton.setVisible(true);
                         tablaProductos.setModel(cargarDatosArreglo());
                         categoriaSeleccionada = 2;
                     }
-                    case "GLOBOS" -> {
+                    case "Globo" -> {
                         campoBusquedaMateriales.setVisible(true);
                         agregarButton.setVisible(true);
                         cancelarButton.setVisible(true);
                         tablaProductos.setModel(cargarDatosGlobo());
                         categoriaSeleccionada = 7;
                     }
-                    case "TARGETAS" -> {
+                    case "Tarjeta" -> {
                         campoBusquedaMateriales.setVisible(true);
                         agregarButton.setVisible(true);
                         cancelarButton.setVisible(true);
                         tablaProductos.setModel(cargarDatosTarjetas());
                         categoriaSeleccionada = 6;
                     }
-                    case "MATERIALES" -> {
+                    case "Material" -> {
                         campoBusquedaMateriales.setVisible(true);
                         agregarButton.setVisible(true);
                         cancelarButton.setVisible(true);
                         tablaProductos.setModel(cargarDatosMaterial());
                         categoriaSeleccionada = 1;
                     }
-                    case "DESAYUNOS" -> {
+                    case "Desayuno" -> {
                         campoBusquedaMateriales.setVisible(true);
                         agregarButton.setVisible(true);
                         cancelarButton.setVisible(true);
