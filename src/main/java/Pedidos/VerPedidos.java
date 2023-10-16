@@ -1,4 +1,4 @@
-package Desayunos;
+package Pedidos;
 import Objetos.Conexion;
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -17,20 +17,24 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-public class VerDesayunos extends JFrame {
+public class VerPedidos extends JFrame {
     private JPanel panel1, panel3, panel4, panel5, panel6;
-    private JTextField nombre, cantidad, mano_obra, precio_desayuno, proveedor;
+    private JTextField campoCodigo, campoFechaPedido, campoEntrega, campoFechaEntrega, campoCliente;
     private JTable productos;
     private JButton cancelarButton;
     private JLabel lbl0, lbl1, lbl2, lbl3, lbl4, lbl5, lbl6, lbl7, lbl8, lbl9, lbl10, lbl11, lbl12, lblImagen;
     private JScrollPane panel2;
-    private JTextArea descripcion;
+    private JTextArea campoDescripcion;
     private JLabel lbl13;
+    private JTextField campoPrecio;
+    private JLabel lbl14;
     private Conexion sql;
     private Connection mysql;
     private int id;
-    private VerDesayunos actual = this;
+    private VerPedidos actual = this;
     Font fontTitulo = new Font("Century Gothic", Font.BOLD, 20);
     Font font = new Font("Century Gothic", Font.BOLD, 15);
     Font font2 = new Font("Century Gothic", Font.BOLD, 11);
@@ -68,7 +72,7 @@ public class VerDesayunos extends JFrame {
     private int panelImgHeight = 200;
     private int panelImgWidth2 = 200;
     private int panelImgHeight2 = 200;
-    public VerDesayunos(int id) {
+    public VerPedidos(int id) {
         super("");
         setSize(850, 610);
         setLocationRelativeTo(null);
@@ -76,86 +80,62 @@ public class VerDesayunos extends JFrame {
 
         this.id = id;
 
-        descripcion.setLineWrap(true);
-        descripcion.setWrapStyleWord(true);
-
-        // Crear una instancia de Dimension con las dimensiones deseadas
-        Dimension panelImgSize = new Dimension(panelImgWidth, panelImgHeight);
-        Dimension panelImgSize2 = new Dimension(panelImgWidth2, panelImgHeight2);
-
-        // Establecer las dimensiones en el panelImg
-        panel3.setPreferredSize(panelImgSize);
-        panel3.setMaximumSize(panelImgSize);
-        panel3.setMinimumSize(panelImgSize);
-        panel3.setSize(panelImgSize);
-
-        panel4.setPreferredSize(panelImgSize2);
-        panel4.setMaximumSize(panelImgSize2);
-        panel4.setMinimumSize(panelImgSize2);
-        panel4.setSize(panelImgSize2);
-
-        // Configurar el layout del panelImg como GridBagLayout
-        panel3.setLayout(new GridBagLayout());
-
-        // Configurar restricciones de diseño para la etiqueta de imagen
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.weightx = 1.0;
-        gbc.weighty = 1.0;
-        lblImagen.setHorizontalAlignment(SwingConstants.CENTER);
-        panel3.add(lblImagen, gbc);
-        mostrar();
+        campoDescripcion.setLineWrap(true);
+        campoDescripcion.setWrapStyleWord(true);
 
         panel1.setBackground(Color.decode("#F5F5F5"));
         panel2.setBackground(Color.decode("#F5F5F5"));
-        panel3.setBackground(Color.decode("#F5F5F5"));
         panel4.setBackground(Color.decode("#F5F5F5"));
         panel5.setBackground(Color.decode("#F5F5F5"));
         panel6.setBackground(Color.decode("#F5F5F5"));
 
         Color textColor = Color.decode("#263238");
         Color textColor2 = Color.decode("#607d8b");
-        nombre.setBorder(BorderFactory.createEmptyBorder());
-        nombre.setBackground(Color.decode("#F5F5F5"));
-        nombre.setForeground(textColor);
-        nombre.setEditable(false);
-        nombre.setFocusable(false);
+        campoCodigo.setBorder(BorderFactory.createEmptyBorder());
+        campoCodigo.setBackground(Color.decode("#F5F5F5"));
+        campoCodigo.setForeground(textColor);
+        campoCodigo.setEditable(false);
+        campoCodigo.setFocusable(false);
 
         JTableHeader header = productos.getTableHeader();
         header.setForeground(Color.WHITE);
         header.setBackground(darkColorCyan);
 
-        precio_desayuno.setBorder(BorderFactory.createEmptyBorder());
-        precio_desayuno.setBackground(Color.decode("#F5F5F5"));
-        precio_desayuno.setForeground(textColor);
-        precio_desayuno.setEditable(false);
-        precio_desayuno.setFocusable(false);
+        campoFechaEntrega.setBorder(BorderFactory.createEmptyBorder());
+        campoFechaEntrega.setBackground(Color.decode("#F5F5F5"));
+        campoFechaEntrega.setForeground(textColor);
+        campoFechaEntrega.setEditable(false);
+        campoFechaEntrega.setFocusable(false);
 
-        descripcion.setBorder(BorderFactory.createEmptyBorder());
-        descripcion.setBackground(Color.decode("#F5F5F5"));
-        descripcion.setForeground(textColor);
-        descripcion.setEditable(false);
-        descripcion.setFocusable(false);
+        campoDescripcion.setBorder(BorderFactory.createEmptyBorder());
+        campoDescripcion.setBackground(Color.decode("#F5F5F5"));
+        campoDescripcion.setForeground(textColor);
+        campoDescripcion.setEditable(false);
+        campoDescripcion.setFocusable(false);
 
-        cantidad.setBorder(BorderFactory.createEmptyBorder());
-        cantidad.setBackground(Color.decode("#F5F5F5"));
-        cantidad.setForeground(textColor);
-        cantidad.setEditable(false);
-        cantidad.setFocusable(false);
+        campoFechaPedido.setBorder(BorderFactory.createEmptyBorder());
+        campoFechaPedido.setBackground(Color.decode("#F5F5F5"));
+        campoFechaPedido.setForeground(textColor);
+        campoFechaPedido.setEditable(false);
+        campoFechaPedido.setFocusable(false);
 
-        proveedor.setBorder(BorderFactory.createEmptyBorder());
-        proveedor.setBackground(Color.decode("#F5F5F5"));
-        proveedor.setForeground(textColor);
-        proveedor.setEditable(false);
-        proveedor.setFocusable(false);
+        campoCliente.setBorder(BorderFactory.createEmptyBorder());
+        campoCliente.setBackground(Color.decode("#F5F5F5"));
+        campoCliente.setForeground(textColor);
+        campoCliente.setEditable(false);
+        campoCliente.setFocusable(false);
 
-        mano_obra.setBorder(BorderFactory.createEmptyBorder());
-        mano_obra.setBackground(Color.decode("#F5F5F5"));
-        mano_obra.setForeground(textColor);
-        mano_obra.setEditable(false);
-        mano_obra.setFocusable(false);
+        campoEntrega.setBorder(BorderFactory.createEmptyBorder());
+        campoEntrega.setBackground(Color.decode("#F5F5F5"));
+        campoEntrega.setForeground(textColor);
+        campoEntrega.setEditable(false);
+        campoEntrega.setFocusable(false);
+
+        campoPrecio.setBorder(BorderFactory.createEmptyBorder());
+        campoPrecio.setBackground(Color.decode("#F5F5F5"));
+        campoPrecio.setForeground(textColor);
+        campoPrecio.setEditable(false);
+        campoPrecio.setFocusable(false);
 
         cancelarButton.setForeground(Color.WHITE);
         cancelarButton.setBackground(Color.decode("#263238"));
@@ -175,6 +155,7 @@ public class VerDesayunos extends JFrame {
         lbl11.setForeground(textColor2);
         lbl12.setForeground(textColor2);
         lbl13.setForeground(textColor2);
+        lbl14.setForeground(textColor2);
 
         lbl1.setFont(font2);
         lbl2.setFont(font2);
@@ -186,13 +167,15 @@ public class VerDesayunos extends JFrame {
         lbl11.setFont(font2);
         lbl12.setFont(font2);
         lbl13.setFont(font2);
+        lbl14.setFont(font2);
 
-        nombre.setFont(font);
-        precio_desayuno.setFont(font);
-        cantidad.setFont(font);
-        descripcion.setFont(font);
-        proveedor.setFont(font);
-        mano_obra.setFont(font);
+        campoCodigo.setFont(font);
+        campoFechaEntrega.setFont(font);
+        campoFechaPedido.setFont(font);
+        campoDescripcion.setFont(font);
+        campoCliente.setFont(font);
+        campoEntrega.setFont(font);
+        campoPrecio.setFont(font);
         lbl8.setFont(font);
         lbl9.setFont(font);
         lbl10.setFont(font);
@@ -210,12 +193,13 @@ public class VerDesayunos extends JFrame {
         cancelarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ListaDesayunos listaDesayunos = new ListaDesayunos();
-                listaDesayunos.setVisible(true);
+                ListaPedidos listaPedidos = new ListaPedidos();
+                listaPedidos.setVisible(true);
                 actual.dispose();
             }
         });
 
+        mostrar();
         configurarTablaMateriales();
     }
 
@@ -226,21 +210,48 @@ public class VerDesayunos extends JFrame {
         double suma = 0;
 
         try {
-            PreparedStatement statement = mysql.prepareStatement("SELECT desayunos.*, Proveedores.empresaProveedora, Proveedores.nombreVendedor FROM desayunos JOIN Proveedores ON desayunos.proveedor_id = Proveedores.id WHERE desayunos.id = ?;");
+            PreparedStatement statement = mysql.prepareStatement("SELECT pedidos.*, clientes.nombre, clientes.apellido FROM pedidos JOIN clientes ON pedidos.cliente_id = clientes.id WHERE pedidos.id = ?;");
             statement.setInt(1, this.id);
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
-                nombre.setText(resultSet.getString("nombre"));
-                cantidad.setText(resultSet.getString("cantidad") + " unidades");
-                double precioDesayunoValor = resultSet.getDouble("precio_desayuno");
-                String formattedPrecioDesayuno = "L. " + decimalFormat.format(precioDesayunoValor);
-                precio_desayuno.setText(formattedPrecioDesayuno + "  ");
-                double manoObraValor = resultSet.getDouble("mano_obra");
-                String formattedManoObra = "L. " + decimalFormat.format(manoObraValor);
-                mano_obra.setText(formattedManoObra + "  ");
-                descripcion.setText(resultSet.getString("descripcion"));
-                proveedor.setText(resultSet.getString("empresaProveedora") + " (" + resultSet.getString("nombreVendedor") + ")");
+                // Crea un formato personalizado para mostrar las fechas
+                SimpleDateFormat formatoFecha = new SimpleDateFormat("dd 'de' MMMM, yyyy");
+
+                // Obtén las fechas del ResultSet
+                String fechaPedidoString = resultSet.getString("fecha_pedido");
+                String fechaEntregaString = resultSet.getString("fecha_entrega");
+
+                // Convierte las cadenas de fecha en objetos Date
+                SimpleDateFormat formatoOriginal = new SimpleDateFormat("yyyy-MM-dd");
+
+                Date fechaPedido = formatoOriginal.parse(fechaPedidoString);
+                Date fechaEntrega = formatoOriginal.parse(fechaEntregaString);
+
+                // Formatea las fechas en el estilo deseado
+                String fechaPedidoFormateada = formatoFecha.format(fechaPedido);
+                String fechaEntregaFormateada = formatoFecha.format(fechaEntrega);
+
+                // Establece los textos en tus campos de texto
+                campoFechaPedido.setText(fechaPedidoFormateada);
+                campoFechaEntrega.setText(fechaEntregaFormateada);
+                campoCodigo.setText(resultSet.getString("codigo_pedido"));
+
+                campoEntrega.setText(resultSet.getString("entrega"));
+
+                double precioEnvio = resultSet.getDouble("precio_envio");
+                String formattedPrecio;
+
+                if (precioEnvio <= 0) {
+                    formattedPrecio = "L. 0.00";
+                } else {
+                    formattedPrecio = "L. " + decimalFormat.format(precioEnvio);
+                }
+
+                campoPrecio.setText(formattedPrecio + "  ");
+
+                campoDescripcion.setText(resultSet.getString("descripcion"));
+                campoCliente.setText(resultSet.getString("nombre") + " " + resultSet.getString("apellido"));
 
                 DefaultTableModel modeloProductos = new DefaultTableModel();
                 modeloProductos.addColumn("N°");
@@ -253,22 +264,28 @@ public class VerDesayunos extends JFrame {
                         "SELECT dv.cantidad, " +
                                 "CASE dv.tipo_detalle " +
                                 "   WHEN 'material' THEN m.nombre " +
-                                "   WHEN 'globo' THEN g.codigo_globo " +
                                 "   WHEN 'tarjeta' THEN t.ocasion " +
                                 "   WHEN 'floristeria' THEN f.nombre " +
+                                "   WHEN 'manualidad' THEN ma.nombre " +
+                                "   WHEN 'arreglo' THEN a.nombre " +
+                                "   WHEN 'desayuno' THEN d.nombre " +
                                 "END AS nombre_detalle, " +
                                 "CASE dv.tipo_detalle " +
                                 "   WHEN 'material' THEN m.precio " +
-                                "   WHEN 'globo' THEN g.precio " +
                                 "   WHEN 'tarjeta' THEN t.precio_tarjeta " +
                                 "   WHEN 'floristeria' THEN f.precio " +
+                                "   WHEN 'manualidad' THEN ma.precio_manualidad " +
+                                "   WHEN 'arreglo' THEN a.precio " +
+                                "   WHEN 'desayuno' THEN d.precio_desayuno " +
                                 "END AS precio_detalle " +
-                                "FROM detalles_desayunos dv " +
+                                "FROM detalles_pedidos dv " +
                                 "LEFT JOIN materiales m ON dv.detalle_id = m.id AND dv.tipo_detalle = 'material' " +
-                                "LEFT JOIN globos g ON dv.detalle_id = g.id AND dv.tipo_detalle = 'globo' " +
                                 "LEFT JOIN tarjetas t ON dv.detalle_id = t.id AND dv.tipo_detalle = 'tarjeta' " +
                                 "LEFT JOIN floristeria f ON dv.detalle_id = f.id AND dv.tipo_detalle = 'floristeria' " +
-                                "WHERE dv.desayuno_id = ?;"
+                                "LEFT JOIN manualidades ma ON dv.detalle_id = ma.id AND dv.tipo_detalle = 'manualidad' " +
+                                "LEFT JOIN arreglos a ON dv.detalle_id = a.id AND dv.tipo_detalle = 'arreglo' " +
+                                "LEFT JOIN desayunos d ON dv.detalle_id = d.id AND dv.tipo_detalle = 'desayuno' " +
+                                "WHERE dv.pedido_id = ?;"
                 );
                 detallesStatement.setInt(1, this.id);
                 ResultSet detallesResultSet = detallesStatement.executeQuery();
@@ -290,63 +307,36 @@ public class VerDesayunos extends JFrame {
                 // Llenar la tabla de productos con el modelo
                 productos.setModel(modeloProductos);
 
+                // Formatear el número "suma" y establecerlo en lbl8
                 String formattedLbl8 = "L. " + decimalFormat.format(suma);
                 lbl8.setText(formattedLbl8 + "  ");
 
-                String manoObraString = resultSet.getString("mano_obra");
-                manoObraString = manoObraString.replace(",", ""); // Eliminar las comas del número
-                double manoObraValue = Double.parseDouble(manoObraString);
+// Obtener el valor de "precio_envio" del resultado
+                String precioEnvioString = resultSet.getString("precio_envio");
+                double precioEnvioValue = 0.0; // Valor por defecto
 
-                String formattedLbl9 = "L. " + decimalFormat.format(manoObraValue);
+                if (precioEnvioString != null) {
+                    precioEnvioString = precioEnvioString.replace(",", ""); // Eliminar las comas del número
+                    precioEnvioValue = Double.parseDouble(precioEnvioString);
+                }
+
+                String formattedLbl9 = "L. " + decimalFormat.format(precioEnvioValue);
                 lbl9.setText(formattedLbl9 + "  ");
 
-                double sumaLbl8Lbl9 = suma + manoObraValue;
+// Calcular la suma de "suma" y "precio_envioValue", formatearla y establecerla en lbl10
+                double sumaLbl8Lbl9 = suma + precioEnvioValue;
                 String sumaFormateada = "L. " + decimalFormat.format(sumaLbl8Lbl9);
 
                 lbl10.setText(sumaFormateada + "  ");
 
             } else {
-                JOptionPane.showMessageDialog(null, "El desayuno con el ID " + this.id + " no fue encontrado.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-
-            String imagenNombre = resultSet.getString("imagen");
-            String imagenPath = "img/desayunos/" + imagenNombre;
-
-            try {
-                File imagenFile = new File(imagenPath);
-                if (imagenFile.exists()) {
-                    Image imagenOriginal = ImageIO.read(imagenFile);
-
-                    // Ajusta el tamaño de la imagen para que se ajuste al tamaño predeterminado del panel
-                    int anchoPanelPredeterminado = 200;
-                    int altoPanelPredeterminado = 200;
-
-                    // Calcula las proporciones de escalamiento para ajustar la imagen al tamaño del panel
-                    double proporcionAncho = (double) anchoPanelPredeterminado / imagenOriginal.getWidth(null);
-                    double proporcionAlto = (double) altoPanelPredeterminado / imagenOriginal.getHeight(null);
-
-                    // Escala la imagen utilizando la proporción más pequeña para evitar distorsiones
-                    double proporcionEscalamiento = Math.min(proporcionAncho, proporcionAlto);
-                    int anchoEscalado = (int) (imagenOriginal.getWidth(null) * proporcionEscalamiento);
-                    int altoEscalado = (int) (imagenOriginal.getHeight(null) * proporcionEscalamiento);
-
-                    // Crea una nueva imagen escalada con las dimensiones calculadas
-                    Image imagenEscalada = imagenOriginal.getScaledInstance(anchoEscalado, altoEscalado, Image.SCALE_SMOOTH);
-
-                    // Crea un ImageIcon a partir de la imagen escalada
-                    ImageIcon imagenIcono = new ImageIcon(imagenEscalada);
-
-                    // Actualiza la etiqueta lblImagen con el ImageIcon
-                    lblImagen.setIcon(imagenIcono);
-                } else {
-                    System.out.println("No se encontró la imagen: " + imagenPath);
-                }
-            } catch (Exception e) {
-                System.out.println("Error al cargar la imagen: " + e.getMessage());
+                JOptionPane.showMessageDialog(null, "El pedido con el ID " + this.id + " no fue encontrado.", "Error", JOptionPane.ERROR_MESSAGE);
             }
 
         } catch (SQLException error) {
             System.out.println(error.getMessage());
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -361,12 +351,16 @@ public class VerDesayunos extends JFrame {
             columnModel.getColumn(3).setPreferredWidth(100);
             columnModel.getColumn(4).setPreferredWidth(100);
 
-            columnModel.getColumn(0).setCellRenderer(new VerDesayunos.CenterAlignedRenderer());
-            columnModel.getColumn(1).setCellRenderer(new VerDesayunos.LeftAlignedRenderer());
-            columnModel.getColumn(2).setCellRenderer(new VerDesayunos.LeftAlignedRenderer());
-            columnModel.getColumn(3).setCellRenderer(new VerDesayunos.LeftAlignedRenderer());
-            columnModel.getColumn(4).setCellRenderer(new VerDesayunos.LeftAlignedRenderer());
+            columnModel.getColumn(0).setCellRenderer(new VerPedidos.CenterAlignedRenderer());
+            columnModel.getColumn(1).setCellRenderer(new VerPedidos.LeftAlignedRenderer());
+            columnModel.getColumn(2).setCellRenderer(new VerPedidos.LeftAlignedRenderer());
+            columnModel.getColumn(3).setCellRenderer(new VerPedidos.LeftAlignedRenderer());
+            columnModel.getColumn(4).setCellRenderer(new VerPedidos.LeftAlignedRenderer());
         }
+    }
+
+    private void createUIComponents() {
+        // TODO: place custom component creation code here
     }
 
     class CenterAlignedRenderer extends DefaultTableCellRenderer {
@@ -395,8 +389,8 @@ public class VerDesayunos extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            VerDesayunos verDesayunos = new VerDesayunos(1);
-            verDesayunos.setVisible(true);
+            VerPedidos verPedidos = new VerPedidos(1);
+            verPedidos.setVisible(true);
         });
     }
 }

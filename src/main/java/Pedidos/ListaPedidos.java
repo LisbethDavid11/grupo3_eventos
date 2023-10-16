@@ -1,5 +1,7 @@
 package Pedidos;
 
+import Desayunos.EditarDesayuno;
+import Desayunos.VerDesayunos;
 import Modelos.ModeloPedido;
 import Objetos.Conexion;
 import Objetos.Pedido;
@@ -91,6 +93,32 @@ public class ListaPedidos extends JFrame {
             }
         });
 
+        botonVer.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (listaPedidos.getSelectedRow() == -1) {
+                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                VerPedidos verPedidos = new VerPedidos(pedidoList.get(listaPedidos.getSelectedRow()).getId());
+                verPedidos.setVisible(true);
+                actual.dispose();
+            }
+        });
+
+        botonEditar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (listaPedidos.getSelectedRow() == -1) {
+                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                EditarPedido editarPedido = new EditarPedido(pedidoList.get(listaPedidos.getSelectedRow()), pedidoList.get(listaPedidos.getSelectedRow()).getId());
+                editarPedido.setVisible(true);
+                actual.dispose();
+            }
+        });
+
         campoBusqueda.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
@@ -170,10 +198,6 @@ public class ListaPedidos extends JFrame {
         columnModel.getColumn(3).setCellRenderer(new ListaPedidos.LeftAlignedRenderer());
         columnModel.getColumn(4).setCellRenderer(new ListaPedidos.LeftAlignedRenderer());
         columnModel.getColumn(5).setCellRenderer(new ListaPedidos.LeftAlignedRenderer());
-    }
-
-    private void createUIComponents() {
-        // TODO: place custom component creation code here
     }
 
     class LeftAlignedRenderer extends DefaultTableCellRenderer {

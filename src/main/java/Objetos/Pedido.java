@@ -10,13 +10,14 @@ public class Pedido {
     private String descripcion;
     private int clienteId;
     private String entrega;
+    private double precioEnvio; // Cambié el tipo de precioEnvio a double
 
     public static String nombreTabla = "pedidos";
 
     public Pedido() {
     }
 
-    public Pedido(int id, String codigoPedido, Date fechaPedido, Date fechaEntrega, String descripcion, int clienteId, String entrega) {
+    public Pedido(int id, String codigoPedido, Date fechaPedido, Date fechaEntrega, String descripcion, int clienteId, String entrega, double precioEnvio) {
         this.id = id;
         this.codigoPedido = codigoPedido;
         this.fechaPedido = fechaPedido;
@@ -24,6 +25,7 @@ public class Pedido {
         this.descripcion = descripcion;
         this.clienteId = clienteId;
         this.entrega = entrega;
+        this.precioEnvio = precioEnvio;
     }
 
     public int getId() {
@@ -80,5 +82,13 @@ public class Pedido {
 
     public void setEntrega(String entrega) {
         this.entrega = entrega;
+    }
+
+    public double getPrecioEnvio() {
+        return precioEnvio;
+    }
+
+    public void setPrecioEnvio(double precioEnvio) {
+        this.precioEnvio = precioEnvio;
     }
 }

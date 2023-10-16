@@ -115,11 +115,10 @@ public class EditarDesayuno extends JFrame {
         setContentPane(panel1);
         this.id = id;
         this.originalDesayuno = desayuno;
-
         sql = new Conexion();
+        configurarTablaMateriales();
         campoDescripcion.setLineWrap(true);
         campoDescripcion.setWrapStyleWord(true);
-        configurarTablaMateriales();
 
         tiposDescripcion.put("F","floristeria");
         tiposDescripcion.put("T","tarjeta");
@@ -1301,6 +1300,7 @@ public class EditarDesayuno extends JFrame {
 
 
     }
+
     private PoliModeloFlor cargarDatosFloristeria() {
         sql = new Conexion();
         floristeriaList.clear();
