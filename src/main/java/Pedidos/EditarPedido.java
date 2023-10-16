@@ -1,5 +1,4 @@
 package Pedidos;
-
 import Materiales.TextPrompt;
 import Modelos.*;
 import Objetos.*;
@@ -7,7 +6,6 @@ import org.jdatepicker.JDatePicker;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
@@ -997,15 +995,30 @@ public class EditarPedido extends JFrame {
         campoDescripcion.setText(this.originalPedido.getDescripcion());
         campoCodigo.setText(String.valueOf(this.originalPedido.getCodigoPedido()));
         campoFechaPedido.setText(String.valueOf(this.originalPedido.getFechaPedido()));
-        // Obtén el precio de envío del objeto Pedido
-        double precioEnvio = this.originalPedido.getPrecioEnvio();
 
-        // Formatea el precio de envío a dos decimales y conviértelo a String
-        DecimalFormat df = new DecimalFormat("#.00");
-        String precioEnvioStr = df.format(precioEnvio);
+        try (Connection mysql = sql.conectamysql();
+             PreparedStatement precioEnvioStatement = mysql.prepareStatement("SELECT precio_envio FROM pedidos WHERE id = ?")
+        ) {
+            precioEnvioStatement.setInt(1, this.id);
+            ResultSet precioEnvioResultSet = precioEnvioStatement.executeQuery();
 
-        // Asigna el precio de envío al campoPrecioEnvio
-        campoPrecioEnvio.setText(precioEnvioStr);
+            if (precioEnvioResultSet.next()) {
+                double precioEnvio = precioEnvioResultSet.getDouble("precio_envio");
+
+                // Formatea el precio de envío a dos decimales y conviértelo a String
+                String precioEnvioStr = String.format("%.2f", precioEnvio);
+
+                // Asigna el precio de envío al campoPrecioEnvio
+                campoPrecioEnvio.setText(precioEnvioStr);
+            } else {
+                // Puedes manejar aquí el caso en el que no se encuentra el precio de envío
+            }
+
+        } catch (SQLException error) {
+            System.out.println(error.getMessage());
+        }
+
+
         // Suponiendo que campoFechaEntrega es el nombre del panel que contiene el JDatePicker
         JDatePicker datePicker = actual.datePicker;
 

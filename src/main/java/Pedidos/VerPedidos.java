@@ -1,6 +1,7 @@
 package Pedidos;
+
 import Objetos.Conexion;
-import javax.imageio.ImageIO;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -10,7 +11,6 @@ import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -68,10 +68,12 @@ public class VerPedidos extends JFrame {
     Color darkColorRed = new Color(244, 67, 54);
     Color darkColorBlue = new Color(33, 150, 243);
     EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
+
     private int panelImgWidth = 200;
     private int panelImgHeight = 200;
     private int panelImgWidth2 = 200;
     private int panelImgHeight2 = 200;
+
     public VerPedidos(int id) {
         super("");
         setSize(850, 610);
@@ -311,7 +313,7 @@ public class VerPedidos extends JFrame {
                 String formattedLbl8 = "L. " + decimalFormat.format(suma);
                 lbl8.setText(formattedLbl8 + "  ");
 
-// Obtener el valor de "precio_envio" del resultado
+                // Obtener el valor de "precio_envio" del resultado
                 String precioEnvioString = resultSet.getString("precio_envio");
                 double precioEnvioValue = 0.0; // Valor por defecto
 
@@ -323,7 +325,7 @@ public class VerPedidos extends JFrame {
                 String formattedLbl9 = "L. " + decimalFormat.format(precioEnvioValue);
                 lbl9.setText(formattedLbl9 + "  ");
 
-// Calcular la suma de "suma" y "precio_envioValue", formatearla y establecerla en lbl10
+                // Calcular la suma de "suma" y "precio_envioValue", formatearla y establecerla en lbl10
                 double sumaLbl8Lbl9 = suma + precioEnvioValue;
                 String sumaFormateada = "L. " + decimalFormat.format(sumaLbl8Lbl9);
 
