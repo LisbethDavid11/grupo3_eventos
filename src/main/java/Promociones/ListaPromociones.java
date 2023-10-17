@@ -32,7 +32,7 @@ import java.util.List;
 public class ListaPromociones extends JFrame {
     private final JDateChooser fecha_desde,fecha_hasta;
     private JPanel panelPrincipal, panelTitulo, panelA, panelB;
-    private JButton botonEditar, botonCrear, botonVer, botonAdelante, botonAtras;
+    private JButton botonCrear, botonVer, botonAdelante, botonAtras;
     private JTextField campoBusqueda;
     private TextPrompt placeholder = new TextPrompt(" Buscar por descripción y precio", campoBusqueda);
     private JLabel lblPagina;
@@ -152,8 +152,6 @@ public class ListaPromociones extends JFrame {
             }
         });
 
-
-
         botonCrear.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -163,7 +161,6 @@ public class ListaPromociones extends JFrame {
             }
         });
 
-           /*
         botonVer.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -171,12 +168,13 @@ public class ListaPromociones extends JFrame {
                     JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
                     return;
                 }
-                VerEventos verEventos = new VerEventos(listaEvento.get(listaPromociones.getSelectedRow()).getId());
+                VerPromociones verEventos = new VerPromociones(listaPromocion.get(listaPromociones.getSelectedRow()).getId());
                 verEventos.setVisible(true);
                 actual.dispose();
             }
         });
 
+        /*
         botonEditar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -206,7 +204,6 @@ public class ListaPromociones extends JFrame {
         botonAdelante.setBackground(darkColor);
         botonAtras.setBackground(darkColor);
         botonVer.setBackground(darkColor);
-        botonEditar.setBackground(darkColor);
         botonCrear.setBackground(darkColor);
         header.setBackground(darkColor);
 
@@ -214,7 +211,6 @@ public class ListaPromociones extends JFrame {
         botonAtras.setForeground(Color.WHITE);
         botonVer.setForeground(Color.WHITE);
         botonCrear.setForeground(Color.WHITE);
-        botonEditar.setForeground(Color.WHITE);
         campoBusqueda.setForeground(darkColor);
         placeholder.setForeground(darkColor);
         lblPagina.setForeground(Color.WHITE);
@@ -224,7 +220,6 @@ public class ListaPromociones extends JFrame {
         botonAtras.setFont(font);
         botonVer.setFont(font);
         botonCrear.setFont(font);
-        botonEditar.setFont(font);
         placeholder.setFont(font);
         lblPagina.setFont(font);
         lblTitulo.setFont(fontTitulo);
@@ -233,7 +228,6 @@ public class ListaPromociones extends JFrame {
         botonAtras.setFocusable(false);
         botonCrear.setFocusable(false);
         botonVer.setFocusable(false);
-        botonEditar.setFocusable(false);
     }
 
     private void configurarTablaManualidades() {
@@ -396,7 +390,6 @@ public class ListaPromociones extends JFrame {
 
         return totalPageCount;
     }
-
 
     public static void main(String[] args) {
         ListaPromociones listaPromociones = new ListaPromociones();
