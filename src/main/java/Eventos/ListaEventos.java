@@ -26,6 +26,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -73,6 +74,25 @@ public class ListaEventos extends JFrame {
         panel_fecha.add(fecha_hasta);
 
         panel_fecha.setPreferredSize(new Dimension(270, 30));
+
+        // Obtener la fecha actual
+        Date fechaActual = new Date();
+
+        // Restar 2 años a la fecha actual para la fecha "Desde"
+        Calendar calDesde = Calendar.getInstance();
+        calDesde.setTime(fechaActual);
+        calDesde.add(Calendar.YEAR, -2);
+        Date fechaDesdeDosAniosAntes = calDesde.getTime();
+
+        // Sumar 30 días a la fecha actual para la fecha "Desde"
+        Calendar calHasta = Calendar.getInstance();
+        calHasta.setTime(fechaActual);
+        calHasta.add(Calendar.MONTH, +1);
+        Date FechaHasta30DiasDespues = calHasta.getTime();
+
+        // Establecer las fechas en los componentes JDateChooser
+        fecha_desde.setDate(fechaDesdeDosAniosAntes);
+        fecha_hasta.setDate(FechaHasta30DiasDespues);
 
         listaEventos.setModel(cargarDatos());
         configurarTablaManualidades();
@@ -160,7 +180,6 @@ public class ListaEventos extends JFrame {
             }
         });
 
-        /*
         botonVer.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -177,17 +196,15 @@ public class ListaEventos extends JFrame {
         botonEditar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (listaDesayunos.getSelectedRow() == -1) {
+                if (listaEventos.getSelectedRow() == -1) {
                     JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
                     return;
                 }
-                EditarEvento editarEvento = new EditarEvento(listaEvento.get(listaEventos.getSelectedRow()), listaDesayuno.get(listaDesayunos.getSelectedRow()).getId());
+                EditarEvento editarEvento = new EditarEvento(listaEvento.get(listaEventos.getSelectedRow()), listaEvento.get(listaEventos.getSelectedRow()).getId());
                 editarEvento.setVisible(true);
                 actual.dispose();
             }
         });
-
-         */
 
         JTableHeader header = listaEventos.getTableHeader();
         header.setForeground(Color.WHITE);
