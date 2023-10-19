@@ -107,7 +107,7 @@ public class CrearEvento extends JFrame {
 
     public CrearEvento() {
         super("");
-        setSize(1050, 680);
+        setSize(1080, 680);
         setLocationRelativeTo(null);
         setContentPane(panel1);
         sql = new Conexion();
@@ -544,7 +544,7 @@ public class CrearEvento extends JFrame {
 
                 if (tablaProductos.getRowCount() == 0) {
                     validacion++;
-                    mensaje += "La lista de productos\n";
+                    mensaje += "Lista de productos\n";
                 }
 
                 if (datePicker.getJFormattedTextField().getText().trim().isEmpty()) {
@@ -573,12 +573,6 @@ public class CrearEvento extends JFrame {
                 if (validacion > 0) {
                     JOptionPane.showMessageDialog(null, mensaje, "Validación", JOptionPane.ERROR_MESSAGE);
                     return;
-                }
-
-                // Verifica si la hora final es al menos 1 minuto después de la hora inicial
-                if (horaInicial > horaFinal || (horaInicial == horaFinal && minutoInicial >= minutoFinal)) {
-                    JOptionPane.showMessageDialog(null, "La hora final debe ser al menos 1 minuto después de la hora inicial", "Validación", JOptionPane.ERROR_MESSAGE);
-                    return; // Sale del método sin guardar si la validación no se cumple
                 }
 
                 if (!campoDireccion.getText().trim().isEmpty()) {
