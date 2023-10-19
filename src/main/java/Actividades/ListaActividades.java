@@ -168,7 +168,7 @@ public class ListaActividades extends JFrame {
             }
         });
 
-/*
+
         botonCrear.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -178,6 +178,7 @@ public class ListaActividades extends JFrame {
             }
         });
 
+/*
         botonVer.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -253,9 +254,9 @@ public class ListaActividades extends JFrame {
         TableColumnModel columnModel = listaActividades.getColumnModel();
 
         columnModel.getColumn(0).setPreferredWidth(20);
-        columnModel.getColumn(1).setPreferredWidth(220);
-        columnModel.getColumn(2).setPreferredWidth(220);
-        columnModel.getColumn(3).setPreferredWidth(180);
+        columnModel.getColumn(1).setPreferredWidth(150);
+        columnModel.getColumn(2).setPreferredWidth(250);
+        columnModel.getColumn(3).setPreferredWidth(150);
         columnModel.getColumn(4).setPreferredWidth(80);
         columnModel.getColumn(5).setPreferredWidth(80);
 

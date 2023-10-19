@@ -49,6 +49,8 @@ public class CrearEvento extends JFrame {
     private JComboBox comboBox1;
     private JComboBox comboBox2;
     private JButton agregarManualidadesButton;
+    private JTextField campoNombre;
+    private JTextArea campoDescripcion;
     private int selectTabla = 1;
     private List<PoliProducto> productosListTemporal = new ArrayList<>();
     private List<PoliMobiliario> mobiliarioList = new ArrayList<>();
