@@ -1,9 +1,11 @@
-import SubMenu.SubMenu;
+import Auth.Login;
 
 import java.sql.SQLException;
 public class Main {
     public static void main(String[] args) throws SQLException {
-        SubMenu menu = new SubMenu();
-        menu.setVisible(true);
+        Login LoginFrame = new Login();
+        LoginFrame.setVisible(true);
+        LoginFrame.pack();
+        LoginFrame.setLocationRelativeTo(null);
     }
 }
