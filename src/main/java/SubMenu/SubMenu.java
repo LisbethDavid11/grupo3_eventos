@@ -1,5 +1,6 @@
 package SubMenu;
 
+import Actividades.CalendarioDeActividades;
 import Actividades.ListaActividades;
 import Arreglos.ListaArreglos;
 import Clientes.ListaClientes;
@@ -42,7 +43,7 @@ public class SubMenu extends JFrame {
     private ListaPedidos listaPedidos;
     private ListaPromociones listaPromociones;
     private ListaEventos listaEventos;
-    private ListaActividades listaActividades;
+    private CalendarioDeActividades listaActividades;
 
     public SubMenu() {
         super("Menú Principal");
@@ -119,7 +120,6 @@ public class SubMenu extends JFrame {
         actividadesButton = new JButton("Actividades");
         actividadesButton.setBackground(Color.decode("#FF5722"));
         actividadesButton.setPreferredSize(new Dimension(100, 40)); // Ajustar tamaño
-
 
         // Crear un GridLayout con 2 filas y 8 columnas
         GridLayout gridLayout = new GridLayout(2, 8);
@@ -211,7 +211,7 @@ public class SubMenu extends JFrame {
         listaPedidos = new ListaPedidos();
         listaPromociones = new ListaPromociones();
         listaEventos = new ListaEventos();
-        listaActividades = new ListaActividades();
+        listaActividades = new CalendarioDeActividades();
 
         clientesButton.addActionListener(new ActionListener() {
             @Override
