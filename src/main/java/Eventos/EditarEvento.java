@@ -568,12 +568,6 @@ public class EditarEvento extends JFrame {
                     return;
                 }
 
-                // Verifica si la hora final es al menos 1 minuto después de la hora inicial
-                if (horaInicial > horaFinal || (horaInicial == horaFinal && minutoInicial >= minutoFinal)) {
-                    JOptionPane.showMessageDialog(null, "La hora final debe ser al menos 1 minuto después de la hora inicial", "Validación", JOptionPane.ERROR_MESSAGE);
-                    return; // Sale del método sin guardar si la validación no se cumple
-                }
-
                 if (!campoDireccion.getText().trim().isEmpty()) {
                     String texto = campoDireccion.getText().trim();
                     int longitud = texto.length();
