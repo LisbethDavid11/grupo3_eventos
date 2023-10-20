@@ -38,6 +38,7 @@ public class ListaActividades extends JFrame {
     private JLabel lblTitulo;
     private JTable listaActividades;
     private JPanel panel_fecha;
+    private JButton botonCambiar;
     private List<Actividad> listaActividad;
     private int pagina = 0;
     private Connection mysql;
@@ -52,7 +53,7 @@ public class ListaActividades extends JFrame {
 
     public ListaActividades() {
         super("");
-        setSize(850, 505);
+        setSize(920, 505);
         setLocationRelativeTo(null);
         setContentPane(panelPrincipal);
         campoBusqueda.setText("");
@@ -178,7 +179,6 @@ public class ListaActividades extends JFrame {
             }
         });
 
-/*
         botonVer.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -186,12 +186,21 @@ public class ListaActividades extends JFrame {
                     JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
                     return;
                 }
-                VerActividades verActividades = new VerActividades(listaActividad.get(listaActividades.getSelectedRow()).getId());
+                VerActividad verActividades = new VerActividad(listaActividad.get(listaActividades.getSelectedRow()).getId());
                 verActividades.setVisible(true);
                 actual.dispose();
             }
         });
 
+        botonCambiar.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                CalendarioDeActividades calendarioDeActividades = new CalendarioDeActividades();
+                calendarioDeActividades.setVisible(true);
+                dispose();
+            }
+        });
+
+        /*
         botonEditar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -219,6 +228,7 @@ public class ListaActividades extends JFrame {
         campoBusqueda.setBackground(Color.WHITE);
         botonAdelante.setBackground(darkColor);
         botonAtras.setBackground(darkColor);
+        botonCambiar.setBackground(darkColor);
         botonVer.setBackground(darkColor);
         botonEditar.setBackground(darkColor);
         botonCrear.setBackground(darkColor);
@@ -227,6 +237,7 @@ public class ListaActividades extends JFrame {
         botonAdelante.setForeground(Color.WHITE);
         botonAtras.setForeground(Color.WHITE);
         botonVer.setForeground(Color.WHITE);
+        botonCambiar.setForeground(Color.WHITE);
         botonCrear.setForeground(Color.WHITE);
         botonEditar.setForeground(Color.WHITE);
         campoBusqueda.setForeground(darkColor);
@@ -236,6 +247,7 @@ public class ListaActividades extends JFrame {
         campoBusqueda.setFont(font);
         botonAdelante.setFont(font);
         botonAtras.setFont(font);
+        botonCambiar.setFont(font);
         botonVer.setFont(font);
         botonCrear.setFont(font);
         botonEditar.setFont(font);

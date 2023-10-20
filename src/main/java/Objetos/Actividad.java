@@ -14,15 +14,14 @@ public class Actividad {
     public Actividad() {
     }
 
-    public Actividad(int id, String nombre, String descripcion, String direccion, Date fecha, Date inicio, Date fin) {
+    public Actividad(int id, String nombre, Date fecha, Date inicio, Date fin) {
         this.id = id;
         this.nombre = nombre;
-        this.descripcion = descripcion;
-        this.direccion = direccion;
         this.fecha = fecha;
         this.inicio = inicio;
         this.fin = fin;
     }
+
 
     public int getId() {
         return id;
