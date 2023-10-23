@@ -295,6 +295,16 @@ public class SignUp extends javax.swing.JFrame {
                         JOptionPane.showMessageDialog(null, "El correo electrónico ingresado no tiene un formato válido", "Validación", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
+
+                    // Verificar el dominio del correo electrónico
+                    if (!correoElectronico.endsWith("@gmail.com") &&
+                            !correoElectronico.endsWith("@unah.hn") &&
+                            !correoElectronico.endsWith("@yahoo.com") &&
+                            !correoElectronico.endsWith("@yahoo.es") &&
+                            !correoElectronico.endsWith("@hotmail.com")) {
+                        JOptionPane.showMessageDialog(null, "El dominio del correo electrónico no es válido", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
                 } else {
                     JOptionPane.showMessageDialog(null, "El campo de correo electrónico no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
                     return;
@@ -304,6 +314,12 @@ public class SignUp extends javax.swing.JFrame {
                 String correo = jTextField2.getText().trim();
                 if (usuarioExistente(correo)) {
                     JOptionPane.showMessageDialog(null, "El correo electrónico ya está registrado. Utiliza otro correo.");
+                    return;
+                }
+
+                String contrasenia = jPasswordField1.getText().trim();
+                if (contrasenia.length() < 8) {
+                    JOptionPane.showMessageDialog(null, "La contraseña debe tener al menos 8 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
