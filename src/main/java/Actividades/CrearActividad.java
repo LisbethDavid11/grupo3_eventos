@@ -294,6 +294,11 @@ public class CrearActividad extends JFrame {
                 int validacion = 0;
                 String mensaje = "Faltó ingresar: \n";
 
+                if (campoNombre.getText().trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "Nombre de la actividad\n";
+                }
+
                 if (campoDescripcion.getText().trim().isEmpty()) {
                     validacion++;
                     mensaje += "Descripción\n";
@@ -301,7 +306,7 @@ public class CrearActividad extends JFrame {
 
                 if (campoDireccion.getText().trim().isEmpty()) {
                     validacion++;
-                    mensaje += "Dirección\n";
+                    mensaje += "Lugar de la actividad\n";
                 }
 
                 if (datePicker.getJFormattedTextField().getText().trim().isEmpty()) {

@@ -185,28 +185,19 @@ public class VerActividad extends JFrame {
                 SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a");
 
                 String nombre = resultSet.getString("nombre");
-                String fechaStr = resultSet.getString("fecha");
-                String inicioStr = resultSet.getString("inicio");
-                String finStr = resultSet.getString("fin");
+                java.sql.Date fecha = resultSet.getDate("fecha");
+                java.sql.Time inicio = resultSet.getTime("inicio");
+                java.sql.Time fin = resultSet.getTime("fin");
                 String descripcion = resultSet.getString("descripcion");
                 String direccion = resultSet.getString("direccion");
 
-                try {
-                    Date fecha = new SimpleDateFormat("yyyy-MM-dd").parse(fechaStr);
-                    Date inicio = new SimpleDateFormat("HH:mm:ss").parse(inicioStr);
-                    Date fin = new SimpleDateFormat("HH:mm:ss").parse(finStr);
-
-                    campoNombre.setText(nombre);
-                    campoFecha.setText(dateFormat.format(fecha));
-                    campoInicio.setText(timeFormat.format(inicio));
-                    campoFin.setText(timeFormat.format(fin));
-                    campoDescripcion.setText(descripcion);
-                    campoDireccion.setText(direccion);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
+                campoNombre.setText(nombre);
+                campoFecha.setText(dateFormat.format(fecha));
+                campoInicio.setText(timeFormat.format(inicio));
+                campoFin.setText(timeFormat.format(fin));
+                campoDescripcion.setText(descripcion);
+                campoDireccion.setText(direccion);
             }
-
         } catch (SQLException error) {
             // Mensaje de error
             System.out.println(error.getMessage());
