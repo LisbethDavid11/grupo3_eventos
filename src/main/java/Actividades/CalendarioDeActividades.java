@@ -3,6 +3,7 @@ import Objetos.Actividad;
 import Objetos.Conexion;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -28,44 +29,44 @@ public class CalendarioDeActividades extends JFrame {
     private DefaultTableModel calendarModel;
     private JScrollPane calendarScroll;
     private JScrollPane actividadesScroll;
+    private JPanel panelTitulo;
     private int realYear, realMonth, realDay, currentYear, currentMonth;
     private int selectedRow = -1; // Para mantener un seguimiento del día seleccionado
-    Font font = new Font("Century Gothic", Font.BOLD, 18);
+    Font font = new Font("Century Gothic", Font.BOLD, 16);
     Font font2 = new Font("Century Gothic", Font.PLAIN, 10);
+    Font fontHeader = new Font("Century Gothic", Font.BOLD, 10);
     Color darkColor = new Color(38, 50, 56);
+    Color primaryColor = new Color(55, 71, 79);    // Color primario
+    Color secondaryColor = new Color(69, 90, 100); // Color secundario
+    Color darkBlue = new Color(0, 123, 255);
+    Color textColor = Color.WHITE;
 
     public CalendarioDeActividades() {
         this.setTitle("Calendario de Actividades");
-        this.setSize(835, 535);
+        this.setSize(835, 475);
         setLocationRelativeTo(null);
         this.setLayout(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         listaActividades = cargarDatos();
         actividadesScroll = new JScrollPane();
+        panelTitulo = new JPanel();
+
         this.add(actividadesScroll);
         mostrarActividadesDelDia(-1, currentMonth, currentYear);  // -1 indica que se deben mostrar todas las actividades
-
-        Color darkColor = new Color(38, 50, 56);       // Color de fondo
-        Color primaryColor = new Color(55, 71, 79);    // Color primario
-        Color secondaryColor = new Color(69, 90, 100); // Color secundario
-        Color textColor = Color.WHITE;
-
-        tituloLabel = new JLabel("Actividades");
-        yearLabel = new JLabel("Año:");
-        monthLabel = new JLabel("Mes:");
-        yearBox = new JComboBox<>();
-        prevButton = new JButton("<");
-        nextButton = new JButton(">");
-
-        crearButton = new JButton("CREAR");
-        crearButton.setBackground(new Color(0, 123, 255)); // Color azul Material Design
         calendarModel = new DefaultTableModel() {
             public boolean isCellEditable(int rowIndex, int mColIndex) {
                 return false;
             }
         };
 
+        tituloLabel = new JLabel("ACTIVIDADES");
+        yearBox = new JComboBox<>();
+        yearLabel = new JLabel("Año:");
+        monthLabel = new JLabel("Mes:");
+        prevButton = new JButton("<");
+        nextButton = new JButton(">");
+        crearButton = new JButton("CREAR");
         calendarTable = new JTable(calendarModel);
         calendarScroll = new JScrollPane(calendarTable);
 
@@ -76,34 +77,54 @@ public class CalendarioDeActividades extends JFrame {
         this.add(nextButton);
         this.add(calendarScroll);
         this.add(crearButton);
+        this.add(panelTitulo);
+        panelTitulo.add(tituloLabel);
 
-        prevButton.setBounds(10, 10, 45, 20);
-        monthLabel.setBounds(80, 10, 70, 20);
-        nextButton.setBounds(160, 10, 45, 20);
-        yearLabel.setBounds(260, 10, 55, 20);
-        yearBox.setBounds(300, 10, 75, 20);
-        tituloLabel.setBounds(410, 10, 70, 20);
-        calendarScroll.setBounds(10, 40, 400, 419); // Mantén la ubicación del calendario
-
-        crearButton.setBounds(410, 465, 400, 30);
+        prevButton.setBounds(10, 10, 45, 22);
+        monthLabel.setBounds(80, 10, 70, 22);
+        nextButton.setBounds(160, 10, 45, 22);
+        yearLabel.setBounds(260, 10, 55, 22);
+        yearBox.setBounds(300, 10, 75, 22);
+        panelTitulo.setBounds(410, 40, 400, 20);
+        tituloLabel.setBounds(410, 38, 400, 22);
+        calendarScroll.setBounds(10, 40, 400, 387);
+        crearButton.setBounds(410, 10, 400, 22);
 
         // Establecer colores
-        tituloLabel.setForeground(primaryColor);
+        tituloLabel.setForeground(Color.white);
+        tituloLabel.setFont(fontHeader);
+
+        panelTitulo.setBackground(darkBlue);
+
         yearLabel.setForeground(primaryColor);
         monthLabel.setForeground(primaryColor);
+
         yearBox.setBackground(primaryColor);
         yearBox.setForeground(textColor);
+        yearBox.setFont(font);
+
         prevButton.setBackground(primaryColor);
         prevButton.setForeground(textColor);
         prevButton.setFocusPainted(false);
+        prevButton.setFont(font);
+
         nextButton.setBackground(primaryColor);
         nextButton.setForeground(textColor);
         nextButton.setFocusPainted(false);
+        nextButton.setFont(font);
+
+        crearButton.setBackground(darkColor);
+        crearButton.setForeground(textColor);
+        crearButton.setFocusPainted(false);
+        crearButton.setFont(font);
+
         calendarTable.setBackground(darkColor);
         calendarTable.setForeground(textColor);
 
-        crearButton.setForeground(textColor);
-        crearButton.setFocusPainted(false);
+        JTableHeader encabezado = calendarTable.getTableHeader();
+        encabezado.setForeground(Color.WHITE);
+        encabezado.setBackground(darkBlue);
+        encabezado.setFont(fontHeader);
 
         String[] headers = {"Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"};
         for (String header : headers) {
@@ -116,7 +137,7 @@ public class CalendarioDeActividades extends JFrame {
         calendarTable.setColumnSelectionAllowed(true);
         calendarTable.setRowSelectionAllowed(true);
         calendarTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        calendarTable.setRowHeight(66);
+        calendarTable.setRowHeight(61);
         calendarModel.setColumnCount(7);
         calendarModel.setRowCount(6);
 
@@ -184,20 +205,28 @@ public class CalendarioDeActividades extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 int row = calendarTable.getSelectedRow();
                 int col = calendarTable.getSelectedColumn();
-                Object value = calendarTable.getValueAt(row, col); // Obtén el valor de la celda
-                if (value != null) {
-                    String day = value.toString();
-                    // Cambiar el fondo del día seleccionado y el día actual
-                    calendarTable.setSelectionBackground(secondaryColor);
-                    calendarTable.setSelectionForeground(textColor);
+                Object value = calendarTable.getValueAt(row, col); // Obtener el valor de la celda
 
-                    if (!day.equals("")) {
-                        int selectedDay = Integer.parseInt(day.split(" ")[0]);
-                        mostrarActividadesDelDia(selectedDay, currentMonth, currentYear);
+                // Cambiar el fondo del día seleccionado y el día actual
+                calendarTable.setSelectionBackground(secondaryColor);
+                calendarTable.setSelectionForeground(textColor);
+
+                if (value != null) {
+                    String day = value.toString(); // Convertir el valor a String
+
+                    if (!day.isEmpty()) {
+                        // Eliminar caracteres no numéricos antes de analizar el número
+                        String strippedDay = day.replaceAll("[^0-9]", "");
+                        if (!strippedDay.isEmpty()) {
+                            int selectedDay = Integer.parseInt(strippedDay);
+                            mostrarActividadesDelDia(selectedDay, currentMonth, currentYear);
+                        }
                     }
                 }
             }
         });
+
+
     }
 
     public void refreshCalendar(int month, int year) {
@@ -223,27 +252,39 @@ public class CalendarioDeActividades extends JFrame {
         numberOfDays = cal.getActualMaximum(GregorianCalendar.DAY_OF_MONTH);
         startOfMonth = cal.get(GregorianCalendar.DAY_OF_WEEK);
 
+
         for (int i = 1; i <= numberOfDays; i++) {
             int row = (i + startOfMonth - 2) / 7;
             int column = (i + startOfMonth - 2) % 7;
             calendarModel.setValueAt(i, row, column);
 
+            // Marcar el día actual
+            if (i == realDay && month == realMonth && year == realYear) {
+                calendarTable.setValueAt(i + " ●", row, column); // Agrega el punto
+            }
+        }
+
+        for (int i = 1; i <= numberOfDays; i++) {
+            int row = (i + startOfMonth - 2) / 7;
+            int column = (i + startOfMonth - 2) % 7;
+            String dayValue = String.valueOf(i); // Convierte el valor de i a una cadena
+            calendarModel.setValueAt(dayValue, row, column);
+
             if (i == realDay && month == realMonth && year == realYear) {
                 // Marca el día actual con un punto azul
-                String dayWithDot = i + " <font color='#007BFF'>●</font>";
+                String dayWithDot = i + " ●";
                 calendarTable.setValueAt("<html>" + dayWithDot + "</html>", row, column);
             } else {
                 boolean hasActivities = hasActivitiesOnDay(i, month, year);
                 if (hasActivities) {
                     // Marca los días con actividades con un punto azul
-                    String dayWithDot = i + " <font color='#007BFF'>●</font>";
+                    String dayWithDot = i + " ●";
                     calendarTable.setValueAt("<html>" + dayWithDot + "</html>", row, column);
                 } else {
                     // No agrega el punto, solo el número del día
-                    calendarTable.setValueAt(i, row, column);
+                    calendarTable.setValueAt(dayValue, row, column);
                 }
             }
-
         }
     }
 
@@ -270,21 +311,13 @@ public class CalendarioDeActividades extends JFrame {
         JPanel actividadesPanel = new JPanel();
         actividadesPanel.removeAll();
         actividadesPanel.setLayout(new BoxLayout(actividadesPanel, BoxLayout.Y_AXIS));
+        actividadesPanel.setBackground(darkColor);
 
-        // Crea un JLabel de tamaño 400x15 y agrega algún contenido si es necesario
-        JLabel item = new JLabel();
-        item.setPreferredSize(new Dimension(30, 20));
-
-        item.setBackground(Color.white);
-        item.setForeground(darkColor);
-        // Agrega el JLabel al panel de actividades
-
-        actividadesPanel.add(item);
         // Agrega las actividades al panel
         for (Actividad actividad : actividadesDelDia) {
             actividadesPanel.setBackground(darkColor);
 
-            JLabel nombreLabel = new JLabel(actividad.getNombre());
+            JLabel nombreLabel = new JLabel(" " + actividad.getNombre());
             nombreLabel.setFont(font);
             nombreLabel.setForeground(Color.white);
 
@@ -297,16 +330,30 @@ public class CalendarioDeActividades extends JFrame {
 
             // Crea un panel para contener la información de la actividad
             JPanel actividadPanel = new JPanel();
-            actividadPanel.setLayout(new GridLayout(1, 0)); // Utiliza GridLayout con una fila y columnas flexibles
-            actividadPanel.setBackground(darkColor);
-            JLabel horaInicioLabel = new JLabel(horaFormateadaInicio + " - " + horaFormateadaFin);
+            actividadPanel.setLayout(new GridLayout(3, 0)); // Utiliza GridLayout con una fila y columnas flexibles
+            actividadPanel.setBackground(primaryColor);
+
+            JLabel horaInicioLabel = new JLabel(" " + horaFormateadaInicio + " - " + horaFormateadaFin);
             horaInicioLabel.setFont(font2);
             horaInicioLabel.setForeground(Color.white);
             // Crea un ImageIcon con la ruta de la imagen
             ImageIcon iconoVer = new ImageIcon("img/verCarta.png");
 
-            // Crea el botón "Ver" con el icono
-            JButton verButton = new JButton(iconoVer);
+            // Define el nuevo tamaño que deseas para el icono
+            int nuevoAncho = 30; // Ancho en píxeles
+            int nuevoAlto = 30; // Alto en píxeles
+
+            // Obtiene la imagen del ImageIcon
+            Image imagen = iconoVer.getImage();
+
+            // Redimensiona la imagen al nuevo tamaño
+            Image nuevaImagen = imagen.getScaledInstance(nuevoAncho, nuevoAlto, Image.SCALE_SMOOTH);
+
+            // Crea un nuevo ImageIcon con la imagen redimensionada
+            ImageIcon iconoRedimensionado = new ImageIcon(nuevaImagen);
+
+            // Ahora, iconoRedimensionado contiene la imagen redimensionada; crea el botón ver con el icono
+            JButton verButton = new JButton(iconoRedimensionado);
             verButton.setBackground(darkColor); // Azul Material Design
             verButton.setBorderPainted(false);
             verButton.setFocusPainted(false);
@@ -336,7 +383,7 @@ public class CalendarioDeActividades extends JFrame {
         this.remove(actividadesScroll);
 
         actividadesScroll = new JScrollPane(actividadesPanel);
-        actividadesScroll.setBounds(410, 40, 400, 417); // Coloca el panel debajo del calendario
+        actividadesScroll.setBounds(410, 60, 400, 366); // Coloca el panel debajo del calendario
 
         actividadesScroll.setBackground(darkColor);
         this.add(actividadesScroll);

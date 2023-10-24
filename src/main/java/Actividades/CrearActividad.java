@@ -246,8 +246,8 @@ public class CrearActividad extends JFrame {
         botonCancelar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                    ListaActividades listaActividades = new ListaActividades();
-                    listaActividades.setVisible(true);
+                    CalendarioDeActividades calendarioDeActividades = new CalendarioDeActividades();
+                    calendarioDeActividades.setVisible(true);
                     actual.dispose();
             }
         });
@@ -349,10 +349,9 @@ public class CrearActividad extends JFrame {
                     public void actionPerformed(ActionEvent e) {
                         // Acciones para el botón Sí
                         guardarActividad();
-
                         dialog.dispose();
-                        ListaActividades listaActividades = new ListaActividades();
-                        listaActividades.setVisible(true);
+                        CalendarioDeActividades calendarioDeActividades = new CalendarioDeActividades();
+                        calendarioDeActividades.setVisible(true);
                         actual.dispose();
                     }
                 });
