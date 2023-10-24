@@ -2,6 +2,7 @@ package SubMenu;
 
 import Actividades.CalendarioDeActividades;
 import Actividades.ListaActividades;
+import Alquileres.ListaAlquileres;
 import Arreglos.ListaArreglos;
 import Clientes.ListaClientes;
 import Compras.ListaCompras;
@@ -25,7 +26,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class SubMenu extends JFrame {
-    private JButton proveedoresButton, empleadosButton, clientesButton, floristeriaButton, arreglosButton, materialesButton, comprasButton,tarjetaButton, manualidadesButton, globosButton, desayunosButton, ventasButton, mobiliarioButton, pedidosButton, eventosButton, promocionesButton, actividadesButton;
+    private JButton proveedoresButton, empleadosButton, clientesButton, floristeriaButton, arreglosButton, materialesButton, comprasButton,tarjetaButton, manualidadesButton, globosButton, desayunosButton, ventasButton, mobiliarioButton, pedidosButton, eventosButton, promocionesButton, actividadesButton, alquileresButton;
     private JPanel panel, panel2, panel3;
     private ListaClientes listaCliente;
     private ListaEmpleados listaEmpleados;
@@ -44,6 +45,7 @@ public class SubMenu extends JFrame {
     private ListaPromociones listaPromociones;
     private ListaEventos listaEventos;
     private CalendarioDeActividades listaActividades;
+    private ListaAlquileres listaAlquileres;
 
     public SubMenu() {
         super("Menú Principal");
@@ -121,6 +123,10 @@ public class SubMenu extends JFrame {
         actividadesButton.setBackground(Color.decode("#FF5722"));
         actividadesButton.setPreferredSize(new Dimension(100, 40)); // Ajustar tamaño
 
+        alquileresButton = new JButton("Alquileres");
+        alquileresButton.setBackground(Color.decode("#e68b84"));
+        alquileresButton.setPreferredSize(new Dimension(100, 40)); // Ajustar tamaño
+
         // Crear un GridLayout con 2 filas y 8 columnas
         GridLayout gridLayout = new GridLayout(2, 8);
 
@@ -145,6 +151,7 @@ public class SubMenu extends JFrame {
         panel.add(promocionesButton);
         panel.add(eventosButton);
         panel.add(actividadesButton);
+        panel.add(alquileresButton);
 
         // Crea el panel de imagen y lo coloca en el centro
         ImagePanel imagenPanel = new ImagePanel();
@@ -173,6 +180,7 @@ public class SubMenu extends JFrame {
         promocionesButton.setFocusPainted(false);
         eventosButton.setFocusPainted(false);
         actividadesButton.setFocusPainted(false);
+        alquileresButton.setFocusPainted(false);
 
         promocionesButton.setForeground(Color.WHITE);
         eventosButton.setForeground(Color.WHITE);
@@ -191,7 +199,7 @@ public class SubMenu extends JFrame {
         actividadesButton.setForeground(Color.WHITE);
         clientesButton.setForeground(Color.WHITE);
         proveedoresButton.setForeground(Color.WHITE);
-
+        alquileresButton.setForeground(Color.WHITE);
         add(panel3);
 
         // Crear instancias de las ventanas
@@ -212,6 +220,7 @@ public class SubMenu extends JFrame {
         listaPromociones = new ListaPromociones();
         listaEventos = new ListaEventos();
         listaActividades = new CalendarioDeActividades();
+        listaAlquileres = new ListaAlquileres();
 
         clientesButton.addActionListener(new ActionListener() {
             @Override
@@ -329,6 +338,13 @@ public class SubMenu extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 listaActividades.setVisible(true);
+            }
+        });
+
+        alquileresButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) { listaAlquileres.setVisible(true);
+
             }
         });
     }
