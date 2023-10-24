@@ -88,7 +88,7 @@
         <properties>
           <font name="Arial" size="12" style="1"/>
           <foreground color="-16315129"/>
-          <text value="Nombres:"/>
+          <text value="Nombre de la actividad:"/>
         </properties>
       </component>
       <component id="aa2ce" class="javax.swing.JLabel" binding="lbl2">

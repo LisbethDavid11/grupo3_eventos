@@ -183,6 +183,42 @@ public class CrearActividad extends JFrame {
         lbl0.setBorder(marginTitulo);
         lbl0.setFont(fontTitulo);
 
+        campoNombre.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                String text = campoNombre.getText();
+                int length = text.length();
+                int caretPosition = campoNombre.getCaretPosition();
+
+                // Verificar si se está ingresando un espacio en blanco
+                if (e.getKeyChar() == ' ') {
+                    // Verificar si es el primer espacio en blanco o si hay varios espacios consecutivos
+                    if (length == 0 || caretPosition == 0 || text.charAt(caretPosition - 1) == ' ') {
+                        e.consume(); // Ignorar el espacio en blanco adicional
+                    }
+                } else {
+                    // Verificar la longitud del texto después de eliminar espacios en blanco
+                    String trimmedText = text.replaceAll("\\s+", " ");
+                    int trimmedLength = trimmedText.length();
+
+                    // Verificar si se está ingresando una letra
+                    if (Character.isLetter(e.getKeyChar())) {
+                        // Verificar si se excede el límite de caracteres
+                        if (trimmedLength >= 100) {
+                            e.consume(); // Ignorar la letra
+                        } else {
+                            // Convertir solo la primera letra a mayúscula
+                            if (caretPosition == 0) {
+                                e.setKeyChar(Character.toUpperCase(e.getKeyChar()));
+                            }
+                        }
+                    } else {
+                        e.consume(); // Ignorar cualquier otro tipo de carácter
+                    }
+                }
+            }
+        });
+
         campoDireccion.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
