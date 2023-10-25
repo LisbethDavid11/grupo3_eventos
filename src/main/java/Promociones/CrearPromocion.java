@@ -538,64 +538,71 @@ public class CrearPromocion extends JFrame {
                     return;
                 }
 
-                // Obtener la cantidad del material que deseas agregar (por ejemplo, mediante un cuadro de diálogo)
                 int cantidadMaterial = obtenerCantidadMaterial();
 
-                // Verifica si la cantidad es válida (por ejemplo, mayor que cero) antes de continuar
                 if (cantidadMaterial <= 0) {
                     return;
                 }
 
                 double precioMaterial = obtenerPrecioPromocion();
 
-                // Verifica si la promoción es válida (por ejemplo, mayor que cero) antes de continuar
                 if (precioMaterial <= 0) {
                     return;
                 }
-
-                // Verificar que el material ya está presente en la lista temporal
+                
                 PoliProducto l = (PoliProducto) listas.get(selectTabla).get(tablaProductos.getSelectedRow());
                 String id_material = "";
                 int id_materialEntero = 0;
 
                 boolean materialDuplicado = false;
 
-                if ( l instanceof PoliFlor p){
+                if (l instanceof PoliFlor p) {
                     id_materialEntero = p.getID();
-                    id_material = "F-"+p.getID();
-
-                }else  if ( l instanceof PoliMaterial p){
+                    id_material = "F-" + p.getID();
+                } else if (l instanceof PoliMaterial p) {
                     id_materialEntero = p.getID();
-                    id_material = "M-"+p.getID();
-
-                }else  if ( l instanceof PoliGlobo p){
+                    id_material = "M-" + p.getID();
+                } else if (l instanceof PoliGlobo p) {
                     id_materialEntero = p.getID();
-                    id_material = "G-"+p.getID();
-
-                }else  if ( l instanceof PoliTarjeta p){
+                    id_material = "G-" + p.getID();
+                } else if (l instanceof PoliTarjeta p) {
                     id_materialEntero = p.getID();
-                    id_material = "T-"+p.getID();
-
-                }else  if ( l instanceof PoliDesayuno p){
+                    id_material = "T-" + p.getID();
+                } else if (l instanceof PoliDesayuno p) {
                     id_materialEntero = p.getID();
-                    id_material = "D-"+p.getID();
-
-                }else  if ( l instanceof PoliArreglo p){
+                    id_material = "D-" + p.getID();
+                } else if (l instanceof PoliArreglo p) {
                     id_materialEntero = p.getID();
-                    id_material = "A-"+p.getID();
-
-                }else  if ( l instanceof PoliMobiliario p){
+                    id_material = "A-" + p.getID();
+                } else if (l instanceof PoliMobiliario p) {
                     id_materialEntero = p.getID();
-                    id_material = "W-"+p.getID();
+                    id_material = "W-" + p.getID();
+                }
 
+                int availableQuantity = obtenerCantidadMaterialDesdeBD(id_materialEntero, l.getTipo());
+
+                if (cantidadMaterial <= 0) {
+                    showErrorDialog("La cantidad debe ser mayor o igual a 1");
+                    return;
+                } else if (cantidadMaterial > availableQuantity) {
+                    showErrorDialog("La cantidad supera la cantidad disponible en la base de datos");
+                    return;
                 }
 
                 for (PoliProductoPromocion materialTemporal : productosListTemporal) {
-                    String id = materialTemporal.getTipo()+"-"+materialTemporal.getID();
-                        if ( id.equals(id_material)) {
-                            materialDuplicado = true;
-                            break;
-                        }
+                    String id = materialTemporal.getTipo() + "-" + materialTemporal.getID();
+                    if (id.equals(id_material)) {
+                        materialDuplicado = true;
+                        break;
+                    }
+                }
+
+                for (PoliProductoPromocion materialTemporal : productosListTemporal) {
+                    String id = materialTemporal.getTipo() + "-" + materialTemporal.getID();
+                    if (id.equals(id_material)) {
+                        materialDuplicado = true;
+                        break;
+                    }
                 }
 
                 if (!materialDuplicado) {
@@ -1095,6 +1102,95 @@ public class CrearPromocion extends JFrame {
         return modeloMaterial;
     }
 
+    private void guardarPromocion() {
+        String descripcion = campoDescripcion.getText().trim();
+
+        Date fechaInicial = (Date) datePicker.getModel().getValue(); // Explicitly cast the value to Date
+        String fechaI = new SimpleDateFormat("yyyy-MM-dd").format(fechaInicial);
+
+        Date fechaFinal = (Date) datePicker2.getModel().getValue(); // Explicitly cast the value to Date
+        String fechaF = new SimpleDateFormat("yyyy-MM-dd").format(fechaFinal);
+
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO promociones (descripcion, inicio, fin) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+            preparedStatement.setString(1, descripcion);
+            preparedStatement.setString(2, fechaI);
+            preparedStatement.setString(3, fechaF);
+
+            preparedStatement.executeUpdate();
+
+            ResultSet resultSet = preparedStatement.getGeneratedKeys();
+            int lastId = 0;
+            if (resultSet.next()) {
+                lastId = resultSet.getInt(1);
+            }
+
+            try (PreparedStatement prepared = connection.prepareStatement(
+                    "UPDATE detalles_promociones SET promocion_id = ? WHERE promocion_id IS NULL")) {
+                prepared.setInt(1, lastId);
+                prepared.executeUpdate();
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+                JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+                materialList = new ArrayList<>();
+            }
+
+            JOptionPane.showMessageDialog(null, "Promoción guardada exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al guardar la promoción", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void guardarDetallePromocion(int id_material, int cantidad, String tipo, double promocion) {
+
+        double availableQuantity = obtenerCantidadMaterialDesdeBD(id_material, tipo);
+
+        if (cantidad <= 0) {
+            showErrorDialog("La cantidad debe ser mayor a 0.");
+            return;
+        } else if (cantidad > availableQuantity) {
+            showErrorDialog("La cantidad supera la cantidad disponible en la base de datos.");
+            return;
+        }
+
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO detalles_promociones (tipo_detalle, detalle_id, cantidad,precio, promocion) VALUES (?, ?, ?, ?, ?)")) {
+            preparedStatement.setString(1, tiposDescripcion.get(tipo));
+            preparedStatement.setInt(2, id_material);
+            preparedStatement.setInt(3, cantidad);
+            preparedStatement.setDouble(4, obtenerPrecioMaterialDesdeBD(id_material,tipo)); // Obtener el precio del material desde la base de datos
+            preparedStatement.setDouble(5, promocion);
+            preparedStatement.executeUpdate();
+
+            JOptionPane.showMessageDialog(null, "Detalle agregado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al agregar el detalle de la promoción", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private int obtenerCantidadMaterialDesdeBD(int id_material, String tipo) {
+        int availableQuantity = 0;
+
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "SELECT cantidad FROM " + tiposTablas.get(tipo) + " WHERE id = ?"
+             )) {
+            preparedStatement.setInt(1, id_material);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                availableQuantity = resultSet.getInt("cantidad");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al obtener la cantidad desde la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        return availableQuantity;
+    }
+
     private double obtenerPrecioMaterialDesdeBD(int id_material, String tipo) {
         double precio = 0.0;
 
@@ -1138,63 +1234,6 @@ public class CrearPromocion extends JFrame {
         }
 
         return precio;
-    }
-
-    private void guardarPromocion() {
-        String descripcion = campoDescripcion.getText().trim();
-
-        Date fechaInicial = (Date) datePicker.getModel().getValue(); // Explicitly cast the value to Date
-        String fechaI = new SimpleDateFormat("yyyy-MM-dd").format(fechaInicial);
-
-        Date fechaFinal = (Date) datePicker2.getModel().getValue(); // Explicitly cast the value to Date
-        String fechaF = new SimpleDateFormat("yyyy-MM-dd").format(fechaFinal);
-
-        try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO promociones (descripcion, inicio, fin) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setString(1, descripcion);
-            preparedStatement.setString(2, fechaI);
-            preparedStatement.setString(3, fechaF);
-
-            preparedStatement.executeUpdate();
-
-            ResultSet resultSet = preparedStatement.getGeneratedKeys();
-            int lastId = 0;
-            if (resultSet.next()) {
-                lastId = resultSet.getInt(1);
-            }
-
-            try (PreparedStatement prepared = connection.prepareStatement(
-                    "UPDATE detalles_promociones SET promocion_id = ? WHERE promocion_id IS NULL")) {
-                prepared.setInt(1, lastId);
-                prepared.executeUpdate();
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-                JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
-                materialList = new ArrayList<>();
-            }
-
-            JOptionPane.showMessageDialog(null, "Promoción guardada exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al guardar la promoción", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    private void guardarDetallePromocion(int id_material, int cantidad, String tipo, double promocion) {
-        try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO detalles_promociones (tipo_detalle, detalle_id, cantidad,precio, promocion) VALUES (?, ?, ?, ?, ?)")) {
-            preparedStatement.setString(1, tiposDescripcion.get(tipo));
-            preparedStatement.setInt(2, id_material);
-            preparedStatement.setInt(3, cantidad);
-            preparedStatement.setDouble(4, obtenerPrecioMaterialDesdeBD(id_material,tipo)); // Obtener el precio del material desde la base de datos
-            preparedStatement.setDouble(5, promocion);
-            preparedStatement.executeUpdate();
-
-            JOptionPane.showMessageDialog(null, "Detalle agregado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al agregar el detalle de la promoción", "Error", JOptionPane.ERROR_MESSAGE);
-        }
     }
 
     private double obtenerPrecioPromocion() {
@@ -1306,7 +1345,9 @@ public class CrearPromocion extends JFrame {
                 } catch (NumberFormatException ex) {
                     showErrorDialog("La cantidad debe ser un número válido");
                 }
+
             }
+
         });
 
         btnCancel.addActionListener(new ActionListener() {
@@ -1320,6 +1361,8 @@ public class CrearPromocion extends JFrame {
 
         return cantidadMaterial[0];
     }
+
+
 
     private void showErrorDialog(String message) {
         JButton btnOK = new JButton("Aceptar");
