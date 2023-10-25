@@ -122,11 +122,11 @@ public class Login extends javax.swing.JFrame {
 
         jLabel6.setFont(new java.awt.Font("Showcard Gothic", 1, 24)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel6.setText("Eventos Shelsea");
+        jLabel6.setText("Eventos Chelsea");
 
         jLabel7.setFont(new java.awt.Font("Segoe UI Light", 0, 14)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(204, 204, 204));
-        jLabel7.setText("copyright © Todos los derechos reservados.");
+        jLabel7.setText("Copyright © Todos los derechos reservados.");
 
         javax.swing.GroupLayout RightLayout = new javax.swing.GroupLayout(Right);
         Right.setLayout(RightLayout);

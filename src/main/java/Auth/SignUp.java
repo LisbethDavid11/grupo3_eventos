@@ -123,7 +123,7 @@ public class SignUp extends javax.swing.JFrame {
         // javax.swing.ImageIcon icon = new javax.swing.ImageIcon("img/flor.png");
         jLabel2.setFont(new java.awt.Font("Showcard Gothic", 0, 24)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel2.setText("Eventos Shelsea");
+        jLabel2.setText("Eventos Chelsea");
 
         jLabel3.setFont(new java.awt.Font("Segoe UI Light", 0, 14)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(204, 204, 204));

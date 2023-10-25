@@ -1216,7 +1216,7 @@ public class CrearPedido extends JFrame {
         return availableQuantity;
     }
 
-    
+
     private void guardarDetallePedido(int id_material, int cantidad, String tipo) {
 
         double availableQuantity = obtenerCantidadMaterialDesdeBD(id_material, tipo);
