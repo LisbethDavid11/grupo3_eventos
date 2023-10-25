@@ -730,49 +730,59 @@ public class CrearEvento extends JFrame {
                     return;
                 }
 
-                // Obtener la cantidad del material que deseas agregar (por ejemplo, mediante un cuadro de diálogo)
                 int cantidadMaterial = obtenerCantidadMaterial();
 
-                // Verifica si la cantidad es válida (por ejemplo, mayor que cero) antes de continuar
                 if (cantidadMaterial <= 0) {
                     return;
                 }
 
-                // Verificar que el material ya está presente en la lista temporal
                 PoliProducto l = (PoliProducto) listas.get(selectTabla).get(tablaProductos.getSelectedRow());
                 String id_material = "";
                 int id_materialEntero = 0;
 
                 boolean materialDuplicado = false;
 
-                if ( l instanceof PoliFlor p){
+                if (l instanceof PoliFlor p) {
                     id_materialEntero = p.getID();
-                    id_material = "F-"+p.getID();
+                    id_material = "F-" + p.getID();
+                } else if (l instanceof PoliMaterial p) {
+                    id_materialEntero = p.getID();
+                    id_material = "M-" + p.getID();
+                } else if (l instanceof PoliGlobo p) {
+                    id_materialEntero = p.getID();
+                    id_material = "G-" + p.getID();
+                } else if (l instanceof PoliTarjeta p) {
+                    id_materialEntero = p.getID();
+                    id_material = "T-" + p.getID();
+                } else if (l instanceof PoliDesayuno p) {
+                    id_materialEntero = p.getID();
+                    id_material = "D-" + p.getID();
+                } else if (l instanceof PoliArreglo p) {
+                    id_materialEntero = p.getID();
+                    id_material = "A-" + p.getID();
+                } else if (l instanceof PoliMobiliario p) {
+                    id_materialEntero = p.getID();
+                    id_material = "W-" + p.getID();
+                }
 
-                } else  if ( l instanceof PoliMobiliario p){
-                    id_materialEntero = p.getID();
-                    id_material = "M-"+p.getID();
+                int availableQuantity = obtenerCantidadMaterialDesdeBD(id_materialEntero, l.getTipo());
 
-                } else  if ( l instanceof PoliGlobo p){
-                    id_materialEntero = p.getID();
-                    id_material = "G-"+p.getID();
-
-                } else  if ( l instanceof PoliArreglo p){
-                    id_materialEntero = p.getID();
-                    id_material = "A-"+p.getID();
-
-                } else  if ( l instanceof PoliManualidad p){
-                    id_materialEntero = p.getID();
-                    id_material = "W-"+p.getID();
+                if (cantidadMaterial <= 0) {
+                    showErrorDialog("La cantidad debe ser mayor o igual a 1");
+                    return;
+                } else if (cantidadMaterial > availableQuantity) {
+                    showErrorDialog("La cantidad supera la cantidad disponible en la base de datos");
+                    return;
                 }
 
                 for (PoliProducto materialTemporal : productosListTemporal) {
-                    String id = materialTemporal.getTipo()+"-"+materialTemporal.getID();
-                        if ( id.equals(id_material)) {
-                            materialDuplicado = true;
-                            break;
-                        }
+                    String id = materialTemporal.getTipo() + "-" + materialTemporal.getID();
+                    if (id.equals(id_material)) {
+                        materialDuplicado = true;
+                        break;
+                    }
                 }
+
 
                 if (!materialDuplicado) {
                     // Llamar al método guardarDetalleEvento con los tres argumentos
@@ -987,15 +997,12 @@ public class CrearEvento extends JFrame {
         }
     }
 
-
     private PoliModeloProducto cargarDetallesMateriales() {
         selectTabla = 0;
 
         double precioTotalMateriales = 0.00;
 
-        System.out.println(productosListTemporal.size());
         for (PoliProducto productosGeneral : productosListTemporal) {
-
             double total = productosGeneral.getCantidad() * productosGeneral.getPrecio();
             precioTotalMateriales += total;
         }
@@ -1450,7 +1457,7 @@ public class CrearEvento extends JFrame {
         int cliente_id = Integer.parseInt(jbcClientes.getSelectedItem().toString().split(" - ")[0]);
         String tipo  = jbcTipoEvento.getSelectedItem().toString().trim();
 
-// Obtener los valores de los JComboBox de AM/PM
+        // Obtener los valores de los JComboBox de AM/PM
         String amPmInicial = comboBox1.getSelectedItem().toString();
         String amPmFinal = comboBox2.getSelectedItem().toString();
 
@@ -1512,7 +1519,38 @@ public class CrearEvento extends JFrame {
         }
     }
 
+    private int obtenerCantidadMaterialDesdeBD(int id_material, String tipo) {
+        int availableQuantity = 0;
+
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "SELECT cantidad FROM " + tiposTablas.get(tipo) + " WHERE id = ?"
+             )) {
+            preparedStatement.setInt(1, id_material);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                availableQuantity = resultSet.getInt("cantidad");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al obtener la cantidad desde la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        return availableQuantity;
+    }
+
+
     private void guardarDetalleEvento(int id_material, int cantidad, String tipo) {
+        double availableQuantity = obtenerCantidadMaterialDesdeBD(id_material, tipo);
+
+        if (cantidad <= 0) {
+            showErrorDialog("La cantidad debe ser mayor a 0.");
+            return;
+        } else if (cantidad > availableQuantity) {
+            showErrorDialog("La cantidad supera la cantidad disponible en la base de datos.");
+            return;
+        }
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO detalles_eventos (tipo_detalle, detalle_id, cantidad,precio) VALUES (?, ?, ?, ?)")) {
             preparedStatement.setString(1, tiposDescripcion.get(tipo));
