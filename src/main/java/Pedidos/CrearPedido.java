@@ -1215,8 +1215,6 @@ public class CrearPedido extends JFrame {
 
         return availableQuantity;
     }
-
-
     private void guardarDetallePedido(int id_material, int cantidad, String tipo) {
 
         double availableQuantity = obtenerCantidadMaterialDesdeBD(id_material, tipo);
@@ -1225,7 +1223,7 @@ public class CrearPedido extends JFrame {
             showErrorDialog("La cantidad debe ser mayor a 0.");
             return;
         } else if (cantidad > availableQuantity) {
-            showErrorDialog("La cantidad supera la cantidad disponible en la base de datos.");
+            showErrorDialog("El número ingresado es mayor a la cantidad disponible en la base de datos");
             return;
         }
 
