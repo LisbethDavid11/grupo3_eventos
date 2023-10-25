@@ -1,7 +1,13 @@
 package Actividades;
+
+
 import Objetos.Actividad;
 import Objetos.Conexion;
+import org.jdesktop.swingx.prompt.PromptSupport;
+
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
@@ -30,6 +36,7 @@ public class CalendarioDeActividades extends JFrame {
     private JScrollPane calendarScroll;
     private JScrollPane actividadesScroll;
     private JPanel panelTitulo;
+    private JTextField busquedaTextField;
     private int realYear, realMonth, realDay, currentYear, currentMonth;
     private int selectedRow = -1; // Para mantener un seguimiento del día seleccionado
     Font font = new Font("Century Gothic", Font.BOLD, 16);
@@ -69,6 +76,9 @@ public class CalendarioDeActividades extends JFrame {
         crearButton = new JButton("CREAR");
         calendarTable = new JTable(calendarModel);
         calendarScroll = new JScrollPane(calendarTable);
+        busquedaTextField = new JTextField();
+        PromptSupport.init("Buscar por nombre, hora incial u hora final", Color.GRAY, Color.WHITE, busquedaTextField);
+
 
         this.add(yearLabel);
         this.add(monthLabel);
@@ -78,6 +88,7 @@ public class CalendarioDeActividades extends JFrame {
         this.add(calendarScroll);
         this.add(crearButton);
         this.add(panelTitulo);
+        this.add(busquedaTextField);
         panelTitulo.add(tituloLabel);
 
         prevButton.setBounds(10, 10, 45, 22);
@@ -88,7 +99,8 @@ public class CalendarioDeActividades extends JFrame {
         panelTitulo.setBounds(410, 40, 400, 20);
         tituloLabel.setBounds(410, 38, 400, 22);
         calendarScroll.setBounds(10, 40, 400, 387);
-        crearButton.setBounds(410, 10, 400, 22);
+        busquedaTextField.setBounds(410, 10, 300, 23);
+        crearButton.setBounds(710, 10, 90, 22);
 
         // Establecer colores
         tituloLabel.setForeground(Color.white);
@@ -189,7 +201,6 @@ public class CalendarioDeActividades extends JFrame {
             }
         });
 
-
         yearBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (yearBox.getSelectedItem() != null) {
@@ -226,8 +237,132 @@ public class CalendarioDeActividades extends JFrame {
             }
         });
 
+        busquedaTextField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                filterActivities();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                filterActivities();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                // Este método se usa generalmente con DocumentListeners de componentes como JTextPane, no es necesario para JTextField.
+            }
+        });
+
+
+
 
     }
+
+    private void filterActivities() {
+        String searchText = busquedaTextField.getText().toLowerCase();
+        int selectedDay = selectedRow; // Obtén el día seleccionado, -1 si no hay ninguno seleccionado
+
+        // Filtra las actividades según el día seleccionado y el texto de búsqueda
+        List<Actividad> filteredActivities = new ArrayList<>();
+        SimpleDateFormat dia = new SimpleDateFormat("d");
+        SimpleDateFormat mes = new SimpleDateFormat("M");
+        SimpleDateFormat anio = new SimpleDateFormat("yyyy");
+
+        for (Actividad actividad : listaActividades) {
+            int actividadDay = Integer.parseInt(dia.format(actividad.getFecha()));
+            int actividadMonth = Integer.parseInt(mes.format(actividad.getFecha())) - 1;
+            int actividadYear = Integer.parseInt(anio.format(actividad.getFecha()));
+
+            // Filtrar por día seleccionado si es válido (-1 indica mostrar todas las actividades)
+            boolean filterByDay = (selectedDay == -1) || (selectedDay == actividadDay);
+
+            // Filtrar por nombre, hora inicial o hora final que contienen el texto de búsqueda
+            boolean filterBySearchText = actividad.getNombre().toLowerCase().contains(searchText)
+                    || actividad.getInicio().toString().toLowerCase().contains(searchText)
+                    || actividad.getFin().toString().toLowerCase().contains(searchText);
+
+            if (filterByDay && filterBySearchText) {
+                filteredActivities.add(actividad);
+            }
+        }
+
+        mostrarActividades(filteredActivities);
+    }
+
+    private void mostrarActividades(List<Actividad> actividades) {
+        // Elimina el panel actual de actividades
+        if (actividadesScroll != null) {
+            this.remove(actividadesScroll);
+        }
+
+        // Crea un nuevo panel para mostrar las actividades filtradas
+        JPanel actividadesPanel = new JPanel();
+        actividadesPanel.setLayout(new BoxLayout(actividadesPanel, BoxLayout.Y_AXIS));
+        actividadesPanel.setBackground(darkColor);
+
+        for (Actividad actividad : actividades) {
+            actividadesPanel.setBackground(darkColor);
+
+            JLabel nombreLabel = new JLabel(" " + actividad.getNombre());
+            nombreLabel.setFont(font);
+            nombreLabel.setForeground(Color.white);
+
+            Date horaInicio = actividad.getInicio();
+            Date horaFin = actividad.getFin();
+
+            SimpleDateFormat formato = new SimpleDateFormat("hh:mm a");
+            String horaFormateadaInicio = formato.format(horaInicio);
+            String horaFormateadaFin = formato.format(horaFin);
+
+            JPanel actividadPanel = new JPanel();
+            actividadPanel.setLayout(new GridLayout(3, 0));
+            actividadPanel.setBackground(primaryColor);
+
+            JLabel horaInicioLabel = new JLabel(" " + horaFormateadaInicio + " - " + horaFormateadaFin);
+            horaInicioLabel.setFont(font2);
+            horaInicioLabel.setForeground(Color.white);
+
+            ImageIcon iconoVer = new ImageIcon("img/verCarta.png");
+            int nuevoAncho = 30;
+            int nuevoAlto = 30;
+            Image imagen = iconoVer.getImage();
+            Image nuevaImagen = imagen.getScaledInstance(nuevoAncho, nuevoAlto, Image.SCALE_SMOOTH);
+            ImageIcon iconoRedimensionado = new ImageIcon(nuevaImagen);
+
+            JButton verButton = new JButton(iconoRedimensionado);
+            verButton.setBackground(darkColor);
+            verButton.setBorderPainted(false);
+            verButton.setFocusPainted(false);
+
+            verButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    int actividadID = actividad.getId();
+                    VerActividad verActividades = new VerActividad(actividadID);
+                    verActividades.setVisible(true);
+                    dispose();
+                }
+            });
+
+            actividadPanel.add(nombreLabel);
+            actividadPanel.add(horaInicioLabel);
+            actividadPanel.add(verButton);
+
+            actividadesPanel.add(actividadPanel);
+            actividadesPanel.add(new JSeparator(JSeparator.HORIZONTAL));
+        }
+
+        actividadesScroll = new JScrollPane(actividadesPanel);
+        actividadesScroll.setBounds(410, 60, 400, 366);
+        actividadesScroll.setBackground(darkColor);
+        this.add(actividadesScroll);
+        actividadesScroll.getVerticalScrollBar().setValue(actividadesScroll.getVerticalScrollBar().getValue() + 1);
+
+        this.revalidate();
+        this.repaint();
+    }
+
 
     public void refreshCalendar(int month, int year) {
         String[] months = {"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"};
@@ -453,5 +588,4 @@ public class CalendarioDeActividades extends JFrame {
         calendarioDeActividades.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         calendarioDeActividades.setVisible(true);
     }
-
 }
