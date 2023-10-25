@@ -1223,7 +1223,7 @@ public class CrearPedido extends JFrame {
             showErrorDialog("La cantidad debe ser mayor a 0.");
             return;
         } else if (cantidad > availableQuantity) {
-            showErrorDialog("El número ingresado es mayor a la cantidad disponible en la base de datos");
+            showErrorDialog("El número ingresado es mayor a la cantidad disponible en la base de datos.");
             return;
         }
 

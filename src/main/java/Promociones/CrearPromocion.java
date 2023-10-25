@@ -585,7 +585,7 @@ public class CrearPromocion extends JFrame {
                     showErrorDialog("La cantidad debe ser mayor o igual a 1");
                     return;
                 } else if (cantidadMaterial > availableQuantity) {
-                    showErrorDialog("La cantidad supera la cantidad disponible en la base de datos");
+                    showErrorDialog("El número ingresado es mayor a la cantidad disponible en la base de datos.");
                     return;
                 }
 

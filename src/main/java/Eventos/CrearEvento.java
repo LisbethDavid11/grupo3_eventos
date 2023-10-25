@@ -745,7 +745,7 @@ public class CrearEvento extends JFrame {
                 if (l instanceof PoliFlor p) {
                     id_materialEntero = p.getID();
                     id_material = "F-" + p.getID();
-                } else if (l instanceof PoliMaterial p) {
+                } else if (l instanceof PoliManualidad p) {
                     id_materialEntero = p.getID();
                     id_material = "M-" + p.getID();
                 } else if (l instanceof PoliGlobo p) {
@@ -1548,7 +1548,7 @@ public class CrearEvento extends JFrame {
             showErrorDialog("La cantidad debe ser mayor a 0.");
             return;
         } else if (cantidad > availableQuantity) {
-            showErrorDialog("La cantidad supera la cantidad disponible en la base de datos.");
+            showErrorDialog("El número ingresado es mayor a la cantidad disponible en la base de datos.");
             return;
         }
         try (Connection connection = sql.conectamysql();
