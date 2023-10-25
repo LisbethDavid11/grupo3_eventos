@@ -967,8 +967,12 @@ public class CrearEvento extends JFrame {
 
         // Actualizar el lbl9 con el total calculado
         DecimalFormat decimalFormat = new DecimalFormat("#.00");
-        String sumaTotalFormateado = decimalFormat.format(sumaTotal);
-        lbl11.setText(" " + sumaTotalFormateado);
+        if(sumaTotal == 0){
+            lbl11.setText("0.00");
+        }else {
+            String sumaTotalFormateado = decimalFormat.format(sumaTotal);
+            lbl11.setText(" " + sumaTotalFormateado);
+        }
 
         return sumaTotal;
     }

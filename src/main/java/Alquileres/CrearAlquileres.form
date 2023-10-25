@@ -185,6 +185,10 @@
                 <item value="Boda"/>
                 <item value="Cumpleaños"/>
                 <item value="15 años"/>
+                <item value="Cena Navideña"/>
+                <item value="Reunión familiar"/>
+                <item value="Graduaciones"/>
+                <item value="Aniversarios"/>
                 <item value="Despedida de soltero"/>
               </model>
             </properties>

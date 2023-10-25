@@ -652,6 +652,7 @@ public class CrearAlquileres extends JFrame {
                     return;
                 }
 
+
                 // Verificar que el material ya está presente en la lista temporal
                 PoliProducto l = (PoliProducto) listas.get(selectTabla).get(tablaProductos.getSelectedRow());
                 String id_material = "";
@@ -679,6 +680,12 @@ public class CrearAlquileres extends JFrame {
                     id_materialEntero = p.getID();
                     id_material = "W-"+p.getID();
                 }
+
+                if (l.getCantidad() < cantidadMaterial) {
+                    JOptionPane.showMessageDialog(null,"La cantidad a alquilar, no debe superar a la existencia");
+                    return;
+                }
+
 
                 for (PoliProducto materialTemporal : productosListTemporal) {
                     String id = materialTemporal.getTipo()+"-"+materialTemporal.getID();
@@ -877,8 +884,14 @@ public class CrearAlquileres extends JFrame {
 
         // Actualizar el lbl9 con el total calculado
         DecimalFormat decimalFormat = new DecimalFormat("#.00");
-        String sumaTotalFormateado = decimalFormat.format(sumaTotal);
-        lbl11.setText(" " + sumaTotalFormateado);
+        if(sumaTotal == 0){
+
+            lbl11.setText("0.00");
+        }else{
+            String sumaTotalFormateado = decimalFormat.format(sumaTotal);
+            lbl11.setText(" " + sumaTotalFormateado);
+        }
+
 
         return sumaTotal;
     }

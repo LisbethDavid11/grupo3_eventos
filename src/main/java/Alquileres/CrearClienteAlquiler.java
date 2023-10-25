@@ -26,6 +26,7 @@ public class CrearClienteAlquiler extends JFrame{
     private JButton botonGuardar, botonCancelar, botonLimpiar;
     private JPanel panel, panel1, panel2, panel3;
     private JLabel label0, label1,label2,label3,label4,label5;
+    private JRadioButton radioAldetalle;
     private CrearClienteAlquiler actual = this;
     private Connection mysql;
     private Conexion sql;
@@ -200,7 +201,7 @@ public class CrearClienteAlquiler extends JFrame{
         });
 
         ButtonGroup buttonGroup = new ButtonGroup();
-
+        buttonGroup.add(radioAldetalle);
         buttonGroup.add(radioMayorista);
         buttonGroup.clearSelection();
 
@@ -226,7 +227,9 @@ public class CrearClienteAlquiler extends JFrame{
         botonGuardar.setFocusPainted(false);
         botonGuardar.setBorder(margin);
 
-
+        radioAldetalle.setForeground(textColor);
+        radioAldetalle.setBackground(panel.getBackground());
+        radioAldetalle.setFocusPainted(false);
 
         radioMayorista.setForeground(textColor);
         radioMayorista.setBackground(panel.getBackground());
@@ -297,7 +300,7 @@ public class CrearClienteAlquiler extends JFrame{
                     mensaje += "Teléfono\n";
                 }
 
-                if (!radioMayorista.isSelected()) {
+                if (!radioMayorista.isSelected() && !radioAldetalle.isSelected()) {
                     validacion++;
                     mensaje += "Tipo de cliente\n";
                 }
@@ -508,7 +511,7 @@ public class CrearClienteAlquiler extends JFrame{
             preparedStatement.setString(3, campoIdentidad.getText());
             preparedStatement.setString(4, campoTelefono.getText());
             preparedStatement.setString(5, campoDomicilio.getText());
-            preparedStatement.setString(6,  "Mayorista");
+            preparedStatement.setString(6, radioAldetalle.isSelected() ? "Al Detalle" : "Mayorista");
             preparedStatement.executeUpdate();
 
             String nombreCompleto = campoNombre.getText() + " " + campoApellido.getText();

@@ -34,7 +34,7 @@ public class ListaAlquileres extends JFrame {
     private final JDateChooser fecha_desde,fecha_hasta;
     private JButton botonEditar, botonCrear, botonVer, botonAdelante, botonAtras;
     private JTextField campoBusqueda;
-    private TextPrompt placeholder = new TextPrompt(" Buscar por nombre del cliente, fecha ó tipo", campoBusqueda);
+    private TextPrompt placeholder = new TextPrompt(" Buscar por nombre del cliente y fecha ", campoBusqueda);
     private JLabel lblPagina;
     private JLabel lblTitulo;
     private JTable listaAlquileres;
