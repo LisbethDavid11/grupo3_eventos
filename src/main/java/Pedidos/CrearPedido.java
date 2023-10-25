@@ -1195,7 +1195,40 @@ public class CrearPedido extends JFrame {
         }
     }
 
+    private int obtenerCantidadMaterialDesdeBD(int id_material, String tipo) {
+        int availableQuantity = 0;
+
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "SELECT cantidad FROM " + tiposTablas.get(tipo) + " WHERE id = ?"
+             )) {
+            preparedStatement.setInt(1, id_material);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                availableQuantity = resultSet.getInt("cantidad");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al obtener la cantidad desde la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        return availableQuantity;
+    }
+
+    
     private void guardarDetallePedido(int id_material, int cantidad, String tipo) {
+
+        double availableQuantity = obtenerCantidadMaterialDesdeBD(id_material, tipo);
+
+        if (cantidad <= 0) {
+            showErrorDialog("La cantidad debe ser mayor a 0.");
+            return;
+        } else if (cantidad > availableQuantity) {
+            showErrorDialog("La cantidad supera la cantidad disponible en la base de datos.");
+            return;
+        }
+
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO detalles_pedidos (tipo_detalle, detalle_id, cantidad,precio) VALUES (?, ?, ?, ?)")) {
             preparedStatement.setString(1, tiposDescripcion.get(tipo));

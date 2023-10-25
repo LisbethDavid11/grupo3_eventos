@@ -549,7 +549,7 @@ public class CrearPromocion extends JFrame {
                 if (precioMaterial <= 0) {
                     return;
                 }
-                
+
                 PoliProducto l = (PoliProducto) listas.get(selectTabla).get(tablaProductos.getSelectedRow());
                 String id_material = "";
                 int id_materialEntero = 0;
