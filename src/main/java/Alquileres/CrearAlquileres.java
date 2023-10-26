@@ -664,7 +664,7 @@ public class CrearAlquileres extends JFrame {
                     id_materialEntero = p.getID();
                     id_material = "F-"+p.getID();
 
-                } else  if ( l instanceof PoliMobiliario p){
+                } else  if ( l instanceof PoliManualidad p){
                     id_materialEntero = p.getID();
                     id_material = "M-"+p.getID();
 
@@ -676,13 +676,18 @@ public class CrearAlquileres extends JFrame {
                     id_materialEntero = p.getID();
                     id_material = "A-"+p.getID();
 
-                } else  if ( l instanceof PoliManualidad p){
+                } else  if ( l instanceof PoliMobiliario p){
                     id_materialEntero = p.getID();
                     id_material = "W-"+p.getID();
                 }
 
-                if (l.getCantidad() < cantidadMaterial) {
-                    JOptionPane.showMessageDialog(null,"La cantidad a alquilar, no debe superar a la existencia");
+                int availableQuantity = obtenerCantidadMaterialDesdeBD(id_materialEntero, l.getTipo());
+
+                if (cantidadMaterial <= 0) {
+                    showErrorDialog("La cantidad debe ser mayor o igual a 1");
+                    return;
+                } else if (cantidadMaterial > availableQuantity) {
+                    showErrorDialog("La cantidad supera la cantidad disponible en la base de datos");
                     return;
                 }
 
@@ -714,8 +719,8 @@ public class CrearAlquileres extends JFrame {
                     agregarMobiliarioButton.setVisible(true);
                     // Actualizar la tabla con los detalles actualizados
                     tablaProductos.setModel(cargarDetallesMateriales());
-                    tablaProductos.getColumnModel().getColumn(5).setCellRenderer(new ButtonRenderer());
-                    tablaProductos.getColumnModel().getColumn(5).setCellEditor(new ButtonEditor());
+                    tablaProductos.getColumnModel().getColumn(5).setCellRenderer(new CrearAlquileres.ButtonRenderer());
+                    tablaProductos.getColumnModel().getColumn(5).setCellEditor(new CrearAlquileres.ButtonEditor());
 
                     configurarTablaMateriales();
                     //actualizarLbl8y10();
@@ -1286,7 +1291,37 @@ public class CrearAlquileres extends JFrame {
         }
     }
 
+    private int obtenerCantidadMaterialDesdeBD(int id_material, String tipo) {
+        int availableQuantity = 0;
+
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "SELECT cantidad FROM " + tiposTablas.get(tipo) + " WHERE id = ?"
+             )) {
+            preparedStatement.setInt(1, id_material);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                availableQuantity = resultSet.getInt("cantidad");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al obtener la cantidad desde la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        return availableQuantity;
+    }
+
     private void guardarDetalleAlquiler(int id_material, int cantidad, String tipo) {
+        double availableQuantity = obtenerCantidadMaterialDesdeBD(id_material, tipo);
+
+        if (cantidad <= 0) {
+            showErrorDialog("La cantidad debe ser mayor a 0.");
+            return;
+        } else if (cantidad > availableQuantity) {
+            showErrorDialog("El número ingresado es mayor a la cantidad disponible en la base de datos.");
+            return;
+        }
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO detalles_alquileres (tipo_detalle, detalle_id, cantidad,precio) VALUES (?, ?, ?, ?)")) {
             preparedStatement.setString(1, tiposDescripcion.get(tipo));
