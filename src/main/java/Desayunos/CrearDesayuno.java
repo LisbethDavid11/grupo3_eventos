@@ -780,20 +780,35 @@ public class CrearDesayuno extends JFrame {
                     String directorio = "img/desayunos/";
 
                     Date fecha = new Date();
-                    SimpleDateFormat formatoFecha = new SimpleDateFormat("yyyyMMdd_HHmmss");
-                    
-                    nombreFile  = formatoFecha.format(fecha)+".jpg" ;
+                    SimpleDateFormat formatoFechaHora = new SimpleDateFormat("ddMMyyyy_HHmmss");
+                    String fechaHora = formatoFechaHora.format(fecha);
+
+                    // Generar un número aleatorio entre 0001 y 9999
+                    int numeroAleatorio = (int) (Math.random() * 9999) + 1;
+                    String numeroFormateado = String.format("%04d", numeroAleatorio); // Asegura el formato de 4 dígitos
+
+                    nombreFile = "Desayuno_" + fechaHora + " " + numeroFormateado + ".jpg";
                     urlDestino = directorio + nombreFile;
 
+                    File directorioDestino = new File(directorio);
+                    if (!directorioDestino.exists()) {
+                        directorioDestino.mkdirs(); // Crea la carpeta si no existe
+                    }
+
+                    File finalDirectorio = new File(urlDestino);
+
                     try {
-                        File finalDirectorio = new File(urlDestino);
-
                         BufferedImage imagen = ImageIO.read(new File(imagePath));
+                        boolean resultado = ImageIO.write(imagen, "jpg", finalDirectorio);
 
-                        ImageIO.write(imagen, "jpg", finalDirectorio);
-
+                        if (!resultado) {
+                            JOptionPane.showMessageDialog(null, "Error al guardar la imagen", "Error", JOptionPane.ERROR_MESSAGE);
+                            return; // Detiene la ejecución adicional si falla el guardado
+                        }
                     } catch (IOException ex) {
-                        throw new RuntimeException(ex);
+                        JOptionPane.showMessageDialog(null, "Error al procesar la imagen: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                        ex.printStackTrace();
+                        return;
                     }
 
                     ImageIcon originalIcon = new ImageIcon(imagePath);
@@ -1131,6 +1146,11 @@ public class CrearDesayuno extends JFrame {
     }
 
     private void guardarDetalleDesayuno(int id_material, int cantidad, String tipo) {
+        if (cantidad <= 0) {
+            showErrorDialog("La cantidad debe ser mayor a 0.");
+            return;
+        }
+
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO detalles_desayunos (tipo_detalle, detalle_id, cantidad,precio) VALUES (?, ?, ?, ?)")) {
             preparedStatement.setString(1, tiposDescripcion.get(tipo));

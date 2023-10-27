@@ -1,5 +1,7 @@
 package Arreglos;
 import Objetos.Conexion;
+
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -8,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -30,6 +33,8 @@ public class CrearArreglo extends JFrame {
     private String imagePath = "";
     private CrearArreglo actual = this;
     private Conexion sql;
+    private String nombreFile;
+    private String urlDestino = "";
     Color darkColorRed = new Color(244, 67, 54);
     Color darkColorBlue = new Color(33, 150, 243);
 
@@ -339,6 +344,41 @@ public class CrearArreglo extends JFrame {
                 if (seleccion == JFileChooser.APPROVE_OPTION) {
                     File file = fileChooser.getSelectedFile();
                     imagePath = file.getAbsolutePath();
+
+                    String directorio = "img/arreglos/";
+
+                    Date fecha = new Date();
+                    SimpleDateFormat formatoFechaHora = new SimpleDateFormat("ddMMyyyy_HHmmss");
+                    String fechaHora = formatoFechaHora.format(fecha);
+
+                    // Generar un número aleatorio entre 0001 y 9999
+                    int numeroAleatorio = (int) (Math.random() * 9999) + 1;
+                    String numeroFormateado = String.format("%04d", numeroAleatorio); // Asegura el formato de 4 dígitos
+
+                    nombreFile = "Arreglo_" + fechaHora + " " + numeroFormateado + ".jpg";
+                    urlDestino = directorio + nombreFile;
+
+                    File directorioDestino = new File(directorio);
+                    if (!directorioDestino.exists()) {
+                        directorioDestino.mkdirs(); // Crea la carpeta si no existe
+                    }
+
+                    File finalDirectorio = new File(urlDestino);
+
+                    try {
+                        BufferedImage imagen = ImageIO.read(new File(imagePath));
+                        boolean resultado = ImageIO.write(imagen, "jpg", finalDirectorio);
+
+                        if (!resultado) {
+                            JOptionPane.showMessageDialog(null, "Error al guardar la imagen", "Error", JOptionPane.ERROR_MESSAGE);
+                            return; // Detiene la ejecución adicional si falla el guardado
+                        }
+                    } catch (IOException ex) {
+                        JOptionPane.showMessageDialog(null, "Error al procesar la imagen: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                        ex.printStackTrace();
+                        return;
+                    }
+
                     ImageIcon originalIcon = new ImageIcon(imagePath);
 
                     // Obtener las dimensiones originales de la imagen
@@ -362,7 +402,6 @@ public class CrearArreglo extends JFrame {
                     // Crear un nuevo ImageIcon a partir de la imagen redimensionada
                     ImageIcon scaledIcon = new ImageIcon(resizedImage);
 
-                    // Establecer el nuevo ImageIcon en el JLabel de la imagen
                     imagenLabel.setIcon(scaledIcon);
                 }
             }
@@ -437,27 +476,7 @@ public class CrearArreglo extends JFrame {
 
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO arreglos (imagen, nombre, cantidad, precio, disponible) VALUES (?, ?, ?, ?, ?)")) {
-
-                // Generar el nombre de la imagen
-                SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH-mm-ss");
-                String fechaActual = dateFormat.format(new Date());
-                String nombreImagen = "imagen " + fechaActual + " " + generarNumeroAleatorio(0, 9999);
-
-                // Guardar la imagen en la carpeta
-                String rutaImagen = nombreImagen + obtenerExtensionImagen(imagePath);
-                File destino = new File("img/arreglos/" + rutaImagen);
-
-                try {
-                    // Copiar el archivo seleccionado a la ubicación destino
-                    Path origenPath = Path.of(imagePath);
-                    Files.copy(origenPath, destino.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    JOptionPane.showMessageDialog(null, "Error al guardar la imagen", "Error", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-                preparedStatement.setString(1, rutaImagen);
+                preparedStatement.setString(1, nombreFile);
                 preparedStatement.setString(2, nombre);
                 preparedStatement.setDouble(3, cantidad);
                 preparedStatement.setDouble(4, precio);
