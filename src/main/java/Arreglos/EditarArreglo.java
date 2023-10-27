@@ -1,6 +1,8 @@
 package Arreglos;
 import Desayunos.ListaDesayunos;
 import Objetos.Conexion;
+
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -9,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -62,6 +65,9 @@ public class EditarArreglo extends JFrame {
     Color primaryColorRosado = new Color(233, 30, 99); // Rosado primario
     Color lightColorRosado = new Color(240, 98, 146); // Rosado claro
     Color darkColorRosado = new Color(194, 24, 91); // Rosado oscuro
+
+    private String nombreFile;
+    private String urlDestino = "";
 
     // Crea un margen de 10 píxeles desde el borde inferior
     EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
@@ -385,6 +391,41 @@ public class EditarArreglo extends JFrame {
                 if (seleccion == JFileChooser.APPROVE_OPTION) {
                     File file = fileChooser.getSelectedFile();
                     imagePath = file.getAbsolutePath();
+
+                    String directorio = "img/arreglos/";
+
+                    Date fecha = new Date();
+                    SimpleDateFormat formatoFechaHora = new SimpleDateFormat("ddMMyyyy_HHmmss");
+                    String fechaHora = formatoFechaHora.format(fecha);
+
+                    // Generar un número aleatorio entre 0001 y 9999
+                    int numeroAleatorio = (int) (Math.random() * 9999) + 1;
+                    String numeroFormateado = String.format("%04d", numeroAleatorio); // Asegura el formato de 4 dígitos
+
+                    nombreFile = "Arreglo_" + fechaHora + " " + numeroFormateado + ".jpg";
+                    urlDestino = directorio + nombreFile;
+
+                    File directorioDestino = new File(directorio);
+                    if (!directorioDestino.exists()) {
+                        directorioDestino.mkdirs(); // Crea la carpeta si no existe
+                    }
+
+                    File finalDirectorio = new File(urlDestino);
+
+                    try {
+                        BufferedImage imagen = ImageIO.read(new File(imagePath));
+                        boolean resultado = ImageIO.write(imagen, "jpg", finalDirectorio);
+
+                        if (!resultado) {
+                            mostrarDialogoPersonalizadoError("Error al guardar la imagen", Color.decode("#C62828"));
+                            return; // Detiene la ejecución adicional si falla el guardado
+                        }
+                    } catch (IOException ex) {
+                        mostrarDialogoPersonalizadoError("Error al procesar la imagen: " + ex.getMessage(), Color.decode("#C62828"));
+                        ex.printStackTrace();
+                        return;
+                    }
+
                     ImageIcon originalIcon = new ImageIcon(imagePath);
 
                     // Obtener las dimensiones originales de la imagen
@@ -575,7 +616,7 @@ public class EditarArreglo extends JFrame {
 
                 preparedStatement.setString(1, nombre);
                 preparedStatement.setDouble(2, precio);
-                preparedStatement.setString(3, rutaImagen);
+                preparedStatement.setString(3, nombreFile);
                 preparedStatement.setString(4, disponible);
                 preparedStatement.setInt(5, id);
                 preparedStatement.executeUpdate();

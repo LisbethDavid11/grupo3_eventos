@@ -1,5 +1,7 @@
 package Floristerias;
 import Objetos.Conexion;
+
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -8,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -57,7 +60,8 @@ public class EditarFloristeria extends JFrame {
 
     // Crea un margen de 10 píxeles desde el borde inferior
     EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
-
+    private String nombreFile;
+    private String urlDestino = "";
     private int idFloristeria;
     private int panelImgWidth = 200;
     private int panelImgHeight = 200;
@@ -240,38 +244,38 @@ public class EditarFloristeria extends JFrame {
                 }
 
                 if (validacion > 0) {
-                    JOptionPane.showMessageDialog(null, mensaje, "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoError(mensaje, Color.decode("#C62828"));
                     return;
                 }
 
                 String nombre = campoNombre.getText().trim();
                 if (!nombre.isEmpty()) {
                     if (nombre.length() > 100) {
-                        JOptionPane.showMessageDialog(null, "El nombre de la flor debe tener como máximo 100 caracteres.", "Validación", JOptionPane.ERROR_MESSAGE);
+                        mostrarDialogoPersonalizadoError("El nombre de la flor debe tener como máximo 100 caracteres.", Color.decode("#C62828"));
                         return;
                     }
 
                     if (!nombre.matches("[a-zA-ZñÑ]{2,}(\\s[a-zA-ZñÑ]+\\s*)*")) {
-                        JOptionPane.showMessageDialog(null, "El nombre de la flor debe tener mínimo 2 letras y máximo 1 espacio entre palabras.", "Validación", JOptionPane.ERROR_MESSAGE);
+                        mostrarDialogoPersonalizadoError("El nombre de la flor debe tener mínimo 2 letras y máximo 1 espacio entre palabras.", Color.decode("#C62828"));
                         return;
                     }
                 } else {
-                    JOptionPane.showMessageDialog(null, "El nombre de la flor no puede estar vacío.", "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoError("El nombre de la flor no puede estar vacío.", Color.decode("#C62828"));
                     return;
                 }
 
                 String precioText = campoPrecio.getText().trim();
                 if (precioText.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Faltó ingresar el precio.", "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoError("Faltó ingresar el precio.", Color.decode("#C62828"));
                     return;
                 } else {
                     if (!precioText.matches("\\d{1,5}(\\.\\d{1,2})?")) {
-                        JOptionPane.showMessageDialog(null, "Precio inválido. Debe tener el formato correcto (ejemplo: 1234 o 1234.56).", "Validación", JOptionPane.ERROR_MESSAGE);
+                        mostrarDialogoPersonalizadoError("Precio inválido. Debe tener el formato correcto (ejemplo: 12345 o 123.45).", Color.decode("#C62828"));
                         return;
                     } else {
                         double precio = Double.parseDouble(precioText);
                         if (precio < 1.00 || precio > 99999.99) {
-                            JOptionPane.showMessageDialog(null, "Precio fuera del rango válido (1.00 - 99999.99).", "Validación", JOptionPane.ERROR_MESSAGE);
+                            mostrarDialogoPersonalizadoError("Precio fuera del rango válido (1.00 - 99999.99).", Color.decode("#C62828"));
                             return;
                         }
                     }
@@ -279,27 +283,66 @@ public class EditarFloristeria extends JFrame {
 
                 String proveedors = comboBoxProveedor.getSelectedItem().toString();
                 if (proveedors.equals("Seleccione un proveedor")) {
-                    JOptionPane.showMessageDialog(null, "Debe seleccionar un proveedor.", "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoError("Debe seleccionar un proveedor.", Color.decode("#C62828"));
                     return;
                 }
 
-                int respuesta = JOptionPane.showOptionDialog(
-                        null,
-                        "¿Desea guardar la información de la flor?",
-                        "Confirmación",
-                        JOptionPane.YES_NO_OPTION,
+                JButton btnSave = new JButton("Sí");
+                JButton btnCancel = new JButton("No");
+
+                // Personaliza los botones aquí
+                btnSave.setBackground(darkColorAqua);
+                btnCancel.setBackground(darkColorRed);
+
+                // Personaliza los fondos de los botones aquí
+                btnSave.setForeground(Color.WHITE);
+                btnCancel.setForeground(Color.WHITE);
+
+                // Elimina el foco
+                btnSave.setFocusPainted(false);
+                btnCancel.setFocusPainted(false);
+
+                // Crea un JOptionPane
+                JOptionPane optionPane = new JOptionPane(
+                        "¿Desea actualizar la información de la flor?",
                         JOptionPane.QUESTION_MESSAGE,
+                        JOptionPane.DEFAULT_OPTION,
                         null,
-                        new Object[]{"Sí", "No"},
-                        "No"
+                        new Object[]{}, // no options
+                        null
                 );
 
-                if (respuesta == JOptionPane.YES_OPTION) {
-                    guardarFloristeria();
-                    ListaFloristerias listaFloristeria = new ListaFloristerias();
-                    listaFloristeria.setVisible(true);
-                    actual.dispose();
-                }
+                // Crea un JDialog
+                JDialog dialog = optionPane.createDialog("Guardar");
+
+                // Añade ActionListener a los botones
+                btnSave.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // Acciones para el botón Sí
+                        guardarFloristeria();
+                        dialog.dispose();
+                        ListaFloristerias listaFloristerias = new ListaFloristerias();
+                        listaFloristerias.setVisible(true);
+                        actual.dispose();
+                    }
+                });
+
+                btnCancel.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // Acciones para el botón No
+                        // No se hace nada, sólo se cierra el diálogo
+                        dialog.dispose();
+                    }
+                });
+
+                // Añade los botones al JOptionPane
+                optionPane.setOptions(new Object[]{btnSave, btnCancel});
+
+                // Muestra el diálogo
+                dialog.setVisible(true);
+
             }
         });
 
@@ -332,6 +375,41 @@ public class EditarFloristeria extends JFrame {
                 if (seleccion == JFileChooser.APPROVE_OPTION) {
                     File file = fileChooser.getSelectedFile();
                     imagePath = file.getAbsolutePath();
+
+                    String directorio = "img/floristeria/";
+
+                    Date fecha = new Date();
+                    SimpleDateFormat formatoFechaHora = new SimpleDateFormat("ddMMyyyy_HHmmss");
+                    String fechaHora = formatoFechaHora.format(fecha);
+
+                    // Generar un número aleatorio entre 0001 y 9999
+                    int numeroAleatorio = (int) (Math.random() * 9999) + 1;
+                    String numeroFormateado = String.format("%04d", numeroAleatorio); // Asegura el formato de 4 dígitos
+
+                    nombreFile = "Flor_" + fechaHora + " " + numeroFormateado + ".jpg";
+                    urlDestino = directorio + nombreFile;
+
+                    File directorioDestino = new File(directorio);
+                    if (!directorioDestino.exists()) {
+                        directorioDestino.mkdirs(); // Crea la carpeta si no existe
+                    }
+
+                    File finalDirectorio = new File(urlDestino);
+
+                    try {
+                        BufferedImage imagen = ImageIO.read(new File(imagePath));
+                        boolean resultado = ImageIO.write(imagen, "jpg", finalDirectorio);
+
+                        if (!resultado) {
+                            mostrarDialogoPersonalizadoError("Error al guardar la imagen", Color.decode("#C62828"));
+                            return; // Detiene la ejecución adicional si falla el guardado
+                        }
+                    } catch (IOException ex) {
+                        mostrarDialogoPersonalizadoError("Error al procesar la imagen: " + ex.getMessage(), Color.decode("#C62828"));
+                        ex.printStackTrace();
+                        return;
+                    }
+
                     ImageIcon originalIcon = new ImageIcon(imagePath);
 
                     // Obtener las dimensiones originales de la imagen
@@ -444,12 +522,12 @@ public class EditarFloristeria extends JFrame {
                 campoPrecio.setText(String.format("%.2f", resultSet.getDouble("precio")).replace(",", "."));
                 seleccionarProveedor(proveedorId);
             } else {
-                JOptionPane.showMessageDialog(null, "No se encontró la flor con el ID proporcionado.", "Error", JOptionPane.ERROR_MESSAGE);
+                mostrarDialogoPersonalizadoError("Error al cargar la flor", Color.decode("#C62828"));
                 dispose();
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al cargar los datos de la flor", "Error", JOptionPane.ERROR_MESSAGE);
+            mostrarDialogoPersonalizadoError("Error al cargar los datos de la flor.", Color.decode("#C62828"));
             dispose();
         }
     }
@@ -499,12 +577,12 @@ public class EditarFloristeria extends JFrame {
                 String proveedorText = proveedorId + " - " + empresaProveedora + " - " + nombreVendedor;
                 comboBoxProveedor.setSelectedItem(proveedorText);
             } else {
-                JOptionPane.showMessageDialog(null, "No se encontró el proveedor asociado a la flor.", "Error", JOptionPane.ERROR_MESSAGE);
+                mostrarDialogoPersonalizadoError("El proveedor no ha sido encontrado", Color.decode("#C62828"));
                 dispose();
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al cargar el proveedor asociado a la flor", "Error", JOptionPane.ERROR_MESSAGE);
+            mostrarDialogoPersonalizadoError("Error al cargar el proveedor asociado a la flor", Color.decode("#C62828"));
             dispose();
         }
     }
@@ -535,53 +613,89 @@ public class EditarFloristeria extends JFrame {
 
             try (Connection connection = sql.conectamysql();
                  PreparedStatement preparedStatement = connection.prepareStatement("UPDATE floristeria SET imagen = ?, nombre = ?, precio = ?, proveedor_id = ? WHERE id = ?")) {
-
-                // Generar el nombre de la imagen
-                SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH-mm-ss");
-                String fechaActual = dateFormat.format(new Date());
-                String nombreImagen = "imagen " + fechaActual + " " + generarNumeroAleatorio(0, 9999);
-
-                // Guardar la imagen en la carpeta
-                String rutaImagen = nombreImagen + obtenerExtensionImagen(imagePath);
-                File destino = new File("img/floristeria/" + rutaImagen);
-
-                try {
-                    // Copiar el archivo seleccionado a la ubicación destino
-                    Path origenPath = Path.of(imagePath);
-                    Files.copy(origenPath, destino.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    JOptionPane.showMessageDialog(null, "Error al guardar la imagen", "Error", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-                preparedStatement.setString(1, rutaImagen);
+                preparedStatement.setString(1, nombreFile);
                 preparedStatement.setString(2, nombre);
                 preparedStatement.setDouble(3, precio);
                 preparedStatement.setInt(4, idProveedor);
                 preparedStatement.setInt(5, idFloristeria);
                 preparedStatement.executeUpdate();
 
-                JOptionPane.showMessageDialog(null, "Flor actualizada exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                mostrarDialogoPersonalizadoExito("Flor actualizada exitosamente", Color.decode("#263238"));
             } catch (SQLException e) {
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Error al actualizar la flor", "Error", JOptionPane.ERROR_MESSAGE);
+                mostrarDialogoPersonalizadoError("Error al actualizar la flor.", Color.decode("#C62828"));
             }
 
     }
 
-    private String obtenerExtensionImagen(String imagePath) {
-        int extensionIndex = imagePath.lastIndexOf(".");
-        if (extensionIndex != -1) {
-            return imagePath.substring(extensionIndex);
-        }
-        return "";
+    public void mostrarDialogoPersonalizadoExito(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado
+        JButton btnAceptar = new JButton("ACEPTAR");
+        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE);
+        btnAceptar.setFocusPainted(false);
+
+        // Crea un JOptionPane
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                           // Mensaje a mostrar
+                JOptionPane.INFORMATION_MESSAGE,   // Tipo de mensaje
+                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
+                null,                              // Icono (puede ser null)
+                new Object[]{},                    // No se usan opciones estándar
+                null                               // Valor inicial (no necesario aquí)
+        );
+
+        // Añade el botón al JOptionPane
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Éxito");
+
+        // Añade un ActionListener al botón
+        btnAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+            }
+        });
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
     }
 
-    private String generarNumeroAleatorio(int min, int max) {
-        Random random = new Random();
-        int numeroAleatorio = random.nextInt(max - min + 1) + min;
-        return String.format("%04d", numeroAleatorio);
+    public void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado
+        JButton btnAceptar = new JButton("ACEPTAR");
+        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE);
+        btnAceptar.setFocusPainted(false);
+
+        // Crea un JOptionPane
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                           // Mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
+                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
+                null,                              // Icono (puede ser null)
+                new Object[]{},                    // No se usan opciones estándar
+                null                               // Valor inicial (no necesario aquí)
+        );
+
+        // Añade el botón al JOptionPane
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Error");
+
+        // Añade un ActionListener al botón
+        btnAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+            }
+        });
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
     }
 
     public static void main(String[] args) {

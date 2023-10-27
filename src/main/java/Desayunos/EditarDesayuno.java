@@ -549,11 +549,11 @@ public class EditarDesayuno extends JFrame {
                         boolean resultado = ImageIO.write(imagen, "jpg", finalDirectorio);
 
                         if (!resultado) {
-                            JOptionPane.showMessageDialog(null, "Error al guardar la imagen", "Error", JOptionPane.ERROR_MESSAGE);
+                            mostrarDialogoPersonalizadoError("Error al guardar la imagen.", Color.decode("#C62828"));
                             return; // Detiene la ejecución adicional si falla el guardado
                         }
                     } catch (IOException ex) {
-                        JOptionPane.showMessageDialog(null, "Error al procesar la imagen: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                        mostrarDialogoPersonalizadoError("Error al procesar la imagen: " + ex.getMessage(), Color.decode("#C62828"));
                         ex.printStackTrace();
                         return;
                     }
