@@ -9,10 +9,7 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.sql.*;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -22,33 +19,24 @@ import java.util.List;
 import java.util.*;
 
 public class CrearEvento extends JFrame {
-    private JTextField campoIdentidad, campoTelefono;
+    private JTextField campoIdentidad, campoTelefono, campoBusquedaMateriales;
+    private TextPrompt placeholder = new TextPrompt(" Buscar por nombre de producto", campoBusquedaMateriales);
     private JLabel lbl0, lbl1, lbl2, lbl3, lbl4, lbl5, lbl6, lbl7, lbl8, lbl9, lbl10, lbl11;
     private JTextArea campoDireccion;
-    private JButton botonGuardar;
-    private JButton botonCancelar;
+    private JButton botonGuardar, botonCancelar, botonLimpiar, cancelarButton, agregarButton;
+    private JButton agregarMobiliarioButton, agregarGloboButton, agregarArregloButton, agregarFloresButton, agregarManualidadesButton;
     private JTable tablaProductos;
-    private JPanel panel1, panel2, panel3, panel5, panel6, panel7;
-    private JButton agregarMobiliarioButton, agregarGloboButton, agregarArregloButton, agregarFloresButton;
+    private JPanel panel1, panel2, panel3, panel5, panel6, panel7, panelFecha, panelInicio, panelFin;
     private JScrollPane panel4;
-    private JButton agregarButton;
-    private JTextField campoBusquedaMateriales;
+    private JDatePickerImpl datePicker; // Declare the datePicker variable at the class level
     int categoriaSeleccionada = 0;
-    private TextPrompt placeholder = new TextPrompt(" Buscar por nombre de producto", campoBusquedaMateriales);
-    private JButton cancelarButton;
     private JComboBox<ClienteEvento> jbcClientes;
     private JPanel jpanelDireccion;
     private JLabel jtextCatidadTotalMateriales;
-    private JButton botonLimpiar;
     private JComboBox jbcTipoEvento;
-    private JPanel panelFecha, panelInicio, panelFin;
-    private JSpinner spinnerHora1;
-    private JSpinner spinnerMin1;
-    private JSpinner spinnerHora2;
-    private JSpinner spinnerMin2;
-    private JComboBox comboBox1;
-    private JComboBox comboBox2;
-    private JButton agregarManualidadesButton;
+    private JSpinner spinnerHora1, spinnerMin1, spinnerHora2, spinnerMin2;
+    private JComboBox comboBox1, comboBox2;
+    private JPanel panel8;
     private JTextField campoNombre;
     private JTextArea campoDescripcion;
     private int selectTabla = 1;
@@ -67,10 +55,7 @@ public class CrearEvento extends JFrame {
     private Map<String,String> tiposTablas = new HashMap<>();
     private String imagePath = "";
     private CrearEvento actual = this;
-    private Conexion sql;
-    private Connection mysql;
-    private String nombreFile;
-    private String urlDestino = "";
+
     private DefaultTableModel modeloProductos;
     Font fontTitulo = new Font("Century Gothic", Font.BOLD, 17);
     Font font = new Font("Century Gothic", Font.BOLD, 17);
@@ -104,29 +89,37 @@ public class CrearEvento extends JFrame {
     Color darkColorPink = new Color(233, 30, 99);
     Color darkColorRed = new Color(244, 67, 54);
     Color darkColorBlue = new Color(33, 150, 243);
+    Color textColor = Color.decode("#263238");
     EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
-    private JDatePickerImpl datePicker; // Declare the datePicker variable at the class level
 
+    private Conexion sql;
+    private Connection mysql;
+    private String nombreFile;
+    private String urlDestino = "";
     public CrearEvento() {
         super("");
         setSize(1080, 680);
         setLocationRelativeTo(null);
         setContentPane(panel1);
         sql = new Conexion();
+
         campoDireccion.setLineWrap(true);
         campoDireccion.setWrapStyleWord(true);
         configurarTablaMateriales();
 
+        // Horas
         SpinnerModel hourModel = new SpinnerNumberModel(1, 1, 12, 1);
         SpinnerModel hourModel1 = new SpinnerNumberModel(1, 1, 12, 1);
         SpinnerModel minuteModel = new SpinnerNumberModel(0, 0, 59, 1);
         SpinnerModel minuteModel1 = new SpinnerNumberModel(0, 0, 59, 1);
+
         spinnerHora1.setModel(hourModel);
         spinnerHora2.setModel(hourModel1);
 
         spinnerMin1.setModel(minuteModel);
         spinnerMin2.setModel(minuteModel1);
 
+        // Calendario
         UtilDateModel dateModel = new UtilDateModel();
         Properties properties = new Properties();
         properties.put("text.today", "Hoy");
@@ -135,17 +128,24 @@ public class CrearEvento extends JFrame {
 
         JDatePanelImpl datePanel = new JDatePanelImpl(dateModel, properties);
         datePicker = new JDatePickerImpl(datePanel, new CrearEvento.SimpleDateFormatter());  // Proporcionar un formateador
+        datePicker.getJFormattedTextField().setForeground(Color.decode("#263238"));
+        datePicker.getJFormattedTextField().setBackground(Color.decode("#D7D7D7"));
+        datePicker.setBackground(Color.decode("#F5F5F5"));
 
-        Calendar tomorrow = getTomorrow(); // Obtén el día siguiente al actual
+        // Primero, obtén el botón del datePicker
+        JButton button = (JButton) datePicker.getComponent(1);
+        button.setForeground(Color.decode("#FFFFFF"));
+        button.setBackground(Color.decode("#263238"));
+        button.setFocusable(false);
 
+        Calendar tomorrow = getTomorrow();
         dateModel.addChangeListener(e -> {
             handleDateChange(dateModel, tomorrow);
         });
 
-        // Show initial date in date field (puede ser el día siguiente al actual)
         handleDateChange(dateModel, tomorrow);
-
         panelFecha.add(datePicker);
+        panelFecha.setBackground(Color.decode("#F5F5F5"));
 
         // Establecer ancho y alto deseados para el paneldescripcion
         int panelDesWidth = 80;
@@ -224,6 +224,7 @@ public class CrearEvento extends JFrame {
         panel5.setBackground(Color.decode("#F5F5F5"));
         panel6.setBackground(Color.decode("#F5F5F5"));
         panel7.setBackground(Color.decode("#F5F5F5"));
+        panel8.setBackground(Color.decode("#F5F5F5"));
         jpanelDireccion.setBackground(Color.decode("#F5F5F5"));
         panelFecha.setBackground(Color.decode("#F5F5F5"));
         panelInicio.setBackground(Color.decode("#F5F5F5"));
@@ -233,10 +234,7 @@ public class CrearEvento extends JFrame {
 
         JTableHeader header = tablaProductos.getTableHeader();
         header.setForeground(Color.WHITE);
-        header.setBackground(darkColorCyan);
-
-        // Color de texto para los JTextField
-        Color textColor = Color.decode("#212121");
+        header.setBackground(Color.decode("#263238"));
 
         // Crea un margen de 10 píxeles desde el borde inferior
         EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
@@ -244,23 +242,26 @@ public class CrearEvento extends JFrame {
         // Color de texto de los botones
         botonCancelar.setForeground(Color.WHITE);
         botonGuardar.setForeground(Color.WHITE);
-        agregarMobiliarioButton.setForeground(Color.DARK_GRAY);
         botonLimpiar.setForeground(Color.WHITE);
         cancelarButton.setForeground(Color.WHITE);
         agregarButton.setForeground(Color.WHITE);
-        agregarGloboButton.setForeground(Color.DARK_GRAY);
-        agregarArregloButton.setForeground(Color.DARK_GRAY);
-        agregarFloresButton.setForeground(Color.DARK_GRAY);
-        agregarManualidadesButton.setForeground(Color.DARK_GRAY);
+        agregarGloboButton.setForeground(Color.WHITE);
+        agregarArregloButton.setForeground(Color.WHITE);
+        agregarFloresButton.setForeground(Color.WHITE);
+        agregarManualidadesButton.setForeground(Color.WHITE);
+        agregarMobiliarioButton.setForeground(Color.WHITE);
 
         // Color de fondo de los botones
         botonCancelar.setBackground(darkColorBlue);
         botonGuardar.setBackground(darkColorAqua);
-        agregarMobiliarioButton.setBackground(lightColorAmber);
-        agregarFloresButton.setBackground(lightColorAqua);
-        agregarGloboButton.setBackground(lightColorCyan);
-        agregarArregloButton.setBackground(lightColorRosado);
-        agregarManualidadesButton.setBackground(lightColorVerdeLima);
+        agregarMobiliarioButton.setBackground(Color.decode("#FF5722"));
+        agregarFloresButton.setBackground(Color.decode("#2196F3"));
+        agregarGloboButton.setBackground(Color.decode("#9C27B0"));
+        agregarArregloButton.setBackground(Color.decode("#00BCD4"));
+        agregarManualidadesButton.setBackground(Color.decode("#E91E63"));
+        //agregarMaterialButton.setBackground(Color.decode("#795548"));
+        //agregarTarjetasButton.setBackground(Color.decode("#E81E12"));
+        //agregarDesayunosButton.setBackground(Color.decode("#3F51B5"));
         botonLimpiar.setBackground(darkColorRed);
         agregarButton.setBackground(darkColorCyan);
         cancelarButton.setBackground(darkColorRed);
@@ -456,12 +457,10 @@ public class CrearEvento extends JFrame {
 
                         PoliModeloProducto nuevoModelo = new PoliModeloProducto(new ArrayList<>());
                         tablaProductos.setModel(nuevoModelo);
-                        configurarTablaMateriales();
-
                         calcularTotalTabla();
                         configurarTablaMateriales();
-                        //actualizarLbl8y10();
-
+                        tablaProductos.getColumnModel().getColumn(5).setCellRenderer(new CrearEvento.ButtonRenderer());
+                        tablaProductos.getColumnModel().getColumn(5).setCellEditor(new CrearEvento.ButtonEditor());
                         dialog.dispose();
                     }
                 });
@@ -516,10 +515,18 @@ public class CrearEvento extends JFrame {
         botonCancelar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                eliminarDetallesMaterial();
+                ListaEventos listaEventos = new ListaEventos();
+                listaEventos.setVisible(true);
+                actual.dispose();
+            }
+        });
 
-                    ListaEventos listaEventos = new ListaEventos();
-                    listaEventos.setVisible(true);
-                    actual.dispose();
+        // Agregar WindowListener
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                eliminarDetallesMaterial();
             }
         });
 
@@ -562,6 +569,10 @@ public class CrearEvento extends JFrame {
                 int horaFinal = (int) spinnerHora2.getValue();
                 int minutoFinal = (int) spinnerMin2.getValue();
 
+                // Obtener los valores de los JComboBox de AM/PM
+                String amPmInicial = comboBox1.getSelectedItem().toString();
+                String amPmFinal = comboBox2.getSelectedItem().toString();
+
                 if (horaInicial == 0 && minutoInicial == 0) {
                     validacion++;
                     mensaje += "La hora inicial\n";
@@ -574,6 +585,11 @@ public class CrearEvento extends JFrame {
 
                 if (validacion > 0) {
                     JOptionPane.showMessageDialog(null, mensaje, "Validación", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                if (horaFinal == horaInicial && minutoInicial == minutoFinal && amPmInicial == amPmFinal){
+                    JOptionPane.showMessageDialog(null, "La hora inicial no puede ser la misma que la hora final", "Validación", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
@@ -807,10 +823,9 @@ public class CrearEvento extends JFrame {
                     agregarManualidadesButton.setVisible(true);
                     // Actualizar la tabla con los detalles actualizados
                     tablaProductos.setModel(cargarDetallesMateriales());
+                    configurarTablaMateriales();
                     tablaProductos.getColumnModel().getColumn(5).setCellRenderer(new CrearEvento.ButtonRenderer());
                     tablaProductos.getColumnModel().getColumn(5).setCellEditor(new CrearEvento.ButtonEditor());
-
-                    configurarTablaMateriales();
                     //actualizarLbl8y10();
                 } else {
                     // Crea un botón personalizado
@@ -893,110 +908,6 @@ public class CrearEvento extends JFrame {
         }
     }
 
-    private double obtenerPrecioMaterialDesdeBD(int id_material, String tipo) {
-        double precio = 0.0;
-
-        try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("SELECT " +
-                     (tipo.equals("T") ? "precio_tarjeta" :
-                             tipo.equals("D") ? "precio_desayuno" :
-                                             tipo.equals("F") ? "precio" :
-                                                     tipo.equals("A") ? "precio" :
-                                                             tipo.equals("W") ? "precioUnitario" :
-                                                                     tipo.equals("M") ? "precio_manualidad" :
-                                                                        tipo.equals("G") ? "precio" :
-                                                                             "precio_default") +
-                     " FROM " +
-                     (tipo.equals("T") ? "tarjetas" :
-                             tipo.equals("D") ? "desayunos" :
-                                             tipo.equals("F") ? "floristeria" :
-                                                     tipo.equals("A") ? "arreglos" :
-                                                             tipo.equals("W") ? "mobiliario" :
-                                                                     tipo.equals("M") ? "manualidades" :
-                                                                             tipo.equals("G") ? "globos" :
-                                                                             "default_table") +
-                     " WHERE id = ?")) {
-            preparedStatement.setInt(1, id_material);
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next()) {
-                precio = resultSet.getDouble(
-                        tipo.equals("T") ? "precio_tarjeta" :
-                                tipo.equals("D") ? "precio_desayuno" :
-                                                tipo.equals("F") ? "precio" :
-                                                        tipo.equals("A") ? "precio" :
-                                                                tipo.equals("W") ? "precioUnitario" :
-                                                                        tipo.equals("M") ? "precio_manualidad" :
-                                                                            tipo.equals("G") ? "precio" :
-                                                                                "precio_default");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al obtener el precio del material desde la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-
-        return precio;
-    }
-
-    private void limpiarTablaMateriales() {
-        mobiliarioList.clear();
-        DefaultTableModel emptyModel = new DefaultTableModel();
-        tablaProductos.setModel(emptyModel);
-    }
-
-    private void eliminarDetallesMaterial() {
-        try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM detalles_desayunos WHERE desayuno_id IS NULL")) {
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    private double calcularTotalTabla() {
-        double sumaTotal = 0.0;
-        TableModel modelo = tablaProductos.getModel();
-        PoliModeloProducto modeloProductos = (PoliModeloProducto) modelo;
-
-        // Iterar por todas las filas del modelo
-        for (int i = 0; i < modeloProductos.getRowCount(); i++) {
-            try {
-                // Obtener el total de la fila y sumarlo al total general
-                Object valorCelda = modeloProductos.getValueAt(i, 4); // Suponiendo que la columna "total" está en el índice 4 (índice basado en 0)
-                if (valorCelda != null) {
-                    String totalStr = valorCelda.toString();
-                    double total = extraerValorNumerico(totalStr);
-                    sumaTotal += total;
-                }
-            } catch (NumberFormatException e) {
-                System.err.println("Se encontró un formato de número no válido. Se omite el cálculo para la fila " + i);
-                System.err.println("Valor que causa el error: " + modeloProductos.getValueAt(i, 4));
-            }
-        }
-
-        // Actualizar el lbl9 con el total calculado
-        DecimalFormat decimalFormat = new DecimalFormat("#.00");
-        if(sumaTotal == 0){
-            lbl11.setText("0.00");
-        }else {
-            String sumaTotalFormateado = decimalFormat.format(sumaTotal);
-            lbl11.setText(" " + sumaTotalFormateado);
-        }
-
-        return sumaTotal;
-    }
-
-    private double extraerValorNumerico(String valor) {
-        String valorNumerico = valor.replace(',', '.');
-        try {
-            return Double.parseDouble(valorNumerico);
-        } catch (NumberFormatException e) {
-            System.err.println("Se encontró un formato de número no válido. No se puede convertir a double: " + valor);
-            return 0.0;
-        }
-    }
-
     private PoliModeloProducto cargarDetallesMateriales() {
         selectTabla = 0;
 
@@ -1018,8 +929,7 @@ public class CrearEvento extends JFrame {
 
         // Configurar el ancho de las columnas y alineaciones de las celdas
         configurarTablaMateriales();
-
-        return new PoliModeloProducto(productosListTemporal);
+         return new PoliModeloProducto(productosListTemporal);
     }
 
     private PoliModeloMobiliario cargarDatosMobiliario() {
@@ -1346,13 +1256,13 @@ public class CrearEvento extends JFrame {
                     PoliModeloProducto productoModel = (PoliModeloProducto) model;
                     PoliProducto producto = productoModel.getProducto(modelRow);
 
-                    // Obtén el ID del detalle de pedido utilizando getIdDetalle
-                    int detallePedidoId = producto.getIdDetalle();
+                    // Obtén el ID del detalle de evento utilizando getIdDetalle
+                    int detalleEventoId = producto.getIdDetalle();
 
                     try (Connection connection = sql.conectamysql();
                          PreparedStatement preparedStatement = connection.prepareStatement(
                                  "DELETE FROM detalles_eventos WHERE id = ?")) {
-                        preparedStatement.setInt(1, detallePedidoId);
+                        preparedStatement.setInt(1, detalleEventoId);
                         preparedStatement.executeUpdate();
                     } catch (SQLException ex) {
                         ex.printStackTrace();
@@ -1361,11 +1271,9 @@ public class CrearEvento extends JFrame {
 
                     // Elimina el elemento tanto de la lista temporal como de la tabla
                     productoModel.removeProductAtIndex(modelRow);
-                    calcularTotalTabla();
-                    configurarTablaMateriales();
+
                     fireEditingStopped();
-
-
+                    calcularTotalTabla();
                 }
             }
         }
@@ -1406,7 +1314,6 @@ public class CrearEvento extends JFrame {
         setFormattedDate(selectedDate);
     }
 
-
     public boolean isDateOutOfRange(Date selectedDate, Calendar tomorrow) {
         Calendar selectedCal = Calendar.getInstance();
         selectedCal.setTime(selectedDate);
@@ -1418,15 +1325,15 @@ public class CrearEvento extends JFrame {
         return selectedCal.before(tomorrow) || selectedCal.after(maxDate);
     }
 
-
     public void setFormattedDate(java.util.Date selectedDate) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd 'de' MMMM yyyy"); // Desired date format
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, d 'de' MMMM yyyy", new Locale("es", "ES")); // Formato en español
         String formattedDate = (selectedDate != null) ? dateFormat.format(selectedDate) : "";
         datePicker.getJFormattedTextField().setText(formattedDate);
     }
 
     public class SimpleDateFormatter extends JFormattedTextField.AbstractFormatter {
-        private final String datePattern = "yyyy-MM-dd";
+
+        private final String datePattern = "EEEE, d 'de' MMMM yyyy";
         private final SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);
 
         @Override
@@ -1446,7 +1353,6 @@ public class CrearEvento extends JFrame {
             return "";
         }
     }
-
 
     private void guardarEvento() {
         String direccion = campoDireccion.getText().trim();
@@ -1519,28 +1425,6 @@ public class CrearEvento extends JFrame {
         }
     }
 
-    private int obtenerCantidadMaterialDesdeBD(int id_material, String tipo) {
-        int availableQuantity = 0;
-
-        try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement(
-                     "SELECT cantidad FROM " + tiposTablas.get(tipo) + " WHERE id = ?"
-             )) {
-            preparedStatement.setInt(1, id_material);
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next()) {
-                availableQuantity = resultSet.getInt("cantidad");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al obtener la cantidad desde la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-
-        return availableQuantity;
-    }
-
-
     private void guardarDetalleEvento(int id_material, int cantidad, String tipo) {
         double availableQuantity = obtenerCantidadMaterialDesdeBD(id_material, tipo);
 
@@ -1566,6 +1450,131 @@ public class CrearEvento extends JFrame {
         }
     }
 
+    private int obtenerCantidadMaterialDesdeBD(int id_material, String tipo) {
+        int availableQuantity = 0;
+
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "SELECT cantidad FROM " + tiposTablas.get(tipo) + " WHERE id = ?"
+             )) {
+            preparedStatement.setInt(1, id_material);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                availableQuantity = resultSet.getInt("cantidad");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al obtener la cantidad desde la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        return availableQuantity;
+    }
+
+    private double obtenerPrecioMaterialDesdeBD(int id_material, String tipo) {
+        double precio = 0.0;
+
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT " +
+                     (tipo.equals("T") ? "precio_tarjeta" :
+                             tipo.equals("D") ? "precio_desayuno" :
+                                     tipo.equals("F") ? "precio" :
+                                             tipo.equals("A") ? "precio" :
+                                                     tipo.equals("W") ? "precioUnitario" :
+                                                             tipo.equals("M") ? "precio_manualidad" :
+                                                                     tipo.equals("G") ? "precio" :
+                                                                             "precio_default") +
+                     " FROM " +
+                     (tipo.equals("T") ? "tarjetas" :
+                             tipo.equals("D") ? "desayunos" :
+                                     tipo.equals("F") ? "floristeria" :
+                                             tipo.equals("A") ? "arreglos" :
+                                                     tipo.equals("W") ? "mobiliario" :
+                                                             tipo.equals("M") ? "manualidades" :
+                                                                     tipo.equals("G") ? "globos" :
+                                                                             "default_table") +
+                     " WHERE id = ?")) {
+            preparedStatement.setInt(1, id_material);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                precio = resultSet.getDouble(
+                        tipo.equals("T") ? "precio_tarjeta" :
+                                tipo.equals("D") ? "precio_desayuno" :
+                                        tipo.equals("F") ? "precio" :
+                                                tipo.equals("A") ? "precio" :
+                                                        tipo.equals("W") ? "precioUnitario" :
+                                                                tipo.equals("M") ? "precio_manualidad" :
+                                                                        tipo.equals("G") ? "precio" :
+                                                                                "precio_default");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al obtener el precio del material desde la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        return precio;
+    }
+
+    private double calcularTotalTabla() {
+        double sumaTotal = 0.0;
+        TableModel modelo = tablaProductos.getModel();
+        PoliModeloProducto modeloProductos = (PoliModeloProducto) modelo;
+
+        // Iterar por todas las filas del modelo
+        for (int i = 0; i < modeloProductos.getRowCount(); i++) {
+            try {
+                // Obtener el total de la fila y sumarlo al total general
+                Object valorCelda = modeloProductos.getValueAt(i, 4); // Suponiendo que la columna "total" está en el índice 4 (índice basado en 0)
+                if (valorCelda != null) {
+                    String totalStr = valorCelda.toString();
+                    double total = extraerValorNumerico(totalStr);
+                    sumaTotal += total;
+                }
+            } catch (NumberFormatException e) {
+                System.err.println("Se encontró un formato de número no válido. Se omite el cálculo para la fila " + i);
+                System.err.println("Valor que causa el error: " + modeloProductos.getValueAt(i, 4));
+            }
+        }
+
+        // Actualizar el lbl9 con el total calculado
+        DecimalFormat decimalFormat = new DecimalFormat("#.00");
+        if(sumaTotal == 0){
+            lbl11.setText("0.00");
+        }else {
+            String sumaTotalFormateado = decimalFormat.format(sumaTotal);
+            lbl11.setText(" " + sumaTotalFormateado);
+        }
+
+        return sumaTotal;
+    }
+
+    private double extraerValorNumerico(String valor) {
+        String valorNumerico = valor.replace(',', '.');
+        try {
+            return Double.parseDouble(valorNumerico);
+        } catch (NumberFormatException e) {
+            System.err.println("Se encontró un formato de número no válido. No se puede convertir a double: " + valor);
+            return 0.0;
+        }
+    }
+
+    private void limpiarTablaMateriales() {
+        mobiliarioList.clear();
+        DefaultTableModel emptyModel = new DefaultTableModel();
+        tablaProductos.setModel(emptyModel);
+    }
+
+    private void eliminarDetallesMaterial() {
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "DELETE FROM detalles_eventos WHERE evento_id IS NULL OR evento_id NOT IN (SELECT id FROM eventos)"
+             )) {
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     public static void main(String[] args) {
         CrearEvento crearEvento = new CrearEvento();

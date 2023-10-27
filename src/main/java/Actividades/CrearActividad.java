@@ -1,5 +1,6 @@
 package Actividades;
 
+import Eventos.CrearEvento;
 import Objetos.Conexion;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
@@ -17,6 +18,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Properties;
 
 public class CrearActividad extends JFrame {
@@ -77,6 +79,7 @@ public class CrearActividad extends JFrame {
         campoDescripcion.setLineWrap(true);
         campoDescripcion.setWrapStyleWord(true);
 
+        // Horas
         SpinnerModel hourModel = new SpinnerNumberModel(1, 1, 12, 1);
         SpinnerModel hourModel1 = new SpinnerNumberModel(1, 1, 12, 1);
         SpinnerModel minuteModel = new SpinnerNumberModel(0, 0, 59, 1);
@@ -84,9 +87,11 @@ public class CrearActividad extends JFrame {
 
         spinnerHora1.setModel(hourModel);
         spinnerHora2.setModel(hourModel1);
+
         spinnerMin1.setModel(minuteModel);
         spinnerMin2.setModel(minuteModel1);
 
+        // Calendario
         UtilDateModel dateModel = new UtilDateModel();
         Properties properties = new Properties();
         properties.put("text.today", "Hoy");
@@ -95,15 +100,24 @@ public class CrearActividad extends JFrame {
 
         JDatePanelImpl datePanel = new JDatePanelImpl(dateModel, properties);
         datePicker = new JDatePickerImpl(datePanel, new CrearActividad.SimpleDateFormatter());  // Proporcionar un formateador
+        datePicker.getJFormattedTextField().setForeground(Color.decode("#263238"));
+        datePicker.getJFormattedTextField().setBackground(Color.decode("#D7D7D7"));
+        datePicker.setBackground(Color.decode("#F5F5F5"));
 
-        Calendar tomorrow = getTomorrow(); // Obtén el día siguiente al actual
+        // Primero, obtén el botón del datePicker
+        JButton button = (JButton) datePicker.getComponent(1);
+        button.setForeground(Color.decode("#FFFFFF"));
+        button.setBackground(Color.decode("#263238"));
+        button.setFocusable(false);
 
+        Calendar tomorrow = getTomorrow();
         dateModel.addChangeListener(e -> {
             handleDateChange(dateModel, tomorrow);
         });
 
         handleDateChange(dateModel, tomorrow);
         panelFecha.add(datePicker);
+        panelFecha.setBackground(Color.decode("#F5F5F5"));
 
         // Establecer ancho y alto deseados para el paneldescripcion
         int panelDirWidth = 80;
@@ -322,6 +336,10 @@ public class CrearActividad extends JFrame {
                 int horaFinal = (int) spinnerHora2.getValue();
                 int minutoFinal = (int) spinnerMin2.getValue();
 
+                // Obtener los valores de los JComboBox de AM/PM
+                String amPmInicial = comboBox1.getSelectedItem().toString();
+                String amPmFinal = comboBox2.getSelectedItem().toString();
+
                 if (horaInicial == 0 && minutoInicial == 0) {
                     validacion++;
                     mensaje += "La hora inicial\n";
@@ -337,6 +355,11 @@ public class CrearActividad extends JFrame {
                     return;
                 }
 
+                if (horaFinal == horaInicial && minutoInicial == minutoFinal && amPmInicial == amPmFinal){
+                    JOptionPane.showMessageDialog(null, "La hora inicial no puede ser la misma que la hora final", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
                 if (!campoDireccion.getText().trim().isEmpty()) {
                     String texto = campoDireccion.getText().trim();
                     int longitud = texto.length();
@@ -345,7 +368,6 @@ public class CrearActividad extends JFrame {
                         JOptionPane.showMessageDialog(null, "La dirección debe tener entre 2 y 200 caracteres.", "Validación", JOptionPane.ERROR_MESSAGE);
                     }
                 }
-
 
                 if (!campoDescripcion.getText().trim().isEmpty()) {
                     String texto = campoDescripcion.getText().trim();
@@ -448,13 +470,14 @@ public class CrearActividad extends JFrame {
     }
 
     public void setFormattedDate(java.util.Date selectedDate) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd 'de' MMMM yyyy"); // Desired date format
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, d 'de' MMMM yyyy", new Locale("es", "ES")); // Formato en español
         String formattedDate = (selectedDate != null) ? dateFormat.format(selectedDate) : "";
         datePicker.getJFormattedTextField().setText(formattedDate);
     }
 
     public class SimpleDateFormatter extends JFormattedTextField.AbstractFormatter {
-        private final String datePattern = "yyyy-MM-dd";
+
+        private final String datePattern = "EEEE, d 'de' MMMM yyyy";
         private final SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);
 
         @Override

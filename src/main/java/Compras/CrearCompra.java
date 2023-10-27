@@ -163,6 +163,10 @@ public class CrearCompra extends JFrame {
         tablaProductos.getColumnModel().getColumn(6).setCellEditor(new ButtonEditor(new JCheckBox()));
         configurarTablaProductos();
 
+        JTableHeader header = tablaProductos.getTableHeader();
+        header.setForeground(Color.WHITE);
+        header.setBackground(Color.decode("#263238"));
+
         campoPrecio.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {

@@ -62,7 +62,6 @@ public class CrearDesayuno extends JFrame {
     private List<PoliTarjeta> tarjetaListTemporal = new ArrayList<>();
     private List<PoliGlobo> globoList = new ArrayList<>();
     private List<PoliGlobo> globolListTemporal = new ArrayList<>();
-
     private Map<String,String> tiposDescripcion = new HashMap<>();
     private Map<String,String> tiposTablas = new HashMap<>();
     private String imagePath = "";
@@ -125,7 +124,6 @@ public class CrearDesayuno extends JFrame {
         tiposTablas.put("G","globos");
         tiposTablas.put("M","materiales");
 
-
         jcbProveedores.addItem(new ProveedorDesayuno(0,"","")); // Agregar mensaje inicial
         cargarProveedores();
 
@@ -183,7 +181,7 @@ public class CrearDesayuno extends JFrame {
 
         JTableHeader header = jtableMateriales.getTableHeader();
         header.setForeground(Color.WHITE);
-        header.setBackground(darkColorCyan);
+        header.setBackground(Color.decode("#263238"));
 
         // Color de texto para los JTextField
         Color textColor = Color.decode("#212121");
@@ -199,23 +197,23 @@ public class CrearDesayuno extends JFrame {
         // Color de texto de los botones
         botonCancelar.setForeground(Color.WHITE);
         botonGuardar.setForeground(Color.WHITE);
-        agregarMaterialButton.setForeground(Color.DARK_GRAY);
         botonCargarImagen.setForeground(Color.WHITE);
         botonLimpiar.setForeground(Color.WHITE);
         cancelarButton.setForeground(Color.WHITE);
         agregarButton.setForeground(Color.WHITE);
-        agregarGloboButton.setForeground(Color.DARK_GRAY);
-        agregarTarjetasButton.setForeground(Color.DARK_GRAY);
-        agregarFloresButton.setForeground(Color.DARK_GRAY);
+        agregarMaterialButton.setForeground(Color.WHITE);
+        agregarGloboButton.setForeground(Color.WHITE);
+        agregarTarjetasButton.setForeground(Color.WHITE);
+        agregarFloresButton.setForeground(Color.WHITE);
 
         // Color de fondo de los botones
         botonCancelar.setBackground(darkColorBlue);
         botonGuardar.setBackground(darkColorAqua);
         botonCargarImagen.setBackground(darkColorPink);
-        agregarMaterialButton.setBackground(lightColorAmber);
-        agregarFloresButton.setBackground(lightColorAqua);
-        agregarGloboButton.setBackground(lightColorCyan);
-        agregarTarjetasButton.setBackground(lightColorRosado);
+        agregarFloresButton.setBackground(Color.decode("#2196F3"));
+        agregarGloboButton.setBackground(Color.decode("#9C27B0"));
+        agregarMaterialButton.setBackground(Color.decode("#795548"));
+        agregarTarjetasButton.setBackground(Color.decode("#E81E12"));
         botonLimpiar.setBackground(darkColorRed);
         agregarButton.setBackground(darkColorCyan);
         cancelarButton.setBackground(darkColorRed);
@@ -324,6 +322,8 @@ public class CrearDesayuno extends JFrame {
                 jtableMateriales.setModel(cargarDetallesMateriales());
                 actualizarLbl8y10();
                 configurarTablaMateriales();
+                jtableMateriales.getColumnModel().getColumn(5).setCellRenderer(new CrearDesayuno.ButtonRenderer());
+                jtableMateriales.getColumnModel().getColumn(5).setCellEditor(new CrearDesayuno.ButtonEditor());
             }
         });
 
@@ -372,10 +372,12 @@ public class CrearDesayuno extends JFrame {
 
                         PoliModeloProducto nuevoModelo = new PoliModeloProducto(new ArrayList<>());
                         jtableMateriales.setModel(nuevoModelo);
-                        configurarTablaMateriales();
-
                         calcularTotalTabla();
                         actualizarLbl8y10();
+
+                        configurarTablaMateriales();
+                        jtableMateriales.getColumnModel().getColumn(5).setCellRenderer(new CrearDesayuno.ButtonRenderer());
+                        jtableMateriales.getColumnModel().getColumn(5).setCellEditor(new CrearDesayuno.ButtonEditor());
 
                         dialog.dispose();
                     }
@@ -397,7 +399,6 @@ public class CrearDesayuno extends JFrame {
                 dialog.setVisible(true);
             }
         });
-
 
         campoNombre.addKeyListener(new KeyAdapter() {
             @Override
@@ -537,7 +538,6 @@ public class CrearDesayuno extends JFrame {
             }
         });
 
-        // Listener para el campoManoObra
         campoManoObra.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -555,12 +555,11 @@ public class CrearDesayuno extends JFrame {
             }
         });
 
-
-
         botonCancelar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                    limpiarTablaMateriales();
+                    eliminarDetallesMaterial();
                     ListaDesayunos listaDesayuno = new ListaDesayunos();
                     listaDesayuno.setVisible(true);
                     actual.dispose();
@@ -722,7 +721,7 @@ public class CrearDesayuno extends JFrame {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         // Acciones para el botón Sí
-                        guardarManualidades();
+                        guardarDesayuno();
                         dialog.dispose();
                         ListaDesayunos listaDesayunos = new ListaDesayunos();
                         listaDesayunos.setVisible(true);
@@ -929,7 +928,6 @@ public class CrearDesayuno extends JFrame {
                         }
                 }
 
-
                 if (!materialDuplicado) {
                     // Llamar al método guardarDetalleDesayuno con los tres argumentos
                     guardarDetalleDesayuno(id_materialEntero, cantidadMaterial, l.getTipo());
@@ -956,6 +954,9 @@ public class CrearDesayuno extends JFrame {
                     jtableMateriales.getColumnModel().getColumn(5).setCellEditor(new CrearDesayuno.ButtonEditor());
 
                     configurarTablaMateriales();
+                    jtableMateriales.getColumnModel().getColumn(5).setCellRenderer(new CrearDesayuno.ButtonRenderer());
+                    jtableMateriales.getColumnModel().getColumn(5).setCellEditor(new CrearDesayuno.ButtonEditor());
+
                     actualizarLbl8y10();
                 } else {
                     // Crea un botón personalizado
@@ -1009,6 +1010,13 @@ public class CrearDesayuno extends JFrame {
                 }
             }
         });
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                eliminarDetallesMaterial();
+            }
+        });
     }
 
     private void configurarTablaMateriales() {
@@ -1052,7 +1060,7 @@ public class CrearDesayuno extends JFrame {
         }
     }
 
-    private void guardarManualidades() {
+    private void guardarDesayuno() {
         String nombre = campoNombre.getText().trim();
 
         String precioManualidadText = campoPrecioDesayuno.getText().replace("L ", "").replace(",", "").replace("_", "");
@@ -1621,19 +1629,32 @@ public class CrearDesayuno extends JFrame {
         public void actionPerformed(ActionEvent e) {
             if (table != null) {
                 int modelRow = table.convertRowIndexToModel(row);
-                TableModel model = table.getModel();  // Obtener el modelo de la tabla
+                TableModel model = table.getModel();
 
-                // Verificar si el modelo de la tabla es un PoliModeloProducto
                 if (model instanceof PoliModeloProducto) {
                     PoliModeloProducto productoModel = (PoliModeloProducto) model;
+                    PoliProducto producto = productoModel.getProducto(modelRow);
 
-                    // Eliminar el producto tanto de la lista temporal como de la tabla
+                    // Obtén el ID del detalle de evento utilizando getIdDetalle
+                    int detalleDesayunoId = producto.getIdDetalle();
+
+                    try (Connection connection = sql.conectamysql();
+                         PreparedStatement preparedStatement = connection.prepareStatement(
+                                 "DELETE FROM detalles_desayunos WHERE id = ?")) {
+                        preparedStatement.setInt(1, detalleDesayunoId);
+                        preparedStatement.executeUpdate();
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                        // Manejo de excepciones en caso de error en la eliminación en la base de datos.
+                    }
+
+                    // Elimina el elemento tanto de la lista temporal como de la tabla
                     productoModel.removeProductAtIndex(modelRow);
-                }
 
-                fireEditingStopped(); // Mover esta línea aquí para asegurarte de que se complete la edición
-                calcularTotalTabla();
-                actualizarLbl8y10();
+                    fireEditingStopped();
+                    calcularTotalTabla();
+                    actualizarLbl8y10();
+                }
             }
         }
     }

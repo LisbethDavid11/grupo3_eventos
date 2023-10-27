@@ -1,5 +1,6 @@
 package Promociones;
 
+import Eventos.CrearEvento;
 import Materiales.TextPrompt;
 import Modelos.*;
 import Objetos.*;
@@ -11,10 +12,7 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.sql.*;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -116,16 +114,22 @@ public class CrearPromocion extends JFrame {
 
         JDatePanelImpl datePanel = new JDatePanelImpl(dateModel, properties);
         datePicker = new JDatePickerImpl(datePanel, new CrearPromocion.SimpleDateFormatter());  // Proporcionar un formateador
+        datePicker.getJFormattedTextField().setForeground(Color.decode("#263238"));
+        datePicker.getJFormattedTextField().setBackground(Color.decode("#D7D7D7"));
+        datePicker.setBackground(Color.decode("#F5F5F5"));
+
+        // Primero, obtén el botón del datePicker
+        JButton button = (JButton) datePicker.getComponent(1);
+        button.setForeground(Color.decode("#FFFFFF"));
+        button.setBackground(Color.decode("#263238"));
+        button.setFocusable(false);
 
         Calendar tomorrow = getTomorrow(); // Obtén el día siguiente al actual
-
         dateModel.addChangeListener(e -> {
             handleDateChange(dateModel, tomorrow);
         });
 
-        // Show initial date in date field (puede ser el día siguiente al actual)
         handleDateChange(dateModel, tomorrow);
-
         panelFechaInicial.add(datePicker);
 
         UtilDateModel dateModel2 = new UtilDateModel();
@@ -136,16 +140,23 @@ public class CrearPromocion extends JFrame {
 
         JDatePanelImpl datePanel2 = new JDatePanelImpl(dateModel2, properties2);
         datePicker2 = new JDatePickerImpl(datePanel2, new CrearPromocion.SimpleDateFormatter2());  // Proporcionar un formateador
+        datePicker2.getJFormattedTextField().setForeground(Color.decode("#263238"));
+        datePicker2.getJFormattedTextField().setBackground(Color.decode("#D7D7D7"));
+        datePicker2.setBackground(Color.decode("#F5F5F5"));
+
+        // Primero, obtén el botón del datePicker
+        JButton button2 = (JButton) datePicker2.getComponent(1);
+        button2.setForeground(Color.decode("#FFFFFF"));
+        button2.setBackground(Color.decode("#263238"));
+        button2.setFocusable(false);
 
         Calendar tomorrow2 = getTomorrow(); // Obtén el día siguiente al actual
-
         dateModel2.addChangeListener(e -> {
             handleDateChange2(dateModel2, tomorrow2);
         });
 
         // Show initial date in date field (puede ser el día siguiente al actual)
         handleDateChange2(dateModel2, tomorrow2);
-
         panelFechaFinal.add(datePicker2);
 
         // Establecer ancho y alto deseados para el paneldescripcion
@@ -193,7 +204,7 @@ public class CrearPromocion extends JFrame {
 
         JTableHeader header = tablaProductos.getTableHeader();
         header.setForeground(Color.WHITE);
-        header.setBackground(darkColorCyan);
+        header.setBackground(Color.decode("#263238"));
 
         // Color de texto para los JTextField
         Color textColor = Color.decode("#212121");
@@ -303,13 +314,10 @@ public class CrearPromocion extends JFrame {
                         lbl5.setText("0.00");
                         lbl6.setText("0.00");
 
-                        PoliModeloProducto nuevoModelo = new PoliModeloProducto(new ArrayList<>());
+                        PoliModeloProductoPromocion nuevoModelo = new PoliModeloProductoPromocion(new ArrayList<>());
                         tablaProductos.setModel(nuevoModelo);
+
                         configurarTablaMateriales();
-
-                        //calcularTotalTabla();
-                        //actualizarLbl8y10();
-
                         dialog.dispose();
                     }
                 });
@@ -364,6 +372,7 @@ public class CrearPromocion extends JFrame {
         botonCancelar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                    eliminarDetallesMaterial();
                     ListaPromociones listaPromociones = new ListaPromociones();
                     listaPromociones.setVisible(true);
                     actual.dispose();
@@ -622,10 +631,11 @@ public class CrearPromocion extends JFrame {
                     cancelarButton.setVisible(false);
                     // Actualizar la tabla con los detalles actualizados
                     tablaProductos.setModel(cargarDetallesMateriales());
+
+                    configurarTablaMateriales();
                     tablaProductos.getColumnModel().getColumn(7).setCellRenderer(new CrearPromocion.ButtonRenderer());
                     tablaProductos.getColumnModel().getColumn(7).setCellEditor(new CrearPromocion.ButtonEditor());
 
-                    configurarTablaMateriales();
                     //actualizarLbl8y10();
                 } else {
                     // Crea un botón personalizado
@@ -756,6 +766,13 @@ public class CrearPromocion extends JFrame {
                 }
             }
         });
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                eliminarDetallesMaterial();
+            }
+        });
     }
 
     private void configurarTablaMateriales() {
@@ -807,7 +824,7 @@ public class CrearPromocion extends JFrame {
 
     private void eliminarDetallesMaterial() {
         try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM detalles_desayunos WHERE desayuno_id IS NULL")) {
+             PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM detalles_promociones WHERE promocion_id IS NULL")) {
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -1362,8 +1379,6 @@ public class CrearPromocion extends JFrame {
         return cantidadMaterial[0];
     }
 
-
-
     private void showErrorDialog(String message) {
         JButton btnOK = new JButton("Aceptar");
         btnOK.setBackground(darkColorAqua);
@@ -1443,13 +1458,13 @@ public class CrearPromocion extends JFrame {
                     PoliModeloProductoPromocion productoModel = (PoliModeloProductoPromocion) model;
                     PoliProductoPromocion producto = productoModel.getProducto(modelRow);
 
-                    // Obtén el ID del detalle de pedido utilizando getIdDetalle
-                    int detallePedidoId = producto.getIdDetalle();
+                    // Obtén el ID del detalle de evento utilizando getIdDetalle
+                    int detallePromocionId = producto.getIdDetalle();
 
                     try (Connection connection = sql.conectamysql();
                          PreparedStatement preparedStatement = connection.prepareStatement(
                                  "DELETE FROM detalles_promociones WHERE id = ?")) {
-                        preparedStatement.setInt(1, detallePedidoId);
+                        preparedStatement.setInt(1, detallePromocionId);
                         preparedStatement.executeUpdate();
                     } catch (SQLException ex) {
                         ex.printStackTrace();
@@ -1458,10 +1473,11 @@ public class CrearPromocion extends JFrame {
 
                     // Elimina el elemento tanto de la lista temporal como de la tabla
                     productoModel.removeProductAtIndex(modelRow);
-                    calcularTotalTabla();
-                    configurarTablaMateriales();
+
                     fireEditingStopped();
+                    calcularTotalTabla();
                 }
+
             }
         }
     }
@@ -1516,19 +1532,14 @@ public class CrearPromocion extends JFrame {
     }
 
     public void setFormattedDate(java.util.Date selectedDate) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd 'de' MMMM yyyy"); // Desired date format
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, d 'de' MMMM yyyy", new Locale("es", "ES")); // Formato en español
         String formattedDate = (selectedDate != null) ? dateFormat.format(selectedDate) : "";
         datePicker.getJFormattedTextField().setText(formattedDate);
     }
 
-    public void setFormattedDate2(java.util.Date selectedDate) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd 'de' MMMM yyyy"); // Desired date format
-        String formattedDate = (selectedDate != null) ? dateFormat.format(selectedDate) : "";
-        datePicker2.getJFormattedTextField().setText(formattedDate);
-    }
-
     public class SimpleDateFormatter extends JFormattedTextField.AbstractFormatter {
-        private final String datePattern = "yyyy-MM-dd";
+
+        private final String datePattern = "EEEE, d 'de' MMMM yyyy";
         private final SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);
 
         @Override
@@ -1539,8 +1550,8 @@ public class CrearPromocion extends JFrame {
         @Override
         public String valueToString(Object value) throws ParseException {
             if (value != null) {
-                if (value instanceof Date) {
-                    return dateFormatter.format((Date) value);
+                if (value instanceof java.util.Date) {
+                    return dateFormatter.format((java.util.Date) value);
                 } else if (value instanceof Calendar) {
                     return dateFormatter.format(((Calendar) value).getTime());
                 }
@@ -1549,9 +1560,16 @@ public class CrearPromocion extends JFrame {
         }
     }
 
+    public void setFormattedDate2(java.util.Date selectedDate) {
+        SimpleDateFormat dateFormat2 = new SimpleDateFormat("EEEE, d 'de' MMMM yyyy", new Locale("es", "ES")); // Formato en español
+        String formattedDate2 = (selectedDate != null) ? dateFormat2.format(selectedDate) : "";
+        datePicker2.getJFormattedTextField().setText(formattedDate2);
+    }
+
     public class SimpleDateFormatter2 extends JFormattedTextField.AbstractFormatter {
-        private final String datePattern = "yyyy-MM-dd";
-        private final SimpleDateFormat dateFormatter2 = new SimpleDateFormat(datePattern);
+
+        private final String datePattern2 = "EEEE, d 'de' MMMM yyyy";
+        private final SimpleDateFormat dateFormatter2 = new SimpleDateFormat(datePattern2);
 
         @Override
         public Object stringToValue(String text) throws ParseException {
@@ -1561,8 +1579,8 @@ public class CrearPromocion extends JFrame {
         @Override
         public String valueToString(Object value) throws ParseException {
             if (value != null) {
-                if (value instanceof Date) {
-                    return dateFormatter2.format((Date) value);
+                if (value instanceof java.util.Date) {
+                    return dateFormatter2.format((java.util.Date) value);
                 } else if (value instanceof Calendar) {
                     return dateFormatter2.format(((Calendar) value).getTime());
                 }

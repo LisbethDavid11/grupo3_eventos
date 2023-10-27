@@ -3,6 +3,7 @@ package Pedidos;
 import Materiales.TextPrompt;
 import Modelos.*;
 import Objetos.*;
+import Promociones.CrearPromocion;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
@@ -127,7 +128,7 @@ public class CrearPedido extends JFrame {
 
         JTableHeader header = jtableMateriales.getTableHeader();
         header.setForeground(Color.WHITE);
-        header.setBackground(darkColorCyan);
+        header.setBackground(Color.decode("#263238"));
 
         UtilDateModel dateModel = new UtilDateModel();
         Properties properties = new Properties();
@@ -137,9 +138,17 @@ public class CrearPedido extends JFrame {
 
         JDatePanelImpl datePanel = new JDatePanelImpl(dateModel, properties);
         datePicker = new JDatePickerImpl(datePanel, new CrearPedido.SimpleDateFormatter());  // Proporcionar un formateador
+        datePicker.getJFormattedTextField().setForeground(Color.decode("#263238"));
+        datePicker.getJFormattedTextField().setBackground(Color.decode("#D7D7D7"));
+        datePicker.setBackground(Color.decode("#F5F5F5"));
+
+        // Primero, obtén el botón del datePicker
+        JButton button = (JButton) datePicker.getComponent(1);
+        button.setForeground(Color.decode("#FFFFFF"));
+        button.setBackground(Color.decode("#263238"));
+        button.setFocusable(false);
 
         Calendar tomorrow = getTomorrow(); // Obtén el día siguiente al actual
-
         dateModel.addChangeListener(e -> {
             handleDateChange(dateModel, tomorrow);
         });
@@ -185,28 +194,28 @@ public class CrearPedido extends JFrame {
         agregarButton.setBackground(darkColorCyan);
         agregarButton.setFocusPainted(false);
 
-        agregarArregloButton.setForeground(Color.DARK_GRAY);
-        agregarArregloButton.setBackground(lightColorCyan);
+        agregarArregloButton.setForeground(Color.WHITE);
+        agregarArregloButton.setBackground(Color.decode("#00BCD4"));
         agregarArregloButton.setFocusPainted(false);
 
-        agregarMaterialButton.setForeground(Color.DARK_GRAY);
-        agregarMaterialButton.setBackground(Color.lightGray);
+        agregarMaterialButton.setForeground(Color.WHITE);
+        agregarMaterialButton.setBackground(Color.decode("#795548"));
         agregarMaterialButton.setFocusPainted(false);
 
-        agregarTarjetaButton.setForeground(Color.DARK_GRAY);
-        agregarTarjetaButton.setBackground(lightColorAmber);
+        agregarTarjetaButton.setForeground(Color.WHITE);
+        agregarTarjetaButton.setBackground(Color.decode("#E81E12"));
         agregarTarjetaButton.setFocusPainted(false);
 
-        agregarFlorButton.setForeground(Color.DARK_GRAY);
-        agregarFlorButton.setBackground(lightColorAqua);
+        agregarFlorButton.setForeground(Color.WHITE);
+        agregarFlorButton.setBackground(Color.decode("#2196F3"));
         agregarFlorButton.setFocusPainted(false);
 
-        agregarManualidadButton.setForeground(Color.DARK_GRAY);
-        agregarManualidadButton.setBackground(lightColorRosado);
+        agregarManualidadButton.setForeground(Color.WHITE);
+        agregarManualidadButton.setBackground(Color.decode("#E91E63"));
         agregarManualidadButton.setFocusPainted(false);
 
-        agregarDesayunoButton.setForeground(Color.DARK_GRAY);
-        agregarDesayunoButton.setBackground(lightColorVerdeLima);
+        agregarDesayunoButton.setForeground(Color.WHITE);
+        agregarDesayunoButton.setBackground(Color.decode("#3F51B5"));
         agregarDesayunoButton.setFocusPainted(false);
 
         botonLimpiar.setForeground(Color.WHITE);
@@ -399,7 +408,6 @@ public class CrearPedido extends JFrame {
                 configurarTablaMateriales();
                 jtableMateriales.getColumnModel().getColumn(5).setCellRenderer(new CrearPedido.ButtonRenderer());
                 jtableMateriales.getColumnModel().getColumn(5).setCellEditor(new CrearPedido.ButtonEditor());
-
             }
         });
 
@@ -744,16 +752,13 @@ public class CrearPedido extends JFrame {
                         // Actualizar la tabla y otros componentes relacionados
                         PoliModeloProducto nuevoModelo = new PoliModeloProducto(new ArrayList<>());
                         jtableMateriales.setModel(nuevoModelo);
-                        configurarTablaMateriales();
                         calcularTotalTabla();
                         actualizarLbl8y10();
 
-                        //datePicker.getJFormattedTextField().setText("");
-                        //comboBoxCliente.setSelectedIndex(0);
-                        //buttonGroup.clearSelection();
-                        //campoTelefono.setText("");
-                        //campoDescripcion.setText("");
-                        //campoDireccion.setText("");
+                        configurarTablaMateriales();
+                        jtableMateriales.getColumnModel().getColumn(5).setCellRenderer(new CrearPedido.ButtonRenderer());
+                        jtableMateriales.getColumnModel().getColumn(5).setCellEditor(new CrearPedido.ButtonEditor());
+
                         dialog.dispose();
                     }
                 });
@@ -993,6 +998,13 @@ public class CrearPedido extends JFrame {
                     dialog.setVisible(true);
 
                 }
+            }
+        });
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                eliminarDetallesMaterial();
             }
         });
     }
@@ -1855,13 +1867,14 @@ public class CrearPedido extends JFrame {
     }
 
     public void setFormattedDate(java.util.Date selectedDate) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd 'de' MMMM yyyy"); // Desired date format
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, d 'de' MMMM yyyy", new Locale("es", "ES")); // Formato en español
         String formattedDate = (selectedDate != null) ? dateFormat.format(selectedDate) : "";
         datePicker.getJFormattedTextField().setText(formattedDate);
     }
 
     public class SimpleDateFormatter extends JFormattedTextField.AbstractFormatter {
-        private final String datePattern = "yyyy-MM-dd";
+
+        private final String datePattern = "EEEE, d 'de' MMMM yyyy";
         private final SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);
 
         @Override

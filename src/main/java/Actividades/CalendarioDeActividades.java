@@ -26,7 +26,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 public class CalendarioDeActividades extends JFrame {
-    private JLabel yearLabel, monthLabel, tituloLabel;
+    private JLabel yearLabel, monthLabel, tituloLabel, tituloPrincipalLabel;
     private JButton prevButton, nextButton, crearButton;
     private JTable calendarTable;
     private List<Actividad> listaActividades;
@@ -39,6 +39,7 @@ public class CalendarioDeActividades extends JFrame {
     private JTextField busquedaTextField;
     private int realYear, realMonth, realDay, currentYear, currentMonth;
     private int selectedRow = -1; // Para mantener un seguimiento del día seleccionado
+    Font fontTitulo = new Font("Century Gothic", Font.BOLD, 20);
     Font font = new Font("Century Gothic", Font.BOLD, 16);
     Font font2 = new Font("Century Gothic", Font.PLAIN, 10);
     Font fontHeader = new Font("Century Gothic", Font.BOLD, 10);
@@ -50,10 +51,9 @@ public class CalendarioDeActividades extends JFrame {
 
     public CalendarioDeActividades() {
         this.setTitle("Calendario de Actividades");
-        this.setSize(835, 475);
+        this.setSize(835, 505);
         setLocationRelativeTo(null);
         this.setLayout(null);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         listaActividades = cargarDatos();
         actividadesScroll = new JScrollPane();
@@ -67,6 +67,7 @@ public class CalendarioDeActividades extends JFrame {
             }
         };
 
+        tituloPrincipalLabel = new JLabel("CALENDARIO DE ACTIVIDADES");
         tituloLabel = new JLabel("ACTIVIDADES");
         yearBox = new JComboBox<>();
         yearLabel = new JLabel("Año:");
@@ -79,7 +80,7 @@ public class CalendarioDeActividades extends JFrame {
         busquedaTextField = new JTextField();
         PromptSupport.init("Buscar por nombre, hora incial u hora final", Color.GRAY, Color.WHITE, busquedaTextField);
 
-
+        this.add(tituloPrincipalLabel);
         this.add(yearLabel);
         this.add(monthLabel);
         this.add(yearBox);
@@ -91,20 +92,22 @@ public class CalendarioDeActividades extends JFrame {
         this.add(busquedaTextField);
         panelTitulo.add(tituloLabel);
 
-        prevButton.setBounds(10, 10, 45, 22);
-        monthLabel.setBounds(80, 10, 70, 22);
-        nextButton.setBounds(160, 10, 45, 22);
-        yearLabel.setBounds(260, 10, 55, 22);
-        yearBox.setBounds(300, 10, 75, 22);
-        panelTitulo.setBounds(410, 40, 400, 20);
-        tituloLabel.setBounds(410, 38, 400, 22);
-        calendarScroll.setBounds(10, 40, 400, 387);
-        busquedaTextField.setBounds(410, 10, 300, 23);
-        crearButton.setBounds(710, 10, 90, 22);
+        tituloPrincipalLabel.setBounds(10, 10, 475, 22);
+        prevButton.setBounds(10, 50, 45, 22);
+        monthLabel.setBounds(80, 50, 70, 22);
+        nextButton.setBounds(160, 50, 45, 22);
+        yearLabel.setBounds(260, 50, 55, 22);
+        yearBox.setBounds(300, 50, 75, 22);
+        panelTitulo.setBounds(410, 80, 400, 20);
+        tituloLabel.setBounds(410, 68, 400, 22);
+        calendarScroll.setBounds(10, 80, 400, 387);
+        busquedaTextField.setBounds(410, 50, 300, 23);
+        crearButton.setBounds(710, 50, 90, 22);
 
         // Establecer colores
         tituloLabel.setForeground(Color.white);
         tituloLabel.setFont(fontHeader);
+        tituloPrincipalLabel.setFont(fontTitulo);
 
         panelTitulo.setBackground(darkBlue);
 
@@ -330,8 +333,34 @@ public class CalendarioDeActividades extends JFrame {
             Image nuevaImagen = imagen.getScaledInstance(nuevoAncho, nuevoAlto, Image.SCALE_SMOOTH);
             ImageIcon iconoRedimensionado = new ImageIcon(nuevaImagen);
 
-            JButton verButton = new JButton(iconoRedimensionado);
+            // Crear un JPanel que contendrá el icono y el texto
+            JPanel panel = new JPanel(new BorderLayout());
+
+            // Añadir el icono al JPanel
+            panel.add(new JLabel(iconoRedimensionado), BorderLayout.WEST);
+
+            // Crear un JLabel para el texto "VER"
+            JLabel label = new JLabel("  VER LOS DATOS DE LA ACTIVIDAD");
+
+            // Establecer el color de fondo y el color del texto
+            label.setBackground(darkColor);
+            label.setForeground(Color.white);
+
+            // Alinear el texto al centro vertical
+            label.setVerticalAlignment(JLabel.CENTER);
+
+            // Añadir el JLabel al JPanel
+            panel.add(label, BorderLayout.CENTER);
+
+            // Configurar el JPanel
+            panel.setBackground(darkColor);
+
+            // Crear el botón con el JPanel como su contenido
+            JButton verButton = new JButton();
+            verButton.add(panel);
             verButton.setBackground(darkColor);
+
+            // Configurar propiedades del botón
             verButton.setBorderPainted(false);
             verButton.setFocusPainted(false);
 
@@ -354,7 +383,7 @@ public class CalendarioDeActividades extends JFrame {
         }
 
         actividadesScroll = new JScrollPane(actividadesPanel);
-        actividadesScroll.setBounds(410, 60, 400, 366);
+        actividadesScroll.setBounds(410, 100, 400, 366);
         actividadesScroll.setBackground(darkColor);
         this.add(actividadesScroll);
         actividadesScroll.getVerticalScrollBar().setValue(actividadesScroll.getVerticalScrollBar().getValue() + 1);
@@ -478,25 +507,44 @@ public class CalendarioDeActividades extends JFrame {
             int nuevoAncho = 30; // Ancho en píxeles
             int nuevoAlto = 30; // Alto en píxeles
 
-            // Obtiene la imagen del ImageIcon
             Image imagen = iconoVer.getImage();
-
-            // Redimensiona la imagen al nuevo tamaño
             Image nuevaImagen = imagen.getScaledInstance(nuevoAncho, nuevoAlto, Image.SCALE_SMOOTH);
-
-            // Crea un nuevo ImageIcon con la imagen redimensionada
             ImageIcon iconoRedimensionado = new ImageIcon(nuevaImagen);
 
-            // Ahora, iconoRedimensionado contiene la imagen redimensionada; crea el botón ver con el icono
-            JButton verButton = new JButton(iconoRedimensionado);
-            verButton.setBackground(darkColor); // Azul Material Design
+            // Crear un JPanel que contendrá el icono y el texto
+            JPanel panel = new JPanel(new BorderLayout());
+
+            // Añadir el icono al JPanel
+            panel.add(new JLabel(iconoRedimensionado), BorderLayout.WEST);
+
+            // Crear un JLabel para el texto "VER"
+            JLabel label = new JLabel("  VER LOS DATOS DE LA ACTIVIDAD");
+
+            // Establecer el color de fondo y el color del texto
+            label.setBackground(darkColor);
+            label.setForeground(Color.white);
+
+            // Alinear el texto al centro vertical
+            label.setVerticalAlignment(JLabel.CENTER);
+
+            // Añadir el JLabel al JPanel
+            panel.add(label, BorderLayout.CENTER);
+
+            // Configurar el JPanel
+            panel.setBackground(darkColor);
+
+            // Crear el botón con el JPanel como su contenido
+            JButton verButton = new JButton();
+            verButton.add(panel);
+            verButton.setBackground(darkColor);
+
+            // Configurar propiedades del botón
             verButton.setBorderPainted(false);
             verButton.setFocusPainted(false);
 
             verButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    // Acción al hacer clic en el botón "Ver"
                     int actividadID = actividad.getId();
                     VerActividad verActividades = new VerActividad(actividadID);
                     verActividades.setVisible(true);
@@ -518,14 +566,12 @@ public class CalendarioDeActividades extends JFrame {
         this.remove(actividadesScroll);
 
         actividadesScroll = new JScrollPane(actividadesPanel);
-        actividadesScroll.setBounds(410, 60, 400, 366); // Coloca el panel debajo del calendario
+        actividadesScroll.setBounds(410, 100, 400, 366); // Coloca el panel debajo del calendario
 
         actividadesScroll.setBackground(darkColor);
         this.add(actividadesScroll);
         actividadesScroll.getVerticalScrollBar().setValue(actividadesScroll.getVerticalScrollBar().getValue() + 1);
-
     }
-
 
     public List<Actividad> cargarDatos() {
         List<Actividad> listaActividades = new ArrayList<>();

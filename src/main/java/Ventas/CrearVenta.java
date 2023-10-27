@@ -1,6 +1,7 @@
 package Ventas;
 import Clientes.CrearCliente;
 import Clientes.ListaClientes;
+import Desayunos.CrearDesayuno;
 import Materiales.TextPrompt;
 import Modelos.*;
 import Objetos.*;
@@ -9,10 +10,7 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.sql.*;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -320,33 +318,37 @@ public class CrearVenta extends JFrame {
         imprimirButton.setFocusPainted(false);
         imprimirButton.setBorder(margin);
 
-        agregarMaterialButton.setForeground(Color.DARK_GRAY);
-        agregarMaterialButton.setBackground(lightColorAmber);
-        agregarMaterialButton.setFocusPainted(false);
-
-        agregarDesayunoButton.setForeground(Color.DARK_GRAY);
-        agregarDesayunoButton.setBackground(lightColorCyan);
-        agregarDesayunoButton.setFocusPainted(false);
-
-        agregarArregloButton.setForeground(Color.DARK_GRAY);
-        agregarArregloButton.setBackground(lightColorAqua);
+        cancelarButton.setForeground(Color.WHITE);
+        cancelarButton.setBackground(darkColorRed);
+        cancelarButton.setFocusPainted(false);
+        
+        agregarArregloButton.setForeground(Color.WHITE);
+        agregarArregloButton.setBackground(Color.decode("#00BCD4"));
         agregarArregloButton.setFocusPainted(false);
 
-        agregarFloresButton.setForeground(Color.DARK_GRAY);
-        agregarFloresButton.setBackground(lightColorRosado);
-        agregarFloresButton.setFocusPainted(false);
+        agregarMaterialButton.setForeground(Color.WHITE);
+        agregarMaterialButton.setBackground(Color.decode("#795548"));
+        agregarMaterialButton.setFocusPainted(false);
 
-        agregarTarjetasButton.setForeground(Color.DARK_GRAY);
-        agregarTarjetasButton.setBackground(lightColorVerdeLima);
+        agregarTarjetasButton.setForeground(Color.WHITE);
+        agregarTarjetasButton.setBackground(Color.decode("#E81E12"));
         agregarTarjetasButton.setFocusPainted(false);
 
-        agregarManualidadButton.setForeground(Color.DARK_GRAY);
-        agregarManualidadButton.setBackground(Color.lightGray);
+        agregarFloresButton.setForeground(Color.WHITE);
+        agregarFloresButton.setBackground(Color.decode("#2196F3"));
+        agregarFloresButton.setFocusPainted(false);
+
+        agregarManualidadButton.setForeground(Color.WHITE);
+        agregarManualidadButton.setBackground(Color.decode("#E91E63"));
         agregarManualidadButton.setFocusPainted(false);
+
+        agregarDesayunoButton.setForeground(Color.WHITE);
+        agregarDesayunoButton.setBackground(Color.decode("#3F51B5"));
+        agregarDesayunoButton.setFocusPainted(false);
 
         JTableHeader header = tablaProductos.getTableHeader();
         header.setForeground(Color.WHITE);
-        header.setBackground(darkColorCyan);
+        header.setBackground(Color.decode("#263238"));
 
         lbl0.setForeground(textColor);
         lbl1.setForeground(textColor);
@@ -488,36 +490,13 @@ public class CrearVenta extends JFrame {
                 agregarArregloButton.setVisible(true);
                 agregarDesayunoButton.setVisible(true);
                 tablaProductos.setModel(cargarDetallesMateriales());
+
                 actualizarLbl8y10();
                 configurarTablaMateriales();
+                tablaProductos.getColumnModel().getColumn(5).setCellRenderer(new CrearVenta.ButtonRenderer());
+                tablaProductos.getColumnModel().getColumn(5).setCellEditor(new CrearVenta.ButtonEditor());
             }
         });
-
-
-       /*
-        campoCantidad.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                char c = e.getKeyChar();
-                String text = campoCantidad.getText();
-                if (!Character.isDigit(c)) {
-                    e.consume();
-                    return;
-                }
-                String newText = text + c;
-                int value = 0;
-                try {
-                    value = Integer.parseInt(newText);
-                } catch (NumberFormatException ex) {
-                    e.consume();
-                    return;
-                }
-                if (value < 0 || value > 9999) {
-                    e.consume();
-                }
-            }
-        });
-        */
 
         campoCodigo.addKeyListener(new KeyAdapter() {
             @Override
@@ -539,6 +518,13 @@ public class CrearVenta extends JFrame {
                 if (newText.length() > 50) {
                     e.consume();  // Ignorar la tecla si se supera la longitud máxima
                 }
+            }
+        });
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                eliminarDetallesMaterial();
             }
         });
 
@@ -595,10 +581,11 @@ public class CrearVenta extends JFrame {
 
                         PoliModeloProducto nuevoModelo = new PoliModeloProducto(new ArrayList<>());
                         tablaProductos.setModel(nuevoModelo);
-                        configurarTablaMateriales();
-
                         calcularTotalTabla();
                         actualizarLbl8y10();
+                        configurarTablaMateriales();
+                        tablaProductos.getColumnModel().getColumn(5).setCellRenderer(new CrearVenta.ButtonRenderer());
+                        tablaProductos.getColumnModel().getColumn(5).setCellEditor(new CrearVenta.ButtonEditor());
 
                         dialog.dispose();
                     }
@@ -850,6 +837,7 @@ public class CrearVenta extends JFrame {
                 ListaVentas ventas = new ListaVentas();
                 ventas.setVisible(true);
             }
+            eliminarDetallesMaterial();
             crearVenta.dispose();
         }
     }
@@ -1056,19 +1044,32 @@ public class CrearVenta extends JFrame {
         public void actionPerformed(ActionEvent e) {
             if (table != null) {
                 int modelRow = table.convertRowIndexToModel(row);
-                TableModel model = table.getModel();  // Obtener el modelo de la tabla
+                TableModel model = table.getModel();
 
-                // Verificar si el modelo de la tabla es un PoliModeloProducto
                 if (model instanceof PoliModeloProducto) {
                     PoliModeloProducto productoModel = (PoliModeloProducto) model;
+                    PoliProducto producto = productoModel.getProducto(modelRow);
 
-                    // Eliminar el producto tanto de la lista temporal como de la tabla
+                    // Obtén el ID del detalle de venta utilizando getIdDetalle
+                    int detallesVentaId = producto.getIdDetalle();
+
+                    try (Connection connection = sql.conectamysql();
+                         PreparedStatement preparedStatement = connection.prepareStatement(
+                                 "DELETE FROM detalles_ventas WHERE id = ?")) {
+                        preparedStatement.setInt(1, detallesVentaId);
+                        preparedStatement.executeUpdate();
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                        // Manejo de excepciones en caso de error en la eliminación en la base de datos.
+                    }
+
+                    // Elimina el elemento tanto de la lista temporal como de la tabla
                     productoModel.removeProductAtIndex(modelRow);
-                }
 
-                fireEditingStopped(); // Mover esta línea aquí para asegurarte de que se complete la edición
-                calcularTotalTabla();
-                actualizarLbl8y10();
+                    fireEditingStopped();
+                    calcularTotalTabla();
+                    actualizarLbl8y10();
+                }
             }
         }
     }
@@ -1669,18 +1670,9 @@ public class CrearVenta extends JFrame {
         return productos;
     }
 
-
-
     public static void main(String[] args) {
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    CrearVenta frame = new CrearVenta();
-                    frame.setVisible(true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+        CrearVenta crearVenta = new CrearVenta();
+        crearVenta.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        crearVenta.setVisible(true);
     }
 }
