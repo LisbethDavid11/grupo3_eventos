@@ -102,12 +102,15 @@ public class EditarDesayuno extends JFrame {
     Color darkColorRed = new Color(244, 67, 54);
     Color darkColorBlue = new Color(33, 150, 243);
     EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
+    Color textColor = Color.decode("#212121");
     private Desayuno originalDesayuno;
     private int id;
     private String nombreArchivoImagen;
     private boolean imagenCambiada = false; // Variable de control
     private List<PoliProductosGeneral> productosSeleccionados = new ArrayList<>();
-
+    // Establecer ancho y alto deseados para el panelImg
+    int panelImgWidth = 70;
+    int panelImgHeight = 150;
     public EditarDesayuno(Desayuno desayuno, int id) {
         super("");
         setSize(1050, 680);
@@ -146,10 +149,6 @@ public class EditarDesayuno extends JFrame {
         jpanelDescripcion.setMinimumSize(panelDesSize);
         jpanelDescripcion.setSize(panelDesSize);
 
-        // Establecer ancho y alto deseados para el panelImg
-        int panelImgWidth = 70;
-        int panelImgHeight = 150;
-
         // Crear una instancia de Dimension con las dimensiones deseadas
         Dimension panelImgSize = new Dimension(panelImgWidth, panelImgHeight);
 
@@ -183,64 +182,52 @@ public class EditarDesayuno extends JFrame {
         jpanelDescripcion.setBackground(Color.decode("#F5F5F5"));
         jpanelImagen.setBackground(Color.decode("#F5F5F5"));
 
-        DefaultTableModel modeloProductos = new DefaultTableModel();
-
         JTableHeader header = jtableMateriales.getTableHeader();
         header.setForeground(Color.WHITE);
-        header.setBackground(darkColorCyan);
+        header.setBackground(Color.decode("#263238"));
 
-        // Color de texto para los JTextField
-        Color textColor = Color.decode("#212121");
-
-        // Cargar los iconos en blanco
-        ImageIcon cancelIcon = new ImageIcon("cancel_icon_white.png");
-        ImageIcon saveIcon = new ImageIcon("save_icon_white.png");
-        ImageIcon updateIcon = new ImageIcon("update_icon_white.png");
-
-        // Crea un margen de 10 píxeles desde el borde inferior
-        EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
-
-        // Color de texto de los botones
-        botonCancelar.setForeground(Color.WHITE);
-        botonGuardar.setForeground(Color.WHITE);
-        agregarMaterialButton.setForeground(Color.DARK_GRAY);
-        botonCargarImagen.setForeground(Color.WHITE);
-        botonLimpiar.setForeground(Color.WHITE);
-        cancelarButton.setForeground(Color.WHITE);
-        agregarButton.setForeground(Color.WHITE);
-        agregarGloboButton.setForeground(Color.DARK_GRAY);
-        agregarTarjetasButton.setForeground(Color.DARK_GRAY);
-        agregarFloresButton.setForeground(Color.DARK_GRAY);
-
-        // Color de fondo de los botones
         botonCancelar.setBackground(darkColorBlue);
-        botonGuardar.setBackground(darkColorAqua);
-        botonCargarImagen.setBackground(darkColorPink);
-        agregarMaterialButton.setBackground(lightColorAmber);
-        agregarFloresButton.setBackground(lightColorAqua);
-        agregarGloboButton.setBackground(lightColorCyan);
-        agregarTarjetasButton.setBackground(lightColorRosado);
-        botonLimpiar.setBackground(darkColorRed);
-        agregarButton.setBackground(darkColorCyan);
-        cancelarButton.setBackground(darkColorRed);
-
+        botonCancelar.setForeground(Color.WHITE);
         botonCancelar.setFocusPainted(false);
+        botonCancelar.setBorder(margin);
+
+        botonGuardar.setBackground(darkColorAqua);
+        botonGuardar.setForeground(Color.WHITE);
         botonGuardar.setFocusPainted(false);
+        botonGuardar.setBorder(margin);
+
+        botonCargarImagen.setBackground(darkColorPink);
+        botonCargarImagen.setForeground(Color.WHITE);
         botonCargarImagen.setFocusPainted(false);
-        agregarMaterialButton.setFocusPainted(false);
-        agregarTarjetasButton.setFocusPainted(false);
-        agregarFloresButton.setFocusPainted(false);
-        agregarGloboButton.setFocusPainted(false);
+
+        botonLimpiar.setBackground(darkColorRed);
+        botonLimpiar.setForeground(Color.WHITE);
         botonLimpiar.setFocusPainted(false);
+        botonLimpiar.setBorder(margin);
+
+        cancelarButton.setBackground(darkColorRed);
+        cancelarButton.setForeground(Color.WHITE);
         cancelarButton.setFocusPainted(false);
+
+        agregarButton.setBackground(darkColorCyan);
+        agregarButton.setForeground(Color.WHITE);
         agregarButton.setFocusPainted(false);
 
-        // Aplica el margen al botón
-        botonGuardar.setBorder(margin);
-        botonCancelar.setBorder(margin);
-        botonLimpiar.setBorder(margin);
-        botonCancelar.setBorder(margin);
-        botonLimpiar.setBorder(margin);
+        agregarMaterialButton.setBackground(Color.decode("#795548"));
+        agregarMaterialButton.setForeground(Color.WHITE);
+        agregarMaterialButton.setFocusPainted(false);
+
+        agregarGloboButton.setBackground(Color.decode("#9C27B0"));
+        agregarGloboButton.setForeground(Color.WHITE);
+        agregarGloboButton.setFocusPainted(false);
+
+        agregarTarjetasButton.setBackground(Color.decode("#E81E12"));
+        agregarTarjetasButton.setForeground(Color.WHITE);
+        agregarTarjetasButton.setFocusPainted(false);
+
+        agregarFloresButton.setBackground(Color.decode("#2196F3"));
+        agregarFloresButton.setForeground(Color.WHITE);
+        agregarFloresButton.setFocusPainted(false);
 
         lbl0.setForeground(textColor);
         lbl2.setForeground(textColor);
@@ -325,71 +312,11 @@ public class EditarDesayuno extends JFrame {
                 agregarFloresButton.setVisible(true);
                 agregarGloboButton.setVisible(true);
                 agregarTarjetasButton.setVisible(true);
-                // Actualizar la tabla con los detalles actualizados
                 jtableMateriales.setModel(cargarDetallesMateriales());
+                actualizarLbl8y10();
+                configurarTablaMateriales();
                 jtableMateriales.getColumnModel().getColumn(5).setCellRenderer(new EditarDesayuno.ButtonRenderer());
                 jtableMateriales.getColumnModel().getColumn(5).setCellEditor(new EditarDesayuno.ButtonEditor());
-
-                configurarTablaMateriales();
-                actualizarLbl8y10();
-
-            }
-        });
-
-        botonLimpiar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JButton btnYes = new JButton("Sí");
-                JButton btnNo = new JButton("No");
-
-                // Personaliza los botones aquí
-                btnYes.setBackground(darkColorAqua);
-                btnNo.setBackground(darkColorPink);
-
-                // Personaliza los fondos de los botones aquí
-                btnYes.setForeground(Color.WHITE);
-                btnNo.setForeground(Color.WHITE);
-
-                // Elimina el foco
-                btnYes.setFocusPainted(false);
-                btnNo.setFocusPainted(false);
-
-                // Crea un JOptionPane
-                JOptionPane optionPane = new JOptionPane(
-                        "¿Estás seguro de que deseas limpiar la tabla de detalles?",
-                        JOptionPane.DEFAULT_OPTION,
-                        JOptionPane.DEFAULT_OPTION,
-                        null,
-                        new Object[]{}, // no options
-                        null
-                );
-
-                // Crea un JDialog
-                JDialog dialog = optionPane.createDialog("Limpiar");
-
-                // Añade ActionListener a los botones
-                btnYes.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        limpiarTablaMateriales();
-                        dialog.dispose();
-                    }
-                });
-
-                btnNo.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        // Acciones para el botón No
-                        // No se hace nada, sólo se cierra el diálogo
-                        dialog.dispose();
-                    }
-                });
-
-                // Añade los botones al JOptionPane
-                optionPane.setOptions(new Object[]{btnYes, btnNo});
-
-                // Muestra el diálogo
-                dialog.setVisible(true);
             }
         });
 
@@ -531,7 +458,16 @@ public class EditarDesayuno extends JFrame {
             }
         });
 
-        // Listener para el campoManoObra
+        agregarButton.setVisible(false);
+        cancelarButton.setVisible(false);
+        campoBusquedaMateriales.setVisible(false);
+        campoBusquedaMateriales.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                jtableMateriales.setModel(cargarDatosMaterial());
+            }
+        });
+
         campoManoObra.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -552,193 +488,9 @@ public class EditarDesayuno extends JFrame {
         botonCancelar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                    ListaDesayunos listaDesayuno = new ListaDesayunos();
-                    listaDesayuno.setVisible(true);
-                    actual.dispose();
-            }
-        });
-
-        botonGuardar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int validacion = 0;
-                String mensaje = "Faltó ingresar: \n";
-
-                if (imagenCambiada && imagePath.isEmpty()) {
-                    validacion++;
-                    mensaje += "Imagen\n";
-                }
-
-                if (campoNombre.getText().trim().isEmpty()) {
-                    validacion++;
-                    mensaje += "Nombre del desayuno sorpresa\n";
-                }
-
-                if (campoDescripcion.getText().trim().isEmpty()) {
-                    validacion++;
-                    mensaje += "Descripción\n";
-                }
-
-                if (jcbProveedores.getSelectedIndex() == 0) {
-                    validacion++;
-                    mensaje += "Seleccionar el proveedor\n";
-                }
-
-                if (campoPrecioDesayuno.getText().trim().isEmpty()) {
-                    validacion++;
-                    mensaje += "Precio del desayuno\n";
-                }
-
-                if (campoManoObra.getText().trim().isEmpty()) {
-                    validacion++;
-                    mensaje += "Mano de obra\n";
-                }
-
-                if (jtableMateriales.getRowCount() == 0) {
-                    validacion++;
-                    mensaje += "La lista de productos\n";
-                }
-
-                if (validacion > 0) {
-                    JOptionPane.showMessageDialog(null, mensaje, "Validación", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-                if (!campoDescripcion.getText().trim().isEmpty()) {
-                    String texto = campoDescripcion.getText().trim();
-                    int longitud = texto.length();
-
-                    if (longitud < 2 || longitud > 200) {
-                        JOptionPane.showMessageDialog(null, "La descripción debe tener entre 2 y 200 caracteres.", "Validación", JOptionPane.ERROR_MESSAGE);
-                    }
-                }
-
-                String nombre = campoNombre.getText().trim();
-                if (!nombre.isEmpty()) {
-                    if (nombre.length() > 100) {
-                        JOptionPane.showMessageDialog(null, "El nombre debe tener como máximo 100 caracteres.", "Validación", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-
-                    if (!nombre.matches("[a-zA-ZñÑ]{2,}(\\s[a-zA-ZñÑ]+\\s*)*")) {
-                        JOptionPane.showMessageDialog(null, "El nombre debe tener mínimo 2 letras y máximo 1 espacio entre palabras.", "Validación", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(null, "El campo de nombre no puede estar vacío.", "Validación", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-                String precioText = campoPrecioDesayuno.getText().trim();
-                // Replace commas with periods to handle decimal separator
-                precioText = precioText.replaceAll(",", ".");
-
-                if (precioText.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Faltó ingresar el precio.", "Validación", JOptionPane.ERROR_MESSAGE);
-                    return;
-                } else {
-                    if (!precioText.matches("\\d{1,5}(\\.\\d{1,2})?")) {
-                        JOptionPane.showMessageDialog(null, "Precio inválido. Debe tener el formato correcto (ejemplo: 1234 o 1234.56).", "Validación", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    } else {
-                        double precio = Double.parseDouble(precioText);
-                        if (precio < 1.00 || precio > 99999.99) {
-                            JOptionPane.showMessageDialog(null, "Precio fuera del rango válido (1.00 - 99999.99).", "Validación", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        } else {
-                            // Get the value from the JLabel "lbl10" and replace commas with periods
-                            String lbl10Text = lbl10.getText().trim();
-                            lbl10Text = lbl10Text.replaceAll(",", ".");
-                            if (!lbl10Text.isEmpty()) {
-                                double lbl10Value = Double.parseDouble(lbl10Text);
-                                if (precio <= lbl10Value) {
-                                    JOptionPane.showMessageDialog(null, "El precio debe ser mayor que el valor total despues de gastos de materiales y mano de obra.", "Validación", JOptionPane.ERROR_MESSAGE);
-                                    return;
-                                }
-                            } else {
-                                JOptionPane.showMessageDialog(null, "El valor en lbl10 no es válido.", "Validación", JOptionPane.ERROR_MESSAGE);
-                                return;
-                            }
-                        }
-                    }
-                }
-
-                String manoObraText = campoManoObra.getText().trim();
-                if (manoObraText.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Faltó ingresar el precio por mano de obra.", "Validación", JOptionPane.ERROR_MESSAGE);
-                    return;
-                } else {
-                    if (!manoObraText.matches("\\d{1,5}(\\.\\d{1,2})?")) {
-                        JOptionPane.showMessageDialog(null, "Precio por mano de obra inválido. Debe tener el formato correcto (ejemplo: 1234 o 1234.56).", "Validación", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    } else {
-                        double precio = Double.parseDouble(manoObraText);
-                        if (precio < 1.00 || precio > 99999.99) {
-                            JOptionPane.showMessageDialog(null, "Precio por mano de obra fuera del rango válido (1.00 - 99999.99).", "Validación", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
-                    }
-                }
-
-                JButton btnSave = new JButton("Sí");
-                JButton btnCancel = new JButton("No");
-
-                // Personaliza los botones aquí
-                btnSave.setBackground(darkColorAqua);
-                btnCancel.setBackground(darkColorPink);
-
-                // Personaliza los fondos de los botones aquí
-                btnSave.setForeground(Color.WHITE);
-                btnCancel.setForeground(Color.WHITE);
-
-                // Elimina el foco
-                btnSave.setFocusPainted(false);
-                btnCancel.setFocusPainted(false);
-
-                // Crea un JOptionPane
-                JOptionPane optionPane = new JOptionPane(
-                        "¿Desea actualizar la información del desayuno sorpresa?",
-                        JOptionPane.QUESTION_MESSAGE,
-                        JOptionPane.DEFAULT_OPTION,
-                        null,
-                        new Object[]{}, // no options
-                        null
-                );
-
-                // Crea un JDialog
-                JDialog dialog = optionPane.createDialog("Guardar");
-
-                // Añade ActionListener a los botones
-                btnSave.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        // Acciones para el botón Sí
-                        if (!imagePath.isEmpty()) {
-                            imagenCambiada = true;
-                        }
-                        actualizarDesayuno();
-                        dialog.dispose();
-                        ListaDesayunos listaDesayunos = new ListaDesayunos();
-                        listaDesayunos.setVisible(true);
-                        actual.dispose();
-                    }
-                });
-
-                btnCancel.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        // Acciones para el botón No
-                        // No se hace nada, sólo se cierra el diálogo
-                        dialog.dispose();
-                    }
-                });
-
-                // Añade los botones al JOptionPane
-                optionPane.setOptions(new Object[]{btnSave, btnCancel});
-
-                // Muestra el diálogo
-                dialog.setVisible(true);
-
+                ListaDesayunos listaDesayuno = new ListaDesayunos();
+                listaDesayuno.setVisible(true);
+                actual.dispose();
             }
         });
 
@@ -775,20 +527,35 @@ public class EditarDesayuno extends JFrame {
                     String directorio = "img/desayunos/";
 
                     Date fecha = new Date();
-                    SimpleDateFormat formatoFecha = new SimpleDateFormat("yyyyMMdd_HHmmss");
-                    
-                    nombreFile  = formatoFecha.format(fecha)+".jpg" ;
+                    SimpleDateFormat formatoFechaHora = new SimpleDateFormat("ddMMyyyy_HHmmss");
+                    String fechaHora = formatoFechaHora.format(fecha);
+
+                    // Generar un número aleatorio entre 0001 y 9999
+                    int numeroAleatorio = (int) (Math.random() * 9999) + 1;
+                    String numeroFormateado = String.format("%04d", numeroAleatorio); // Asegura el formato de 4 dígitos
+
+                    nombreFile = "Desayuno_" + fechaHora + " " + numeroFormateado + ".jpg";
                     urlDestino = directorio + nombreFile;
 
+                    File directorioDestino = new File(directorio);
+                    if (!directorioDestino.exists()) {
+                        directorioDestino.mkdirs(); // Crea la carpeta si no existe
+                    }
+
+                    File finalDirectorio = new File(urlDestino);
+
                     try {
-                        File finalDirectorio = new File(urlDestino);
-
                         BufferedImage imagen = ImageIO.read(new File(imagePath));
+                        boolean resultado = ImageIO.write(imagen, "jpg", finalDirectorio);
 
-                        ImageIO.write(imagen, "jpg", finalDirectorio);
-
+                        if (!resultado) {
+                            JOptionPane.showMessageDialog(null, "Error al guardar la imagen", "Error", JOptionPane.ERROR_MESSAGE);
+                            return; // Detiene la ejecución adicional si falla el guardado
+                        }
                     } catch (IOException ex) {
-                        throw new RuntimeException(ex);
+                        JOptionPane.showMessageDialog(null, "Error al procesar la imagen: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                        ex.printStackTrace();
+                        return;
                     }
 
                     ImageIcon originalIcon = new ImageIcon(imagePath);
@@ -819,14 +586,60 @@ public class EditarDesayuno extends JFrame {
             }
         });
 
-
-        agregarButton.setVisible(false);
-        cancelarButton.setVisible(false);
-        campoBusquedaMateriales.setVisible(false);
-        campoBusquedaMateriales.addKeyListener(new KeyAdapter() {
+        botonLimpiar.addActionListener(new ActionListener() {
             @Override
-            public void keyReleased(KeyEvent e) {
-                jtableMateriales.setModel(cargarDatosMaterial());
+            public void actionPerformed(ActionEvent e) {
+                JButton btnYes = new JButton("Sí");
+                JButton btnNo = new JButton("No");
+
+                // Personaliza los botones aquí
+                btnYes.setBackground(darkColorAqua);
+                btnNo.setBackground(darkColorPink);
+
+                // Personaliza los fondos de los botones aquí
+                btnYes.setForeground(Color.WHITE);
+                btnNo.setForeground(Color.WHITE);
+
+                // Elimina el foco
+                btnYes.setFocusPainted(false);
+                btnNo.setFocusPainted(false);
+
+                // Crea un JOptionPane
+                JOptionPane optionPane = new JOptionPane(
+                        "¿Estás seguro de que deseas limpiar la tabla de detalles?",
+                        JOptionPane.DEFAULT_OPTION,
+                        JOptionPane.DEFAULT_OPTION,
+                        null,
+                        new Object[]{}, // no options
+                        null
+                );
+
+                // Crea un JDialog
+                JDialog dialog = optionPane.createDialog("Limpiar");
+
+                // Añade ActionListener a los botones
+                btnYes.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        limpiarTablaMateriales();
+                        dialog.dispose();
+                    }
+                });
+
+                btnNo.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // Acciones para el botón No
+                        // No se hace nada, sólo se cierra el diálogo
+                        dialog.dispose();
+                    }
+                });
+
+                // Añade los botones al JOptionPane
+                optionPane.setOptions(new Object[]{btnYes, btnNo});
+
+                // Muestra el diálogo
+                dialog.setVisible(true);
             }
         });
 
@@ -915,7 +728,6 @@ public class EditarDesayuno extends JFrame {
                     }
                 }
 
-
                 if (!materialDuplicado) {
                     // Llamar al método guardarDetalleDesayuno con los tres argumentos
                     guardarDetalleDesayuno(id_materialEntero, cantidadMaterial, l.getTipo());
@@ -978,6 +790,189 @@ public class EditarDesayuno extends JFrame {
                     // Muestra el diálogo
                     dialog.setVisible(true);
                 }
+            }
+        });
+
+        botonGuardar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int validacion = 0;
+                String mensaje = "Faltó ingresar: \n";
+
+                if (imagenCambiada && imagePath.isEmpty()) {
+                    validacion++;
+                    mensaje += "Imagen\n";
+                }
+
+                if (campoNombre.getText().trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "Nombre del desayuno sorpresa\n";
+                }
+
+                if (campoDescripcion.getText().trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "Descripción\n";
+                }
+
+                if (jcbProveedores.getSelectedIndex() == 0) {
+                    validacion++;
+                    mensaje += "Seleccionar el proveedor\n";
+                }
+
+                if (campoPrecioDesayuno.getText().trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "Precio del desayuno\n";
+                }
+
+                if (campoManoObra.getText().trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "Mano de obra\n";
+                }
+
+                if (jtableMateriales.getRowCount() == 0) {
+                    validacion++;
+                    mensaje += "La lista de productos\n";
+                }
+
+                if (validacion > 0) {
+                    mostrarDialogoPersonalizadoError(mensaje, Color.decode("#C62828"));
+                    return;
+                }
+
+                if (!campoDescripcion.getText().trim().isEmpty()) {
+                    String texto = campoDescripcion.getText().trim();
+                    int longitud = texto.length();
+
+                    if (longitud < 2 || longitud > 200) {
+                        mostrarDialogoPersonalizadoError("La descripción debe tener entre 2 y 200 caracteres.", Color.decode("#C62828"));
+                    }
+                }
+
+                String nombre = campoNombre.getText().trim();
+                if (!nombre.isEmpty()) {
+                    if (nombre.length() > 100) {
+                        mostrarDialogoPersonalizadoError("El nombre debe tener como máximo 100 caracteres.", Color.decode("#C62828"));
+                        return;
+                    }
+
+                    if (!nombre.matches("[a-zA-ZñÑ]{2,}(\\s[a-zA-ZñÑ]+\\s*)*")) {
+                        mostrarDialogoPersonalizadoError("El nombre debe tener mínimo 2 letras y máximo 1 espacio entre palabras.", Color.decode("#C62828"));
+                        return;
+                    }
+                } else {
+                    mostrarDialogoPersonalizadoError("El campo de nombre no puede estar vacío.", Color.decode("#C62828"));
+                    return;
+                }
+
+                String precioText = campoPrecioDesayuno.getText().trim();
+                precioText = precioText.replaceAll(",", ".");
+
+                if (precioText.isEmpty()) {
+                    mostrarDialogoPersonalizadoError("Faltó ingresar el precio.", Color.decode("#C62828"));
+                    return;
+                } else {
+                    if (!precioText.matches("\\d{1,5}(\\.\\d{1,2})?")) {
+                        mostrarDialogoPersonalizadoError("Precio inválido. Debe tener el formato correcto (ejemplo: 1234 o 1234.56).", Color.decode("#C62828"));
+                        return;
+                    } else {
+                        double precio = Double.parseDouble(precioText);
+                        if (precio < 1.00 || precio > 99999.99) {
+                            mostrarDialogoPersonalizadoError("Precio fuera del rango válido (1.00 - 99999.99).", Color.decode("#C62828"));
+                            return;
+                        } else {
+                            // Get the value from the JLabel "lbl10" and replace commas with periods
+                            String lbl10Text = lbl10.getText().trim();
+                            lbl10Text = lbl10Text.replaceAll(",", ".");
+                            if (!lbl10Text.isEmpty()) {
+                                double lbl10Value = Double.parseDouble(lbl10Text);
+                                if (precio <= lbl10Value) {
+                                    mostrarDialogoPersonalizadoError("El precio debe ser mayor que el valor total después de gastos de materiales y mano de obra.", Color.decode("#C62828"));
+                                    return;
+                                }
+                            } else {
+                                mostrarDialogoPersonalizadoError("El valor total después de gastos de materiales y mano de obra es inválido.", Color.decode("#C62828"));
+                                return;
+                            }
+                        }
+                    }
+                }
+
+                String manoObraText = campoManoObra.getText().trim();
+                if (manoObraText.isEmpty()) {
+                    mostrarDialogoPersonalizadoError("Faltó ingresar el precio por mano de obra.", Color.decode("#C62828"));
+                    return;
+                } else {
+                    if (!manoObraText.matches("\\d{1,5}(\\.\\d{1,2})?")) {
+                        mostrarDialogoPersonalizadoError("Precio por mano de obra inválido. Debe tener el formato correcto (ejemplo: 1234 o 1234.56).", Color.decode("#C62828"));
+                        return;
+                    } else {
+                        double precio = Double.parseDouble(manoObraText);
+                        if (precio < 1.00 || precio > 99999.99) {
+                            mostrarDialogoPersonalizadoError("Precio por mano de obra fuera del rango válido (1.00 - 99999.99).", Color.decode("#C62828"));
+                            return;
+                        }
+                    }
+                }
+
+                JButton btnSave = new JButton("Sí");
+                JButton btnCancel = new JButton("No");
+
+                // Personaliza los botones aquí
+                btnSave.setBackground(darkColorAqua);
+                btnCancel.setBackground(darkColorPink);
+
+                // Personaliza los fondos de los botones aquí
+                btnSave.setForeground(Color.WHITE);
+                btnCancel.setForeground(Color.WHITE);
+
+                // Elimina el foco
+                btnSave.setFocusPainted(false);
+                btnCancel.setFocusPainted(false);
+
+                // Crea un JOptionPane
+                JOptionPane optionPane = new JOptionPane(
+                        "¿Desea actualizar la información del desayuno sorpresa?",
+                        JOptionPane.QUESTION_MESSAGE,
+                        JOptionPane.DEFAULT_OPTION,
+                        null,
+                        new Object[]{}, // no options
+                        null
+                );
+
+                // Crea un JDialog
+                JDialog dialog = optionPane.createDialog("Guardar");
+
+                // Añade ActionListener a los botones
+                btnSave.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // Acciones para el botón Sí
+                        if (!imagePath.isEmpty()) {
+                            imagenCambiada = true;
+                        }
+                        actualizarDesayuno();
+                        dialog.dispose();
+                        ListaDesayunos listaDesayunos = new ListaDesayunos();
+                        listaDesayunos.setVisible(true);
+                        actual.dispose();
+                    }
+                });
+
+                btnCancel.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // Acciones para el botón No
+                        // No se hace nada, sólo se cierra el diálogo
+                        dialog.dispose();
+                    }
+                });
+
+                // Añade los botones al JOptionPane
+                optionPane.setOptions(new Object[]{btnSave, btnCancel});
+
+                // Muestra el diálogo
+                dialog.setVisible(true);
+
             }
         });
 
@@ -1056,7 +1051,7 @@ public class EditarDesayuno extends JFrame {
              PreparedStatement preparedStatement = connection.prepareStatement(
                      "UPDATE desayunos SET imagen = ?, nombre = ?, descripcion = ?, proveedor_id = ?, precio_desayuno = ?, mano_obra = ? WHERE id = ?")) {
 
-            preparedStatement.setString(1, nombreArchivoImagen); // Reemplaza "nombreFile" con el nombre de archivo de la imagen.
+            preparedStatement.setString(1, nombreFile); // Reemplaza "nombreFile" con el nombre de archivo de la imagen.
             preparedStatement.setString(2, nombre);
             preparedStatement.setString(3, descripcion);
             preparedStatement.setInt(4, tipo.getIdProveedor());
@@ -1067,13 +1062,13 @@ public class EditarDesayuno extends JFrame {
             int rowsAffected = preparedStatement.executeUpdate();
 
             if (rowsAffected > 0) {
-                JOptionPane.showMessageDialog(null, "Desayuno actualizado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                mostrarDialogoPersonalizadoExito("Desayuno actualizado exitosamente.", Color.decode("#263238"));
             } else {
-                JOptionPane.showMessageDialog(null, "No se encontró el desayuno para actualizar", "Error", JOptionPane.ERROR_MESSAGE);
+                mostrarDialogoPersonalizadoError("No se encontró el desayuno para actualizar.", Color.decode("#C62828"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al actualizar el desayuno", "Error", JOptionPane.ERROR_MESSAGE);
+            mostrarDialogoPersonalizadoError("Error al actualizar el desayuno.", Color.decode("#C62828"));
         }
     }
 
@@ -1086,11 +1081,10 @@ public class EditarDesayuno extends JFrame {
             preparedStatement.setDouble(4, obtenerPrecioMaterialDesdeBD(id_material,tipo));// Obtener el precio del material desde la base de datos
             preparedStatement.setInt(5, this.id);
             preparedStatement.executeUpdate();
-
-            JOptionPane.showMessageDialog(null, "Detalle agregado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-        } catch (SQLException e) {
+            mostrarDialogoPersonalizadoExito("Detalle agregado exitosamente", Color.decode("#263238"));
+           } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al agregar el detalle de la manualidad", "Error", JOptionPane.ERROR_MESSAGE);
+            mostrarDialogoPersonalizadoError("Error al agregar el detalle del desayuno", Color.decode("#C62828"));
         }
     }
 
@@ -1133,9 +1127,8 @@ public class EditarDesayuno extends JFrame {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al obtener el precio del material desde la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
+            mostrarDialogoPersonalizadoError("Error al obtener el precio del producto desde la base de datos.", Color.decode("#C62828"));
         }
-
         return precio;
     }
 
@@ -1149,15 +1142,6 @@ public class EditarDesayuno extends JFrame {
 
         jtableMateriales.getColumnModel().getColumn(5).setCellRenderer(new ButtonRenderer());
         jtableMateriales.getColumnModel().getColumn(5).setCellEditor(new ButtonEditor());
-    }
-
-    private void eliminarDetallesMaterial() {
-        try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM detalles_desayunos WHERE desayuno_id IS NULL")) {
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 
     private void eliminarDetallesMaterialID(int id) {
@@ -1227,7 +1211,7 @@ public class EditarDesayuno extends JFrame {
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos", Color.decode("#C62828"));
             productosListTemporal = new ArrayList<>();
         }
 
@@ -1294,11 +1278,9 @@ public class EditarDesayuno extends JFrame {
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
             return new ArrayList<>();
         }
-
-
     }
 
     private PoliModeloFlor cargarDatosFloristeria() {
@@ -1330,7 +1312,7 @@ public class EditarDesayuno extends JFrame {
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
             floristeriaList = new ArrayList<>();
         }
 
@@ -1365,7 +1347,7 @@ public class EditarDesayuno extends JFrame {
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
             materialList = new ArrayList<>();
         }
 
@@ -1400,7 +1382,7 @@ public class EditarDesayuno extends JFrame {
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
             globoList = new ArrayList<>();
         }
 
@@ -1436,7 +1418,7 @@ public class EditarDesayuno extends JFrame {
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
             tarjetaList = new ArrayList<>();
         }
 
@@ -1684,6 +1666,19 @@ public class EditarDesayuno extends JFrame {
         lbl10.setText(String.format("%.2f", total));
     }
 
+    private ImageIcon escalarImagen(Image imagenOriginal, int anchoPanel, int altoPanel) {
+        double proporcionAncho = (double) anchoPanel / imagenOriginal.getWidth(null);
+        double proporcionAlto = (double) altoPanel / imagenOriginal.getHeight(null);
+
+        double proporcionEscalamiento = Math.min(proporcionAncho, proporcionAlto);
+        int anchoEscalado = (int) (imagenOriginal.getWidth(null) * proporcionEscalamiento);
+        int altoEscalado = (int) (imagenOriginal.getHeight(null) * proporcionEscalamiento);
+
+        Image imagenEscalada = imagenOriginal.getScaledInstance(anchoEscalado, altoEscalado, Image.SCALE_SMOOTH);
+        return new ImageIcon(imagenEscalada);
+    }
+
+
     public void cargarDatosEditar() {
         campoDescripcion.setText(this.originalDesayuno.getDescripcion());
         campoPrecioDesayuno.setText(String.valueOf(this.originalDesayuno.getPrecio_desayuno()));
@@ -1713,27 +1708,16 @@ public class EditarDesayuno extends JFrame {
             if (imagenFile.exists()) {
                 Image imagenOriginal = ImageIO.read(imagenFile);
 
-                // Ajusta el tamaño de la imagen para que se ajuste al tamaño predeterminado del panel
-                int anchoPanelPredeterminado = 300;
-                int altoPanelPredeterminado = 300;
+                // Utiliza las dimensiones del panel para el escalado
+                int anchoPanel = jpanelImagen.getWidth();
+                int altoPanel = jpanelImagen.getHeight();
 
-                // Calcula las proporciones de escalamiento para ajustar la imagen al tamaño del panel
-                double proporcionAncho = (double) anchoPanelPredeterminado / imagenOriginal.getWidth(null);
-                double proporcionAlto = (double) altoPanelPredeterminado / imagenOriginal.getHeight(null);
+                // Escalar la imagen usando la función escalarImagen
+                ImageIcon imagenIcono = escalarImagen(imagenOriginal, anchoPanel * 3, altoPanel);
 
-                // Escala la imagen utilizando la proporción más pequeña para evitar distorsiones
-                double proporcionEscalamiento = Math.min(proporcionAncho, proporcionAlto);
-                int anchoEscalado = (int) (imagenOriginal.getWidth(null) * proporcionEscalamiento);
-                int altoEscalado = (int) (imagenOriginal.getHeight(null) * proporcionEscalamiento);
-
-                // Crea una nueva imagen escalada con las dimensiones calculadas
-                Image imagenEscalada = imagenOriginal.getScaledInstance(anchoEscalado, altoEscalado, Image.SCALE_SMOOTH);
-
-                // Crea un ImageIcon a partir de la imagen escalada
-                ImageIcon imagenIcono = new ImageIcon(imagenEscalada);
-
-                // Actualiza la etiqueta lblImagen con el ImageIcon
+                // Configura la etiqueta con la imagen escalada
                 jlabelImagen.setIcon(imagenIcono);
+                jlabelImagen.setHorizontalAlignment(SwingConstants.CENTER);
             } else {
                 System.out.println("No se encontró la imagen: " + imagenPath);
             }
@@ -1750,66 +1734,73 @@ public class EditarDesayuno extends JFrame {
 
     }
 
-    /*private void mostrar() {
-        sql = new Conexion();
-        mysql = sql.conectamysql();
-        DecimalFormat decimalFormat = new DecimalFormat("###,###.00");
-        double suma = 0;
+    public void mostrarDialogoPersonalizadoExito(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado
+        JButton btnAceptar = new JButton("ACEPTAR");
+        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE);
+        btnAceptar.setFocusPainted(false);
 
-        try {
-            PreparedStatement statement = mysql.prepareStatement("SELECT * FROM desayunos WHERE id = ?;");
-            statement.setInt(1, this.id);
-            ResultSet resultSet = statement.executeQuery();
+        // Crea un JOptionPane
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                           // Mensaje a mostrar
+                JOptionPane.INFORMATION_MESSAGE,   // Tipo de mensaje
+                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
+                null,                              // Icono (puede ser null)
+                new Object[]{},                    // No se usan opciones estándar
+                null                               // Valor inicial (no necesario aquí)
+        );
 
-            if (resultSet.next()) {
-                PreparedStatement detallesStatement = mysql.prepareStatement("SELECT CASE WHEN dd.tipo_detalle = 'material' THEN m.nombre WHEN dd.tipo_detalle = 'globo' THEN g.codigo_globo WHEN dd.tipo_detalle = 'tarjeta' THEN t.ocasion WHEN dd.tipo_detalle = 'floristeria' THEN f.nombre ELSE 'Tipo Desconocido' END AS detalle_nombre, dd.cantidad, dd.precio FROM detalles_desayunos dd LEFT JOIN materiales m ON dd.tipo_detalle = 'material' AND dd.detalle_id = m.id LEFT JOIN globos g ON dd.tipo_detalle = 'globo' AND dd.detalle_id = g.id LEFT JOIN tarjetas t ON dd.tipo_detalle = 'tarjeta' AND dd.detalle_id = t.id LEFT JOIN floristeria f ON dd.tipo_detalle = 'floristeria' AND dd.detalle_id = f.id WHERE dd.desayuno_id = ?");
-                detallesStatement.setInt(1, this.id);
-                ResultSet resultSetDetalles = detallesStatement.executeQuery();
+        // Añade el botón al JOptionPane
+        optionPane.setOptions(new Object[]{btnAceptar});
 
-                // Define un DefaultTableModel con las columnas que deseas mostrar
-                DefaultTableModel tableModel = new DefaultTableModel();
-                tableModel.addColumn("N°");
-                tableModel.addColumn("Detalle");
-                tableModel.addColumn("Cantidad");
-                tableModel.addColumn("Precio");
-                tableModel.addColumn("Total");
-                tableModel.addColumn("Eliminar");
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Éxito");
 
-                int numeroFila = 1; // Inicializa el número de fila
-
-                while (resultSetDetalles.next()) {
-                    String detalleNombre = resultSetDetalles.getString("detalle_nombre");
-                    int cantidad = resultSetDetalles.getInt("cantidad");
-                    double precio = resultSetDetalles.getDouble("precio");
-                    double total = cantidad * precio;
-
-                    tableModel.addRow(new Object[]{numeroFila, detalleNombre, cantidad, precio, total, "X"});
-                    suma += total; // Suma el total para calcular el total general
-                    numeroFila++; // Incrementa el número de fila para la siguiente fila
-                }
-
-                // Asigna el modelo de tabla al JTable
-                jtableMateriales.setModel(tableModel);
-
-                // Configura el renderizador personalizado para la columna de eliminación
-                ButtonRenderer buttonRenderer = new ButtonRenderer();
-                jtableMateriales.getColumn("Eliminar").setCellRenderer(buttonRenderer);
-
-                // Configura el editor personalizado para la columna de eliminación
-                ButtonEditor buttonEditor = new ButtonEditor();
-                jtableMateriales.getColumn("Eliminar").setCellEditor(buttonEditor);
-
-                actualizarLbl8y10();
-                configurarTablaMateriales();
-            } else {
-                JOptionPane.showMessageDialog(null, "El desayuno con el ID " + this.id + " no fue encontrado.", "Error", JOptionPane.ERROR_MESSAGE);
+        // Añade un ActionListener al botón
+        btnAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
             }
+        });
 
-
-
-        } catch (SQLException error) {
-            System.out.println(error.getMessage());
-        }
+        // Muestra el diálogo
+        dialog.setVisible(true);
     }
-*/
+
+    public void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado
+        JButton btnAceptar = new JButton("ACEPTAR");
+        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE);
+        btnAceptar.setFocusPainted(false);
+
+        // Crea un JOptionPane
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                           // Mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
+                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
+                null,                              // Icono (puede ser null)
+                new Object[]{},                    // No se usan opciones estándar
+                null                               // Valor inicial (no necesario aquí)
+        );
+
+        // Añade el botón al JOptionPane
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Error");
+
+        // Añade un ActionListener al botón
+        btnAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+            }
+        });
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
+    }
 }
