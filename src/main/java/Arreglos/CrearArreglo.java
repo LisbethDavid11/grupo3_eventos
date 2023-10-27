@@ -1,4 +1,5 @@
 package Arreglos;
+import Desayunos.ListaDesayunos;
 import Objetos.Conexion;
 
 import javax.imageio.ImageIO;
@@ -95,78 +96,6 @@ public class CrearArreglo extends JFrame {
         imagenLabel.setHorizontalAlignment(SwingConstants.CENTER);
         panelImg.add(imagenLabel, gbc);
 
-        campoNombre.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                String text = campoNombre.getText();
-                int length = text.length();
-                int caretPosition = campoNombre.getCaretPosition();
-
-                // Verificar si se está ingresando un espacio en blanco
-                if (e.getKeyChar() == ' ') {
-                    // Verificar si es el primer espacio en blanco o si hay varios espacios consecutivos
-                    if (length == 0 || caretPosition == 0 || text.charAt(caretPosition - 1) == ' ') {
-                        e.consume(); // Ignorar el espacio en blanco adicional
-                    }
-                } else {
-                    // Verificar la longitud del texto después de eliminar espacios en blanco
-                    String trimmedText = text.replaceAll("\\s+", " ");
-                    int trimmedLength = trimmedText.length();
-
-                    // Verificar si se está ingresando una letra
-                    if (Character.isLetter(e.getKeyChar())) {
-                        // Verificar si se excede el límite de caracteres
-                        if (trimmedLength >= 100) {
-                            e.consume(); // Ignorar la letra
-                        } else {
-                            // Convertir solo la primera letra a mayúscula
-                            if (caretPosition == 0) {
-                                e.setKeyChar(Character.toUpperCase(e.getKeyChar()));
-                            }
-                        }
-                    } else {
-                        e.consume(); // Ignorar cualquier otro tipo de carácter
-                    }
-                }
-            }
-        });
-
-        campoPrecio.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                char c = e.getKeyChar();
-                String text = campoPrecio.getText();
-
-                // Permitir solo dígitos y el carácter de punto decimal
-                if (!Character.isDigit(c) && c != '.') {
-                    e.consume(); // Ignorar cualquier otro carácter
-                    return;
-                }
-
-                // Verificar si se excede el límite de caracteres
-                if (text.length() >= 5 && c != '.' && !text.contains(".")) {
-                    e.consume(); // Ignorar el carácter si se excede el límite de dígitos y no es un punto decimal
-                    return;
-                }
-
-                // Verificar si ya hay un punto decimal y se intenta ingresar otro
-                if (text.contains(".") && c == '.') {
-                    e.consume(); // Ignorar el carácter si ya hay un punto decimal
-                    return;
-                }
-
-                // Verificar la cantidad de dígitos después del punto decimal
-                if (text.contains(".")) {
-                    int dotIndex = text.indexOf(".");
-                    int decimalDigits = text.length() - dotIndex - 1;
-                    if (decimalDigits >= 2) {
-                        e.consume(); // Ignorar el carácter si se excede la cantidad de dígitos después del punto decimal
-                        return;
-                    }
-                }
-            }
-        });
-
         ButtonGroup buttonGroup = new ButtonGroup();
         buttonGroup.add(radioButtonNo);
         buttonGroup.add(radioButtonSi);
@@ -248,70 +177,109 @@ public class CrearArreglo extends JFrame {
                 }
 
                 if (validacion > 0) {
-                    JOptionPane.showMessageDialog(null, mensaje, "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoError(mensaje, Color.decode("#C62828"));
                     return;
                 }
 
                 String nombre = campoNombre.getText().trim();
                 if (!nombre.isEmpty()) {
                     if (nombre.length() > 100) {
-                        JOptionPane.showMessageDialog(null, "El nombre debe tener como máximo 100 caracteres.", "Validación", JOptionPane.ERROR_MESSAGE);
+                        mostrarDialogoPersonalizadoError("El nombre debe tener como máximo 100 caracteres.", Color.decode("#C62828"));
                         return;
                     }
 
                     if (!nombre.matches("[a-zA-ZñÑ]{2,}(\\s[a-zA-ZñÑ]+\\s*)*")) {
-                        JOptionPane.showMessageDialog(null, "El nombre debe tener mínimo 2 letras y máximo 1 espacio entre palabras.", "Validación", JOptionPane.ERROR_MESSAGE);
+                        mostrarDialogoPersonalizadoError("El nombre debe tener mínimo 2 letras y máximo 1 espacio entre palabras.", Color.decode("#C62828"));
                         return;
                     }
                 } else {
-                    JOptionPane.showMessageDialog(null, "El campo de nombre no puede estar vacío.", "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoError("El campo de nombre no puede estar vacío.", Color.decode("#C62828"));
                     return;
                 }
 
                 String precioText = campoPrecio.getText().trim();
                 if (precioText.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Faltó ingresar el precio.", "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoError("Faltó ingresar el precio.", Color.decode("#C62828"));
                     return;
                 } else {
                     if (!precioText.matches("\\d{1,5}(\\.\\d{1,2})?")) {
-                        JOptionPane.showMessageDialog(null, "Precio inválido. Debe tener el formato correcto (ejemplo: 1234 o 1234.56).", "Validación", JOptionPane.ERROR_MESSAGE);
+                        mostrarDialogoPersonalizadoError("Precio inválido. Debe tener el formato correcto (ejemplo: 1234 o 1234.56).", Color.decode("#C62828"));
                         return;
                     } else {
                         double precio = Double.parseDouble(precioText);
                         if (precio < 1.00 || precio > 99999.99) {
-                            JOptionPane.showMessageDialog(null, "Precio fuera del rango válido (1.00 - 99999.99).", "Validación", JOptionPane.ERROR_MESSAGE);
+                            mostrarDialogoPersonalizadoError("Precio fuera del rango válido (1.00 - 99999.99).", Color.decode("#C62828"));
                             return;
                         }
                     }
                 }
 
                 if (!radioButtonSi.isSelected() && !radioButtonNo.isSelected()) {
-                    JOptionPane.showMessageDialog(null, "Debe seleccionar la disponibilidad.", "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoError("Debe seleccionar la disponibilidad.", Color.decode("#C62828"));
                     return;
                 }
 
                 if (imagePath.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Faltó cargar la imagen.", "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoError("Faltó cargar la imagen.", Color.decode("#C62828"));
                     return;
                 }
 
-                int respuesta = JOptionPane.showOptionDialog(
-                        null,
+                JButton btnSave = new JButton("Sí");
+                JButton btnCancel = new JButton("No");
+
+                // Personaliza los botones aquí
+                btnSave.setBackground(darkColorAqua);
+                btnCancel.setBackground(darkColorRed);
+
+                // Personaliza los fondos de los botones aquí
+                btnSave.setForeground(Color.WHITE);
+                btnCancel.setForeground(Color.WHITE);
+
+                // Elimina el foco
+                btnSave.setFocusPainted(false);
+                btnCancel.setFocusPainted(false);
+
+                // Crea un JOptionPane
+                JOptionPane optionPane = new JOptionPane(
                         "¿Desea guardar la información del arreglo?",
-                        "Confirmación",
-                        JOptionPane.YES_NO_OPTION,
                         JOptionPane.QUESTION_MESSAGE,
+                        JOptionPane.DEFAULT_OPTION,
                         null,
-                        new Object[]{"Sí", "No"},
-                        "No"
+                        new Object[]{}, // no options
+                        null
                 );
 
-                if (respuesta == JOptionPane.YES_OPTION) {
-                    guardarArreglo();
-                    ListaArreglos listaArreglo = new ListaArreglos();
-                    listaArreglo.setVisible(true);
-                    actual.dispose();
-                }
+                // Crea un JDialog
+                JDialog dialog = optionPane.createDialog("Guardar");
+
+                // Añade ActionListener a los botones
+                btnSave.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // Acciones para el botón Sí
+                        guardarArreglo();
+                        dialog.dispose();
+                        ListaArreglos listaArreglo = new ListaArreglos();
+                        listaArreglo.setVisible(true);
+                        actual.dispose();
+                    }
+                });
+
+                btnCancel.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // Acciones para el botón No
+                        // No se hace nada, sólo se cierra el diálogo
+                        dialog.dispose();
+                    }
+                });
+
+                // Añade los botones al JOptionPane
+                optionPane.setOptions(new Object[]{btnSave, btnCancel});
+
+                // Muestra el diálogo
+                dialog.setVisible(true);
+
             }
         });
 
@@ -370,11 +338,11 @@ public class CrearArreglo extends JFrame {
                         boolean resultado = ImageIO.write(imagen, "jpg", finalDirectorio);
 
                         if (!resultado) {
-                            JOptionPane.showMessageDialog(null, "Error al guardar la imagen", "Error", JOptionPane.ERROR_MESSAGE);
+                            mostrarDialogoPersonalizadoError("Error al guardar la imagen", Color.decode("#C62828"));
                             return; // Detiene la ejecución adicional si falla el guardado
                         }
                     } catch (IOException ex) {
-                        JOptionPane.showMessageDialog(null, "Error al procesar la imagen: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                        mostrarDialogoPersonalizadoError("Error al procesar la imagen: " + ex.getMessage(), Color.decode("#C62828"));
                         ex.printStackTrace();
                         return;
                     }
@@ -465,6 +433,78 @@ public class CrearArreglo extends JFrame {
                 dialog.setVisible(true);
             }
         });
+
+        campoNombre.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                String text = campoNombre.getText();
+                int length = text.length();
+                int caretPosition = campoNombre.getCaretPosition();
+
+                // Verificar si se está ingresando un espacio en blanco
+                if (e.getKeyChar() == ' ') {
+                    // Verificar si es el primer espacio en blanco o si hay varios espacios consecutivos
+                    if (length == 0 || caretPosition == 0 || text.charAt(caretPosition - 1) == ' ') {
+                        e.consume(); // Ignorar el espacio en blanco adicional
+                    }
+                } else {
+                    // Verificar la longitud del texto después de eliminar espacios en blanco
+                    String trimmedText = text.replaceAll("\\s+", " ");
+                    int trimmedLength = trimmedText.length();
+
+                    // Verificar si se está ingresando una letra
+                    if (Character.isLetter(e.getKeyChar())) {
+                        // Verificar si se excede el límite de caracteres
+                        if (trimmedLength >= 100) {
+                            e.consume(); // Ignorar la letra
+                        } else {
+                            // Convertir solo la primera letra a mayúscula
+                            if (caretPosition == 0) {
+                                e.setKeyChar(Character.toUpperCase(e.getKeyChar()));
+                            }
+                        }
+                    } else {
+                        e.consume(); // Ignorar cualquier otro tipo de carácter
+                    }
+                }
+            }
+        });
+
+        campoPrecio.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                String text = campoPrecio.getText();
+
+                // Permitir solo dígitos y el carácter de punto decimal
+                if (!Character.isDigit(c) && c != '.') {
+                    e.consume(); // Ignorar cualquier otro carácter
+                    return;
+                }
+
+                // Verificar si se excede el límite de caracteres
+                if (text.length() >= 5 && c != '.' && !text.contains(".")) {
+                    e.consume(); // Ignorar el carácter si se excede el límite de dígitos y no es un punto decimal
+                    return;
+                }
+
+                // Verificar si ya hay un punto decimal y se intenta ingresar otro
+                if (text.contains(".") && c == '.') {
+                    e.consume(); // Ignorar el carácter si ya hay un punto decimal
+                    return;
+                }
+
+                // Verificar la cantidad de dígitos después del punto decimal
+                if (text.contains(".")) {
+                    int dotIndex = text.indexOf(".");
+                    int decimalDigits = text.length() - dotIndex - 1;
+                    if (decimalDigits >= 2) {
+                        e.consume(); // Ignorar el carácter si se excede la cantidad de dígitos después del punto decimal
+                        return;
+                    }
+                }
+            }
+        });
     }
 
     private void guardarArreglo() {
@@ -483,25 +523,81 @@ public class CrearArreglo extends JFrame {
                 preparedStatement.setString(5, disponible);
                 preparedStatement.executeUpdate();
 
-                JOptionPane.showMessageDialog(null, "Arreglo guardado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-            } catch (SQLException e) {
+                mostrarDialogoPersonalizadoExito("Arreglo guardado exitosamente", Color.decode("#263238"));
+        } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al guardar el arreglo", "Error", JOptionPane.ERROR_MESSAGE);
+            mostrarDialogoPersonalizadoError("Error al guardar el arreglo", Color.decode("#C62828"));
         }
     }
 
-    private String obtenerExtensionImagen(String imagePath) {
-        int extensionIndex = imagePath.lastIndexOf(".");
-        if (extensionIndex != -1) {
-            return imagePath.substring(extensionIndex);
-        }
-        return "";
+    public void mostrarDialogoPersonalizadoExito(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado
+        JButton btnAceptar = new JButton("ACEPTAR");
+        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE);
+        btnAceptar.setFocusPainted(false);
+
+        // Crea un JOptionPane
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                           // Mensaje a mostrar
+                JOptionPane.INFORMATION_MESSAGE,   // Tipo de mensaje
+                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
+                null,                              // Icono (puede ser null)
+                new Object[]{},                    // No se usan opciones estándar
+                null                               // Valor inicial (no necesario aquí)
+        );
+
+        // Añade el botón al JOptionPane
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Éxito");
+
+        // Añade un ActionListener al botón
+        btnAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+            }
+        });
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
     }
 
-    private String generarNumeroAleatorio(int min, int max) {
-        Random random = new Random();
-        int numeroAleatorio = random.nextInt(max - min + 1) + min;
-        return String.format("%04d", numeroAleatorio);
+    public void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado
+        JButton btnAceptar = new JButton("ACEPTAR");
+        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE);
+        btnAceptar.setFocusPainted(false);
+
+        // Crea un JOptionPane
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                           // Mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
+                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
+                null,                              // Icono (puede ser null)
+                new Object[]{},                    // No se usan opciones estándar
+                null                               // Valor inicial (no necesario aquí)
+        );
+
+        // Añade el botón al JOptionPane
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Error");
+
+        // Añade un ActionListener al botón
+        btnAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+            }
+        });
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
     }
 
     public static void main(String[] args) {

@@ -1,4 +1,5 @@
 package Arreglos;
+import Desayunos.ListaDesayunos;
 import Objetos.Conexion;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -248,72 +249,112 @@ public class EditarArreglo extends JFrame {
                 }
 
                 if (validacion > 0) {
-                    JOptionPane.showMessageDialog(null, mensaje, "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoError(mensaje, Color.decode("#C62828"));
                     return;
                 }
 
                 String nombre = campoNombre.getText().trim();
                 if (!nombre.isEmpty()) {
                     if (nombre.length() > 100) {
-                        JOptionPane.showMessageDialog(null, "El nombre debe tener como máximo 100 caracteres.", "Validación", JOptionPane.ERROR_MESSAGE);
+                        mostrarDialogoPersonalizadoError("El nombre debe tener como máximo 100 caracteres.", Color.decode("#C62828"));
                         return;
                     }
 
                     if (!nombre.matches("[a-zA-ZñÑ]{2,}(\\s[a-zA-ZñÑ]+\\s*)*")) {
-                        JOptionPane.showMessageDialog(null, "El nombre debe tener mínimo 2 letras y máximo 1 espacio entre palabras.", "Validación", JOptionPane.ERROR_MESSAGE);
+                        mostrarDialogoPersonalizadoError("El nombre debe tener mínimo 2 letras y máximo 1 espacio entre palabras.", Color.decode("#C62828"));
                         return;
                     }
                 } else {
-                    JOptionPane.showMessageDialog(null, "El campo de nombre no puede estar vacío.", "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoError("El campo de nombre no puede estar vacío.", Color.decode("#C62828"));
                     return;
                 }
 
                 String precioText = campoPrecio.getText().trim();
                 if (precioText.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Faltó ingresar el precio.", "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoError("Faltó ingresar el precio.", Color.decode("#C62828"));
                     return;
                 } else {
                     if (!precioText.matches("\\d{1,5}(\\.\\d{1,2})?")) {
-                        JOptionPane.showMessageDialog(null, "Precio inválido. Debe tener el formato correcto (ejemplo: 1234 o 1234.56).", "Validación", JOptionPane.ERROR_MESSAGE);
+                        mostrarDialogoPersonalizadoError("Precio inválido. Debe tener el formato correcto (ejemplo: 1234 o 1234.56).", Color.decode("#C62828"));
                         return;
                     } else {
                         double precio = Double.parseDouble(precioText);
                         if (precio < 1.00 || precio > 99999.99) {
-                            JOptionPane.showMessageDialog(null, "Precio fuera del rango válido (1.00 - 99999.99).", "Validación", JOptionPane.ERROR_MESSAGE);
+                            mostrarDialogoPersonalizadoError("Precio fuera del rango válido (1.00 - 99999.99).", Color.decode("#C62828"));
                             return;
                         }
                     }
                 }
 
                 if (!radioButtonSi.isSelected() && !radioButtonNo.isSelected()) {
-                    JOptionPane.showMessageDialog(null, "Debe seleccionar la disponibilidad.", "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoError("Debe seleccionar la disponibilidad.", Color.decode("#C62828"));
                     return;
                 }
 
                 if (imagePath.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Faltó cargar la imagen.", "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoError("Faltó cargar la imagen.", Color.decode("#C62828"));
                     return;
                 }
 
-                int respuesta = JOptionPane.showOptionDialog(
-                        null,
-                        "¿Desea actualizar la información del arreglo?",
-                        "Confirmación",
-                        JOptionPane.YES_NO_OPTION,
+                JButton btnSave = new JButton("Sí");
+                JButton btnCancel = new JButton("No");
+
+                // Personaliza los botones aquí
+                btnSave.setBackground(darkColorAqua);
+                btnCancel.setBackground(darkColorRed);
+
+                // Personaliza los fondos de los botones aquí
+                btnSave.setForeground(Color.WHITE);
+                btnCancel.setForeground(Color.WHITE);
+
+                // Elimina el foco
+                btnSave.setFocusPainted(false);
+                btnCancel.setFocusPainted(false);
+
+                // Crea un JOptionPane
+                JOptionPane optionPane = new JOptionPane(
+                        "¿Desea actualizar la información del desayuno sorpresa?",
                         JOptionPane.QUESTION_MESSAGE,
+                        JOptionPane.DEFAULT_OPTION,
                         null,
-                        new Object[]{"Sí", "No"},
-                        "No"
+                        new Object[]{}, // no options
+                        null
                 );
 
-                if (respuesta == JOptionPane.YES_OPTION) {
-                    actualizarArreglo();
-                    ListaArreglos listaArreglo = new ListaArreglos();
-                    listaArreglo.setVisible(true);
-                    actual.dispose();
-                }
+                // Crea un JDialog
+                JDialog dialog = optionPane.createDialog("Guardar");
+
+                // Añade ActionListener a los botones
+                btnSave.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // Acciones para el botón Sí
+                        actualizarArreglo();
+                        dialog.dispose();
+                        ListaArreglos listaArreglo = new ListaArreglos();
+                        listaArreglo.setVisible(true);
+                        actual.dispose();
+                    }
+                });
+
+                btnCancel.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // Acciones para el botón No
+                        // No se hace nada, sólo se cierra el diálogo
+                        dialog.dispose();
+                    }
+                });
+
+                // Añade los botones al JOptionPane
+                optionPane.setOptions(new Object[]{btnSave, btnCancel});
+
+                // Muestra el diálogo
+                dialog.setVisible(true);
+
             }
         });
+
 
         botonCargarImagen.addActionListener(new ActionListener() {
             @Override
@@ -488,7 +529,9 @@ public class EditarArreglo extends JFrame {
 
                     }
                 } catch (Exception e) {
-                    JOptionPane.showMessageDialog(null, "Error al cargar la imagen del arreglo.", "Error", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoError("Error al cargar la imagen del arreglo.", Color.decode("#C62828"));
+
+
                 }
 
                 String disponible = resultSet.getString("disponible");
@@ -499,7 +542,7 @@ public class EditarArreglo extends JFrame {
                 }
             }
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error al obtener los datos del arreglo.", "Error", JOptionPane.ERROR_MESSAGE);
+            mostrarDialogoPersonalizadoError("Error al obtener los datos del arreglo.", Color.decode("#C62828"));
         }
     }
 
@@ -518,7 +561,7 @@ public class EditarArreglo extends JFrame {
                 Files.copy(origenPath, destino.toPath(), StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Error al guardar la imagen", "Error", JOptionPane.ERROR_MESSAGE);
+                mostrarDialogoPersonalizadoError("Error al guardar la imagen.", Color.decode("#C62828"));
                 return;
             }
 
@@ -537,14 +580,14 @@ public class EditarArreglo extends JFrame {
                 preparedStatement.setInt(5, id);
                 preparedStatement.executeUpdate();
 
-                JOptionPane.showMessageDialog(null, "Arreglo actualizado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                mostrarDialogoPersonalizadoExito("Arreglo actualizado exitosamente.", Color.decode("#263238"));
             } catch (SQLException e) {
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Error al actualizar el arreglo", "Error", JOptionPane.ERROR_MESSAGE);
+                mostrarDialogoPersonalizadoError("Error al actualizar el arreglo.", Color.decode("#C62828"));
             }
         } catch (Exception e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al actualizar el arreglo", "Error", JOptionPane.ERROR_MESSAGE);
+            mostrarDialogoPersonalizadoError("Error al actualizar el arreglo.", Color.decode("#C62828"));
         }
     }
 
@@ -560,6 +603,76 @@ public class EditarArreglo extends JFrame {
         Random random = new Random();
         int numeroAleatorio = random.nextInt(max - min + 1) + min;
         return String.format("%04d", numeroAleatorio);
+    }
+
+    public void mostrarDialogoPersonalizadoExito(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado
+        JButton btnAceptar = new JButton("ACEPTAR");
+        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE);
+        btnAceptar.setFocusPainted(false);
+
+        // Crea un JOptionPane
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                           // Mensaje a mostrar
+                JOptionPane.INFORMATION_MESSAGE,   // Tipo de mensaje
+                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
+                null,                              // Icono (puede ser null)
+                new Object[]{},                    // No se usan opciones estándar
+                null                               // Valor inicial (no necesario aquí)
+        );
+
+        // Añade el botón al JOptionPane
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Éxito");
+
+        // Añade un ActionListener al botón
+        btnAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+            }
+        });
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
+    }
+
+    public void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado
+        JButton btnAceptar = new JButton("ACEPTAR");
+        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE);
+        btnAceptar.setFocusPainted(false);
+
+        // Crea un JOptionPane
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                           // Mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
+                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
+                null,                              // Icono (puede ser null)
+                new Object[]{},                    // No se usan opciones estándar
+                null                               // Valor inicial (no necesario aquí)
+        );
+
+        // Añade el botón al JOptionPane
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Error");
+
+        // Añade un ActionListener al botón
+        btnAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+            }
+        });
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
     }
 
     public static void main(String[] args) {
