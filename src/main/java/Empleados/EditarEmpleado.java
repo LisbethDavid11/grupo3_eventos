@@ -379,21 +379,20 @@ public class EditarEmpleado extends JFrame {
         botonGuardar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
+                Integer empleadoId = id;
                 int validacion = 0;
                 String mensaje = "Faltó ingresar: \n";
 
-                // Asume que tienes el ID del empleado disponible como una variable llamada empleadoId
-                Integer empleadoId = id; // Utiliza la variable id de la clase
-
-                // Verificar si ya existe un empleado con la misma identidad (ignorando el empleado actual)
+                // Verificar si ya existe un empleado con la misma identidad
                 if (validarIdentidadExistente(campoIdentidad.getText().trim(), empleadoId)) {
-                    JOptionPane.showMessageDialog(null, "La identidad ingresada ya está asociada a otro empleado", "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoError("La identidad ingresada ya está asociada a otro empleado.", Color.decode("#C62828"));
                     return; // Detener la ejecución del método
                 }
 
-                // Verificar si ya existe un empleado con el mismo teléfono (ignorando el empleado actual)
+                // Verificar si ya existe un empleado con el mismo teléfono
                 if (validarTelefonoExistente(campoTelefono.getText().trim(), empleadoId)) {
-                    JOptionPane.showMessageDialog(null, "El teléfono ingresado ya está asociado a otro empleado", "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoError("El teléfono ingresado ya está asociado a otro empleado.", Color.decode("#C62828"));
                     return; // Detener la ejecución del método
                 }
 
@@ -427,14 +426,14 @@ public class EditarEmpleado extends JFrame {
                 } else {
                     int edad = Integer.parseInt(campoEdad.getText());
                     if (edad < 18 || edad > 60) {
-                        JOptionPane.showMessageDialog(null, "La edad debe estar entre 18 y 60 años", "Validación", JOptionPane.ERROR_MESSAGE);
+                        mostrarDialogoPersonalizadoError("La edad debe estar entre 18 y 60 años.", Color.decode("#C62828"));
                         return;
                     }
                 }
 
                 if (campoCorreo.getText().trim().isEmpty()) {
                     validacion++;
-                    mensaje += "Correo\n";
+                    mensaje += "Correo electrónico\n";
                 }
 
                 if (campoTelefono.getText().trim().isEmpty()) {
@@ -457,48 +456,41 @@ public class EditarEmpleado extends JFrame {
                     mensaje += "Dirección\n";
                 }
 
-                // Verificar si se seleccionó un tipo de empleado
-                if (!temporalRadioButton.isSelected() && !permanenteRadioButton.isSelected()) {
-                    validacion++;
-                    mensaje += "Tipo de empleado\n";
-                }
-
-
                 // Mostrar mensaje de campos vacíos si es necesario
                 if (validacion > 0) {
-                    JOptionPane.showMessageDialog(null, mensaje.toString(), "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoError(mensaje, Color.decode("#C62828"));
                     return;
                 }
 
                 String nombre = campoNombres.getText().trim();
                 if (!nombre.isEmpty()) {
                     if (nombre.length() > 50) {
-                        JOptionPane.showMessageDialog(null, "El nombre de empleado debe tener como máximo 50 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
+                        mostrarDialogoPersonalizadoError("El nombre de empleado debe tener como máximo 50 caracteres.", Color.decode("#C62828"));
                         return;
                     }
 
                     if (!nombre.matches("[a-zA-ZñÑáéíóúÁÉÍÓÚ]{2,}(\\s[a-zA-ZñÑáéíóúÁÉÍÓÚ]+)?")) {
-                        JOptionPane.showMessageDialog(null, "El nombre de empleado debe tener mínimo 2 letras y máximo 1 espacio entre palabras.", "Validación", JOptionPane.ERROR_MESSAGE);
+                        mostrarDialogoPersonalizadoError("El nombre de empleado debe tener mínimo 2 letras y máximo 1 espacio entre palabras.", Color.decode("#C62828"));
                         return;
                     }
                 } else {
-                    JOptionPane.showMessageDialog(null, "El campo de nombre de empleado no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoError("El campo de nombre de empleado no puede estar vacío.", Color.decode("#C62828"));
                     return;
                 }
 
                 String apellido = campoApellidos.getText().trim();
                 if (!apellido.isEmpty()) {
                     if (apellido.length() > 50) {
-                        JOptionPane.showMessageDialog(null, "El apellido de empleado debe tener como máximo 50 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
+                        mostrarDialogoPersonalizadoError("El apellido de empleado debe tener como máximo 50 caracteres.", Color.decode("#C62828"));
                         return;
                     }
 
                     if (!apellido.matches("[a-zA-ZñÑáéíóúÁÉÍÓÚ]{2,}(\\s[a-zA-ZñÑáéíóúÁÉÍÓÚ]+)?")) {
-                        JOptionPane.showMessageDialog(null, "El apellido de empleado debe tener mínimo 2 letras y máximo 1 espacio entre palabras.", "Validación", JOptionPane.ERROR_MESSAGE);
+                        mostrarDialogoPersonalizadoError("El apellido de empleado debe tener mínimo 2 letras y máximo 1 espacio entre palabras.", Color.decode("#C62828"));
                         return;
                     }
                 } else {
-                    JOptionPane.showMessageDialog(null, "El apellido del empleado no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoError("El apellido del empleado no puede estar vacío.", Color.decode("#C62828"));
                     return;
                 }
 
@@ -506,81 +498,81 @@ public class EditarEmpleado extends JFrame {
                 if (!correoElectronico.isEmpty()) {
                     // Verificar el formato del correo electrónico utilizando una expresión regular
                     if (!correoElectronico.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
-                        JOptionPane.showMessageDialog(null, "El correo electrónico ingresado no tiene un formato válido", "Validación", JOptionPane.ERROR_MESSAGE);
+                        mostrarDialogoPersonalizadoError("El correo electrónico ingresado no tiene un formato válido.", Color.decode("#C62828"));
                         return;
                     }
                 } else {
-                    JOptionPane.showMessageDialog(null, "El campo de correo electrónico no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoError("El campo de correo electrónico no puede estar vacío.", Color.decode("#C62828"));
                     return;
                 }
 
                 String nombreContacto = campoNombreContacto.getText().trim();
                 if (!nombreContacto.isEmpty()) {
                     if (nombreContacto.length() > 50) {
-                        JOptionPane.showMessageDialog(null, "El nombre de contacto debe tener como máximo 50 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
+                        mostrarDialogoPersonalizadoError("El nombre de contacto debe tener como máximo 50 caracteres.", Color.decode("#C62828"));
                         return;
                     }
                     if (!nombreContacto.matches("[a-zA-ZñÑáéíóúÁÉÍÓÚ]{2,}(\\s[a-zA-ZñÑáéíóúÁÉÍÓÚ]+)?")) {
-                        JOptionPane.showMessageDialog(null, "El nombre de contacto debe tener mínimo 2 letras y máximo 1 espacio entre palabras.", "Validación", JOptionPane.ERROR_MESSAGE);
+                        mostrarDialogoPersonalizadoError("El nombre de contacto debe tener mínimo 2 letras y máximo 1 espacio entre palabras.", Color.decode("#C62828"));
                         return;
                     }
                 } else {
-                    JOptionPane.showMessageDialog(null, "El campo de nombre de contacto no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoError("El campo de nombre de contacto no puede estar vacío.", Color.decode("#C62828"));
                     return;
                 }
 
                 String domicilio = campoDireccion.getText().trim();
                 if (!domicilio.isEmpty()) {
                     if (domicilio.length() < 2 || domicilio.length() > 200) {
-                        JOptionPane.showMessageDialog(null, "El domicilio debe tener entre 2 y 200 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
+                        mostrarDialogoPersonalizadoError("El domicilio debe tener entre 2 y 200 caracteres.", Color.decode("#C62828"));
                         return;
                     }
                 } else {
-                    JOptionPane.showMessageDialog(null, "El campo de domicilio no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoError("El campo de domicilio no puede estar vacío.", Color.decode("#C62828"));
                     return;
                 }
 
                 String telefono = campoTelefono.getText().trim();
                 if (!telefono.isEmpty()) {
                     if (telefono.length() != 8) {
-                        JOptionPane.showMessageDialog(null, "El número de teléfono debe tener exactamente 8 dígitos", "Validación", JOptionPane.ERROR_MESSAGE);
+                        mostrarDialogoPersonalizadoError("El número de teléfono debe tener exactamente 8 dígitos.", Color.decode("#C62828"));
                         return;
                     }
 
                     if (!telefono.matches("[2389]\\d{7}")) {
-                        JOptionPane.showMessageDialog(null, "El número de teléfono debe empezar con 2, 3, 8 o 9", "Validación", JOptionPane.ERROR_MESSAGE);
+                        mostrarDialogoPersonalizadoError("El número de teléfono debe empezar con 2, 3, 8 o 9.", Color.decode("#C62828"));
                         return;
                     }
                 } else {
-                    JOptionPane.showMessageDialog(null, "El campo de teléfono no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoError("El campo de teléfono no puede estar vacío.", Color.decode("#C62828"));
                     return;
                 }
 
                 String contactoEmergencia = campoContactoEmergencia.getText().trim();
                 if (!contactoEmergencia.isEmpty()) {
                     if (contactoEmergencia.length() != 8) {
-                        JOptionPane.showMessageDialog(null, "El número de contacto de emergencia debe tener exactamente 8 dígitos", "Validación", JOptionPane.ERROR_MESSAGE);
+                        mostrarDialogoPersonalizadoError("El número de contacto de emergencia debe tener exactamente 8 dígitos.", Color.decode("#C62828"));
                         return;
                     }
 
                     if (!contactoEmergencia.matches("[2389]\\d{7}")) {
-                        JOptionPane.showMessageDialog(null, "El número de contacto de emergencia debe empezar con 2, 3, 8 o 9", "Validación", JOptionPane.ERROR_MESSAGE);
+                        mostrarDialogoPersonalizadoError("El número de contacto de emergencia debe empezar con 2, 3, 8 o 9.", Color.decode("#C62828"));
                         return;
                     }
                 } else {
-                    JOptionPane.showMessageDialog(null, "El campo de contacto de emergencia no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoError("El campo de contacto de emergencia no puede estar vacío.", Color.decode("#C62828"));
                     return;
                 }
 
                 String identidad = campoIdentidad.getText().trim();
                 if (!identidad.isEmpty()) {
                     if (identidad.length() != 15) {
-                        JOptionPane.showMessageDialog(null, "La identidad debe tener 15 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
+                        mostrarDialogoPersonalizadoError("La identidad debe tener 15 caracteres.", Color.decode("#C62828"));
                         return;
                     }
 
                     if (!identidad.matches("\\d{4}-\\d{4}-\\d{5}")) {
-                        JOptionPane.showMessageDialog(null, "La identidad debe tener el formato ####-####-#####", "Validación", JOptionPane.ERROR_MESSAGE);
+                        mostrarDialogoPersonalizadoError("La identidad debe tener otro formato valido, ejemplo: 0703-1980-12345.", Color.decode("#C62828"));
                         return;
                     }
 
@@ -588,31 +580,70 @@ public class EditarEmpleado extends JFrame {
                     Empleado empleado = new Empleado();
                     boolean esIdentidadValida = empleado.comprobarIdentidad(numerosIdentidad);
                     if (!esIdentidadValida) {
-                        JOptionPane.showMessageDialog(null, "La identidad ingresada no es válida", "Validación", JOptionPane.ERROR_MESSAGE);
+                        mostrarDialogoPersonalizadoError("La identidad ingresada no es válida.", Color.decode("#C62828"));
                         return;
                     }
                 } else {
-                    JOptionPane.showMessageDialog(null, "El campo de identidad no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoError("El campo de identidad no puede estar vacío.", Color.decode("#C62828"));
                     return;
                 }
 
-                int respuesta = JOptionPane.showOptionDialog(
-                        null,
-                        "¿Desea actualizar la información del empleado?",
-                        "Confirmación",
-                        JOptionPane.YES_NO_OPTION,
+                JButton btnSave = new JButton("Sí");
+                JButton btnCancel = new JButton("No");
+
+                // Personaliza los botones aquí
+                btnSave.setBackground(darkColorAqua);
+                btnCancel.setBackground(darkColorRed);
+
+                // Personaliza los fondos de los botones aquí
+                btnSave.setForeground(Color.WHITE);
+                btnCancel.setForeground(Color.WHITE);
+
+                // Elimina el foco
+                btnSave.setFocusPainted(false);
+                btnCancel.setFocusPainted(false);
+
+                // Crea un JOptionPane
+                JOptionPane optionPane = new JOptionPane(
+                        "¿Desea guardar la información del empleado?",
                         JOptionPane.QUESTION_MESSAGE,
+                        JOptionPane.DEFAULT_OPTION,
                         null,
-                        new Object[]{"Sí", "No"},
-                        "No"
+                        new Object[]{}, // no options
+                        null
                 );
 
-                if (respuesta == JOptionPane.YES_OPTION) {
-                    GuardarDatos();
-                    ListaEmpleados listaEmpleados = new ListaEmpleados();
-                    listaEmpleados.setVisible(true);
-                    actual.dispose();
-                }
+                // Crea un JDialog
+                JDialog dialog = optionPane.createDialog("Guardar");
+
+                // Añade ActionListener a los botones
+                btnSave.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // Acciones para el botón Sí
+                        GuardarDatos();
+                        dialog.dispose();
+                        ListaEmpleados listaEmpleados = new ListaEmpleados();
+                        listaEmpleados.setVisible(true);
+                        actual.dispose();
+                    }
+                });
+
+                btnCancel.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // Acciones para el botón No
+                        // No se hace nada, sólo se cierra el diálogo
+                        dialog.dispose();
+                    }
+                });
+
+                // Añade los botones al JOptionPane
+                optionPane.setOptions(new Object[]{btnSave, btnCancel});
+
+                // Muestra el diálogo
+                dialog.setVisible(true);
+
             }
         });
 
@@ -816,6 +847,76 @@ public class EditarEmpleado extends JFrame {
         }
     }
 
+    public void mostrarDialogoPersonalizadoExito(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado
+        JButton btnAceptar = new JButton("ACEPTAR");
+        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE);
+        btnAceptar.setFocusPainted(false);
+
+        // Crea un JOptionPane
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                           // Mensaje a mostrar
+                JOptionPane.INFORMATION_MESSAGE,   // Tipo de mensaje
+                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
+                null,                              // Icono (puede ser null)
+                new Object[]{},                    // No se usan opciones estándar
+                null                               // Valor inicial (no necesario aquí)
+        );
+
+        // Añade el botón al JOptionPane
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Éxito");
+
+        // Añade un ActionListener al botón
+        btnAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+            }
+        });
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
+    }
+
+    public void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado
+        JButton btnAceptar = new JButton("ACEPTAR");
+        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE);
+        btnAceptar.setFocusPainted(false);
+
+        // Crea un JOptionPane
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                           // Mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
+                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
+                null,                              // Icono (puede ser null)
+                new Object[]{},                    // No se usan opciones estándar
+                null                               // Valor inicial (no necesario aquí)
+        );
+
+        // Añade el botón al JOptionPane
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Error");
+
+        // Añade un ActionListener al botón
+        btnAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+            }
+        });
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
+    }
+
     public void GuardarDatos() {
         sql = new Conexion();
         mysql = sql.conectamysql();
@@ -849,15 +950,12 @@ public class EditarEmpleado extends JFrame {
             statement.setString(10, campoDireccion.getText());
             statement.setString(11, tipo);
             statement.setInt(12, this.id);
-
             statement.executeUpdate();
 
             String nombreCompleto = campoNombres.getText() + " " + campoApellidos.getText();
-            System.out.println("Empleado " + nombreCompleto + " ha sido actualizado exitosamente.");
-            JOptionPane.showMessageDialog(null, "Empleado " + nombreCompleto + " ha sido actualizado exitosamente.", "Éxito", JOptionPane.DEFAULT_OPTION);
+            mostrarDialogoPersonalizadoExito("Empleado " + nombreCompleto + " ha sido actualizado exitosamente.", Color.decode("#263238"));
         } catch (SQLException e) {
-            String mensajeError = "Error al actualizar el empleado: " + e.getMessage();
-            JOptionPane.showMessageDialog(null, "No se pudo realizar la actualización del empleado", "Error", JOptionPane.ERROR_MESSAGE);
+            mostrarDialogoPersonalizadoError("No se pudo realizar la actualización del empleado", Color.decode("#C62828"));
         }
     }
 }
