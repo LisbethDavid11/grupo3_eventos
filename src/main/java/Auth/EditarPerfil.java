@@ -113,23 +113,26 @@ public class EditarPerfil extends JFrame {
 
                 // Verificar si se está ingresando un espacio en blanco
                 if (e.getKeyChar() == ' ') {
-                    // Verificar si es el primer espacio en blanco o si hay varios espacios consecutivos
-                    if (length == 0 || caretPosition == 0 || text.charAt(caretPosition - 1) == ' ') {
-                        e.consume(); // Ignorar el espacio en blanco adicional
+                    // Verificar si es el primer espacio en blanco o ya se ingresaron tres espacios
+                    if (length == 0 || text.chars().filter(ch -> ch == ' ').count() >= 3) {
+                        e.consume(); // Ignorar el espacio en blanco
+                    } else if (caretPosition > 0 && text.charAt(caretPosition - 1) == ' ') {
+                        e.consume(); // Ignorar espacios en blanco adicionales
                     }
                 } else {
                     // Verificar la longitud del texto después de eliminar espacios en blanco
-                    String trimmedText = text.replaceAll("\\s+", " ");
+                    String trimmedText = text.replaceAll(" ", "");
                     int trimmedLength = trimmedText.length();
 
                     // Verificar si se está ingresando una letra
                     if (Character.isLetter(e.getKeyChar())) {
                         // Verificar si se excede el límite de caracteres
-                        if (trimmedLength >= 100) {
+                        if (trimmedLength >= 50) {
                             e.consume(); // Ignorar la letra
                         } else {
-                            // Convertir solo la primera letra a mayúscula
-                            if (caretPosition == 0) {
+                            // Verificar si es el primer carácter o el carácter después de un espacio en blanco
+                            if (length == 0 || (caretPosition > 0 && text.charAt(caretPosition - 1) == ' ')) {
+                                // Convertir la letra a mayúscula
                                 e.setKeyChar(Character.toUpperCase(e.getKeyChar()));
                             }
                         }
