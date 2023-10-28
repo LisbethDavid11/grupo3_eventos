@@ -117,7 +117,7 @@ public class Login extends javax.swing.JFrame {
         Conexion sql = new Conexion();
         Connection connection = sql.conectamysql();
         try {
-            String query = "SELECT contrasena, nombre, imagen FROM usuarios WHERE correo = ?";
+            String query = "SELECT id, nombre, correo, contrasena, imagen, rol FROM usuarios WHERE correo = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, correo);
 
@@ -127,8 +127,12 @@ public class Login extends javax.swing.JFrame {
                 String contrasenaEncriptada = resultSet.getString("contrasena");
                 if (BCrypt.checkpw(contrasena, contrasenaEncriptada)) {
                     return new DatosUsuario(
+                            resultSet.getInt("id"),
                             resultSet.getString("nombre"),
-                            resultSet.getString("imagen")
+                            resultSet.getString("correo"),
+                            resultSet.getString("contrasena"), // Considerar seguridad
+                            resultSet.getString("imagen"),
+                            resultSet.getString("rol")
                     );
                 }
             }
@@ -153,10 +157,17 @@ public class Login extends javax.swing.JFrame {
         DatosUsuario datosUsuario = verificarCredenciales(correo, contrasena);
 
         if (datosUsuario != null) {
-            SesionUsuario.getInstance().setNombreUsuario(datosUsuario.getNombre());
-            SesionUsuario.getInstance().setImagenUsuario(datosUsuario.getImagen());
-            mostrarDialogoPersonalizadoExito("Inicio de sesión exitoso. Bienvenido " + datosUsuario.getNombre()+".", Color.decode("#263238"));
+            SesionUsuario sesion = SesionUsuario.getInstance();
+            sesion.setIdUsuario(datosUsuario.getId());
+            sesion.setNombreUsuario(datosUsuario.getNombre());
+            sesion.setCorreoUsuario(datosUsuario.getCorreo());
+            sesion.setImagenUsuario(datosUsuario.getImagen());
+            sesion.setRolUsuario(datosUsuario.getRol());
+
+            mostrarDialogoPersonalizadoExito("Inicio de sesión exitoso. Bienvenido " + datosUsuario.getNombre() + ".", Color.decode("#263238"));
+
             SubMenu menu = new SubMenu();
+            menu.setIdUsuarioActual(datosUsuario.getId());
             menu.setNombreUsuario(datosUsuario.getNombre());
             menu.setImagenUsuario(datosUsuario.getImagen());
             menu.setVisible(true);

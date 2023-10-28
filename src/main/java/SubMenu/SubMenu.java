@@ -4,6 +4,7 @@ import Actividades.CalendarioDeActividades;
 import Alquileres.ListaAlquileres;
 import Arreglos.ListaArreglos;
 import Auth.Login;
+import Auth.VerPerfil;
 import Clientes.ListaClientes;
 import Compras.ListaCompras;
 import Desayunos.ListaDesayunos;
@@ -57,7 +58,8 @@ public class SubMenu extends JFrame {
     private JPopupMenu userMenu;
     private String nombre;
     private String imagen;
-
+    private int id;
+    private int usuarioActualId;
     public SubMenu() {
         super("Menú Principal");
         setSize(1100, 640);
@@ -375,6 +377,12 @@ public class SubMenu extends JFrame {
         userLabel.setIcon(new ImageIcon(getRoundedImage(imagePath, 40, 40)));
     }
 
+    private int idUsuarioActual;
+
+    public void setIdUsuarioActual(int id) {
+        this.idUsuarioActual = id;
+    }
+
     private void setupNavbar() {
         navbarPanel = new JPanel();
         navbarPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -397,7 +405,16 @@ public class SubMenu extends JFrame {
         // Menú Popup para las opciones del usuario
         userMenu = new JPopupMenu();
         JMenuItem menuItemPerfil = new JMenuItem("Perfil");
+        menuItemPerfil.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                VerPerfil verPerfil = new VerPerfil(idUsuarioActual);
+                verPerfil.setVisible(true);
+            }
+        });
+
         JMenuItem menuItemConfiguracion = new JMenuItem("Configuración");
+
         // Suponiendo que estás en una clase que extiende JFrame
         JMenuItem menuItemCerrarSesion = new JMenuItem("Cerrar Sesión");
         menuItemCerrarSesion.addActionListener(new ActionListener() {
@@ -515,8 +532,6 @@ public class SubMenu extends JFrame {
         g2.dispose();
         return resizedImg;
     }
-
-
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {

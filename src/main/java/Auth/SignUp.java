@@ -1,6 +1,8 @@
 package Auth;
 import SubMenu.SubMenu;
-import java.sql.Connection;
+
+import java.sql.*;
+
 import Objetos.Conexion;
 import javax.swing.*;
 import java.awt.*;
@@ -8,9 +10,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.Random;
+
 import org.mindrot.jbcrypt.BCrypt;
 
 public class SignUp extends javax.swing.JFrame {
@@ -28,15 +29,16 @@ public class SignUp extends javax.swing.JFrame {
             String nombre = jTextField1.getText().trim();
             String correo = jTextField2.getText().trim();
             String contrasena = new String(jPasswordField1.getPassword());
-            String rol = "general";
+            String rol = "general"; // Asumiendo que todos los nuevos usuarios serán 'general'
 
             String contrasenaEncriptada = BCrypt.hashpw(contrasena, BCrypt.gensalt());
 
-            String[] imagenes = {"imagen 1.jpg", "imagen 2.jpg", "imagen 3.jpg", "imagen 4.jpg", "imagen 5.jpg", "imagen 6.jpg", "imagen 7.jpg", "imagen 8.jpg", "imagen 9.jpg", "imagen 10.jpg"};
-            String imagenSeleccionada = imagenes[0]; // Ajusta la lógica para seleccionar la imagen
+            // Suponiendo que se elige una imagen de forma predeterminada
+            String[] imagenes = {"imagen1.jpg", "imagen2.jpg", "imagen3.jpg", "imagen4.jpg", "imagen5.jpg", "imagen6.jpg", "imagen7.jpg", "imagen8.jpg", "imagen9.jpg", "imagen10.jpg"};
+            String imagenSeleccionada = imagenes[new Random().nextInt(imagenes.length)]; // Selección aleatoria
 
             String query = "INSERT INTO usuarios (nombre, correo, contrasena, imagen, rol) VALUES (?, ?, ?, ?, ?)";
-            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
                 preparedStatement.setString(1, nombre);
                 preparedStatement.setString(2, correo);
                 preparedStatement.setString(3, contrasenaEncriptada);
@@ -46,17 +48,24 @@ public class SignUp extends javax.swing.JFrame {
                 int rowsInserted = preparedStatement.executeUpdate();
                 if (rowsInserted > 0) {
                     mostrarDialogoPersonalizadoExito("Registro exitoso. El usuario se ha creado correctamente.", Color.decode("#263238"));
-                    return new DatosUsuario(nombre, imagenSeleccionada); // Devuelve los datos del usuario
+
+                    // Obtener el ID generado
+                    try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
+                        if (generatedKeys.next()) {
+                            int id = generatedKeys.getInt(1);
+                            return new DatosUsuario(id, nombre, correo, contrasenaEncriptada, imagenSeleccionada, rol); // Devuelve los datos del usuario
+                        }
+                    }
                 } else {
                     mostrarDialogoPersonalizadoError("Error al registrar el usuario. Inténtalo de nuevo.", Color.decode("#C62828"));
-                    return null;
                 }
             }
         } catch (SQLException e) {
             mostrarDialogoPersonalizadoError("Error al registrar el usuario: " + e.getMessage(), Color.decode("#C62828"));
-            return null;
         }
+        return null;
     }
+
 
     private boolean usuarioExistente(String correo) {
         Conexion sql = new Conexion();
