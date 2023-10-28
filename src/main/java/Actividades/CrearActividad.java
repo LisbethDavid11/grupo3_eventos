@@ -1,6 +1,6 @@
 package Actividades;
 
-import Eventos.CrearEvento;
+import Desayunos.ListaDesayunos;
 import Objetos.Conexion;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
@@ -65,6 +65,7 @@ public class CrearActividad extends JFrame {
     Color darkColorRed = new Color(244, 67, 54);
     Color darkColorBlue = new Color(33, 150, 243);
     EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
+    Color textColor = Color.decode("#212121");
     private JDatePickerImpl datePicker; // Declare the datePicker variable at the class level
 
     public CrearActividad() {
@@ -155,27 +156,21 @@ public class CrearActividad extends JFrame {
         panel2.setBackground(Color.decode("#F5F5F5"));
         panel3.setBackground(Color.decode("#F5F5F5"));
 
-        // Color de texto para los JTextField
-        Color textColor = Color.decode("#212121");
+        campoDireccion.setForeground(textColor);
+        campoDireccion.setBackground(new Color(215, 215, 215));
 
-        // Crea un margen de 10 píxeles desde el borde inferior
-        EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
+        campoDescripcion.setForeground(textColor);
+        campoDescripcion.setBackground(new Color(215, 215, 215));
 
-        // Color de texto de los botones
-        botonCancelar.setForeground(Color.WHITE);
-        botonGuardar.setForeground(Color.WHITE);
-
-        // Color de fondo de los botones
         botonCancelar.setBackground(darkColorBlue);
-        botonGuardar.setBackground(darkColorAqua);
-
         botonCancelar.setFocusPainted(false);
-        botonGuardar.setFocusPainted(false);
+        botonCancelar.setBorder(margin);
+        botonCancelar.setForeground(Color.WHITE);
 
-        // Aplica el margen al botón
+        botonGuardar.setBackground(darkColorAqua);
+        botonGuardar.setFocusPainted(false);
         botonGuardar.setBorder(margin);
-        botonCancelar.setBorder(margin);
-        botonCancelar.setBorder(margin);
+        botonGuardar.setForeground(Color.WHITE);
 
         lbl0.setForeground(textColor);
         lbl1.setForeground(textColor);
@@ -185,16 +180,7 @@ public class CrearActividad extends JFrame {
         lbl5.setForeground(textColor);
         lbl6.setForeground(textColor);
 
-        // Color de texto para el JTextArea
-        campoDireccion.setForeground(textColor);
-        campoDireccion.setBackground(new Color(215, 215, 215));
-
-        campoDescripcion.setForeground(textColor);
-        campoDescripcion.setBackground(new Color(215, 215, 215));
-
-        // Crea un margen de 15 píxeles desde el borde inferior
-        EmptyBorder marginTitulo = new EmptyBorder(15, 0, 15, 0);
-        lbl0.setBorder(marginTitulo);
+        lbl0.setBorder(margin);
         lbl0.setFont(fontTitulo);
 
         campoNombre.addKeyListener(new KeyAdapter() {
@@ -351,12 +337,12 @@ public class CrearActividad extends JFrame {
                 }
 
                 if (validacion > 0) {
-                    JOptionPane.showMessageDialog(null, mensaje, "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoError(mensaje, Color.decode("#C62828"));
                     return;
                 }
 
                 if (horaFinal == horaInicial && minutoInicial == minutoFinal && amPmInicial == amPmFinal){
-                    JOptionPane.showMessageDialog(null, "La hora inicial no puede ser la misma que la hora final", "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoError("La hora inicial no puede ser la misma que la hora final.", Color.decode("#C62828"));
                     return;
                 }
 
@@ -365,7 +351,7 @@ public class CrearActividad extends JFrame {
                     int longitud = texto.length();
 
                     if (longitud < 2 || longitud > 200) {
-                        JOptionPane.showMessageDialog(null, "La dirección debe tener entre 2 y 200 caracteres.", "Validación", JOptionPane.ERROR_MESSAGE);
+                        mostrarDialogoPersonalizadoError("La dirección debe tener entre 2 y 200 caracteres.", Color.decode("#C62828"));
                     }
                 }
 
@@ -374,7 +360,7 @@ public class CrearActividad extends JFrame {
                     int longitud = texto.length();
 
                     if (longitud < 2 || longitud > 200) {
-                        JOptionPane.showMessageDialog(null, "La descripción debe tener entre 2 y 200 caracteres.", "Validación", JOptionPane.ERROR_MESSAGE);
+                        mostrarDialogoPersonalizadoError("La descripción debe tener entre 2 y 200 caracteres.", Color.decode("#C62828"));
                     }
                 }
 
@@ -433,7 +419,6 @@ public class CrearActividad extends JFrame {
 
                 // Muestra el diálogo
                 dialog.setVisible(true);
-
             }
         });
     }
@@ -451,7 +436,7 @@ public class CrearActividad extends JFrame {
     public void handleDateChange(UtilDateModel dateModel, Calendar tomorrow) {
         java.util.Date selectedDate = dateModel.getValue();
         if (selectedDate != null && isDateOutOfRange(selectedDate, tomorrow)) {
-            JOptionPane.showMessageDialog(null, "La fecha seleccionada está fuera del rango permitido", "Error", JOptionPane.ERROR_MESSAGE);
+            mostrarDialogoPersonalizadoError("La fecha seleccionada está fuera del rango permitido.", Color.decode("#C62828"));
             selectedDate = null; // Anula la selección en lugar de restablecerla a hoy
             dateModel.setValue(selectedDate);
         }
@@ -547,11 +532,81 @@ public class CrearActividad extends JFrame {
             preparedStatement.setTime(6, fin);
             preparedStatement.executeUpdate();
 
-            JOptionPane.showMessageDialog(null, "Actividad guardada exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al guardar la actividad", "Error", JOptionPane.ERROR_MESSAGE);
+            mostrarDialogoPersonalizadoExito("Actividad guardada exitosamente", Color.decode("#263238"));
+            } catch (SQLException e) {
+                e.printStackTrace();
+            mostrarDialogoPersonalizadoError("Error al guardar la actividad", Color.decode("#C62828"));
         }
+    }
+
+    public void mostrarDialogoPersonalizadoExito(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado
+        JButton btnAceptar = new JButton("ACEPTAR");
+        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE);
+        btnAceptar.setFocusPainted(false);
+
+        // Crea un JOptionPane
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                           // Mensaje a mostrar
+                JOptionPane.INFORMATION_MESSAGE,   // Tipo de mensaje
+                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
+                null,                              // Icono (puede ser null)
+                new Object[]{},                    // No se usan opciones estándar
+                null                               // Valor inicial (no necesario aquí)
+        );
+
+        // Añade el botón al JOptionPane
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Éxito");
+
+        // Añade un ActionListener al botón
+        btnAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+            }
+        });
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
+    }
+
+    public void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado
+        JButton btnAceptar = new JButton("ACEPTAR");
+        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE);
+        btnAceptar.setFocusPainted(false);
+
+        // Crea un JOptionPane
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                           // Mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
+                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
+                null,                              // Icono (puede ser null)
+                new Object[]{},                    // No se usan opciones estándar
+                null                               // Valor inicial (no necesario aquí)
+        );
+
+        // Añade el botón al JOptionPane
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Error");
+
+        // Añade un ActionListener al botón
+        btnAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+            }
+        });
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
     }
 
     public static void main(String[] args) {
