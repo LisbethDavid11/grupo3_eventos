@@ -146,10 +146,22 @@ public class VerPerfil extends JFrame {
         etiquetaCorreo.setFont(font);
         etiquetaRol.setFont(font);
 
+        actualizarButton.addActionListener(e -> {
+            int idUsuarioActual = SesionUsuario.getInstance().getIdUsuario();
+            EditarPerfil editarPerfil = new EditarPerfil(idUsuarioActual);
+            editarPerfil.setVisible(true);
+            actual.dispose();
+        });
 
         volverButton.addActionListener(e -> {
             actual.dispose();
         });
+    }
+
+    private int idUsuarioActual;
+
+    public void setIdUsuarioActual(int id) {
+        this.idUsuarioActual = id;
     }
 
     private void mostrar() {
@@ -170,7 +182,6 @@ public class VerPerfil extends JFrame {
                 } else if ("general".equals(rol)){
                     etiquetaRol.setText("  General");
                 }
-
 
                 String imagenNombre = resultSet.getString("imagen");
                 String imagenPath = "img/usuarios/" + imagenNombre;

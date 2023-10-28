@@ -1,5 +1,5 @@
 package Arreglos;
-import Desayunos.ListaDesayunos;
+
 import Objetos.Conexion;
 
 import javax.imageio.ImageIO;
@@ -319,7 +319,7 @@ public class EditarArreglo extends JFrame {
 
                 // Crea un JOptionPane
                 JOptionPane optionPane = new JOptionPane(
-                        "¿Desea actualizar la información del desayuno sorpresa?",
+                        "¿Desea actualizar la información del arreglo?",
                         JOptionPane.QUESTION_MESSAGE,
                         JOptionPane.DEFAULT_OPTION,
                         null,

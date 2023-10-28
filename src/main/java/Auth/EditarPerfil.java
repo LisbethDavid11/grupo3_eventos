@@ -1,6 +1,8 @@
 package Auth;
+
 import Objetos.Conexion;
 import SubMenu.SubMenu;
+import org.mindrot.jbcrypt.BCrypt;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -14,26 +16,24 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Random;
 
 public class EditarPerfil extends JFrame {
-    private JTextField campoNombre, campoPrecio;
-    private JRadioButton radioButtonSi, radioButtonNo;
+    private JTextField campoNombre, campoCorreo;
     private JButton botonGuardar, botonCancelar, botonCargarImagen, botonLimpiar;
-    private JPanel panel, panelImg, panel1, panel2, panel3;
+    private JPanel panel, panelImg, panel1, panel3;
     private JLabel labelImagen;
     private JLabel label0, label1, label2, label3;
+    private JPasswordField campoContrasenaAnterior;
+    private JPasswordField campoContrasenaNueva;
+    private JPasswordField campoContrasenaConfirmar;
+    private JComboBox campoRol;
+    private JButton botonMostrar;
     private String imagePath = "";
     private final EditarPerfil actual = this;
     private Conexion sql;
@@ -69,18 +69,19 @@ public class EditarPerfil extends JFrame {
     private String nombreFile;
     private String urlDestino = "";
 
+
     // Crea un margen de 10 píxeles desde el borde inferior
     EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
-    public EditarPerfil(int arregloId) {
+    public EditarPerfil(int id) {
         super("");
-        setSize(500, 600);
+        setSize(560, 640);
         setLocationRelativeTo(null);
         setContentPane(panel);
         sql = new Conexion();
+        this.id = id;
 
-        this.id = arregloId;
         mostrar();
-
+        defaultEchoChar = campoContrasenaAnterior.getEchoChar();
         // Crear una instancia de Dimension con las dimensiones deseadas
         Dimension panelImgSize = new Dimension(panelImgWidth, panelImgHeight);
 
@@ -139,50 +140,34 @@ public class EditarPerfil extends JFrame {
             }
         });
 
-        campoPrecio.addKeyListener(new KeyAdapter() {
+        campoCorreo.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                char c = e.getKeyChar();
-                String text = campoPrecio.getText();
+                String correo = campoCorreo.getText();
 
-                // Permitir solo dígitos y el carácter de punto decimal
-                if (!Character.isDigit(c) && c != '.') {
-                    e.consume(); // Ignorar cualquier otro carácter
+                // Verificar si se excede la longitud máxima
+                if (correo.length() >= 45) {
+                    e.consume(); // Ignorar el evento si se alcanza el límite máximo de caracteres (45)
                     return;
                 }
 
-                // Verificar si se excede el límite de caracteres
-                if (text.length() >= 5 && c != '.' && !text.contains(".")) {
-                    e.consume(); // Ignorar el carácter si se excede el límite de dígitos y no es un punto decimal
+                // Verificar si se está ingresando un espacio en blanco
+                if (Character.isWhitespace(e.getKeyChar())) {
+                    e.consume(); // Ignorar el espacio en blanco
                     return;
                 }
 
-                // Verificar si ya hay un punto decimal y se intenta ingresar otro
-                if (text.contains(".") && c == '.') {
-                    e.consume(); // Ignorar el carácter si ya hay un punto decimal
+                // Verificar si el carácter no es una letra, guion, arroba o punto
+                if (!Character.isLetter(e.getKeyChar()) && e.getKeyChar() != '-' && e.getKeyChar() != '@' && e.getKeyChar() != '.') {
+                    e.consume(); // Ignorar el carácter si no es una letra, guion, arroba o punto
                     return;
-                }
-
-                // Verificar la cantidad de dígitos después del punto decimal
-                if (text.contains(".")) {
-                    int dotIndex = text.indexOf(".");
-                    int decimalDigits = text.length() - dotIndex - 1;
-                    if (decimalDigits >= 2) {
-                        e.consume(); // Ignorar el carácter si se excede la cantidad de dígitos después del punto decimal
-                        return;
-                    }
                 }
             }
         });
 
-        ButtonGroup buttonGroup = new ButtonGroup();
-        buttonGroup.add(radioButtonNo);
-        buttonGroup.add(radioButtonSi);
-
         panel.setBackground(Color.decode("#F5F5F5"));
         panelImg.setBackground(Color.decode("#F5F5F5"));
         panel1.setBackground(Color.decode("#F5F5F5"));
-        panel2.setBackground(Color.decode("#F5F5F5"));
         panel3.setBackground(Color.decode("#F5F5F5"));
 
         botonLimpiar.setForeground(Color.WHITE);
@@ -205,13 +190,11 @@ public class EditarPerfil extends JFrame {
         botonCargarImagen.setFocusPainted(false);
         botonCargarImagen.setBorder(margin);
 
-        radioButtonSi.setForeground(textColor);
-        radioButtonSi.setBackground(panel.getBackground());
-        radioButtonSi.setFocusPainted(false);
-
-        radioButtonNo.setForeground(textColor);
-        radioButtonNo.setBackground(panel.getBackground());
-        radioButtonNo.setFocusPainted(false);
+        // Crea un margen de 15 píxeles desde el borde inferior
+        EmptyBorder marginDNI = new EmptyBorder(10, 0, 10, 0);
+        campoContrasenaAnterior.setBorder(marginDNI);
+        campoContrasenaNueva.setBorder(marginDNI);
+        campoContrasenaConfirmar.setBorder(marginDNI);
 
         label0.setForeground(textColor);
         label1.setForeground(textColor);
@@ -219,11 +202,22 @@ public class EditarPerfil extends JFrame {
         label3.setForeground(textColor);
         label0.setFont(fontTitulo);
 
+        EmptyBorder marginBotonMostrar = new EmptyBorder(10, 10, 10, 10);
+        botonMostrar.setForeground(Color.white);
+        botonMostrar.setBackground(darkColorBlue);
+        botonMostrar.setBorder(marginBotonMostrar);
+        botonMostrar.setFocusPainted(false);
+
+        botonMostrar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                mostrarContrasenas();
+            }
+        });
+
         botonCancelar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                SubMenu subMenu = new SubMenu();
-                subMenu.setVisible(true);
                 actual.dispose();
             }
         });
@@ -234,19 +228,48 @@ public class EditarPerfil extends JFrame {
                 int validacion = 0;
                 String mensaje = "Faltó ingresar: \n";
 
+                String contrasenaAnterior = campoContrasenaAnterior.getText().trim();
+                String contrasenaNueva = campoContrasenaNueva.getText().trim();
+                String contrasenaConfirmar = campoContrasenaConfirmar.getText().trim();
+
+                if (!contrasenaAnterior.isEmpty()) {
+                    // Validar que la contraseña anterior sea correcta y tenga más de 8 caracteres
+                    if (validarContrasena(id, contrasenaAnterior)) {
+                        // La contraseña actual es correcta, proceder con la lógica de cambio de contraseña
+                    } else {
+                        mostrarDialogoPersonalizadoError("La contraseña actual no es correcta.", Color.decode("#C62828"));
+                    }
+
+                    if (contrasenaAnterior.length() <= 7) {
+                        mostrarDialogoPersonalizadoError("La contraseña anterior tiene menos de 8 caracteres, verifica.", Color.decode("#C62828"));
+                        return; // Detener la ejecución del método
+                    }
+
+                    // Validar las nuevas contraseñas
+                    if (contrasenaNueva.length() <= 8 || contrasenaConfirmar.length() <= 8) {
+                        mostrarDialogoPersonalizadoError("La nueva contraseña y su confirmación deben tener más de 8 caracteres.", Color.decode("#C62828"));
+                        return; // Detener la ejecución del método
+                    }
+
+                    if (!contrasenaNueva.equals(contrasenaConfirmar)) {
+                        mostrarDialogoPersonalizadoError("Las contraseñas nuevas no coinciden.", Color.decode("#C62828"));
+                        return; // Detener la ejecución del método
+                    }
+
+                    if (contrasenaNueva.equals(contrasenaAnterior)) {
+                        mostrarDialogoPersonalizadoError("La nueva contraseña no debe ser igual a la anterior.", Color.decode("#C62828"));
+                        return; // Detener la ejecución del método
+                    }
+                }
+
                 if (campoNombre.getText().trim().isEmpty()) {
                     validacion++;
-                    mensaje += "Nombre\n";
+                    mensaje += "Nombre completo\n";
                 }
 
-                if (campoPrecio.getText().trim().isEmpty()) {
+                if (campoCorreo.getText().trim().isEmpty()) {
                     validacion++;
-                    mensaje += "Precio\n";
-                }
-
-                if (!radioButtonSi.isSelected() && !radioButtonNo.isSelected()) {
-                    validacion++;
-                    mensaje += "Disponibilidad\n";
+                    mensaje += "Correo electrónico\n";
                 }
 
                 if (imagePath.isEmpty()) {
@@ -261,41 +284,50 @@ public class EditarPerfil extends JFrame {
 
                 String nombre = campoNombre.getText().trim();
                 if (!nombre.isEmpty()) {
-                    if (nombre.length() > 100) {
-                        mostrarDialogoPersonalizadoError("El nombre debe tener como máximo 100 caracteres.", Color.decode("#C62828"));
+                    if (nombre.length() > 50) {
+                        mostrarDialogoPersonalizadoError("El nombre de usuario debe tener como máximo 50 caracteres.", Color.decode("#C62828"));
                         return;
                     }
 
-                    if (!nombre.matches("[a-zA-ZñÑ]{2,}(\\s[a-zA-ZñÑ]+\\s*)*")) {
-                        mostrarDialogoPersonalizadoError("El nombre debe tener mínimo 2 letras y máximo 1 espacio entre palabras.", Color.decode("#C62828"));
+                    if (!nombre.matches("^[a-zA-ZñÑáéíóúÁÉÍÓÚ]+(\\s[a-zA-ZñÑáéíóúÁÉÍÓÚ]+)?(\\s[a-zA-ZñÑáéíóúÁÉÍÓÚ]+)?(\\s[a-zA-ZñÑáéíóúÁÉÍÓÚ]+)?$")) {
+                        mostrarDialogoPersonalizadoError("El nombre de usuario debe tener mínimo 2 letras y máximo 3 espacios (1 entre palabras).", Color.decode("#C62828"));
                         return;
                     }
                 } else {
-                    mostrarDialogoPersonalizadoError("El campo de nombre no puede estar vacío.", Color.decode("#C62828"));
+                    mostrarDialogoPersonalizadoError("El campo de nombre de usuario no puede estar vacío.", Color.decode("#C62828"));
                     return;
                 }
 
-                String precioText = campoPrecio.getText().trim();
-                if (precioText.isEmpty()) {
-                    mostrarDialogoPersonalizadoError("Faltó ingresar el precio.", Color.decode("#C62828"));
-                    return;
-                } else {
-                    if (!precioText.matches("\\d{1,5}(\\.\\d{1,2})?")) {
-                        mostrarDialogoPersonalizadoError("Precio inválido. Debe tener el formato correcto (ejemplo: 1234 o 1234.56).", Color.decode("#C62828"));
+                String correoElectronico = campoCorreo.getText().trim();
+                if (!correoElectronico.isEmpty()) {
+                    // Verificar el formato del correo electrónico utilizando una expresión regular
+                    if (!correoElectronico.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+                        mostrarDialogoPersonalizadoError("El correo electrónico ingresado no tiene un formato válido.", Color.decode("#C62828"));
                         return;
-                    } else {
-                        double precio = Double.parseDouble(precioText);
-                        if (precio < 1.00 || precio > 99999.99) {
-                            mostrarDialogoPersonalizadoError("Precio fuera del rango válido (1.00 - 99999.99).", Color.decode("#C62828"));
-                            return;
-                        }
                     }
-                }
 
-                if (!radioButtonSi.isSelected() && !radioButtonNo.isSelected()) {
-                    mostrarDialogoPersonalizadoError("Debe seleccionar la disponibilidad.", Color.decode("#C62828"));
+                    // Verificar el dominio del correo electrónico
+                    if (!correoElectronico.endsWith("@gmail.com") &&
+                            !correoElectronico.endsWith("@unah.hn") &&
+                            !correoElectronico.endsWith("@yahoo.com") &&
+                            !correoElectronico.endsWith("@yahoo.es") &&
+                            !correoElectronico.endsWith("@hotmail.com")) {
+                        mostrarDialogoPersonalizadoError("El dominio del correo electrónico no es válido.", Color.decode("#C62828"));
+                        return;
+                    }
+                } else {
+                    mostrarDialogoPersonalizadoError("El campo de correo electrónico no puede estar vacío.", Color.decode("#C62828"));
                     return;
                 }
+
+                /*
+                String correo = campoCorreo.getText().trim();
+                // Verificar si el correo ya está registrado por otro usuario
+                if (usuarioExistente(correo, idUsuarioActual)) {
+                    mostrarDialogoPersonalizadoError("El correo electrónico ya está registrado. Utiliza otro correo.", Color.decode("#C62828"));
+                    return;
+                }
+                */
 
                 if (imagePath.isEmpty()) {
                     mostrarDialogoPersonalizadoError("Faltó cargar la imagen.", Color.decode("#C62828"));
@@ -319,7 +351,7 @@ public class EditarPerfil extends JFrame {
 
                 // Crea un JOptionPane
                 JOptionPane optionPane = new JOptionPane(
-                        "¿Desea actualizar la información del desayuno sorpresa?",
+                        "¿Desea actualizar la información del perfil de usuario?\n  IMPORTANTE: No olvides tu usuario y contraseña.",
                         JOptionPane.QUESTION_MESSAGE,
                         JOptionPane.DEFAULT_OPTION,
                         null,
@@ -334,12 +366,10 @@ public class EditarPerfil extends JFrame {
                 btnSave.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        // Acciones para el botón Sí
-                        actualizarArreglo();
                         dialog.dispose();
-                        SubMenu subMenu = new SubMenu();
-                        subMenu.setVisible(true);
                         actual.dispose();
+                        cerrarVentanas();
+                        actualizarUsuario();
                     }
                 });
 
@@ -392,7 +422,7 @@ public class EditarPerfil extends JFrame {
                     File file = fileChooser.getSelectedFile();
                     imagePath = file.getAbsolutePath();
 
-                    String directorio = "img/arreglos/";
+                    String directorio = "img/usuarios/";
 
                     Date fecha = new Date();
                     SimpleDateFormat formatoFechaHora = new SimpleDateFormat("ddMMyyyy_HHmmss");
@@ -402,7 +432,7 @@ public class EditarPerfil extends JFrame {
                     int numeroAleatorio = (int) (Math.random() * 9999) + 1;
                     String numeroFormateado = String.format("%04d", numeroAleatorio); // Asegura el formato de 4 dígitos
 
-                    nombreFile = "Arreglo_" + fechaHora + " " + numeroFormateado + ".jpg";
+                    nombreFile = "Usuario_" + fechaHora + " " + numeroFormateado + ".jpg";
                     urlDestino = directorio + nombreFile;
 
                     File directorioDestino = new File(directorio);
@@ -474,7 +504,7 @@ public class EditarPerfil extends JFrame {
 
                 // Crea un JOptionPane
                 JOptionPane optionPane = new JOptionPane(
-                        "¿Estás seguro de que deseas reestablecer los datos del arreglo?",
+                        "¿Estás seguro de que deseas reestablecer los datos del usuario?",
                         JOptionPane.DEFAULT_OPTION,
                         JOptionPane.DEFAULT_OPTION,
                         null,
@@ -489,11 +519,13 @@ public class EditarPerfil extends JFrame {
                 btnYes.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        campoPrecio.setText("");
+                        campoCorreo.setText("");
                         campoNombre.setText("");
+                        campoContrasenaAnterior.setText("");
+                        campoContrasenaNueva.setText("");
+                        campoContrasenaConfirmar.setText("");
+                        campoRol.setSelectedItem(0);
                         imagePath = ""; // Restablecer la ruta de la imagen
-
-                        buttonGroup.clearSelection();
                         mostrar(); // Vuelve a cargar los datos originales
                         dialog.dispose();
                     }
@@ -517,26 +549,64 @@ public class EditarPerfil extends JFrame {
         });
     }
 
+    private int idUsuarioActual;
+
+    private char defaultEchoChar;
+
+    private boolean esVisible = false;
+
+    public void setIdUsuarioActual(int id) {
+        this.idUsuarioActual = id;
+    }
+
+    private void mostrarContrasenas() {
+        // Cambiar el estado de visibilidad de la contraseña
+        esVisible = !esVisible;
+
+        // Establecer el modo de eco dependiendo del estado de visibilidad
+        char modoEco = esVisible ? (char) 0 : defaultEchoChar; // Usa el carácter de eco por defecto
+
+        campoContrasenaAnterior.setEchoChar(modoEco);
+        campoContrasenaNueva.setEchoChar(modoEco);
+        campoContrasenaConfirmar.setEchoChar(modoEco);
+    }
+
     private void mostrar() {
         sql = new Conexion();
         mysql = sql.conectamysql();
 
         try {
-            PreparedStatement statement = mysql.prepareStatement("SELECT * FROM arreglos WHERE id = ?;");
+            PreparedStatement statement = mysql.prepareStatement("SELECT * FROM usuarios WHERE id = ?;");
             statement.setInt(1, this.id);
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
                 campoNombre.setText(resultSet.getString("nombre"));
-                double precio = resultSet.getDouble("precio");
-                DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-                symbols.setDecimalSeparator('.');
-                DecimalFormat decimalFormat = new DecimalFormat("0.00", symbols);
-                campoPrecio.setText(decimalFormat.format(precio));
+                campoCorreo.setText(resultSet.getString("correo"));
+                String rol = resultSet.getString("rol");
+                int indiceRol;
+
+                switch (rol) {
+                    case "admin":
+                        indiceRol = 1;
+                        break;
+                    case "general":
+                        indiceRol = 2;
+                        break;
+                    case "variado":
+                        indiceRol = 3;
+                        break;
+                    default:
+                        indiceRol = -1; // O algún valor por defecto que indique una selección no válida
+                }
+
+                if (indiceRol != -1) {
+                    campoRol.setSelectedIndex(indiceRol);
+                }
 
                 String imagenNombre = resultSet.getString("imagen");
-                String imagenPath = "img/arreglos/" + imagenNombre;
-
+                String imagenPath = "img/usuarios/" + imagenNombre;
+                nombreFile = imagenNombre;
                 try {
                     File imagenFile = new File(imagenPath);
                     if (imagenFile.exists()) {
@@ -566,84 +636,138 @@ public class EditarPerfil extends JFrame {
 
                         labelImagen.setIcon(imagenFinal);
                         imagePath = imagenPath;
-
-
                     }
                 } catch (Exception e) {
-                    mostrarDialogoPersonalizadoError("Error al cargar la imagen del arreglo.", Color.decode("#C62828"));
-
-
-                }
-
-                String disponible = resultSet.getString("disponible");
-                if (disponible.equals("Si")) {
-                    radioButtonSi.setSelected(true);
-                } else {
-                    radioButtonNo.setSelected(true);
+                    mostrarDialogoPersonalizadoError("Error al cargar la imagen del usuario.", Color.decode("#C62828"));
                 }
             }
         } catch (SQLException e) {
-            mostrarDialogoPersonalizadoError("Error al obtener los datos del arreglo.", Color.decode("#C62828"));
+            mostrarDialogoPersonalizadoError("Error al obtener los datos del usuario.", Color.decode("#C62828"));
         }
     }
 
-    private void actualizarArreglo() {
+    private boolean validarContrasena(int id, String contrasenaIngresada) {
+        Conexion sql = new Conexion();
+        Connection connection = sql.conectamysql();
         try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH-mm-ss");
-            String fechaActual = dateFormat.format(new Date());
-            String nombreImagen = "imagen " + fechaActual + " " + generarNumeroAleatorio(0, 9999);
+            String query = "SELECT contrasena FROM usuarios WHERE id = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, this.id);
 
-            String rutaImagen = nombreImagen + obtenerExtensionImagen(imagePath);
-            File destino = new File("img/arreglos/" + rutaImagen);
+            ResultSet resultSet = preparedStatement.executeQuery();
 
+            if (resultSet.next()) {
+                String contrasenaEncriptada = resultSet.getString("contrasena");
+                return BCrypt.checkpw(contrasenaIngresada, contrasenaEncriptada);
+            }
+        } catch (SQLException e) {
+            mostrarDialogoPersonalizadoError("Error al verificar la contraseña: " + e.getMessage(), Color.decode("#C62828"));
+        } finally {
             try {
-                // Copiar el archivo seleccionado a la ubicación destino
-                Path origenPath = Path.of(imagePath);
-                Files.copy(origenPath, destino.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException e) {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
                 e.printStackTrace();
-                mostrarDialogoPersonalizadoError("Error al guardar la imagen.", Color.decode("#C62828"));
+            }
+        }
+        return false;
+    }
+
+    private boolean usuarioExistente(String correo, int id) {
+        Conexion sql = new Conexion();
+        Connection connection = sql.conectamysql();
+
+        try {
+            String query = "SELECT * FROM usuarios WHERE correo = ? AND id <> ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, correo);
+            preparedStatement.setInt(2, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            return resultSet.next();
+        } catch (SQLException e) {
+            mostrarDialogoPersonalizadoError("Error, cierra y vuelve a ejecutar", Color.decode("#C62828"));
+            return false;
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private String obtenerNombreDeArchivo(String rutaCompleta) {
+        File archivo = new File(rutaCompleta);
+        return archivo.getName();
+    }
+
+
+    private void actualizarUsuario() {
+        try {
+            // Obtener solo el nombre del archivo de la imagen
+            String nombreArchivoImagen = obtenerNombreDeArchivo(imagePath);
+            String nombre = campoNombre.getText().trim();
+            String contrasena = new String(campoContrasenaNueva.getPassword());
+            String correo = campoCorreo.getText().trim();
+            Object itemRol = campoRol.getSelectedItem();
+            String rol = "";
+
+            if (itemRol instanceof String) {
+                rol = (String) itemRol;
+                switch (rol) {
+                    case "Administrador":
+                        rol = "admin";
+                        break;
+                    case "General":
+                        rol = "general";
+                        break;
+                    case "Variado":
+                        rol = "variado";
+                        break;
+                    default:
+                        return;
+                }
+            } else {
                 return;
             }
 
-            String nombre = campoNombre.getText().trim();
-            String precioText = campoPrecio.getText().replace("L ", "").replace(",", "").replace("_", "");
-            double precio = Double.parseDouble(precioText);
-            String disponible = radioButtonSi.isSelected() ? "Si" : "No";
+            try (Connection connection = sql.conectamysql()) {
+                String query;
+                if (contrasena.isEmpty()) {
+                    query = "UPDATE usuarios SET nombre = ?, correo = ?, imagen = ?, rol = ? WHERE id = ?";
+                } else {
+                    query = "UPDATE usuarios SET nombre = ?, correo = ?, imagen = ?, contrasena = ?, rol = ? WHERE id = ?";
+                }
 
-            try (Connection connection = sql.conectamysql();
-                 PreparedStatement preparedStatement = connection.prepareStatement("UPDATE arreglos SET nombre = ?, precio = ?, imagen = ?, disponible = ? WHERE id = ?")) {
-
+                PreparedStatement preparedStatement = connection.prepareStatement(query);
                 preparedStatement.setString(1, nombre);
-                preparedStatement.setDouble(2, precio);
+                preparedStatement.setString(2, correo);
                 preparedStatement.setString(3, nombreFile);
-                preparedStatement.setString(4, disponible);
-                preparedStatement.setInt(5, id);
-                preparedStatement.executeUpdate();
+                preparedStatement.setString(4, rol);
 
-                mostrarDialogoPersonalizadoExito("Arreglo actualizado exitosamente.", Color.decode("#263238"));
+                if (!contrasena.isEmpty()) {
+                    String contrasenaEncriptada = BCrypt.hashpw(contrasena, BCrypt.gensalt());
+                    preparedStatement.setString(4, contrasenaEncriptada);
+                    preparedStatement.setString(5, rol);
+                    preparedStatement.setInt(6, id);
+                } else {
+                    preparedStatement.setInt(5, id);
+                }
+
+                preparedStatement.executeUpdate();
+                mostrarDialogoPersonalizadoExito("     Usuario actualizado exitosamente.\nPor tu seguridad, vuelve a iniciar sesión.", Color.decode("#263238"));
             } catch (SQLException e) {
                 e.printStackTrace();
-                mostrarDialogoPersonalizadoError("Error al actualizar el arreglo.", Color.decode("#C62828"));
+                mostrarDialogoPersonalizadoError("Error al actualizar el usuario.", Color.decode("#C62828"));
             }
         } catch (Exception e) {
             e.printStackTrace();
-            mostrarDialogoPersonalizadoError("Error al actualizar el arreglo.", Color.decode("#C62828"));
+            mostrarDialogoPersonalizadoError("Error al actualizar el usuario.", Color.decode("#C62828"));
         }
-    }
-
-    private String obtenerExtensionImagen(String imagePath) {
-        int extensionIndex = imagePath.lastIndexOf(".");
-        if (extensionIndex != -1) {
-            return imagePath.substring(extensionIndex);
-        }
-        return "";
-    }
-
-    private String generarNumeroAleatorio(int min, int max) {
-        Random random = new Random();
-        int numeroAleatorio = random.nextInt(max - min + 1) + min;
-        return String.format("%04d", numeroAleatorio);
     }
 
     public void mostrarDialogoPersonalizadoExito(String mensaje, Color colorFondoBoton) {
@@ -716,16 +840,24 @@ public class EditarPerfil extends JFrame {
         dialog.setVisible(true);
     }
 
-    public static void main(String[] args) {
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    EditarPerfil frame = new EditarPerfil(1); // Reemplazar el valor 1 por el ID del arreglo que se desea editar
-                    frame.setVisible(true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+    public void cerrarVentanas() {
+        for (Frame frame : Frame.getFrames()) {
+            if (frame instanceof JFrame) {
+                frame.dispose();
             }
+        }
+
+        Login loginFrame = new Login();
+        loginFrame.setVisible(true);
+        loginFrame.pack();
+        loginFrame.setLocationRelativeTo(null);
+    }
+
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            EditarPerfil editarPerfil = new EditarPerfil(1);
+            editarPerfil.setVisible(true);
         });
     }
 }

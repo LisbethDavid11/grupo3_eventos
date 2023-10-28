@@ -4,6 +4,7 @@ import Actividades.CalendarioDeActividades;
 import Alquileres.ListaAlquileres;
 import Arreglos.ListaArreglos;
 import Auth.Login;
+import Auth.SesionUsuario;
 import Auth.VerPerfil;
 import Clientes.ListaClientes;
 import Compras.ListaCompras;
@@ -408,6 +409,7 @@ public class SubMenu extends JFrame {
         menuItemPerfil.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                int idUsuarioActual = SesionUsuario.getInstance().getIdUsuario();
                 VerPerfil verPerfil = new VerPerfil(idUsuarioActual);
                 verPerfil.setVisible(true);
             }
