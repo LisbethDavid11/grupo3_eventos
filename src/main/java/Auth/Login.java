@@ -1,17 +1,17 @@
 package Auth;
 
-import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.sql.Connection;
 import Objetos.Conexion;
 import SubMenu.SubMenu;
 import org.mindrot.jbcrypt.BCrypt;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import javax.swing.JOptionPane;
 
 public class Login extends javax.swing.JFrame {
     private Connection mysql;
@@ -23,17 +23,17 @@ public class Login extends javax.swing.JFrame {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
 
                 if (jTextField1.getText().trim().isEmpty() && jPasswordField1.getText().trim().isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "El correo electrónico y la contraseña no puede estar vacíos", "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoError("El correo electrónico y la contraseña no puede estar vacíos.", Color.decode("#C62828"));
                     return;
                 }
 
                 if (jTextField1.getText().trim().isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "El correo electrónico no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoError("El correo electrónico no puede estar vacío.", Color.decode("#C62828"));
                     return;
                 }
 
                 if (jPasswordField1.getText().trim().isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "La contraseña no puede estar vacía", "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoError("La contraseña no puede estar vacía.", Color.decode("#C62828"));
                     return;
                 }
 
@@ -43,12 +43,81 @@ public class Login extends javax.swing.JFrame {
 
     }
 
-    private boolean verificarCredenciales(String correo, String contrasena) {
+    public void mostrarDialogoPersonalizadoExito(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado
+        JButton btnAceptar = new JButton("ACEPTAR");
+        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE);
+        btnAceptar.setFocusPainted(false);
+
+        // Crea un JOptionPane
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                           // Mensaje a mostrar
+                JOptionPane.INFORMATION_MESSAGE,   // Tipo de mensaje
+                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
+                null,                              // Icono (puede ser null)
+                new Object[]{},                    // No se usan opciones estándar
+                null                               // Valor inicial (no necesario aquí)
+        );
+
+        // Añade el botón al JOptionPane
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Éxito");
+
+        // Añade un ActionListener al botón
+        btnAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+            }
+        });
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
+    }
+
+    public void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado
+        JButton btnAceptar = new JButton("ACEPTAR");
+        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE);
+        btnAceptar.setFocusPainted(false);
+
+        // Crea un JOptionPane
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                           // Mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
+                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
+                null,                              // Icono (puede ser null)
+                new Object[]{},                    // No se usan opciones estándar
+                null                               // Valor inicial (no necesario aquí)
+        );
+
+        // Añade el botón al JOptionPane
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Error");
+
+        // Añade un ActionListener al botón
+        btnAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+            }
+        });
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
+    }
+
+    private DatosUsuario verificarCredenciales(String correo, String contrasena) {
         Conexion sql = new Conexion();
         Connection connection = sql.conectamysql();
-
         try {
-            String query = "SELECT contrasena FROM usuarios WHERE correo = ?";
+            String query = "SELECT contrasena, nombre, imagen FROM usuarios WHERE correo = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, correo);
 
@@ -56,14 +125,17 @@ public class Login extends javax.swing.JFrame {
 
             if (resultSet.next()) {
                 String contrasenaEncriptada = resultSet.getString("contrasena");
-                // Verificar si la contraseña proporcionada coincide con la contraseña encriptada en la base de datos
-                return BCrypt.checkpw(contrasena, contrasenaEncriptada);
-            } else {
-                return false; // El correo proporcionado no existe en la base de datos
+                if (BCrypt.checkpw(contrasena, contrasenaEncriptada)) {
+                    return new DatosUsuario(
+                            resultSet.getString("nombre"),
+                            resultSet.getString("imagen")
+                    );
+                }
             }
+            return null;
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Error al verificar las credenciales: " + e.getMessage());
-            return false;
+            mostrarDialogoPersonalizadoError("Error al verificar las credenciales" + e.getMessage(), Color.decode("#C62828"));
+            return null;
         } finally {
             if (connection != null) {
                 try {
@@ -78,13 +150,19 @@ public class Login extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
         String correo = jTextField1.getText();
         String contrasena = new String(jPasswordField1.getPassword());
-        if (verificarCredenciales(correo, contrasena)) {
-            JOptionPane.showMessageDialog(this, "Inicio de sesión exitoso.");
+        DatosUsuario datosUsuario = verificarCredenciales(correo, contrasena);
+
+        if (datosUsuario != null) {
+            SesionUsuario.getInstance().setNombreUsuario(datosUsuario.getNombre());
+            SesionUsuario.getInstance().setImagenUsuario(datosUsuario.getImagen());
+            mostrarDialogoPersonalizadoExito("Inicio de sesión exitoso. Bienvenido " + datosUsuario.getNombre()+".", Color.decode("#263238"));
             SubMenu menu = new SubMenu();
+            menu.setNombreUsuario(datosUsuario.getNombre());
+            menu.setImagenUsuario(datosUsuario.getImagen());
             menu.setVisible(true);
-            dispose();
+            this.dispose();
         } else {
-            JOptionPane.showMessageDialog(this, "Credenciales incorrectas. Inténtalo de nuevo.");
+            mostrarDialogoPersonalizadoError("Credenciales incorrectas. Inténtalo de nuevo.", Color.decode("#C62828"));
         }
     }
 

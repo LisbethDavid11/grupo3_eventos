@@ -20,45 +20,41 @@ public class SignUp extends javax.swing.JFrame {
     public SignUp() {
         initComponents();
     }
-    private boolean guardarUsuario() {
-        Conexion sql = new Conexion();
-        Connection connection = sql.conectamysql();
 
-        try {
+    private DatosUsuario guardarUsuario() {
+        Conexion sql = new Conexion();
+
+        try (Connection connection = sql.conectamysql()) {
             String nombre = jTextField1.getText().trim();
             String correo = jTextField2.getText().trim();
             String contrasena = new String(jPasswordField1.getPassword());
+            String rol = "general";
 
-            // Encriptar la contraseña usando BCrypt
             String contrasenaEncriptada = BCrypt.hashpw(contrasena, BCrypt.gensalt());
 
-            String query = "INSERT INTO usuarios (nombre, correo, contrasena) VALUES (?, ?, ?)";
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1, nombre);
-            preparedStatement.setString(2, correo);
-            preparedStatement.setString(3, contrasenaEncriptada);
+            String[] imagenes = {"imagen 1.jpg", "imagen 2.jpg", "imagen 3.jpg", "imagen 4.jpg", "imagen 5.jpg", "imagen 6.jpg", "imagen 7.jpg", "imagen 8.jpg", "imagen 9.jpg", "imagen 10.jpg"};
+            String imagenSeleccionada = imagenes[0]; // Ajusta la lógica para seleccionar la imagen
 
-            int rowsInserted = preparedStatement.executeUpdate();
-            if (rowsInserted > 0) {
-                JOptionPane.showMessageDialog(this, "Registro exitoso. El usuario se ha creado correctamente.");
-                SubMenu menu = new SubMenu();
-                menu.setVisible(true);
-                return true;
-            } else {
-                JOptionPane.showMessageDialog(this, "Error al registrar el usuario. Inténtalo de nuevo.");
-                return false;
-            }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Error al registrar el usuario: " + e.getMessage());
-            return false;
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
+            String query = "INSERT INTO usuarios (nombre, correo, contrasena, imagen, rol) VALUES (?, ?, ?, ?, ?)";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setString(1, nombre);
+                preparedStatement.setString(2, correo);
+                preparedStatement.setString(3, contrasenaEncriptada);
+                preparedStatement.setString(4, imagenSeleccionada);
+                preparedStatement.setString(5, rol);
+
+                int rowsInserted = preparedStatement.executeUpdate();
+                if (rowsInserted > 0) {
+                    mostrarDialogoPersonalizadoExito("Registro exitoso. El usuario se ha creado correctamente.", Color.decode("#263238"));
+                    return new DatosUsuario(nombre, imagenSeleccionada); // Devuelve los datos del usuario
+                } else {
+                    mostrarDialogoPersonalizadoError("Error al registrar el usuario. Inténtalo de nuevo.", Color.decode("#C62828"));
+                    return null;
                 }
             }
+        } catch (SQLException e) {
+            mostrarDialogoPersonalizadoError("Error al registrar el usuario: " + e.getMessage(), Color.decode("#C62828"));
+            return null;
         }
     }
 
@@ -75,7 +71,7 @@ public class SignUp extends javax.swing.JFrame {
             // Si resultSet.next() devuelve true, significa que ya existe un usuario con el mismo correo
             return resultSet.next();
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+            mostrarDialogoPersonalizadoError("Error, cierra y vuelve a ejecutar", Color.decode("#C62828"));
             return false;
         } finally {
             if (connection != null) {
@@ -87,7 +83,77 @@ public class SignUp extends javax.swing.JFrame {
             }
         }
     }
-  
+
+    public void mostrarDialogoPersonalizadoExito(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado
+        JButton btnAceptar = new JButton("ACEPTAR");
+        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE);
+        btnAceptar.setFocusPainted(false);
+
+        // Crea un JOptionPane
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                           // Mensaje a mostrar
+                JOptionPane.INFORMATION_MESSAGE,   // Tipo de mensaje
+                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
+                null,                              // Icono (puede ser null)
+                new Object[]{},                    // No se usan opciones estándar
+                null                               // Valor inicial (no necesario aquí)
+        );
+
+        // Añade el botón al JOptionPane
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Éxito");
+
+        // Añade un ActionListener al botón
+        btnAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+            }
+        });
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
+    }
+
+    public void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado
+        JButton btnAceptar = new JButton("ACEPTAR");
+        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE);
+        btnAceptar.setFocusPainted(false);
+
+        // Crea un JOptionPane
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                           // Mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
+                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
+                null,                              // Icono (puede ser null)
+                new Object[]{},                    // No se usan opciones estándar
+                null                               // Valor inicial (no necesario aquí)
+        );
+
+        // Añade el botón al JOptionPane
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Error");
+
+        // Añade un ActionListener al botón
+        btnAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+            }
+        });
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
+    }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -238,53 +304,53 @@ public class SignUp extends javax.swing.JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (jTextField1.getText().trim().isEmpty() && jPasswordField1.getText().trim().isEmpty() && jTextField2.getText().trim().isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "El nombre completo, correo electrónico y la contraseña no puede estar vacíos", "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoError("El nombre completo, correo electrónico y la contraseña no puede estar vacíos.", Color.decode("#C62828"));
                     return;
                 }
 
                 if (jTextField1.getText().trim().isEmpty() && jTextField2.getText().trim().isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "El nombre completo y el correo electrónico no puede estar vacíos", "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoError("El nombre completo y el correo electrónico no puede estar vacíos.", Color.decode("#C62828"));
                     return;
                 }
 
                 if (jTextField2.getText().trim().isEmpty() && jPasswordField1.getText().trim().isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "El correo electrónico y la contraseña no puede estar vacíos", "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoError("El correo electrónico y la contraseña no puede estar vacíos.", Color.decode("#C62828"));
                     return;
                 }
 
                 if (jTextField1.getText().trim().isEmpty() && jPasswordField1.getText().trim().isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "El nombre completo y la contraseña no puede estar vacíos", "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoError("El nombre completo y la contraseña no puede estar vacíos.", Color.decode("#C62828"));
                     return;
                 }
 
                 if (jTextField1.getText().trim().isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "El nombre completo no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoError("El nombre completo no puede estar vacío.", Color.decode("#C62828"));
                     return;
                 }
 
                 if (jTextField2.getText().trim().isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "El correo electrónico no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoError("El correo electrónico no puede estar vacío.", Color.decode("#C62828"));
                     return;
                 }
 
                 if (jPasswordField1.getText().trim().isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "La contraseña no puede estar vacía", "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoError("La contraseña no puede estar vacía.", Color.decode("#C62828"));
                     return;
                 }
 
                 String nombre = jTextField1.getText().trim();
                 if (!nombre.isEmpty()) {
                     if (nombre.length() > 50) {
-                        JOptionPane.showMessageDialog(null, "El nombre de usuario debe tener como máximo 50 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
+                        mostrarDialogoPersonalizadoError("El nombre de usuario debe tener como máximo 50 caracteres.", Color.decode("#C62828"));
                         return;
                     }
 
                     if (!nombre.matches("^[a-zA-ZñÑáéíóúÁÉÍÓÚ]+(\\s[a-zA-ZñÑáéíóúÁÉÍÓÚ]+)?(\\s[a-zA-ZñÑáéíóúÁÉÍÓÚ]+)?(\\s[a-zA-ZñÑáéíóúÁÉÍÓÚ]+)?$")) {
-                        JOptionPane.showMessageDialog(null, "El nombre de usuario debe tener mínimo 2 letras y máximo 3 espacios (1 entre palabras).", "Validación", JOptionPane.ERROR_MESSAGE);
+                        mostrarDialogoPersonalizadoError("El nombre de usuario debe tener mínimo 2 letras y máximo 3 espacios (1 entre palabras).", Color.decode("#C62828"));
                         return;
                     }
                 } else {
-                    JOptionPane.showMessageDialog(null, "El campo de nombre de usuario no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoError("El campo de nombre de usuario no puede estar vacío.", Color.decode("#C62828"));
                     return;
                 }
 
@@ -292,7 +358,7 @@ public class SignUp extends javax.swing.JFrame {
                 if (!correoElectronico.isEmpty()) {
                     // Verificar el formato del correo electrónico utilizando una expresión regular
                     if (!correoElectronico.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
-                        JOptionPane.showMessageDialog(null, "El correo electrónico ingresado no tiene un formato válido", "Validación", JOptionPane.ERROR_MESSAGE);
+                        mostrarDialogoPersonalizadoError("El correo electrónico ingresado no tiene un formato válido.", Color.decode("#C62828"));
                         return;
                     }
 
@@ -302,24 +368,24 @@ public class SignUp extends javax.swing.JFrame {
                             !correoElectronico.endsWith("@yahoo.com") &&
                             !correoElectronico.endsWith("@yahoo.es") &&
                             !correoElectronico.endsWith("@hotmail.com")) {
-                        JOptionPane.showMessageDialog(null, "El dominio del correo electrónico no es válido", "Validación", JOptionPane.ERROR_MESSAGE);
+                        mostrarDialogoPersonalizadoError("El dominio del correo electrónico no es válido.", Color.decode("#C62828"));
                         return;
                     }
                 } else {
-                    JOptionPane.showMessageDialog(null, "El campo de correo electrónico no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoError("El campo de correo electrónico no puede estar vacío.", Color.decode("#C62828"));
                     return;
                 }
 
                 // Verificar si el correo ya está registrado
                 String correo = jTextField2.getText().trim();
                 if (usuarioExistente(correo)) {
-                    JOptionPane.showMessageDialog(null, "El correo electrónico ya está registrado. Utiliza otro correo.");
+                    mostrarDialogoPersonalizadoError("El correo electrónico ya está registrado. Utiliza otro correo.", Color.decode("#C62828"));
                     return;
                 }
 
                 String contrasenia = jPasswordField1.getText().trim();
                 if (contrasenia.length() < 8) {
-                    JOptionPane.showMessageDialog(null, "La contraseña debe tener al menos 8 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoError("La contraseña debe tener al menos 8 caracteres.", Color.decode("#C62828"));
                     return;
                 }
 
@@ -357,8 +423,17 @@ public class SignUp extends javax.swing.JFrame {
                     public void actionPerformed(ActionEvent e) {
                         // Acciones para el botón Sí
                         dialog.dispose();
-                        guardarUsuario();
-                        dispose();
+                        dialog.dispose();
+                        DatosUsuario datosUsuario = guardarUsuario();
+                        if (datosUsuario != null) {
+                            SesionUsuario.getInstance().setNombreUsuario(datosUsuario.getNombre());
+                            SesionUsuario.getInstance().setImagenUsuario(datosUsuario.getImagen());
+                            SubMenu menu = new SubMenu();
+                            menu.setNombreUsuario(datosUsuario.getNombre());
+                            menu.setImagenUsuario(datosUsuario.getImagen());
+                            menu.setVisible(true);
+                            dispose(); // Cierra el formulario actual
+                        }
                     }
                 });
 

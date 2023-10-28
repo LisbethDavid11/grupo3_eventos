@@ -1,9 +1,9 @@
 package SubMenu;
 
 import Actividades.CalendarioDeActividades;
-import Actividades.ListaActividades;
 import Alquileres.ListaAlquileres;
 import Arreglos.ListaArreglos;
+import Auth.Login;
 import Clientes.ListaClientes;
 import Compras.ListaCompras;
 import Desayunos.ListaDesayunos;
@@ -20,10 +20,16 @@ import Proveedores.ListaProveedores;
 import Tarjetas.ListaTarjetas;
 import Ventas.ListaVentas;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 public class SubMenu extends JFrame {
     private JButton proveedoresButton, empleadosButton, clientesButton, floristeriaButton, arreglosButton, materialesButton, comprasButton,tarjetaButton, manualidadesButton, globosButton, desayunosButton, ventasButton, mobiliarioButton, pedidosButton, eventosButton, promocionesButton, actividadesButton, alquileresButton;
@@ -46,12 +52,21 @@ public class SubMenu extends JFrame {
     private ListaEventos listaEventos;
     private CalendarioDeActividades listaActividades;
     private ListaAlquileres listaAlquileres;
+    private JPanel navbarPanel;
+    private JLabel userLabel, userNameLabel;
+    private JPopupMenu userMenu;
+    private String nombre;
+    private String imagen;
 
     public SubMenu() {
         super("Menú Principal");
-        setSize(1100, 620);
+        setSize(1100, 640);
         setLocationRelativeTo(null);
+        // Inicialización y configuración del Navbar
+        setupNavbar();
 
+        // Añadir el navbar al JFrame
+        add(navbarPanel, BorderLayout.NORTH);
         panel = new JPanel(new GridLayout(1, 1)); // Cambia a una sola fila
 
         // Establecer colores Material Design a los botones
@@ -160,7 +175,7 @@ public class SubMenu extends JFrame {
 
         // Crea un panel para contener los botones y el panel de imagen
         panel3 = new JPanel(new BorderLayout());
-        panel3.add(panel, BorderLayout.NORTH);
+        panel3.add(panel, BorderLayout.SOUTH);
         panel3.add(panel2, BorderLayout.CENTER);
 
         clientesButton.setFocusPainted(false);
@@ -348,6 +363,160 @@ public class SubMenu extends JFrame {
             }
         });
     }
+
+    public void setNombreUsuario(String nombre) {
+        this.nombre = nombre;
+        userNameLabel.setText("Bienvenido, " + nombre + " ▼ ");
+    }
+
+    public void setImagenUsuario(String imagen) {
+        this.imagen = imagen;
+        String imagePath = "img/usuarios/" + imagen; // Ruta actualizada según la imagen
+        userLabel.setIcon(new ImageIcon(getRoundedImage(imagePath, 40, 40)));
+    }
+
+    private void setupNavbar() {
+        navbarPanel = new JPanel();
+        navbarPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+        navbarPanel.setBackground(Color.decode("#607D8B")); // Color del Navbar
+
+        userLabel = new JLabel();
+        userLabel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10)); // Margen para la etiqueta
+
+        // Configurar etiqueta con el nombre del usuario
+        userNameLabel = new JLabel("Nombre de Usuario");
+        userNameLabel.setForeground(Color.WHITE); // Color del texto
+        userNameLabel.setFont(new Font("Arial", Font.BOLD, 14)); // Fuente y tamaño
+        userNameLabel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10)); // Margen para la etiqueta
+
+        // Icono en forma de V
+        ImageIcon vIcon = new ImageIcon("path_to_v_icon.jpg"); // Ruta al ícono en forma de V
+        JLabel vLabel = new JLabel(vIcon);
+        vLabel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
+
+        // Menú Popup para las opciones del usuario
+        userMenu = new JPopupMenu();
+        JMenuItem menuItemPerfil = new JMenuItem("Perfil");
+        JMenuItem menuItemConfiguracion = new JMenuItem("Configuración");
+        // Suponiendo que estás en una clase que extiende JFrame
+        JMenuItem menuItemCerrarSesion = new JMenuItem("Cerrar Sesión");
+        menuItemCerrarSesion.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JButton btnYes = new JButton("Sí");
+                JButton btnNo = new JButton("No");
+
+                // Personaliza los botones aquí
+                btnYes.setBackground( Color.decode("#263238"));
+                btnNo.setBackground(Color.decode("#C62828"));
+
+                // Personaliza los fondos de los botones aquí
+                btnYes.setForeground(Color.WHITE);
+                btnNo.setForeground(Color.WHITE);
+
+                // Elimina el foco
+                btnYes.setFocusPainted(false);
+                btnNo.setFocusPainted(false);
+
+                // Crea un JOptionPane
+                JOptionPane optionPane = new JOptionPane(
+                        "¿Estás seguro de que deseas cerrar sesión?",
+                        JOptionPane.DEFAULT_OPTION,
+                        JOptionPane.DEFAULT_OPTION,
+                        null,
+                        new Object[]{}, // no options
+                        null
+                );
+
+                // Crea un JDialog
+                JDialog dialog = optionPane.createDialog("Cerrar sesión");
+
+                // Añade ActionListener a los botones
+                btnYes.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        dispose();
+                        dialog.dispose();
+                        Login LoginFrame = new Login();
+                        LoginFrame.setVisible(true);
+                        LoginFrame.pack();
+                        LoginFrame.setLocationRelativeTo(null);
+                    }
+                });
+
+                btnNo.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // Acciones para el botón No
+                        // No se hace nada, sólo se cierra el diálogo
+                        dialog.dispose();
+                    }
+                });
+
+                // Añade los botones al JOptionPane
+                optionPane.setOptions(new Object[]{btnYes, btnNo});
+
+                // Muestra el diálogo
+                dialog.setVisible(true);
+            }
+        });
+
+        userMenu.add(menuItemPerfil);
+        userMenu.add(menuItemConfiguracion);
+        userMenu.add(menuItemCerrarSesion);
+
+        // Evento para mostrar el menú al hacer clic en el nombre del usuario
+        userNameLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                userMenu.show(userNameLabel, e.getX(), e.getY());
+            }
+        });
+
+        navbarPanel.add(userLabel);
+        navbarPanel.add(vLabel);
+        navbarPanel.add(userNameLabel);
+    }
+
+    private Image getRoundedImage(String imagePath, int width, int height) {
+        if (imagePath == null || imagePath.isEmpty()) {
+            System.out.println("Image path is null or empty");
+            return null; // o retornar una imagen por defecto
+        }
+
+        BufferedImage srcImg = null;
+        try {
+            File imageFile = new File(imagePath);
+            if (!imageFile.exists()) {
+                System.out.println("File does not exist: " + imagePath);
+                return null; // o retornar una imagen por defecto
+            }
+            srcImg = ImageIO.read(imageFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Error al cargar el archivo: " + imagePath);
+            return null; // o retornar una imagen por defecto
+        }
+
+        // Escalado de imagen con alta calidad
+        Image scaledImg = srcImg.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+        BufferedImage resizedImg = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = resizedImg.createGraphics();
+
+        // Mejorar la calidad de renderizado
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+
+        // Aplicar redondeo
+        g2.fillRoundRect(0, 0, width, height, width, height);
+        g2.setComposite(AlphaComposite.SrcIn);
+        g2.drawImage(scaledImg, 0, 0, null);
+
+        g2.dispose();
+        return resizedImg;
+    }
+
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
