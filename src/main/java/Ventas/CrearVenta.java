@@ -317,7 +317,7 @@ public class CrearVenta extends JFrame {
         imprimirButton.setBorder(margin);
 
         cancelarButton.setForeground(Color.WHITE);
-        cancelarButton.setBackground(darkColorRed);
+        cancelarButton.setBackground(Color.decode("#3F51B5"));
         cancelarButton.setFocusPainted(false);
         
         agregarArregloButton.setForeground(Color.WHITE);

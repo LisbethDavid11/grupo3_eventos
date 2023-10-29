@@ -13,7 +13,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class VerVentas extends JFrame {
     private JPanel panel1;
@@ -164,7 +168,7 @@ public class VerVentas extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String codigoVenta = codigo_venta.getText();
-                //ListaVentas.imprimirFactura(codigoVenta);
+                ListaVentas.imprimirFactura(codigoVenta);
             }
         });
 
@@ -234,11 +238,32 @@ public class VerVentas extends JFrame {
             if (resultSet.next()) {
                 // Llenar los campos de la interfaz con los datos de la venta
                 codigo_venta.setText(resultSet.getString("codigo_venta"));
-                fecha.setText(resultSet.getString("fecha"));
-
-                // Mostrar el nombre completo del cliente y del usuario
                 cliente.setText(resultSet.getString("nombre_cliente"));
                 usuario.setText(resultSet.getString("nombre_usuario"));
+                String fechaBD = resultSet.getString("fecha");
+                Date fechaDate = null;
+                SimpleDateFormat formatoSalida = new SimpleDateFormat("EEEE d 'de' MMMM, yyyy", new Locale("es", "ES"));
+                String[] formatosPosibles = {"yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd"};
+
+                for (String formato : formatosPosibles) {
+                    try {
+                        fechaDate = new SimpleDateFormat(formato).parse(fechaBD);
+                        break; // Sale del bucle si el parseo es exitoso
+                    } catch (ParseException e) {
+                        // Intenta con el siguiente formato si hay una excepción
+                    }
+                }
+
+                if (fechaDate != null) {
+                    String fechaFormateada = formatoSalida.format(fechaDate);
+
+                    // Asegurar que la primera letra sea mayúscula
+                    fechaFormateada = Character.toUpperCase(fechaFormateada.charAt(0)) + fechaFormateada.substring(1);
+                    fecha.setText(fechaFormateada);
+                } else {
+                    System.out.println("Formato de fecha no reconocido.");
+                    // Manejar la situación cuando ninguno de los formatos funciona
+                }
 
                 DefaultTableModel modeloProductos = new DefaultTableModel();
                 modeloProductos.addColumn("N°");
