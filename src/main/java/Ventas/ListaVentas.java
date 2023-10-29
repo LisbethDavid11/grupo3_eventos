@@ -554,33 +554,58 @@ public class ListaVentas extends JFrame {
     public static String obtenerNombreProducto(int detalleId, Conexion sql) {
         String nombreProducto = "Producto no encontrado";
 
-        String query =
-                "SELECT nombre FROM (" +
-                        "    SELECT nombre FROM floristeria WHERE id = ? " +
-                        "    UNION ALL " +
-                        "    SELECT ocasion AS nombre FROM tarjetas WHERE id = ? " +
-                        "    UNION ALL " +
-                        "    SELECT nombre FROM manualidades WHERE id = ? " +
-                        "    UNION ALL " +
-                        "    SELECT nombre FROM arreglos WHERE id = ? " +
-                        "    UNION ALL " +
-                        "    SELECT nombre FROM desayunos WHERE id = ? " +
-                        "    UNION ALL " +
-                        "    SELECT nombre FROM materiales WHERE id = ?" +
-                        ")";
-
         try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-
-            // Estableciendo el mismo ID para todas las consultas
-            for (int i = 1; i <= 6; i++) {
-                preparedStatement.setInt(i, detalleId);
-            }
-
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "SELECT tipo_detalle, detalle_id FROM detalles_ventas WHERE id = ?"
+             )
+        ) {
+            preparedStatement.setInt(1, detalleId);
             ResultSet rs = preparedStatement.executeQuery();
 
             if (rs.next()) {
-                nombreProducto = rs.getString("nombre");
+                String tipoDetalle = rs.getString("tipo_detalle");
+                int detalleIdProducto = rs.getInt("detalle_id");
+
+                String query = null;
+                String columnName = null;
+
+                switch (tipoDetalle) {
+                    case "floristeria":
+                        query = "SELECT nombre FROM floristeria WHERE id = ?";
+                        columnName = "nombre";
+                        break;
+                    case "tarjeta":
+                        query = "SELECT ocasion FROM tarjetas WHERE id = ?";
+                        columnName = "ocasion";
+                        break;
+                    case "manualidad":
+                        query = "SELECT nombre FROM manualidades WHERE id = ?";
+                        columnName = "nombre";
+                        break;
+                    case "arreglo":
+                        query = "SELECT nombre FROM arreglos WHERE id = ?";
+                        columnName = "nombre";
+                        break;
+                    case "desayuno":
+                        query = "SELECT nombre FROM desayunos WHERE id = ?";
+                        columnName = "nombre";
+                        break;
+                    case "material":
+                        query = "SELECT nombre FROM materiales WHERE id = ?";
+                        columnName = "nombre";
+                        break;
+                    default:
+                        return "Tipo de detalle no reconocido";
+                }
+
+                try (PreparedStatement productoStatement = connection.prepareStatement(query)) {
+                    productoStatement.setInt(1, detalleIdProducto);
+                    ResultSet productoRs = productoStatement.executeQuery();
+
+                    if (productoRs.next()) {
+                        nombreProducto = productoRs.getString(columnName);
+                    }
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -646,32 +671,27 @@ public class ListaVentas extends JFrame {
             sql = new Conexion();
             try (Connection mysql = sql.conectamysql();
                  PreparedStatement preparedStatement = mysql.prepareStatement(
-                         "SELECT c.*, p.nombre" +
+                         "SELECT c.id, c.codigo_venta, c.fecha, c.cliente_id, e.id AS empleado_id, p.nombre AS nombre_cliente " +
                                  "FROM ventas c " +
                                  "JOIN clientes p ON c.cliente_id = p.id " +
                                  "JOIN usuarios e ON c.usuario_id = e.id " +
                                  "WHERE c.codigo_venta LIKE CONCAT('%', ?, '%')")) {
 
                 SimpleDateFormat formatoFecha = new SimpleDateFormat("dd 'de' MMMM yyyy", new Locale("es"));
-
                 preparedStatement.setString(1, codigo);  // Búsqueda por código de venta
-
                 ResultSet resultSet = preparedStatement.executeQuery();
 
                 while (resultSet.next()) {
                     venta.setId(resultSet.getInt("id"));
                     venta.setCodigoVenta(resultSet.getString("codigo_venta"));
                     java.util.Date fecha = resultSet.getDate("fecha");
-                    if (fecha != null) {
-                        venta.setFecha(formatoFecha.format(fecha));
-                    } else {
-                        venta.setFecha("");
-                    }
+                    venta.setFecha(fecha != null ? formatoFecha.format(fecha) : "");
                     venta.setClienteId(resultSet.getInt("cliente_id"));
-                    venta.setUsuarioId(resultSet.getInt("empleado_id"));
+                    //venta.setUsuarioId(resultSet.getInt("usuario_id"));
                 }
-            }catch (Exception ignored){
-
+            } catch (SQLException e) {
+                e.printStackTrace();  // Mejor manejo de excepciones
+                // Manejo adicional de errores, si se requiere
             }
 
 
@@ -695,6 +715,8 @@ public class ListaVentas extends JFrame {
             contentStream.showText("Barrio Tierra Blanca, 100 mts adelante de Pintogama.");
             contentStream.newLine();
             contentStream.showText("Teléfono: 9699-1168");
+            contentStream.newLine();
+            contentStream.showText("Factura N° " + codigo);
             contentStream.newLine();
             contentStream.showText("Fecha: " + new SimpleDateFormat("dd-MM-yyyy").format(new Date()));
             contentStream.endText();
@@ -765,7 +787,8 @@ public class ListaVentas extends JFrame {
                 contentStream.newLineAtOffset(50, yPosition);
                 contentStream.showText(String.valueOf(rowNumber + 1));
                 contentStream.newLineAtOffset(columnWidths[0], 0);
-                contentStream.showText(nombreProducto);
+                contentStream.showText(obtenerNombreProducto(detalle.getId(), sql));
+
 
                 contentStream.newLineAtOffset(columnWidths[1], 0);
                 contentStream.showText(String.valueOf(detalle.getCantidad()));

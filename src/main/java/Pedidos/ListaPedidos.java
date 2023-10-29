@@ -3,6 +3,7 @@ package Pedidos;
 import Modelos.ModeloPedido;
 import Objetos.Conexion;
 import Objetos.Pedido;
+import Ventas.ListaVentas;
 
 import javax.swing.*;
 import javax.swing.table.*;
@@ -139,8 +140,8 @@ public class ListaPedidos extends JFrame {
         JTableHeader header = listaPedidos.getTableHeader();
         header.setForeground(Color.WHITE);
 
-        listaPedidos.getColumnModel().getColumn(7).setCellRenderer(new ListaPedidos.ButtonRenderer());
-        listaPedidos.getColumnModel().getColumn(7).setCellEditor(new ListaPedidos.ButtonEditor());
+        listaPedidos.getColumnModel().getColumn(6).setCellRenderer(new ListaPedidos.ButtonRenderer());
+        listaPedidos.getColumnModel().getColumn(6).setCellEditor(new ListaPedidos.ButtonEditor());
 
         int campoBusquedaHeight = 35;
         campoBusqueda.setPreferredSize(new Dimension(campoBusqueda.getPreferredSize().width, campoBusquedaHeight));
@@ -191,8 +192,7 @@ public class ListaPedidos extends JFrame {
         columnModel.getColumn(3).setPreferredWidth(120);
         columnModel.getColumn(4).setPreferredWidth(80);
         columnModel.getColumn(5).setPreferredWidth(45);
-        columnModel.getColumn(6).setPreferredWidth(45);
-        columnModel.getColumn(7).setPreferredWidth(40);
+        columnModel.getColumn(6).setPreferredWidth(30);
 
         columnModel.getColumn(0).setCellRenderer(new ListaPedidos.CenterAlignedRenderer());
         columnModel.getColumn(1).setCellRenderer(new ListaPedidos.CenterAlignedRenderer());
@@ -201,7 +201,6 @@ public class ListaPedidos extends JFrame {
         columnModel.getColumn(4).setCellRenderer(new ListaPedidos.LeftAlignedRenderer());
         columnModel.getColumn(5).setCellRenderer(new ListaPedidos.LeftAlignedRenderer());
         columnModel.getColumn(6).setCellRenderer(new ListaPedidos.LeftAlignedRenderer());
-        columnModel.getColumn(7).setCellRenderer(new ListaPedidos.LeftAlignedRenderer());
     }
 
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
@@ -326,8 +325,8 @@ public class ListaPedidos extends JFrame {
     private void actualizarTabla() {
         listaPedidos.setModel(cargarDatos());
         configurarTablaMateriales();
-        listaPedidos.getColumnModel().getColumn(7).setCellRenderer(new ListaPedidos.ButtonRenderer());
-        listaPedidos.getColumnModel().getColumn(7).setCellEditor(new ListaPedidos.ButtonEditor());
+        listaPedidos.getColumnModel().getColumn(6).setCellRenderer(new ListaPedidos.ButtonRenderer());
+        listaPedidos.getColumnModel().getColumn(6).setCellEditor(new ListaPedidos.ButtonEditor());
         lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
     }
 
@@ -391,7 +390,7 @@ public class ListaPedidos extends JFrame {
 
             // Crea un JOptionPane
             JOptionPane optionPane = new JOptionPane(
-                    "¿Desea realizar la venta de este pedido?",
+                    "¿Desea realizar la venta de este pedido, e imprimir la factura?",
                     JOptionPane.QUESTION_MESSAGE,
                     JOptionPane.DEFAULT_OPTION,
                     null,
@@ -406,6 +405,8 @@ public class ListaPedidos extends JFrame {
             btnSave.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    String codigoVenta = null; // Inicializa la variable fuera del if
+
                     if (table != null) {
                         int modelRow = table.convertRowIndexToModel(table.getSelectedRow());
                         TableModel model = table.getModel();
@@ -415,19 +416,26 @@ public class ListaPedidos extends JFrame {
                             if (modelRow >= 0 && modelRow < pedidoModel.getRowCount()) {
                                 Pedido pedido = pedidoModel.getPedidos().get(modelRow);
                                 actualizarEstadoPedido(pedido, pedidoModel, modelRow);
+                                codigoVenta = pedido.getCodigoPedido(); // Obtiene el código de pedido
                             }
                         }
                     }
 
-                    mostrarDialogoPersonalizadoExito("La venta del pedido, ha sido realizada con éxito", Color.decode("#263238"));
                     dialog.dispose();
+
+                    if (codigoVenta != null) {
+                        mostrarDialogoPersonalizadoExito("   La venta del pedido, ha sido realizada con éxito.\nSeleccione el lugar donde guardará la factura de venta.", Color.decode("#263238"));
+                        ListaVentas.imprimirFactura(codigoVenta);
+                    }
+
                     listaPedidos.setModel(cargarDatos());
                     configurarTablaMateriales();
 
                     lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
-                    listaPedidos.getColumnModel().getColumn(7).setCellRenderer(new ListaPedidos.ButtonRenderer());
-                    listaPedidos.getColumnModel().getColumn(7).setCellEditor(new ListaPedidos.ButtonEditor());
+                    listaPedidos.getColumnModel().getColumn(6).setCellRenderer(new ListaPedidos.ButtonRenderer());
+                    listaPedidos.getColumnModel().getColumn(6).setCellEditor(new ListaPedidos.ButtonEditor());
                 }
+
             });
 
             btnCancel.addActionListener(new ActionListener() {
@@ -444,7 +452,6 @@ public class ListaPedidos extends JFrame {
 
     private void actualizarEstadoPedido(Pedido pedido, ModeloPedido pedidoModel, int modelRow) {
         int pedidoId = pedido.getId();
-        System.out.println("Procesando pedido con ID: " + pedidoId);
 
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement(
@@ -453,15 +460,15 @@ public class ListaPedidos extends JFrame {
             int affectedRows = preparedStatement.executeUpdate();
 
             if (affectedRows > 0) {
-                System.out.println("El estado del pedido ID " + pedidoId + " ha sido actualizado a 'Enviado'.");
+                //System.out.println("El estado del pedido ID " + pedidoId + " ha sido actualizado a 'Enviado'.");
                 pedido.setEstado("Enviado");
                 pedidoModel.fireTableRowsUpdated(modelRow, modelRow);
             } else {
-                System.out.println("No se pudo actualizar el estado del pedido ID " + pedidoId + ".");
+                //System.out.println("No se pudo actualizar el estado del pedido ID " + pedidoId + ".");
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
-            System.out.println("Error en la base de datos: " + ex.getMessage());
+            //System.out.println("Error en la base de datos: " + ex.getMessage());
         }
     }
 

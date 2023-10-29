@@ -706,7 +706,6 @@ public class CrearVenta extends JFrame {
             }
         });
 
-
         imprimirButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -728,7 +727,6 @@ public class CrearVenta extends JFrame {
                     validacion++;
                     mensaje += "El cliente\n";
                 }
-
 
                 if (tablaProductos.getRowCount() == 0) {
                     validacion++;
@@ -778,6 +776,9 @@ public class CrearVenta extends JFrame {
                         ListaVentas listaVentas = new ListaVentas();
                         listaVentas.setVisible(true);
                         dispose();
+
+                        String codigoVenta = campoCodigo.getText();
+                        ListaVentas.imprimirFactura(codigoVenta);
                     }
                 });
 
@@ -796,9 +797,6 @@ public class CrearVenta extends JFrame {
                 // Muestra el diálogo
                 dialog.setVisible(true);
 
-                guardarDatos();
-                String codigoVenta = campoCodigo.getText();
-                // ListaVentas.imprimirFactura(codigoVenta);
             }
         });
 
@@ -1015,7 +1013,7 @@ public class CrearVenta extends JFrame {
         int numeroAleatorio = random.nextInt(100000);
 
         // Formatear el código final
-        String codigo = "V-" + fecha + "-" + hora + "-" + String.format("%05d", numeroAleatorio);
+        String codigo = "VT-" + fecha + "-" + hora + "-" + String.format("%05d", numeroAleatorio);
         return codigo;
     }
 

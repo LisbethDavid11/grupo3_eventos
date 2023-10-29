@@ -13,7 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class ModeloPedido extends AbstractTableModel {
-    private final String[] columnas = {"N°", "Código de Pedido", "Fecha de Pedido", "Fecha de Entrega", "Cliente", "Entrega", "Estado", "Acción"};
+    private final String[] columnas = {"N°", "Código de Pedido", "Fecha de Pedido", "Fecha de Entrega", "Cliente", "Entrega", "Acción"};
     private final List<Pedido> pedidos;
     private final Conexion sql;
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd 'de' MMMM',' yyyy");
@@ -58,9 +58,7 @@ public class ModeloPedido extends AbstractTableModel {
                 return obtenerNombreCliente(pedido.getClienteId());
             case 5: // Entrega
                 return pedido.getEntrega();
-            case 6: // Entrega
-                return pedido.getEstado();
-            case 7: // Columna del botón Vender
+            case 6: // Columna del botón Vender
                 return " → ";
             default:
                 return null;
@@ -87,7 +85,7 @@ public class ModeloPedido extends AbstractTableModel {
 
     @Override
     public Class<?> getColumnClass(int columnIndex) {
-        if (columnIndex == 7) {
+        if (columnIndex == 6) {
             return JButton.class;
         }
         return super.getColumnClass(columnIndex);
@@ -95,12 +93,12 @@ public class ModeloPedido extends AbstractTableModel {
 
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        return columnIndex == 7;
+        return columnIndex == 6;
     }
 
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-        if (columnIndex == 7 && aValue instanceof String && aValue.equals(" → ")) {
+        if (columnIndex == 6 && aValue instanceof String && aValue.equals(" → ")) {
             // Aquí puedes realizar la lógica para eliminar la fila en la base de datos si es necesario
             pedidos.remove(rowIndex);
             fireTableRowsDeleted(rowIndex, rowIndex);
