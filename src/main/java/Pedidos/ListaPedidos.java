@@ -187,12 +187,12 @@ public class ListaPedidos extends JFrame {
         TableColumnModel columnModel = listaPedidos.getColumnModel();
 
         columnModel.getColumn(0).setPreferredWidth(10);
-        columnModel.getColumn(1).setPreferredWidth(130);
-        columnModel.getColumn(2).setPreferredWidth(120);
-        columnModel.getColumn(3).setPreferredWidth(120);
-        columnModel.getColumn(4).setPreferredWidth(80);
-        columnModel.getColumn(5).setPreferredWidth(45);
-        columnModel.getColumn(6).setPreferredWidth(30);
+        columnModel.getColumn(1).setPreferredWidth(120);
+        columnModel.getColumn(2).setPreferredWidth(110);
+        columnModel.getColumn(3).setPreferredWidth(110);
+        columnModel.getColumn(4).setPreferredWidth(70);
+        columnModel.getColumn(5).setPreferredWidth(35);
+        columnModel.getColumn(6).setPreferredWidth(85);
 
         columnModel.getColumn(0).setCellRenderer(new ListaPedidos.CenterAlignedRenderer());
         columnModel.getColumn(1).setCellRenderer(new ListaPedidos.CenterAlignedRenderer());
@@ -339,7 +339,7 @@ public class ListaPedidos extends JFrame {
         }
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            setText(" → ");
+            setText("Realizar Pedido");
             return this;
         }
     }
@@ -360,7 +360,7 @@ public class ListaPedidos extends JFrame {
         }
 
         public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-            button.setText(" → ");
+            button.setText("Realizar Pedido");
             this.table = table;
             this.row = row;
             this.col = column;
@@ -368,7 +368,7 @@ public class ListaPedidos extends JFrame {
         }
 
         public Object getCellEditorValue() {
-            return " → ";
+            return "Realizar Pedido";
         }
 
         public void actionPerformed(ActionEvent e) {
@@ -434,14 +434,15 @@ public class ListaPedidos extends JFrame {
                     lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
                     listaPedidos.getColumnModel().getColumn(6).setCellRenderer(new ListaPedidos.ButtonRenderer());
                     listaPedidos.getColumnModel().getColumn(6).setCellEditor(new ListaPedidos.ButtonEditor());
+                    fireEditingStopped();
                 }
-
             });
 
             btnCancel.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     dialog.dispose();
+                    fireEditingCanceled();
                 }
             });
 

@@ -59,7 +59,7 @@ public class ModeloPedido extends AbstractTableModel {
             case 5: // Entrega
                 return pedido.getEntrega();
             case 6: // Columna del botón Vender
-                return " → ";
+                return "Realizar Pedido";
             default:
                 return null;
         }
@@ -98,7 +98,7 @@ public class ModeloPedido extends AbstractTableModel {
 
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-        if (columnIndex == 6 && aValue instanceof String && aValue.equals(" → ")) {
+        if (columnIndex == 6 && aValue instanceof String && aValue.equals("Realizar Pedido")) {
             // Aquí puedes realizar la lógica para eliminar la fila en la base de datos si es necesario
             pedidos.remove(rowIndex);
             fireTableRowsDeleted(rowIndex, rowIndex);
