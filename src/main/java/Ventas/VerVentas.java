@@ -1,14 +1,6 @@
 package Ventas;
-import Modelos.ModeloVenta;
-import Modelos.ModeloVentaDetalle;
 import Objetos.Conexion;
-import Objetos.Venta;
 import Objetos.VentaDetalle;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -16,20 +8,16 @@ import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
 import java.util.List;
 
 public class VerVentas extends JFrame {
     private JPanel panel1;
-    private JTextField codigo_venta,fecha, cliente, empleado;
+    private JTextField codigo_venta,fecha, cliente, usuario;
     private JTable productos;
     private JButton cancelarButton;
     private JLabel lbl0, lbl1, lbl2, lbl3, lbl4, lbl5, lbl6, lbl7, lbl8, lbl9, lbl10, lbl13;
@@ -113,11 +101,11 @@ public class VerVentas extends JFrame {
         cliente.setEditable(false);
         cliente.setFocusable(false);
 
-        empleado.setBorder(BorderFactory.createEmptyBorder());
-        empleado.setBackground(Color.decode("#F5F5F5"));
-        empleado.setForeground(textColor);
-        empleado.setEditable(false);
-        empleado.setFocusable(false);
+        usuario.setBorder(BorderFactory.createEmptyBorder());
+        usuario.setBackground(Color.decode("#F5F5F5"));
+        usuario.setForeground(textColor);
+        usuario.setEditable(false);
+        usuario.setFocusable(false);
 
         imprimirButton.setForeground(Color.WHITE);
         imprimirButton.setBackground(darkColorVerdeLima);
@@ -153,7 +141,7 @@ public class VerVentas extends JFrame {
         codigo_venta.setFont(font);
         fecha.setFont(font);
         cliente.setFont(font);
-        empleado.setFont(font);
+        usuario.setFont(font);
 
         lbl8.setFont(font);
         lbl9.setFont(font);
@@ -176,7 +164,7 @@ public class VerVentas extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String codigoVenta = codigo_venta.getText();
-                ListaVentas.imprimirFactura(codigoVenta);
+                //ListaVentas.imprimirFactura(codigoVenta);
             }
         });
 
@@ -234,10 +222,10 @@ public class VerVentas extends JFrame {
 
         try {
             PreparedStatement statement = mysql.prepareStatement(
-                    "SELECT v.*, CONCAT(c.nombre, ' ', c.apellido) AS nombre_cliente, CONCAT(e.Nombres, ' ', e.Apellidos) AS nombre_empleado " +
+                    "SELECT v.*, CONCAT(c.nombre, ' ', c.apellido) AS nombre_cliente, CONCAT(e.nombre) AS nombre_usuario " +
                             "FROM ventas v " +
                             "LEFT JOIN clientes c ON v.cliente_id = c.id " +
-                            "LEFT JOIN empleados e ON v.empleado_id = e.id " +
+                            "LEFT JOIN usuarios e ON v.usuario_id = e.id " +
                             "WHERE v.id = ?;"
             );
             statement.setInt(1, this.id);
@@ -248,9 +236,9 @@ public class VerVentas extends JFrame {
                 codigo_venta.setText(resultSet.getString("codigo_venta"));
                 fecha.setText(resultSet.getString("fecha"));
 
-                // Mostrar el nombre completo del cliente y del empleado
+                // Mostrar el nombre completo del cliente y del usuario
                 cliente.setText(resultSet.getString("nombre_cliente"));
-                empleado.setText(resultSet.getString("nombre_empleado"));
+                usuario.setText(resultSet.getString("nombre_usuario"));
 
                 DefaultTableModel modeloProductos = new DefaultTableModel();
                 modeloProductos.addColumn("N°");
@@ -328,191 +316,6 @@ public class VerVentas extends JFrame {
         } catch (SQLException error) {
             System.out.println(error.getMessage());
         }
-    }
-    
-    public static double obtenerPrecioProducto(int detalleId, Conexion sql) {
-        double precioProducto = 0.0;
-
-        try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement(
-                     "SELECT tipo_detalle, detalle_id FROM detalles_ventas WHERE id = ?")) {
-
-            preparedStatement.setInt(1, detalleId);
-            ResultSet rs = preparedStatement.executeQuery();
-
-            if (rs.next()) {
-                String tipoDetalle = rs.getString("tipo_detalle");
-                int productoId = rs.getInt("detalle_id");
-
-                switch (tipoDetalle) {
-                    case "material":
-                        try (PreparedStatement materialStatement = connection.prepareStatement(
-                                "SELECT precio FROM materiales WHERE id = ?")) {
-
-                            materialStatement.setInt(1, productoId);
-                            ResultSet materialRs = materialStatement.executeQuery();
-                            if (materialRs.next()) {
-                                precioProducto = materialRs.getDouble("precio");
-                            }
-                        }
-                        break;
-                    case "floristeria":
-                        try (PreparedStatement floristeriaStatement = connection.prepareStatement(
-                                "SELECT precio FROM floristeria WHERE id = ?")) {
-
-                            floristeriaStatement.setInt(1, productoId);
-                            ResultSet floristeriaRs = floristeriaStatement.executeQuery();
-                            if (floristeriaRs.next()) {
-                                precioProducto = floristeriaRs.getDouble("precio");
-                            }
-                        }
-                        break;
-                    case "tarjeta":
-                        try (PreparedStatement tarjetaStatement = connection.prepareStatement(
-                                "SELECT precio_tarjeta FROM tarjetas WHERE id = ?")) {
-
-                            tarjetaStatement.setInt(1, productoId);
-                            ResultSet tarjetaRs = tarjetaStatement.executeQuery();
-                            if (tarjetaRs.next()) {
-                                precioProducto = tarjetaRs.getDouble("precio_tarjeta");
-                            }
-                        }
-                        break;
-                    case "manualidad":
-                        try (PreparedStatement manualidadStatement = connection.prepareStatement(
-                                "SELECT precio_manualidad FROM manualidades WHERE id = ?")) {
-
-                            manualidadStatement.setInt(1, productoId);
-                            ResultSet manualidadRs = manualidadStatement.executeQuery();
-                            if (manualidadRs.next()) {
-                                precioProducto = manualidadRs.getDouble("precio_manualidad");
-                            }
-                        }
-                        break;
-                    case "arreglo":
-                        try (PreparedStatement arregloStatement = connection.prepareStatement(
-                                "SELECT precio FROM arreglos WHERE id = ?")) {
-
-                            arregloStatement.setInt(1, productoId);
-                            ResultSet arregloRs = arregloStatement.executeQuery();
-                            if (arregloRs.next()) {
-                                precioProducto = arregloRs.getDouble("precio");
-                            }
-                        }
-                        break;
-                    case "desayuno":
-                        try (PreparedStatement desayunoStatement = connection.prepareStatement(
-                                "SELECT precio_desayuno FROM desayunos WHERE id = ?")) {
-
-                            desayunoStatement.setInt(1, productoId);
-                            ResultSet desayunoRs = desayunoStatement.executeQuery();
-                            if (desayunoRs.next()) {
-                                precioProducto = desayunoRs.getDouble("precio_desayuno");
-                            }
-                        }
-                        break;
-                    default:
-                        precioProducto = 0.0;
-                }
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
-        }
-
-        return precioProducto;
-    }
-
-    public static String obtenerNombreProducto(int detalleId, Conexion sql) {
-        String nombreProducto = "Producto no encontrado";
-
-        try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement(
-                     "SELECT tipo_detalle, detalle_id FROM detalles_ventas WHERE id = ?"
-             )
-        ) {
-            preparedStatement.setInt(1, detalleId);
-            ResultSet rs = preparedStatement.executeQuery();
-
-            if (rs.next()) {
-                String tipoDetalle = rs.getString("tipo_detalle");
-                int detalleIdProducto = rs.getInt("detalle_id");
-
-                String query = null;
-                String columnName = null;
-
-                switch (tipoDetalle) {
-                    case "floristeria":
-                        query = "SELECT nombre FROM floristeria WHERE id = ?";
-                        columnName = "nombre" + "aaa";
-                        break;
-                    case "tarjeta":
-                        query = "SELECT ocasion FROM tarjetas WHERE id = ?";
-                        columnName = "ocasion";
-                        break;
-                    case "manualidad":
-                        query = "SELECT nombre FROM manualidades WHERE id = ?";
-                        columnName = "nombre";
-                        break;
-                    case "arreglo":
-                        query = "SELECT nombre FROM arreglos WHERE id = ?";
-                        columnName = "nombre";
-                        break;
-                    case "desayuno":
-                        query = "SELECT nombre FROM desayunos WHERE id = ?";
-                        columnName = "nombre";
-                        break;
-                    case "material":
-                        query = "SELECT nombre FROM materiales WHERE id = ?";
-                        columnName = "nombre";
-                        break;
-                    default:
-                        return "Tipo de detalle no reconocido";
-                }
-
-                try (PreparedStatement productoStatement = connection.prepareStatement(query)) {
-                    productoStatement.setInt(1, detalleIdProducto);
-                    ResultSet productoRs = productoStatement.executeQuery();
-
-                    if (productoRs.next()) {
-                        nombreProducto = productoRs.getString(columnName);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
-        }
-
-        return nombreProducto;
-    }
-
-    public static double calcularSubtotal(List<VentaDetalle> detalles) {
-        double subtotal = 0.0;
-
-        for (VentaDetalle detalle : detalles) {
-            double precioDetalle = obtenerPrecioProducto(detalle.getId(), sql);
-            subtotal += (detalle.getCantidad() * precioDetalle) * 0.85;
-        }
-
-        return subtotal;
-    }
-
-    public static double calcularISV(List<VentaDetalle> detalles) {
-        double isv = 0.0;
-
-        for (VentaDetalle detalle : detalles) {
-            double precioDetalle = obtenerPrecioProducto(detalle.getId(), sql);
-            isv += (detalle.getCantidad() * precioDetalle) * 0.15;
-        }
-        return isv;
-    }
-
-    private static double calcularTotal(List<VentaDetalle> detalles) {
-        double subtotal = calcularSubtotal(detalles);
-        double isv = calcularISV(detalles);
-        return subtotal + isv;
     }
 
     public static void main(String[] args) {

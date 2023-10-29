@@ -1,12 +1,8 @@
 package Pedidos;
 
-import Desayunos.EditarDesayuno;
-import Desayunos.VerDesayunos;
 import Modelos.ModeloPedido;
-import Modelos.PoliModeloProducto;
 import Objetos.Conexion;
 import Objetos.Pedido;
-import Objetos.PoliProducto;
 
 import javax.swing.*;
 import javax.swing.table.*;
@@ -50,6 +46,8 @@ public class ListaPedidos extends JFrame {
     Color primaryColor = Color.decode("#37474f"); // Gris azul oscuro
     Color lightColor = Color.decode("#cfd8dc"); // Gris azul claro
     Color darkColor = Color.decode("#263238"); // Gris azul más oscuro
+    Color darkColorRed = new Color(244, 67, 54);
+    Color darkColorBlue = new Color(33, 150, 243);
 
     public ListaPedidos() {
         super("");
@@ -96,7 +94,7 @@ public class ListaPedidos extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (listaPedidos.getSelectedRow() == -1) {
-                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
+                    mostrarDialogoPersonalizadoError("Seleccione una fila para continuar.", Color.decode("#C62828"));
                     return;
                 }
                 VerPedidos verPedidos = new VerPedidos(pedidoList.get(listaPedidos.getSelectedRow()).getId());
@@ -109,7 +107,7 @@ public class ListaPedidos extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (listaPedidos.getSelectedRow() == -1) {
-                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
+                    mostrarDialogoPersonalizadoError("Seleccione una fila para continuar", Color.decode("#C62828"));
                     return;
                 }
                 EditarPedido editarPedido = new EditarPedido(pedidoList.get(listaPedidos.getSelectedRow()), pedidoList.get(listaPedidos.getSelectedRow()).getId());
@@ -246,12 +244,13 @@ public class ListaPedidos extends JFrame {
         sql = new Conexion();
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement(
-                     "SELECT p.id, p.codigo_pedido, p.fecha_pedido, p.fecha_entrega, p.descripcion, p.cliente_id, p.entrega, p.estado " +
-                             "FROM pedidos p " +
+                     "SELECT p.id, p.codigo_pedido, p.fecha_pedido, p.fecha_entrega, p.descripcion, " +
+                             "p.cliente_id, p.entrega, p.estado FROM pedidos p " +
                              "INNER JOIN clientes c ON p.cliente_id = c.id " +
-                             "WHERE p.codigo_pedido LIKE CONCAT('%', ?, '%') OR " + // Filtro por código de pedido
-                             "p.fecha_entrega LIKE CONCAT('%', ?, '%') OR " + // Filtro por fecha de entrega
-                             "c.nombre LIKE CONCAT('%', ?, '%') " + // Filtro por nombre de cliente
+                             "WHERE p.estado = 'Proceso' AND (" +
+                             "p.codigo_pedido LIKE CONCAT('%', ?, '%') OR " +
+                             "p.fecha_entrega LIKE CONCAT('%', ?, '%') OR " +
+                             "c.nombre LIKE CONCAT('%', ?, '%')) " +
                              "LIMIT ?, 20"
                                 )) {  // Límite de 20 registros por página
 
@@ -278,7 +277,7 @@ public class ListaPedidos extends JFrame {
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
             pedidoList = new ArrayList<>();
         }
 
@@ -290,28 +289,29 @@ public class ListaPedidos extends JFrame {
         return new ModeloPedido(pedidoList, sql);
     }
 
-
     private int getTotalPageCount() {
         int count = 0;
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement(
                      "SELECT COUNT(*) AS total FROM pedidos p " +
                              "INNER JOIN clientes c ON p.cliente_id = c.id " +
-                             "WHERE p.codigo_pedido LIKE CONCAT('%', ?, '%') OR " + // Filtro por código de pedido
+                             "WHERE p.estado = 'Proceso' AND (" + // Solo pedidos en estado "Proceso"
+                             "p.codigo_pedido LIKE CONCAT('%', ?, '%') OR " + // Filtro por código de pedido
                              "p.fecha_entrega LIKE CONCAT('%', ?, '%') OR " + // Filtro por fecha de entrega
-                             "c.nombre LIKE CONCAT('%', ?, '%')"
-                                )) { // Filtro por descripción
+                             "c.nombre LIKE CONCAT('%', ?, '%'))" // Filtro por nombre de cliente
+             )) {
 
             preparedStatement.setString(1, busqueda);
             preparedStatement.setString(2, busqueda);
             preparedStatement.setString(3, busqueda);
+
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 count = resultSet.getInt("total");
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
         }
 
         int totalPageCount = count / 20;
@@ -322,7 +322,6 @@ public class ListaPedidos extends JFrame {
 
         return totalPageCount;
     }
-
 
     private void actualizarTabla() {
         listaPedidos.setModel(cargarDatos());
@@ -341,7 +340,7 @@ public class ListaPedidos extends JFrame {
         }
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            setText("VENDER");
+            setText(" → ");
             return this;
         }
     }
@@ -362,7 +361,7 @@ public class ListaPedidos extends JFrame {
         }
 
         public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-            button.setText("VENDER");
+            button.setText(" → ");
             this.table = table;
             this.row = row;
             this.col = column;
@@ -370,54 +369,170 @@ public class ListaPedidos extends JFrame {
         }
 
         public Object getCellEditorValue() {
-            return "VENDER";
+            return " → ";
         }
 
         public void actionPerformed(ActionEvent e) {
-            if (table != null) {
-                int modelRow = table.convertRowIndexToModel(row);
-                TableModel model = table.getModel();
 
-                if (model instanceof PoliModeloProducto) {
-                    PoliModeloProducto productoModel = (PoliModeloProducto) model;
-                    PoliProducto producto = productoModel.getProducto(modelRow);
+            JButton btnSave = new JButton("Sí");
+            JButton btnCancel = new JButton("No");
 
-                    // Obtén el ID del detalle de pedido utilizando getIdDetalle
-                    int detallePedidoId = producto.getIdDetalle();
+            // Personaliza los botones aquí
+            btnSave.setBackground(darkColorBlue);
+            btnCancel.setBackground(darkColorRed);
 
-                    try (Connection connection = sql.conectamysql()) {
-                        // Primero, obtén el ID del pedido asociado con el detalle
-                        int pedidoId;
-                        try (PreparedStatement preparedStatement = connection.prepareStatement(
-                                "SELECT pedido_id FROM detalles_pedidos WHERE id = ?")) {
-                            preparedStatement.setInt(1, detallePedidoId);
-                            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                                if (resultSet.next()) {
-                                    pedidoId = resultSet.getInt("pedido_id");
-                                } else {
-                                    // Manejar el caso donde no se encuentra el pedido
-                                    return;
-                                }
+            // Personaliza los fondos de los botones aquí
+            btnSave.setForeground(Color.WHITE);
+            btnCancel.setForeground(Color.WHITE);
+
+            // Elimina el foco
+            btnSave.setFocusPainted(false);
+            btnCancel.setFocusPainted(false);
+
+            // Crea un JOptionPane
+            JOptionPane optionPane = new JOptionPane(
+                    "¿Desea realizar la venta de este pedido?",
+                    JOptionPane.QUESTION_MESSAGE,
+                    JOptionPane.DEFAULT_OPTION,
+                    null,
+                    new Object[]{}, // no options
+                    null
+            );
+
+            // Crea un JDialog
+            JDialog dialog = optionPane.createDialog("Vender");
+
+            // Añade ActionListener a los botones
+            btnSave.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (table != null) {
+                        int modelRow = table.convertRowIndexToModel(table.getSelectedRow());
+                        TableModel model = table.getModel();
+
+                        if (model instanceof ModeloPedido) {
+                            ModeloPedido pedidoModel = (ModeloPedido) model;
+                            if (modelRow >= 0 && modelRow < pedidoModel.getRowCount()) {
+                                Pedido pedido = pedidoModel.getPedidos().get(modelRow);
+                                actualizarEstadoPedido(pedido, pedidoModel, modelRow);
                             }
                         }
-
-                        // Luego, actualiza el estado del pedido a "Enviado"
-                        try (PreparedStatement preparedStatement = connection.prepareStatement(
-                                "UPDATE pedidos SET estado = 'Enviado' WHERE id = ?")) {
-                            preparedStatement.setInt(1, pedidoId);
-                            preparedStatement.executeUpdate();
-                        }
-
-
-
-                    } catch (SQLException ex) {
-                        ex.printStackTrace();
-                        // Manejo de excepciones en caso de error en la base de datos.
                     }
-                    fireEditingStopped();
+
+                    mostrarDialogoPersonalizadoExito("La venta del pedido, ha sido realizada con éxito", Color.decode("#263238"));
+                    dialog.dispose();
+                    listaPedidos.setModel(cargarDatos());
+                    configurarTablaMateriales();
+
+                    lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+                    listaPedidos.getColumnModel().getColumn(7).setCellRenderer(new ListaPedidos.ButtonRenderer());
+                    listaPedidos.getColumnModel().getColumn(7).setCellEditor(new ListaPedidos.ButtonEditor());
                 }
-            }
+            });
+
+            btnCancel.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    dialog.dispose();
+                }
+            });
+
+            optionPane.setOptions(new Object[]{btnSave, btnCancel});
+            dialog.setVisible(true);
         }
+    }
+
+    private void actualizarEstadoPedido(Pedido pedido, ModeloPedido pedidoModel, int modelRow) {
+        int pedidoId = pedido.getId();
+        System.out.println("Procesando pedido con ID: " + pedidoId);
+
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "UPDATE pedidos SET estado = 'Enviado' WHERE id = ?")) {
+            preparedStatement.setInt(1, pedidoId);
+            int affectedRows = preparedStatement.executeUpdate();
+
+            if (affectedRows > 0) {
+                System.out.println("El estado del pedido ID " + pedidoId + " ha sido actualizado a 'Enviado'.");
+                pedido.setEstado("Enviado");
+                pedidoModel.fireTableRowsUpdated(modelRow, modelRow);
+            } else {
+                System.out.println("No se pudo actualizar el estado del pedido ID " + pedidoId + ".");
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            System.out.println("Error en la base de datos: " + ex.getMessage());
+        }
+    }
+
+    public void mostrarDialogoPersonalizadoExito(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado
+        JButton btnAceptar = new JButton("ACEPTAR");
+        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE);
+        btnAceptar.setFocusPainted(false);
+
+        // Crea un JOptionPane
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                           // Mensaje a mostrar
+                JOptionPane.INFORMATION_MESSAGE,   // Tipo de mensaje
+                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
+                null,                              // Icono (puede ser null)
+                new Object[]{},                    // No se usan opciones estándar
+                null                               // Valor inicial (no necesario aquí)
+        );
+
+        // Añade el botón al JOptionPane
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Éxito");
+
+        // Añade un ActionListener al botón
+        btnAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+            }
+        });
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
+    }
+
+    public void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado
+        JButton btnAceptar = new JButton("ACEPTAR");
+        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE);
+        btnAceptar.setFocusPainted(false);
+
+        // Crea un JOptionPane
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                           // Mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
+                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
+                null,                              // Icono (puede ser null)
+                new Object[]{},                    // No se usan opciones estándar
+                null                               // Valor inicial (no necesario aquí)
+        );
+
+        // Añade el botón al JOptionPane
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Error");
+
+        // Añade un ActionListener al botón
+        btnAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+            }
+        });
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
     }
 
     public static void main(String[] args) {

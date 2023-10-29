@@ -68,7 +68,7 @@
           </component>
         </children>
       </grid>
-      <grid id="b58ae" binding="panel4" layout-manager="GridLayoutManager" row-count="10" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+      <grid id="b58ae" binding="panel4" layout-manager="GridLayoutManager" row-count="8" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
           <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -86,18 +86,6 @@
               <font name="Arial" size="12" style="1"/>
               <foreground color="-16119289"/>
               <text value="Cliente"/>
-            </properties>
-          </component>
-          <component id="fc3fb" class="javax.swing.JLabel" binding="lbl4">
-            <constraints>
-              <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
-                <preferred-size width="128" height="14"/>
-              </grid>
-            </constraints>
-            <properties>
-              <font name="Arial" size="12" style="1"/>
-              <foreground color="-16119289"/>
-              <text value="Empleado"/>
             </properties>
           </component>
           <component id="1c944" class="javax.swing.JLabel" binding="lbl1">
@@ -171,21 +159,11 @@
           </component>
           <component id="9ad4a" class="javax.swing.JButton" binding="limpiarButton">
             <constraints>
-              <grid row="9" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="7" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <icon value="IconosBotones/icon_limpiar_16x16.png"/>
               <text value="LIMPIAR DATOS"/>
-            </properties>
-          </component>
-          <component id="dc5d" class="javax.swing.JComboBox" binding="boxEmpleado">
-            <constraints>
-              <grid row="8" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                <preferred-size width="140" height="32"/>
-              </grid>
-            </constraints>
-            <properties>
-              <background color="-2631721"/>
             </properties>
           </component>
           <component id="c6d57" class="javax.swing.JTextField" binding="buscarCliente">

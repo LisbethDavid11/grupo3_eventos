@@ -17,6 +17,9 @@ public class ModeloPedido extends AbstractTableModel {
     private final List<Pedido> pedidos;
     private final Conexion sql;
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd 'de' MMMM',' yyyy");
+    public List<Pedido> getPedidos() {
+        return pedidos;
+    }
 
     public ModeloPedido(List<Pedido> pedidos, Conexion sql) {
         this.pedidos = pedidos;
@@ -58,7 +61,7 @@ public class ModeloPedido extends AbstractTableModel {
             case 6: // Entrega
                 return pedido.getEstado();
             case 7: // Columna del botón Vender
-                return "VENDER";
+                return " → ";
             default:
                 return null;
         }
@@ -97,7 +100,7 @@ public class ModeloPedido extends AbstractTableModel {
 
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-        if (columnIndex == 7 && aValue instanceof String && aValue.equals("VENDER")) {
+        if (columnIndex == 7 && aValue instanceof String && aValue.equals(" → ")) {
             // Aquí puedes realizar la lógica para eliminar la fila en la base de datos si es necesario
             pedidos.remove(rowIndex);
             fireTableRowsDeleted(rowIndex, rowIndex);

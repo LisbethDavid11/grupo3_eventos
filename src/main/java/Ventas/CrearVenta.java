@@ -1,7 +1,9 @@
 package Ventas;
+
+import Auth.SesionUsuario;
 import Clientes.CrearCliente;
 import Clientes.ListaClientes;
-import Desayunos.CrearDesayuno;
+import Desayunos.ListaDesayunos;
 import Materiales.TextPrompt;
 import Modelos.*;
 import Objetos.*;
@@ -22,10 +24,9 @@ import java.util.*;
 public class CrearVenta extends JFrame {
     private JPanel panel1, panel2, panel3, panel4, panel5, panel6;
     private JTable tablaProductos;
-
     public JButton guardarButton, cancelarButton, limpiarButton;
     public JTextField campoCodigo, campoFecha, campoCantidad, campoPrecio;
-    public JComboBox<String> boxCliente, boxEmpleado;
+    public JComboBox<String> boxCliente;
     private JLabel lbl0, lbl1, lbl2, lbl3, lbl4, lbl8, lbl9, lbl10;
     private JButton botonCrear, imprimirButton, agregarMaterialButton, agregarArregloButton, agregarTarjetasButton, agregarFloresButton, agregarManualidadButton, agregarDesayunoButton, agregarProductoButton, cancelarProductoButton;
     private JTextField filtroBusqueda;
@@ -272,9 +273,6 @@ public class CrearVenta extends JFrame {
             }
         });
 
-        boxEmpleado.addItem("Seleccione un empleado");
-        cargarEmpleados();
-
         boxCliente.addItem("Seleccione un cliente");
         cargarClientes();
 
@@ -354,7 +352,6 @@ public class CrearVenta extends JFrame {
         lbl1.setForeground(textColor);
         lbl2.setForeground(textColor);
         lbl3.setForeground(textColor);
-        lbl4.setForeground(textColor);
         lbl0.setBorder(margin);
         lbl0.setFont(fontTitulo);
 
@@ -373,7 +370,6 @@ public class CrearVenta extends JFrame {
         campoFecha.setFocusable(false);
         campoCodigo.setFocusable(false);
         boxCliente.setFocusable(false);
-        boxEmpleado.setFocusable(false);
 
         agregarMaterialButton.addActionListener(new ActionListener() {
             @Override
@@ -641,25 +637,75 @@ public class CrearVenta extends JFrame {
                     mensaje += "El cliente\n";
                 }
 
-                String empleadoText = boxEmpleado.getSelectedItem().toString();
-                if (empleadoText.equals("Seleccione un empleado")) {
-                    validacion++;
-                    mensaje += "El empleado\n";
-                }
-
                 if (tablaProductos.getRowCount() == 0) {
                     validacion++;
                     mensaje += "Los productos\n";
                 }
 
                 if (validacion > 0) {
-                    JOptionPane.showMessageDialog(null, mensaje, "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoError(mensaje, Color.decode("#C62828"));
                     return;
                 }
 
-                guardarDatos();
+                JButton btnSave = new JButton("Sí");
+                JButton btnCancel = new JButton("No");
+
+                // Personaliza los botones aquí
+                btnSave.setBackground(darkColorAqua);
+                btnCancel.setBackground(darkColorPink);
+
+                // Personaliza los fondos de los botones aquí
+                btnSave.setForeground(Color.WHITE);
+                btnCancel.setForeground(Color.WHITE);
+
+                // Elimina el foco
+                btnSave.setFocusPainted(false);
+                btnCancel.setFocusPainted(false);
+
+                // Crea un JOptionPane
+                JOptionPane optionPane = new JOptionPane(
+                        "¿Desea guardar la información de la venta?",
+                        JOptionPane.QUESTION_MESSAGE,
+                        JOptionPane.DEFAULT_OPTION,
+                        null,
+                        new Object[]{}, // no options
+                        null
+                );
+
+                // Crea un JDialog
+                JDialog dialog = optionPane.createDialog("Guardar");
+
+                // Añade ActionListener a los botones
+                btnSave.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // Acciones para el botón Sí
+                        guardarDatos();
+                        dialog.dispose();
+                        ListaVentas listaVentas = new ListaVentas();
+                        listaVentas.setVisible(true);
+                        dispose();
+                    }
+                });
+
+                btnCancel.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // Acciones para el botón No
+                        // No se hace nada, sólo se cierra el diálogo
+                        dialog.dispose();
+                    }
+                });
+
+                // Añade los botones al JOptionPane
+                optionPane.setOptions(new Object[]{btnSave, btnCancel});
+
+                // Muestra el diálogo
+                dialog.setVisible(true);
+
             }
         });
+
 
         imprimirButton.addActionListener(new ActionListener() {
             @Override
@@ -683,11 +729,6 @@ public class CrearVenta extends JFrame {
                     mensaje += "El cliente\n";
                 }
 
-                String empleadoText = boxEmpleado.getSelectedItem().toString();
-                if (empleadoText.equals("Seleccione un empleado")) {
-                    validacion++;
-                    mensaje += "El empleado\n";
-                }
 
                 if (tablaProductos.getRowCount() == 0) {
                     validacion++;
@@ -695,12 +736,69 @@ public class CrearVenta extends JFrame {
                 }
 
                 if (validacion > 0) {
-                    JOptionPane.showMessageDialog(null, mensaje, "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoError(mensaje, Color.decode("#C62828"));
                     return;
                 }
+
+                JButton btnSave = new JButton("Sí");
+                JButton btnCancel = new JButton("No");
+
+                // Personaliza los botones aquí
+                btnSave.setBackground(darkColorAqua);
+                btnCancel.setBackground(darkColorPink);
+
+                // Personaliza los fondos de los botones aquí
+                btnSave.setForeground(Color.WHITE);
+                btnCancel.setForeground(Color.WHITE);
+
+                // Elimina el foco
+                btnSave.setFocusPainted(false);
+                btnCancel.setFocusPainted(false);
+
+                // Crea un JOptionPane
+                JOptionPane optionPane = new JOptionPane(
+                        "¿Desea guardar e imprimir la información de la venta?",
+                        JOptionPane.QUESTION_MESSAGE,
+                        JOptionPane.DEFAULT_OPTION,
+                        null,
+                        new Object[]{}, // no options
+                        null
+                );
+
+                // Crea un JDialog
+                JDialog dialog = optionPane.createDialog("Guardar");
+
+                // Añade ActionListener a los botones
+                btnSave.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // Acciones para el botón Sí
+                        guardarDatos();
+                        dialog.dispose();
+                        ListaVentas listaVentas = new ListaVentas();
+                        listaVentas.setVisible(true);
+                        dispose();
+                    }
+                });
+
+                btnCancel.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // Acciones para el botón No
+                        // No se hace nada, sólo se cierra el diálogo
+                        dialog.dispose();
+                    }
+                });
+
+                // Añade los botones al JOptionPane
+                optionPane.setOptions(new Object[]{btnSave, btnCancel});
+
+                // Muestra el diálogo
+                dialog.setVisible(true);
+
                 guardarDatos();
                 String codigoVenta = campoCodigo.getText();
-                ListaVentas.imprimirFactura(codigoVenta);
+                // ListaVentas.imprimirFactura(codigoVenta);
             }
         });
 
@@ -803,23 +901,6 @@ public class CrearVenta extends JFrame {
         }
     }
 
-    private void cargarEmpleados() {
-        try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("SELECT id, Nombres, Apellidos FROM Empleados");
-             ResultSet resultSet = preparedStatement.executeQuery()) {
-
-            while (resultSet.next()) {
-                int idEmpleado = resultSet.getInt("id");
-                String nombres = resultSet.getString("Nombres");
-                String apellidos = resultSet.getString("Apellidos");
-                String empleadoText = idEmpleado + " - " + nombres + " " + apellidos;
-                boxEmpleado.addItem(empleadoText);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
     private void cancelar() {
         Object[] options = {"Sí", "No"};
         int dialogResult = JOptionPane.showOptionDialog(null, "¿Está seguro de que desea cancelar?", "Confirmar cancelación", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
@@ -844,7 +925,6 @@ public class CrearVenta extends JFrame {
 
     private void limpiar() {
         boxCliente.setSelectedIndex(0);
-        boxEmpleado.setSelectedIndex(0);
     }
 
     private String convertirFecha(String fechaCampo) {
@@ -1097,39 +1177,23 @@ public class CrearVenta extends JFrame {
     }
 
     private void guardarDatos() {
-        Object[] options = {"Sí", "No"};
-        int confirmacionGuardar = JOptionPane.showOptionDialog(
-                null,
-                "¿Desea guardar la venta?",
-                "Confirmar",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                options,
-                options[0]
-        );
-
-        if (confirmacionGuardar != JOptionPane.YES_OPTION) {
-            return;
-        }
 
         String codigoVenta = campoCodigo.getText();
         String fechaCampo = campoFecha.getText();
         String fechaVenta = convertirFecha(fechaCampo);
-
+        int idUsuarioActual = SesionUsuario.getInstance().getIdUsuario();
         int clienteId = Integer.parseInt(boxCliente.getSelectedItem().toString().split(" - ")[0]);
-        int empleadoId = Integer.parseInt(boxEmpleado.getSelectedItem().toString().split(" - ")[0]);
 
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement(
-                     "INSERT INTO ventas (codigo_venta, fecha, cliente_id, empleado_id) VALUES (?, ?, ?, ?)",
+                     "INSERT INTO ventas (codigo_venta, fecha, cliente_id, usuario_id) VALUES (?, ?, ?, ?)",
                      Statement.RETURN_GENERATED_KEYS
              )) {
 
             preparedStatement.setString(1, codigoVenta);
             preparedStatement.setString(2, fechaVenta);
             preparedStatement.setInt(3, clienteId);
-            preparedStatement.setInt(4, empleadoId);
+            preparedStatement.setInt(4, idUsuarioActual);
             preparedStatement.executeUpdate();
 
             ResultSet resultSet = preparedStatement.getGeneratedKeys();
@@ -1144,7 +1208,7 @@ public class CrearVenta extends JFrame {
                 prepared.executeUpdate();
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
-                JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+                mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
                 materialList = new ArrayList<>();
             }
 
@@ -1165,28 +1229,14 @@ public class CrearVenta extends JFrame {
                         updateStatement.executeUpdate();
                     } catch (SQLException e) {
                         e.printStackTrace();
-                        JOptionPane.showMessageDialog(null, "Error al actualizar las cantidades en la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
+                        mostrarDialogoPersonalizadoError("Error al intentar actualizar las cantidades en la base de datos.", Color.decode("#C62828"));
                     }
                 }
             }
-
-            JOptionPane.showMessageDialog(null, "Venta registrada exitosamente.", "Éxito", JOptionPane.DEFAULT_OPTION);
-            crearVenta.dispose();
-
-            ListaVentas ventas = new ListaVentas();
-            ventas.setVisible(true);
-
-            // Lógica para registrar la venta
-            // Crea una instancia de Venta con los datos necesarios
-            Venta nuevaVenta = new Venta();
-
-            // Notificar a los listeners que la venta ha sido registrada
-            for (VentaListener listener : ventaListeners) {
-                listener.onVentaRegistrada(nuevaVenta);
-            }
+            mostrarDialogoPersonalizadoExito("Venta registrada exitosamente.", Color.decode("#263238"));
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al guardar la venta", "Error", JOptionPane.ERROR_MESSAGE);
+            mostrarDialogoPersonalizadoError("Error al guardar la venta.", Color.decode("#C62828"));
         }
     }
 
@@ -1210,10 +1260,10 @@ public class CrearVenta extends JFrame {
             preparedStatement.setDouble(4, obtenerPrecioMaterialDesdeBD(id_material,tipo)); // Obtener el precio del material desde la base de datos
             preparedStatement.executeUpdate();
 
-            JOptionPane.showMessageDialog(null, "Detalle agregado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            mostrarDialogoPersonalizadoExito("Detalle agregado exitosamente.", Color.decode("#263238"));
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al agregar el detalle de la manualidad", "Error", JOptionPane.ERROR_MESSAGE);
+            mostrarDialogoPersonalizadoError("Error al agregar el detalle de la venta.", Color.decode("#C62828"));
         }
     }
 
@@ -1232,7 +1282,7 @@ public class CrearVenta extends JFrame {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al obtener la cantidad desde la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
+            mostrarDialogoPersonalizadoError("Error al intentar obtener la cantidad desde a base de datos.", Color.decode("#C62828"));
         }
 
         return availableQuantity;
@@ -1262,9 +1312,8 @@ public class CrearVenta extends JFrame {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al obtener el precio del material desde la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
+            mostrarDialogoPersonalizadoError("Error al intentar obtener el precio del producto desde la base de datos.", Color.decode("#C62828"));
         }
-
         return precio;
     }
 
@@ -1331,7 +1380,8 @@ public class CrearVenta extends JFrame {
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+
+            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
             productosListTemporal = new ArrayList<>();
         }
 
@@ -1377,7 +1427,7 @@ public class CrearVenta extends JFrame {
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
             floristeriaList = new ArrayList<>();
         }
 
@@ -1412,7 +1462,7 @@ public class CrearVenta extends JFrame {
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
             materialList = new ArrayList<>();
         }
 
@@ -1445,7 +1495,7 @@ public class CrearVenta extends JFrame {
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
             manualidadList = new ArrayList<>();
         }
 
@@ -1481,7 +1531,7 @@ public class CrearVenta extends JFrame {
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
             tarjetaList = new ArrayList<>();
         }
 
@@ -1516,7 +1566,7 @@ public class CrearVenta extends JFrame {
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
             arregloList = new ArrayList<>();
         }
 
@@ -1551,7 +1601,7 @@ public class CrearVenta extends JFrame {
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
             desayunoList = new ArrayList<>();
         }
 
@@ -1668,6 +1718,76 @@ public class CrearVenta extends JFrame {
         }
 
         return productos;
+    }
+
+    public void mostrarDialogoPersonalizadoExito(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado
+        JButton btnAceptar = new JButton("ACEPTAR");
+        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE);
+        btnAceptar.setFocusPainted(false);
+
+        // Crea un JOptionPane
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                           // Mensaje a mostrar
+                JOptionPane.INFORMATION_MESSAGE,   // Tipo de mensaje
+                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
+                null,                              // Icono (puede ser null)
+                new Object[]{},                    // No se usan opciones estándar
+                null                               // Valor inicial (no necesario aquí)
+        );
+
+        // Añade el botón al JOptionPane
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Éxito");
+
+        // Añade un ActionListener al botón
+        btnAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+            }
+        });
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
+    }
+
+    public void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado
+        JButton btnAceptar = new JButton("ACEPTAR");
+        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE);
+        btnAceptar.setFocusPainted(false);
+
+        // Crea un JOptionPane
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                           // Mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
+                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
+                null,                              // Icono (puede ser null)
+                new Object[]{},                    // No se usan opciones estándar
+                null                               // Valor inicial (no necesario aquí)
+        );
+
+        // Añade el botón al JOptionPane
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Error");
+
+        // Añade un ActionListener al botón
+        btnAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+            }
+        });
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
     }
 
     public static void main(String[] args) {

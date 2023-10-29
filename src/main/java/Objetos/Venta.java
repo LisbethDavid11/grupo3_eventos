@@ -5,7 +5,7 @@ public class Venta {
     private String codigoVenta;
     private String fecha;
     private int clienteId;
-    private int empleadoId;
+    private int usuarioId;
 
     public static String nombreTabla = "ventas";
 
@@ -13,7 +13,7 @@ public class Venta {
     }
 
     public Object[] toTableRow() {
-        return new Object[]{id, codigoVenta, fecha, clienteId, empleadoId};
+        return new Object[]{id, codigoVenta, fecha, clienteId, usuarioId};
     }
 
     public Venta(int id, String codigoVenta, String fecha, int clienteId, int empleadoId) {
@@ -21,7 +21,7 @@ public class Venta {
         this.codigoVenta = codigoVenta;
         this.fecha = fecha;
         this.clienteId = clienteId;
-        this.empleadoId = empleadoId;
+        this.usuarioId = usuarioId;
     }
 
     // getters y setters
@@ -58,11 +58,11 @@ public class Venta {
         this.clienteId = clienteId;
     }
 
-    public int getEmpleadoId() {
-        return empleadoId;
+    public int getUsuarioId() {
+        return usuarioId;
     }
 
-    public void setEmpleadoId(int empleadoId) {
-        this.empleadoId = empleadoId;
+    public void setUsuarioId(int usuarioId) {
+        this.usuarioId = usuarioId;
     }
 }

@@ -19,15 +19,15 @@ public class ModeloVenta extends AbstractTableModel {
     private final List<Venta> ventas;
     private final Conexion sql;
     private final Map<Integer, String> clientes;
-    private final Map<Integer, String> empleados;
+    private final Map<Integer, String> usuarios;
 
     public ModeloVenta(List<Venta> ventas, Conexion sql) {
         this.ventas = ventas;
         this.sql = sql;
         this.clientes = new HashMap<>();
-        this.empleados = new HashMap<>();
+        this.usuarios = new HashMap<>();
         cargarClientes();
-        cargarEmpleados();
+        cargarUsuarios();
     }
 
     @Override
@@ -60,10 +60,10 @@ public class ModeloVenta extends AbstractTableModel {
                 int clienteId = venta.getClienteId();
                 String clienteNombre = obtenerNombreCliente(clienteId);
                 return "  " + clienteNombre;
-            case 4: // Empleado
-                int empleadoId = venta.getEmpleadoId();
-                String empleadoNombre = obtenerNombreEmpleado(empleadoId);
-                return "  " + empleadoNombre;
+            case 4: // Usuario
+                int usuarioId = venta.getUsuarioId();
+                String nombre = obtenerNombreUsuario(usuarioId);
+                return "  " + nombre;
             case 5: // Sub Total
                 double subTotal = obtenerSubTotal(venta.getId());
                 return String.format("  L. %.2f", subTotal);
@@ -96,22 +96,21 @@ public class ModeloVenta extends AbstractTableModel {
         return null; // Devuelve null si no se encuentra el cliente o hay un error
     }
 
-    private String obtenerNombreEmpleado(int empleadoId) {
+    private String obtenerNombreUsuario(int usuarioId) {
         try (Connection mysql = sql.conectamysql();
-             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT id, Nombres, Apellidos FROM Empleados WHERE id = ?")) {
-            preparedStatement.setInt(1, empleadoId);
+             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT id, nombre FROM usuarios WHERE id = ?")) {
+            preparedStatement.setInt(1, usuarioId);
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
-                String nombres = resultSet.getString("Nombres");
-                String apellidos = resultSet.getString("Apellidos");
-                return nombres + " " + apellidos;
+                String nombre = resultSet.getString("nombre");
+                return nombre;
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return null; // Devuelve null si no se encuentra el empleado o hay un error
+        return null; // Devuelve null si no se encuentra el usuario o hay un error
     }
 
     private double obtenerSubTotal(int ventaId) {
@@ -277,15 +276,15 @@ public class ModeloVenta extends AbstractTableModel {
         }
     }
 
-    private void cargarEmpleados() {
+    private void cargarUsuarios() {
         try (Connection mysql = sql.conectamysql();
-             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT id, nombres, apellidos FROM empleados")) {
+             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT id, nombre FROM usuarios")) {
 
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
-                String nombreCompleto = resultSet.getString("nombres") + " " + resultSet.getString("apellidos");
-                empleados.put(id, nombreCompleto);
+                String nombre = resultSet.getString("nombre");
+                usuarios.put(id, nombre);
             }
         } catch (SQLException e) {
             e.printStackTrace();

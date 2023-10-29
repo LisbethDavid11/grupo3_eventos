@@ -220,7 +220,6 @@ public class ListaVentas extends JFrame {
         botonImprimir.setFocusable(false);
         fechaComboBox.setFocusable(false);
 
-
         fechaComboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -234,10 +233,10 @@ public class ListaVentas extends JFrame {
         TableColumnModel columnModel = listaVentas.getColumnModel();
 
         columnModel.getColumn(0).setPreferredWidth(20);
-        columnModel.getColumn(1).setPreferredWidth(120);
+        columnModel.getColumn(1).setPreferredWidth(180);
         columnModel.getColumn(2).setPreferredWidth(150);
-        columnModel.getColumn(3).setPreferredWidth(230);
-        columnModel.getColumn(4).setPreferredWidth(230);
+        columnModel.getColumn(3).setPreferredWidth(190);
+        columnModel.getColumn(4).setPreferredWidth(190);
         columnModel.getColumn(5).setPreferredWidth(80);
         columnModel.getColumn(6).setPreferredWidth(80);
         columnModel.getColumn(7).setPreferredWidth(80);
@@ -337,10 +336,10 @@ public class ListaVentas extends JFrame {
     private void actualizarModeloTablaConMesSeleccionado(String mesSeleccionado) {
         sql = new Conexion();
         try (Connection mysql = sql.conectamysql()) {
-            String query = "SELECT c.*, p.nombre, CONCAT(e.Nombres, ' ', e.Apellidos) AS apellido " +
+            String query = "SELECT c.*, p.nombre" +
                     "FROM ventas c " +
                     "JOIN clientes p ON c.cliente_id = p.id " +
-                    "JOIN empleados e ON c.empleado_id = e.id ";
+                    "JOIN usuarios e ON c.usuario_id = e.id ";
 
             boolean hasMesFilter = mesSeleccionado != null && !mesSeleccionado.equals("Todos");
             boolean hasBusquedaFilter = busqueda != null && !busqueda.isEmpty();
@@ -389,7 +388,7 @@ public class ListaVentas extends JFrame {
                 venta.setCodigoVenta(resultSet.getString("codigo_venta"));
                 venta.setFecha(resultSet.getString("fecha"));
                 venta.setClienteId(resultSet.getInt("cliente_id"));
-                venta.setEmpleadoId(resultSet.getInt("empleado_id"));
+                venta.setUsuarioId(resultSet.getInt("usuario_id"));
                 ventaList.add(venta);
             }
             listaVentas.setModel(new ModeloVenta(ventaList, sql));
@@ -555,58 +554,33 @@ public class ListaVentas extends JFrame {
     public static String obtenerNombreProducto(int detalleId, Conexion sql) {
         String nombreProducto = "Producto no encontrado";
 
+        String query =
+                "SELECT nombre FROM (" +
+                        "    SELECT nombre FROM floristeria WHERE id = ? " +
+                        "    UNION ALL " +
+                        "    SELECT ocasion AS nombre FROM tarjetas WHERE id = ? " +
+                        "    UNION ALL " +
+                        "    SELECT nombre FROM manualidades WHERE id = ? " +
+                        "    UNION ALL " +
+                        "    SELECT nombre FROM arreglos WHERE id = ? " +
+                        "    UNION ALL " +
+                        "    SELECT nombre FROM desayunos WHERE id = ? " +
+                        "    UNION ALL " +
+                        "    SELECT nombre FROM materiales WHERE id = ?" +
+                        ")";
+
         try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement(
-                     "SELECT tipo_detalle, detalle_id FROM detalles_ventas WHERE id = ?"
-             )
-        ) {
-            preparedStatement.setInt(1, detalleId);
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            // Estableciendo el mismo ID para todas las consultas
+            for (int i = 1; i <= 6; i++) {
+                preparedStatement.setInt(i, detalleId);
+            }
+
             ResultSet rs = preparedStatement.executeQuery();
 
             if (rs.next()) {
-                String tipoDetalle = rs.getString("tipo_detalle");
-                int detalleIdProducto = rs.getInt("detalle_id");
-
-                String query = null;
-                String columnName = null;
-
-                switch (tipoDetalle) {
-                    case "floristeria":
-                        query = "SELECT nombre FROM floristeria WHERE id = ?";
-                        columnName = "nombre";
-                        break;
-                    case "tarjeta":
-                        query = "SELECT ocasion FROM tarjetas WHERE id = ?";
-                        columnName = "ocasion";
-                        break;
-                    case "manualidad":
-                        query = "SELECT nombre FROM manualidades WHERE id = ?";
-                        columnName = "nombre";
-                        break;
-                    case "arreglo":
-                        query = "SELECT nombre FROM arreglos WHERE id = ?";
-                        columnName = "nombre";
-                        break;
-                    case "desayuno":
-                        query = "SELECT nombre FROM desayunos WHERE id = ?";
-                        columnName = "nombre";
-                        break;
-                    case "material":
-                        query = "SELECT nombre FROM materiales WHERE id = ?";
-                        columnName = "nombre";
-                        break;
-                    default:
-                        return "Tipo de detalle no reconocido";
-                }
-
-                try (PreparedStatement productoStatement = connection.prepareStatement(query)) {
-                    productoStatement.setInt(1, detalleIdProducto);
-                    ResultSet productoRs = productoStatement.executeQuery();
-
-                    if (productoRs.next()) {
-                        nombreProducto = productoRs.getString(columnName);
-                    }
-                }
+                nombreProducto = rs.getString("nombre");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -620,10 +594,10 @@ public class ListaVentas extends JFrame {
         sql = new Conexion();
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement(
-                     "SELECT c.*, p.nombre, CONCAT(e.nombres, ' ', e.apellidos) AS apellido " +
+                     "SELECT c.*, p.nombre " +
                              "FROM ventas c " +
                              "JOIN clientes p ON c.cliente_id = p.id " +
-                             "JOIN empleados e ON c.empleado_id = e.id " +
+                             "JOIN usuarios e ON c.usuario_id = e.id " +
                              "WHERE c.codigo_venta LIKE CONCAT('%', ?, '%') " +
                              "OR DATE_FORMAT(c.fecha, '%d de %M %Y') LIKE CONCAT('%', ?, '%') " +
                              "OR p.nombre LIKE CONCAT('%', ?, '%') " +
@@ -650,7 +624,7 @@ public class ListaVentas extends JFrame {
                 }
 
                 venta.setClienteId(resultSet.getInt("cliente_id"));
-                venta.setEmpleadoId(resultSet.getInt("empleado_id"));
+                venta.setUsuarioId(resultSet.getInt("usuario_id"));
                 ventaList.add(venta);
             }
         } catch (SQLException e) {
@@ -672,10 +646,10 @@ public class ListaVentas extends JFrame {
             sql = new Conexion();
             try (Connection mysql = sql.conectamysql();
                  PreparedStatement preparedStatement = mysql.prepareStatement(
-                         "SELECT c.*, p.nombre, CONCAT(e.nombres, ' ', e.apellidos) AS apellido " +
+                         "SELECT c.*, p.nombre" +
                                  "FROM ventas c " +
                                  "JOIN clientes p ON c.cliente_id = p.id " +
-                                 "JOIN empleados e ON c.empleado_id = e.id " +
+                                 "JOIN usuarios e ON c.usuario_id = e.id " +
                                  "WHERE c.codigo_venta LIKE CONCAT('%', ?, '%')")) {
 
                 SimpleDateFormat formatoFecha = new SimpleDateFormat("dd 'de' MMMM yyyy", new Locale("es"));
@@ -694,7 +668,7 @@ public class ListaVentas extends JFrame {
                         venta.setFecha("");
                     }
                     venta.setClienteId(resultSet.getInt("cliente_id"));
-                    venta.setEmpleadoId(resultSet.getInt("empleado_id"));
+                    venta.setUsuarioId(resultSet.getInt("empleado_id"));
                 }
             }catch (Exception ignored){
 
@@ -753,7 +727,6 @@ public class ListaVentas extends JFrame {
             contentStream.showText("Total");
             contentStream.endText();
 
-            // Agregar línea por línea
             Conexion sql = new Conexion();
             ModeloVentaDetalle mdc = new ModeloVentaDetalle(new ArrayList<>(), sql);
 
@@ -783,13 +756,16 @@ public class ListaVentas extends JFrame {
                     contentStream.endText();
                 }
 
+                // Obtén el nombre del producto
+                String nombreProducto = obtenerNombreProducto(detalle.getId(), sql);
+
                 yPosition -= 20;
                 contentStream.beginText();
                 contentStream.setFont(PDType1Font.HELVETICA, 12);
                 contentStream.newLineAtOffset(50, yPosition);
                 contentStream.showText(String.valueOf(rowNumber + 1));
                 contentStream.newLineAtOffset(columnWidths[0], 0);
-                contentStream.showText(obtenerNombreProducto(detalle.getId(), sql));
+                contentStream.showText(nombreProducto);
 
                 contentStream.newLineAtOffset(columnWidths[1], 0);
                 contentStream.showText(String.valueOf(detalle.getCantidad()));
@@ -801,8 +777,6 @@ public class ListaVentas extends JFrame {
                 contentStream.newLineAtOffset(columnWidths[3], 0);
                 contentStream.showText(String.format("L. %.2f", detalle.getCantidad() * obtenerPrecioProducto(detalle.getId(), sql)));
                 contentStream.endText();
-
-
                 rowNumber++;
             }
 

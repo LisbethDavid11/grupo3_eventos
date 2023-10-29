@@ -1,5 +1,6 @@
 package Pedidos;
 
+import Auth.SesionUsuario;
 import Materiales.TextPrompt;
 import Modelos.*;
 import Objetos.*;
@@ -1172,9 +1173,11 @@ public class CrearPedido extends JFrame {
         String precioText = campoPrecioEnvio.getText().replace("L ", "").replace(",", "").replace("_", "");
         double precioEnvio = Double.parseDouble(precioText);
         int clienteId = Integer.parseInt(clienteText.split(" - ")[0]);
+        int idUsuarioActual = SesionUsuario.getInstance().getIdUsuario();
+        String estado = "Proceso";
 
         try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO pedidos (codigo_pedido, fecha_pedido, fecha_entrega, descripcion, cliente_id, entrega, precio_envio) VALUES (?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO pedidos (codigo_pedido, fecha_pedido, fecha_entrega, descripcion, cliente_id, entrega, precio_envio, usuario_id, estado) VALUES (?,?,?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, codigoPedido);
             preparedStatement.setString(2, fechaPedido);
             preparedStatement.setString(3, fechaEntrega);
@@ -1182,6 +1185,8 @@ public class CrearPedido extends JFrame {
             preparedStatement.setInt(5, clienteId);
             preparedStatement.setString(6, entrega);
             preparedStatement.setDouble(7, precioEnvio);
+            preparedStatement.setInt(8, idUsuarioActual);
+            preparedStatement.setString(9, estado);
             preparedStatement.executeUpdate();
 
             ResultSet resultSet = preparedStatement.getGeneratedKeys();
