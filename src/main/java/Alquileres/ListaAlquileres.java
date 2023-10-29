@@ -34,7 +34,7 @@ public class ListaAlquileres extends JFrame {
     private final JDateChooser fecha_desde,fecha_hasta;
     private JButton botonEditar, botonCrear, botonVer, botonAdelante, botonAtras;
     private JTextField campoBusqueda;
-    private TextPrompt placeholder = new TextPrompt(" Buscar por nombre del cliente y fecha ", campoBusqueda);
+    private TextPrompt placeholder = new TextPrompt(" Buscar por nombre del cliente, tipo y fecha ", campoBusqueda);
     private JLabel lblPagina;
     private JLabel lblTitulo;
     private JTable listaAlquileres;
@@ -310,21 +310,24 @@ public class ListaAlquileres extends JFrame {
                      "SELECT e.*, CONCAT(c.nombre, ' ', c.apellido) AS nombre_completo " +
                              "FROM alquileres e " +
                              "JOIN clientes c ON e.cliente_id = c.id " +
-                             "WHERE  " +
-                             " CONCAT(c.nombre, ' ', c.apellido) LIKE CONCAT('%', ?, '%') " +
-                             "OR DATE_FORMAT(e.fecha, '%d de %M %Y') LIKE CONCAT('%', ?, '%') " +
+                             "WHERE (e.tipo LIKE CONCAT('%', ?, '%') " +
+                             "OR CONCAT(c.nombre, ' ', c.apellido) LIKE CONCAT('%', ?, '%') " +
+                             "OR e.descripcion LIKE CONCAT('%', ?, '%') " +
+                             "OR DATE_FORMAT(e.fecha, '%d de %M %Y') LIKE CONCAT('%', ?, '%')) " +
                              "AND (e.fecha BETWEEN ? AND ?) " +
                              "LIMIT ?, 20"
              )
         ){
             preparedStatement.setString(1, busqueda);
             preparedStatement.setString(2, busqueda);
+            preparedStatement.setString(3, busqueda);
+            preparedStatement.setString(4, busqueda);
             SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd"); // Define el formato de fecha deseado
             String fechaDesde = formato.format(fecha_desde.getDate()); // Convierte la fecha a una cadena de texto en el formato especificado
             String fechaHasta = formato.format(fecha_hasta.getDate());
-            preparedStatement.setString(3, fechaDesde);
-            preparedStatement.setString(4, fechaHasta);
-            preparedStatement.setInt(5, pagina * 20);
+            preparedStatement.setString(5, fechaDesde);
+            preparedStatement.setString(6, fechaHasta);
+            preparedStatement.setInt(7, pagina * 20);
 
             ResultSet resultSet = preparedStatement.executeQuery();
             listaalAlquilers = new ArrayList<>();
@@ -362,19 +365,22 @@ public class ListaAlquileres extends JFrame {
                      "SELECT COUNT(*) AS total " +
                              "FROM alquileres e " +
                              "JOIN clientes c ON e.cliente_id = c.id " +
-                             "WHERE " +
-                             " CONCAT(c.nombre, ' ', c.apellido) LIKE CONCAT('%', ?, '%') " +
-                             "OR DATE_FORMAT(e.fecha, '%d de %M %Y') LIKE CONCAT('%', ?, '%') " +
+                             "WHERE  (e.tipo LIKE CONCAT('%', ?, '%') " +
+                             "OR CONCAT(c.nombre, ' ', c.apellido) LIKE CONCAT('%', ?, '%') " +
+                             "OR e.descripcion LIKE CONCAT('%', ?, '%') " +
+                             "OR DATE_FORMAT(e.fecha, '%d de %M %Y') LIKE CONCAT('%', ?, '%')) " +
                              "AND (e.fecha BETWEEN ? AND ?)"
              )) {
 
             preparedStatement.setString(1, busqueda);
             preparedStatement.setString(2, busqueda);
+            preparedStatement.setString(3, busqueda);
+            preparedStatement.setString(4, busqueda);
             SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
             String fechaDesde = formato.format(fecha_desde.getDate());
             String fechaHasta = formato.format(fecha_hasta.getDate());
-            preparedStatement.setString(3, fechaDesde);
-            preparedStatement.setString(4, fechaHasta);
+            preparedStatement.setString(5, fechaDesde);
+            preparedStatement.setString(6, fechaHasta);
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
