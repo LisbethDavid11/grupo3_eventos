@@ -3,14 +3,13 @@ package Pedidos;
 import Desayunos.EditarDesayuno;
 import Desayunos.VerDesayunos;
 import Modelos.ModeloPedido;
+import Modelos.PoliModeloProducto;
 import Objetos.Conexion;
 import Objetos.Pedido;
+import Objetos.PoliProducto;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
+import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -54,7 +53,7 @@ public class ListaPedidos extends JFrame {
 
     public ListaPedidos() {
         super("");
-        setSize(850, 505);
+        setSize(950, 505);
         setLocationRelativeTo(null);
         setContentPane(panelPrincipal);
         campoBusqueda.setText("");
@@ -142,6 +141,9 @@ public class ListaPedidos extends JFrame {
         JTableHeader header = listaPedidos.getTableHeader();
         header.setForeground(Color.WHITE);
 
+        listaPedidos.getColumnModel().getColumn(7).setCellRenderer(new ListaPedidos.ButtonRenderer());
+        listaPedidos.getColumnModel().getColumn(7).setCellEditor(new ListaPedidos.ButtonEditor());
+
         int campoBusquedaHeight = 35;
         campoBusqueda.setPreferredSize(new Dimension(campoBusqueda.getPreferredSize().width, campoBusquedaHeight));
 
@@ -185,12 +187,14 @@ public class ListaPedidos extends JFrame {
     private void configurarTablaMateriales() {
         TableColumnModel columnModel = listaPedidos.getColumnModel();
 
-        columnModel.getColumn(0).setPreferredWidth(20);
-        columnModel.getColumn(1).setPreferredWidth(120);
-        columnModel.getColumn(2).setPreferredWidth(130);
-        columnModel.getColumn(3).setPreferredWidth(130);
+        columnModel.getColumn(0).setPreferredWidth(10);
+        columnModel.getColumn(1).setPreferredWidth(130);
+        columnModel.getColumn(2).setPreferredWidth(120);
+        columnModel.getColumn(3).setPreferredWidth(120);
         columnModel.getColumn(4).setPreferredWidth(80);
-        columnModel.getColumn(5).setPreferredWidth(60);
+        columnModel.getColumn(5).setPreferredWidth(45);
+        columnModel.getColumn(6).setPreferredWidth(45);
+        columnModel.getColumn(7).setPreferredWidth(40);
 
         columnModel.getColumn(0).setCellRenderer(new ListaPedidos.CenterAlignedRenderer());
         columnModel.getColumn(1).setCellRenderer(new ListaPedidos.CenterAlignedRenderer());
@@ -198,6 +202,8 @@ public class ListaPedidos extends JFrame {
         columnModel.getColumn(3).setCellRenderer(new ListaPedidos.LeftAlignedRenderer());
         columnModel.getColumn(4).setCellRenderer(new ListaPedidos.LeftAlignedRenderer());
         columnModel.getColumn(5).setCellRenderer(new ListaPedidos.LeftAlignedRenderer());
+        columnModel.getColumn(6).setCellRenderer(new ListaPedidos.LeftAlignedRenderer());
+        columnModel.getColumn(7).setCellRenderer(new ListaPedidos.LeftAlignedRenderer());
     }
 
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
@@ -240,7 +246,7 @@ public class ListaPedidos extends JFrame {
         sql = new Conexion();
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement(
-                     "SELECT p.id, p.codigo_pedido, p.fecha_pedido, p.fecha_entrega, p.descripcion, p.cliente_id, p.entrega " +
+                     "SELECT p.id, p.codigo_pedido, p.fecha_pedido, p.fecha_entrega, p.descripcion, p.cliente_id, p.entrega, p.estado " +
                              "FROM pedidos p " +
                              "INNER JOIN clientes c ON p.cliente_id = c.id " +
                              "WHERE p.codigo_pedido LIKE CONCAT('%', ?, '%') OR " + // Filtro por código de pedido
@@ -266,6 +272,7 @@ public class ListaPedidos extends JFrame {
                 pedido.setDescripcion(resultSet.getString("descripcion"));
                 pedido.setClienteId(resultSet.getInt("cliente_id"));
                 pedido.setEntrega(resultSet.getString("entrega"));
+                pedido.setEstado(resultSet.getString("estado"));
                 pedidoList.add(pedido);
             }
 
@@ -320,7 +327,97 @@ public class ListaPedidos extends JFrame {
     private void actualizarTabla() {
         listaPedidos.setModel(cargarDatos());
         configurarTablaMateriales();
+        listaPedidos.getColumnModel().getColumn(7).setCellRenderer(new ListaPedidos.ButtonRenderer());
+        listaPedidos.getColumnModel().getColumn(7).setCellEditor(new ListaPedidos.ButtonEditor());
         lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+    }
+
+    class ButtonRenderer extends JButton implements TableCellRenderer {
+        public ButtonRenderer() {
+            setOpaque(true);
+            setForeground(Color.WHITE);
+            setBackground(darkColor);
+            setFocusPainted(false);
+        }
+
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            setText("VENDER");
+            return this;
+        }
+    }
+
+    class ButtonEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
+        private JButton button;
+        private int row, col;
+        private JTable table;
+
+        public ButtonEditor() {
+            button = new JButton();
+            button.setOpaque(true);
+            button.addActionListener(this);
+            button.setForeground(Color.WHITE);
+            button.setBackground(darkColor);
+            button.setFocusPainted(false);
+            //button.setBorder(margin);
+        }
+
+        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+            button.setText("VENDER");
+            this.table = table;
+            this.row = row;
+            this.col = column;
+            return button;
+        }
+
+        public Object getCellEditorValue() {
+            return "VENDER";
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            if (table != null) {
+                int modelRow = table.convertRowIndexToModel(row);
+                TableModel model = table.getModel();
+
+                if (model instanceof PoliModeloProducto) {
+                    PoliModeloProducto productoModel = (PoliModeloProducto) model;
+                    PoliProducto producto = productoModel.getProducto(modelRow);
+
+                    // Obtén el ID del detalle de pedido utilizando getIdDetalle
+                    int detallePedidoId = producto.getIdDetalle();
+
+                    try (Connection connection = sql.conectamysql()) {
+                        // Primero, obtén el ID del pedido asociado con el detalle
+                        int pedidoId;
+                        try (PreparedStatement preparedStatement = connection.prepareStatement(
+                                "SELECT pedido_id FROM detalles_pedidos WHERE id = ?")) {
+                            preparedStatement.setInt(1, detallePedidoId);
+                            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                                if (resultSet.next()) {
+                                    pedidoId = resultSet.getInt("pedido_id");
+                                } else {
+                                    // Manejar el caso donde no se encuentra el pedido
+                                    return;
+                                }
+                            }
+                        }
+
+                        // Luego, actualiza el estado del pedido a "Enviado"
+                        try (PreparedStatement preparedStatement = connection.prepareStatement(
+                                "UPDATE pedidos SET estado = 'Enviado' WHERE id = ?")) {
+                            preparedStatement.setInt(1, pedidoId);
+                            preparedStatement.executeUpdate();
+                        }
+
+
+
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                        // Manejo de excepciones en caso de error en la base de datos.
+                    }
+                    fireEditingStopped();
+                }
+            }
+        }
     }
 
     public static void main(String[] args) {

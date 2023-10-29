@@ -415,8 +415,6 @@ public class SubMenu extends JFrame {
             }
         });
 
-        JMenuItem menuItemConfiguracion = new JMenuItem("Configuración");
-
         // Suponiendo que estás en una clase que extiende JFrame
         JMenuItem menuItemCerrarSesion = new JMenuItem("Cerrar Sesión");
         menuItemCerrarSesion.addActionListener(new ActionListener() {
@@ -481,7 +479,6 @@ public class SubMenu extends JFrame {
         });
 
         userMenu.add(menuItemPerfil);
-        userMenu.add(menuItemConfiguracion);
         userMenu.add(menuItemCerrarSesion);
 
         // Evento para mostrar el menú al hacer clic en el nombre del usuario

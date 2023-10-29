@@ -2,6 +2,7 @@ package Auth;
 
 import Objetos.Conexion;
 import SubMenu.SubMenu;
+import org.jdesktop.swingx.prompt.PromptSupport;
 import org.mindrot.jbcrypt.BCrypt;
 
 import javax.imageio.ImageIO;
@@ -103,6 +104,10 @@ public class EditarPerfil extends JFrame {
         gbc.weighty = 1.0;
         labelImagen.setHorizontalAlignment(SwingConstants.CENTER);
         panelImg.add(labelImagen, gbc);
+
+        PromptSupport.init("  Actual", Color.GRAY, null, campoContrasenaAnterior);
+        PromptSupport.init("  Nueva", Color.GRAY, null, campoContrasenaNueva);
+        PromptSupport.init("  Confirmar", Color.GRAY, null, campoContrasenaConfirmar);
 
         campoNombre.addKeyListener(new KeyAdapter() {
             @Override

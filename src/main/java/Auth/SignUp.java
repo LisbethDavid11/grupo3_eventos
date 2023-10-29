@@ -34,8 +34,8 @@ public class SignUp extends javax.swing.JFrame {
             String contrasenaEncriptada = BCrypt.hashpw(contrasena, BCrypt.gensalt());
 
             // Suponiendo que se elige una imagen de forma predeterminada
-            String[] imagenes = {"imagen1.jpg", "imagen2.jpg", "imagen3.jpg", "imagen4.jpg", "imagen5.jpg", "imagen6.jpg", "imagen7.jpg", "imagen8.jpg", "imagen9.jpg", "imagen10.jpg"};
-            String imagenSeleccionada = imagenes[new Random().nextInt(imagenes.length)]; // Selección aleatoria
+            String[] imagenes = {"imagen 1.jpg", "imagen 2.jpg", "imagen 3.jpg", "imagen 4.jpg", "imagen 5.jpg", "imagen 6.jpg", "imagen 7.jpg", "imagen 8.jpg", "imagen 9.jpg", "imagen 10.jpg"};
+            String imagenSeleccionada = imagenes[new Random().nextInt(imagenes.length)];
 
             String query = "INSERT INTO usuarios (nombre, correo, contrasena, imagen, rol) VALUES (?, ?, ?, ?, ?)";
             try (PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
@@ -435,9 +435,15 @@ public class SignUp extends javax.swing.JFrame {
                         dialog.dispose();
                         DatosUsuario datosUsuario = guardarUsuario();
                         if (datosUsuario != null) {
-                            SesionUsuario.getInstance().setNombreUsuario(datosUsuario.getNombre());
-                            SesionUsuario.getInstance().setImagenUsuario(datosUsuario.getImagen());
+                            SesionUsuario sesion = SesionUsuario.getInstance();
+                            sesion.setIdUsuario(datosUsuario.getId());
+                            sesion.setNombreUsuario(datosUsuario.getNombre());
+                            sesion.setCorreoUsuario(datosUsuario.getCorreo());
+                            sesion.setImagenUsuario(datosUsuario.getImagen());
+                            sesion.setRolUsuario(datosUsuario.getRol());
+
                             SubMenu menu = new SubMenu();
+                            menu.setIdUsuarioActual(datosUsuario.getId());
                             menu.setNombreUsuario(datosUsuario.getNombre());
                             menu.setImagenUsuario(datosUsuario.getImagen());
                             menu.setVisible(true);

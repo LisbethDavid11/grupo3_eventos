@@ -3,6 +3,7 @@ package Modelos;
 import Objetos.Conexion;
 import Objetos.Pedido;
 
+import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,11 +13,10 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class ModeloPedido extends AbstractTableModel {
-    private final String[] columnas = {"ID", "Código de Pedido", "Fecha de Pedido", "Fecha de Entrega", "Cliente", "Entrega"};
+    private final String[] columnas = {"N°", "Código de Pedido", "Fecha de Pedido", "Fecha de Entrega", "Cliente", "Entrega", "Estado", "Acción"};
     private final List<Pedido> pedidos;
     private final Conexion sql;
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd 'de' MMMM',' yyyy");
-
 
     public ModeloPedido(List<Pedido> pedidos, Conexion sql) {
         this.pedidos = pedidos;
@@ -55,6 +55,10 @@ public class ModeloPedido extends AbstractTableModel {
                 return obtenerNombreCliente(pedido.getClienteId());
             case 5: // Entrega
                 return pedido.getEntrega();
+            case 6: // Entrega
+                return pedido.getEstado();
+            case 7: // Columna del botón Vender
+                return "VENDER";
             default:
                 return null;
         }
@@ -76,5 +80,41 @@ public class ModeloPedido extends AbstractTableModel {
         }
 
         return null; // Devuelve null si no se encuentra el cliente o hay un error
+    }
+
+    @Override
+    public Class<?> getColumnClass(int columnIndex) {
+        if (columnIndex == 7) {
+            return JButton.class;
+        }
+        return super.getColumnClass(columnIndex);
+    }
+
+    @Override
+    public boolean isCellEditable(int rowIndex, int columnIndex) {
+        return columnIndex == 7;
+    }
+
+    @Override
+    public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+        if (columnIndex == 7 && aValue instanceof String && aValue.equals("VENDER")) {
+            // Aquí puedes realizar la lógica para eliminar la fila en la base de datos si es necesario
+            pedidos.remove(rowIndex);
+            fireTableRowsDeleted(rowIndex, rowIndex);
+        }
+    }
+
+    public void removeRow(int rowIndex) {
+        if (rowIndex >= 0 && rowIndex < pedidos.size()) {
+            pedidos.remove(rowIndex);
+            fireTableRowsDeleted(rowIndex, rowIndex);
+        }
+    }
+
+    public void removeProductAtIndex(int index) {
+        if (index >= 0 && index < pedidos.size()) {
+            pedidos.remove(index);
+            fireTableRowsDeleted(index, index);
+        }
     }
 }
