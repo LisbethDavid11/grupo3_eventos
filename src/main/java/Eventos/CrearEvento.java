@@ -1,4 +1,5 @@
 package Eventos;
+import Auth.SesionUsuario;
 import Materiales.TextPrompt;
 import Modelos.*;
 import Objetos.*;
@@ -1355,6 +1356,22 @@ public class CrearEvento extends JFrame {
     }
 
     private void guardarEvento() {
+        Date fechaActual = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMyyyy");
+        String fechaCodigo = dateFormat.format(fechaActual);
+
+        // Obtener hora actual en formato "a.m." o "p.m."
+        SimpleDateFormat hourFormat = new SimpleDateFormat("hhmmss");
+        String hora = hourFormat.format(fechaActual).toUpperCase();
+
+        // Generar número aleatorio de 5 dígitos
+        Random random = new Random();
+        int numeroAleatorio = random.nextInt(100000);
+
+        // Formatear el código final
+        String codigo = "EV-" + fechaCodigo + "-" + hora + "-" + String.format("%05d", numeroAleatorio);
+        String estado = "Pendiente";
+
         String direccion = campoDireccion.getText().trim();
 
         Date fechaInicial = (Date) datePicker.getModel().getValue(); // Explicitly cast the value to Date
@@ -1393,36 +1410,54 @@ public class CrearEvento extends JFrame {
         Time inicio = Time.valueOf(String.format("%02d:%02d:00", horaInicial, minutoInicial));
         Time fin = Time.valueOf(String.format("%02d:%02d:00", horaFinal, minutoFinal));
 
-        try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO eventos (cliente_id, direccion, tipo, fecha, inicio, fin) VALUES (?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setInt(1, cliente_id); // Reemplaza cliente_id con el valor adecuado
-            preparedStatement.setString(2, direccion);
-            preparedStatement.setString(3, tipo);
-            preparedStatement.setString(4, fecha);
-            preparedStatement.setTime(5, inicio);
-            preparedStatement.setTime(6, fin);
-            preparedStatement.executeUpdate();
+        Integer usuario = SesionUsuario.getInstance().getIdUsuario();
 
-            ResultSet resultSet = preparedStatement.getGeneratedKeys();
-            int lastId = 0;
-            if (resultSet.next()) {
-                lastId = resultSet.getInt(1);
-            }
+        if (usuario == 0) {
+            JOptionPane.showMessageDialog(null, "Recuerde que para poder crear un evento, debe iniciar sesión", "Error de sesión", JOptionPane.ERROR_MESSAGE);
+            limpiarTablaMateriales();
+            eliminarDetallesMaterial();
+            dispose();
+            // Y aquí manejar la lógica para redirigir al usuario a la pantalla de inicio de sesión o lo que corresponda
+        } else {
+            // Tu lógica para un usuario con sesión iniciada
+            int idUsuario = usuario; // Aquí usas el valor de usuario como un int
+            try (Connection connection = sql.conectamysql();
+                 PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO eventos (cliente_id, direccion, tipo, fecha, inicio, fin, usuario_id, estado, codigo_evento) VALUES (?, ?, ?,?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+                preparedStatement.setInt(1, cliente_id); // Reemplaza cliente_id con el valor adecuado
+                preparedStatement.setString(2, direccion);
+                preparedStatement.setString(3, tipo);
+                preparedStatement.setString(4, fecha);
+                preparedStatement.setTime(5, inicio);
+                preparedStatement.setTime(6, fin);
+                preparedStatement.setInt(7, usuario);
+                preparedStatement.setString(8, estado);
+                preparedStatement.setString(9, codigo);
+                preparedStatement.executeUpdate();
 
-            try (PreparedStatement prepared = connection.prepareStatement(
-                    "UPDATE detalles_eventos SET evento_id = ? WHERE evento_id IS NULL")) {
-                prepared.setInt(1, lastId);
-                prepared.executeUpdate();
+                ResultSet resultSet = preparedStatement.getGeneratedKeys();
+                int lastId = 0;
+                if (resultSet.next()) {
+                    lastId = resultSet.getInt(1);
+                }
+
+                try (PreparedStatement prepared = connection.prepareStatement(
+                        "UPDATE detalles_eventos SET evento_id = ? WHERE evento_id IS NULL")) {
+                    prepared.setInt(1, lastId);
+                    prepared.executeUpdate();
+                } catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                    JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+                    mobiliarioList = new ArrayList<>();
+                }
+                JOptionPane.showMessageDialog(null, "Evento guardado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
             } catch (SQLException e) {
-                System.out.println(e.getMessage());
-                JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
-                mobiliarioList = new ArrayList<>();
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error al guardar el evento", "Error", JOptionPane.ERROR_MESSAGE);
             }
-            JOptionPane.showMessageDialog(null, "Evento guardado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al guardar el evento", "Error", JOptionPane.ERROR_MESSAGE);
         }
+
+
+
     }
 
     private void guardarDetalleEvento(int id_material, int cantidad, String tipo) {

@@ -538,6 +538,30 @@ public class ListaVentas extends JFrame {
                             }
                         }
                         break;
+
+                    case "globo":
+                        try (PreparedStatement globoStatement = connection.prepareStatement(
+                                "SELECT precio FROM globos WHERE id = ?")) {
+
+                            globoStatement.setInt(1, productoId);
+                            ResultSet globoRs = globoStatement.executeQuery();
+                            if (globoRs.next()) {
+                                precioProducto = globoRs.getDouble("precio");
+                            }
+                        }
+                        break;
+
+                    case "mobiliario":
+                        try (PreparedStatement mobiliarioStatement = connection.prepareStatement(
+                                "SELECT precioUnitario FROM mobiliario WHERE id = ?")) {
+
+                            mobiliarioStatement.setInt(1, productoId);
+                            ResultSet mobiliarioRs = mobiliarioStatement.executeQuery();
+                            if (mobiliarioRs.next()) {
+                                precioProducto = mobiliarioRs.getDouble("precioUnitario");
+                            }
+                        }
+                        break;
                     default:
                         precioProducto = 0.0;
                 }
@@ -593,6 +617,14 @@ public class ListaVentas extends JFrame {
                     case "material":
                         query = "SELECT nombre FROM materiales WHERE id = ?";
                         columnName = "nombre";
+                        break;
+                    case "globo":
+                        query = "SELECT codigo_globo FROM globos WHERE id = ?";
+                        columnName = "codigo_globo";
+                        break;
+                    case "mobiliario":
+                        query = "SELECT nombreMobiliario FROM mobiliario WHERE id = ?";
+                        columnName = "nombreMobiliario";
                         break;
                     default:
                         return "Tipo de detalle no reconocido";

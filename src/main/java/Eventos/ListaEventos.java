@@ -1,18 +1,15 @@
 package Eventos;
-import Manualidades.EditarManualidad;
+
 import Manualidades.TextPrompt;
-import Modelos.ModeloDesayuno;
 import Modelos.ModeloEvento;
 import Objetos.Conexion;
-import Objetos.Desayuno;
 import Objetos.Evento;
+import Pedidos.ListaPedidos;
+import Ventas.ListaVentas;
 import com.toedter.calendar.JDateChooser;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
+import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -51,10 +48,12 @@ public class ListaEventos extends JFrame {
     Color primaryColor = Color.decode("#37474f"); // Gris azul oscuro
     Color lightColor = Color.decode("#cfd8dc"); // Gris azul claro
     Color darkColor = Color.decode("#263238"); // Gris azul más oscuro
+    Color darkColorRed = new Color(244, 67, 54);
+    Color darkColorBlue = new Color(33, 150, 243);
 
     public ListaEventos() {
         super("");
-        setSize(850, 505);
+        setSize(950, 505);
         setLocationRelativeTo(null);
         setContentPane(panelPrincipal);
         campoBusqueda.setText("");
@@ -94,8 +93,12 @@ public class ListaEventos extends JFrame {
         fecha_desde.setDate(fechaDesdeDosAniosAntes);
         fecha_hasta.setDate(FechaHasta30DiasDespues);
 
+        JTableHeader header = listaEventos.getTableHeader();
+        header.setForeground(Color.WHITE);
         listaEventos.setModel(cargarDatos());
         configurarTablaManualidades();
+        listaEventos.getColumnModel().getColumn(7).setCellRenderer(new ListaEventos.ButtonRenderer());
+        listaEventos.getColumnModel().getColumn(7).setCellEditor(new ListaEventos.ButtonEditor());
 
         lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
 
@@ -111,6 +114,8 @@ public class ListaEventos extends JFrame {
                 }
                 listaEventos.setModel(cargarDatos());
                 configurarTablaManualidades();
+                listaEventos.getColumnModel().getColumn(7).setCellRenderer(new ListaEventos.ButtonRenderer());
+                listaEventos.getColumnModel().getColumn(7).setCellEditor(new ListaEventos.ButtonEditor());
                 lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
@@ -127,6 +132,8 @@ public class ListaEventos extends JFrame {
                 }
                 listaEventos.setModel(cargarDatos());
                 configurarTablaManualidades();
+                listaEventos.getColumnModel().getColumn(7).setCellRenderer(new ListaEventos.ButtonRenderer());
+                listaEventos.getColumnModel().getColumn(7).setCellEditor(new ListaEventos.ButtonEditor());
                 lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
@@ -140,6 +147,8 @@ public class ListaEventos extends JFrame {
                 botonAtras.setEnabled(pagina > 0);
                 listaEventos.setModel(cargarDatos());
                 configurarTablaManualidades();
+                listaEventos.getColumnModel().getColumn(7).setCellRenderer(new ListaEventos.ButtonRenderer());
+                listaEventos.getColumnModel().getColumn(7).setCellEditor(new ListaEventos.ButtonEditor());
                 lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
@@ -153,6 +162,8 @@ public class ListaEventos extends JFrame {
                 botonAtras.setEnabled(pagina > 0);
                 listaEventos.setModel(cargarDatos());
                 configurarTablaManualidades();
+                listaEventos.getColumnModel().getColumn(7).setCellRenderer(new ListaEventos.ButtonRenderer());
+                listaEventos.getColumnModel().getColumn(7).setCellEditor(new ListaEventos.ButtonEditor());
                 lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
@@ -166,6 +177,9 @@ public class ListaEventos extends JFrame {
                 botonAtras.setEnabled(pagina > 0);
                 listaEventos.setModel(cargarDatos());
                 configurarTablaManualidades();
+                listaEventos.getColumnModel().getColumn(7).setCellRenderer(new ListaEventos.ButtonRenderer());
+                listaEventos.getColumnModel().getColumn(7).setCellEditor(new ListaEventos.ButtonEditor());
+
                 lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
@@ -184,7 +198,7 @@ public class ListaEventos extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (listaEventos.getSelectedRow() == -1) {
-                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
+                    mostrarDialogoPersonalizadoError("Seleccione una fila para continuar.", Color.decode("#C62828"));
                     return;
                 }
                 VerEventos verEventos = new VerEventos(listaEvento.get(listaEventos.getSelectedRow()).getId());
@@ -197,7 +211,7 @@ public class ListaEventos extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (listaEventos.getSelectedRow() == -1) {
-                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
+                    mostrarDialogoPersonalizadoError("Seleccione una fila para continuar", Color.decode("#C62828"));
                     return;
                 }
                 EditarEvento editarEvento = new EditarEvento(listaEvento.get(listaEventos.getSelectedRow()), listaEvento.get(listaEventos.getSelectedRow()).getId());
@@ -205,9 +219,6 @@ public class ListaEventos extends JFrame {
                 actual.dispose();
             }
         });
-
-        JTableHeader header = listaEventos.getTableHeader();
-        header.setForeground(Color.WHITE);
 
         int campoBusquedaHeight = 35;
         campoBusqueda.setPreferredSize(new Dimension(campoBusqueda.getPreferredSize().width, campoBusquedaHeight));
@@ -254,11 +265,13 @@ public class ListaEventos extends JFrame {
         TableColumnModel columnModel = listaEventos.getColumnModel();
 
         columnModel.getColumn(0).setPreferredWidth(20);
-        columnModel.getColumn(1).setPreferredWidth(220);
-        columnModel.getColumn(2).setPreferredWidth(220);
-        columnModel.getColumn(3).setPreferredWidth(180);
+        columnModel.getColumn(1).setPreferredWidth(180);
+        columnModel.getColumn(2).setPreferredWidth(180);
+        columnModel.getColumn(3).setPreferredWidth(160);
         columnModel.getColumn(4).setPreferredWidth(80);
         columnModel.getColumn(5).setPreferredWidth(80);
+        columnModel.getColumn(6).setPreferredWidth(100);
+        columnModel.getColumn(7).setPreferredWidth(70);
 
         columnModel.getColumn(0).setCellRenderer(new CenterAlignedRenderer());
         columnModel.getColumn(1).setCellRenderer(new LeftAlignedRenderer());
@@ -266,6 +279,8 @@ public class ListaEventos extends JFrame {
         columnModel.getColumn(3).setCellRenderer(new LeftAlignedRenderer());
         columnModel.getColumn(4).setCellRenderer(new LeftAlignedRenderer());
         columnModel.getColumn(5).setCellRenderer(new LeftAlignedRenderer());
+        columnModel.getColumn(6).setCellRenderer(new LeftAlignedRenderer());
+        columnModel.getColumn(7).setCellRenderer(new LeftAlignedRenderer());
     }
 
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
@@ -308,15 +323,21 @@ public class ListaEventos extends JFrame {
         sql = new Conexion();
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement(
-                     "SELECT e.*, CONCAT(c.nombre, ' ', c.apellido) AS nombre_completo " +
+                     "SELECT e.*, CONCAT(c.nombre, ' ', c.apellido) AS nombre_completo, " +
+                             "CASE " +
+                             "    WHEN e.estado IN ('Pendiente', 'En Proceso') THEN e.estado " +
+                             "    ELSE NULL " +
+                             "END AS estado_filtrado " +
                              "FROM eventos e " +
                              "JOIN clientes c ON e.cliente_id = c.id " +
-                             "WHERE (e.tipo LIKE CONCAT('%', ?, '%') " +
-                             "OR CONCAT(c.nombre, ' ', c.apellido) LIKE CONCAT('%', ?, '%') " +
-                             "OR e.direccion LIKE CONCAT('%', ?, '%') " +
-                             "OR DATE_FORMAT(e.fecha, '%d de %M %Y') LIKE CONCAT('%', ?, '%')) " +
+                             "WHERE (e.estado <> 'Terminado') AND (" +
+                             "    e.tipo LIKE CONCAT('%', ?, '%') " +
+                             "    OR CONCAT(c.nombre, ' ', c.apellido) LIKE CONCAT('%', ?, '%') " +
+                             "    OR e.direccion LIKE CONCAT('%', ?, '%') " +
+                             "    OR DATE_FORMAT(e.fecha, '%d de %M %Y') LIKE CONCAT('%', ?, '%')" +
+                             ") " +
                              "AND (e.fecha BETWEEN ? AND ?) " +
-                             "LIMIT ?, 20"
+                             "LIMIT ?, 20;"
              )
         ){
             preparedStatement.setString(1, busqueda);
@@ -342,12 +363,14 @@ public class ListaEventos extends JFrame {
                 evento.setFecha(resultSet.getDate("fecha"));
                 evento.setInicio(resultSet.getTime("inicio"));
                 evento.setFin(resultSet.getTime("fin"));
+                evento.setCodigoEvento(resultSet.getString("codigo_evento"));
+                evento.setEstado(resultSet.getString("estado"));
                 listaEvento.add(evento);
             }
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
             listaEvento = new ArrayList<>();
         }
 
@@ -370,7 +393,7 @@ public class ListaEventos extends JFrame {
                              "OR CONCAT(c.nombre, ' ', c.apellido) LIKE CONCAT('%', ?, '%') " +
                              "OR e.direccion LIKE CONCAT('%', ?, '%') " +
                              "OR DATE_FORMAT(e.fecha, '%d de %M %Y') LIKE CONCAT('%', ?, '%')) " +
-                             "AND (e.fecha BETWEEN ? AND ?)"
+                             "AND (e.fecha BETWEEN ? AND ?);"
              )) {
             preparedStatement.setString(1, busqueda);
             preparedStatement.setString(2, busqueda);
@@ -389,7 +412,7 @@ public class ListaEventos extends JFrame {
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
         }
 
         int totalPageCount = count / 20;
@@ -399,6 +422,232 @@ public class ListaEventos extends JFrame {
         }
 
         return totalPageCount;
+    }
+
+    class ButtonRenderer extends JButton implements TableCellRenderer {
+        public ButtonRenderer() {
+            setOpaque(true);
+            setForeground(Color.WHITE);
+            setBackground(darkColor);
+            setFocusPainted(false);
+        }
+
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            setText(" ➔ ");
+            return this;
+        }
+    }
+
+    class ButtonEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
+        private JButton button;
+        private int row, col;
+        private JTable table;
+
+        public ButtonEditor() {
+            button = new JButton();
+            button.setOpaque(true);
+            button.addActionListener(this);
+            button.setForeground(Color.WHITE);
+            button.setBackground(darkColor);
+            button.setFocusPainted(false);
+            //button.setBorder(margin);
+        }
+
+        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+            button.setText(" ➔ ");
+            this.table = table;
+            this.row = row;
+            this.col = column;
+            return button;
+        }
+
+        public Object getCellEditorValue() {
+            return " ➔ ";
+        }
+
+        public void actionPerformed(ActionEvent e) {
+
+            JButton btnSave = new JButton("Sí");
+            JButton btnCancel = new JButton("No");
+
+            // Personaliza los botones aquí
+            btnSave.setBackground(darkColorBlue);
+            btnCancel.setBackground(darkColorRed);
+
+            // Personaliza los fondos de los botones aquí
+            btnSave.setForeground(Color.WHITE);
+            btnCancel.setForeground(Color.WHITE);
+
+            // Elimina el foco
+            btnSave.setFocusPainted(false);
+            btnCancel.setFocusPainted(false);
+
+            // Crea un JOptionPane
+            JOptionPane optionPane = new JOptionPane(
+                    "¿Desea cambiar el estado de este evento, e imprimir la factura?",
+                    JOptionPane.QUESTION_MESSAGE,
+                    JOptionPane.DEFAULT_OPTION,
+                    null,
+                    new Object[]{}, // no options
+                    null
+            );
+
+            // Crea un JDialog
+            JDialog dialog = optionPane.createDialog("Iniciar Evento");
+
+            // Añade ActionListener a los botones
+            btnSave.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    String codigoVenta = null;
+                    String estadoActualizado = "";
+
+                    if (table != null) {
+                        int modelRow = table.convertRowIndexToModel(table.getSelectedRow());
+                        TableModel model = table.getModel();
+
+                        if (model instanceof ModeloEvento) {
+                            ModeloEvento eventoModel = (ModeloEvento) model;
+                            if (modelRow >= 0 && modelRow < eventoModel.getRowCount()) {
+                                Evento evento = eventoModel.getEventos().get(modelRow);
+                                estadoActualizado = actualizarEstadoEvento(evento, eventoModel, modelRow);
+                                codigoVenta = evento.getCodigoEvento();
+                            }
+                        }
+                    }
+
+                    dialog.dispose();
+
+                    if ("En Proceso".equals(estadoActualizado)) {
+                        mostrarDialogoPersonalizadoExito("        El evento ha iniciado con éxito.\nSeleccione el lugar donde guardará la factura de venta.", Color.decode("#263238"));
+                        ListaVentas.imprimirFactura(codigoVenta);
+                    } else if ("Terminado".equals(estadoActualizado)) {
+                        mostrarDialogoPersonalizadoExito("        El evento ha concluido con éxito.\nSeleccione el lugar donde guardará la factura de venta.", Color.decode("#263238"));
+                        ListaVentas.imprimirFactura(codigoVenta);
+                    }
+
+                    lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+                    listaEventos.setModel(cargarDatos());
+                    configurarTablaManualidades();
+                    listaEventos.getColumnModel().getColumn(7).setCellRenderer(new ListaEventos.ButtonRenderer());
+                    listaEventos.getColumnModel().getColumn(7).setCellEditor(new ListaEventos.ButtonEditor());
+                    fireEditingStopped();
+                }
+            });
+
+            btnCancel.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    dialog.dispose();
+                    fireEditingCanceled();
+                }
+            });
+
+            optionPane.setOptions(new Object[]{btnSave, btnCancel});
+            dialog.setVisible(true);
+        }
+    }
+
+    private String actualizarEstadoEvento(Evento evento, ModeloEvento eventoModel, int modelRow) {
+        String nuevoEstado = "";
+        String estadoActual = evento.getEstado();
+        int eventoId = evento.getId();
+
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "UPDATE eventos SET estado = ? WHERE id = ?")) {
+            if ("Pendiente".equals(estadoActual)) {
+                nuevoEstado = "En Proceso";
+            } else if ("En Proceso".equals(estadoActual)) {
+                nuevoEstado = "Terminado";
+            }
+
+            preparedStatement.setString(1, nuevoEstado);
+            preparedStatement.setInt(2, eventoId);
+            int affectedRows = preparedStatement.executeUpdate();
+
+            if (affectedRows > 0) {
+                evento.setEstado(nuevoEstado);
+                eventoModel.fireTableRowsUpdated(modelRow, modelRow);
+            } else {
+                return "No actualizado"; // Devolver un mensaje o un estado indicativo de fallo
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return "Error"; // Devolver un mensaje o un estado en caso de error
+        }
+
+        return nuevoEstado; // Devolver el nuevo estado si todo fue bien
+    }
+
+    public void mostrarDialogoPersonalizadoExito(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado
+        JButton btnAceptar = new JButton("ACEPTAR");
+        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE);
+        btnAceptar.setFocusPainted(false);
+
+        // Crea un JOptionPane
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                           // Mensaje a mostrar
+                JOptionPane.INFORMATION_MESSAGE,   // Tipo de mensaje
+                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
+                null,                              // Icono (puede ser null)
+                new Object[]{},                    // No se usan opciones estándar
+                null                               // Valor inicial (no necesario aquí)
+        );
+
+        // Añade el botón al JOptionPane
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Éxito");
+
+        // Añade un ActionListener al botón
+        btnAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+            }
+        });
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
+    }
+
+    public void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado
+        JButton btnAceptar = new JButton("ACEPTAR");
+        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE);
+        btnAceptar.setFocusPainted(false);
+
+        // Crea un JOptionPane
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                           // Mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
+                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
+                null,                              // Icono (puede ser null)
+                new Object[]{},                    // No se usan opciones estándar
+                null                               // Valor inicial (no necesario aquí)
+        );
+
+        // Añade el botón al JOptionPane
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Error");
+
+        // Añade un ActionListener al botón
+        btnAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+            }
+        });
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
     }
 
     public static void main(String[] args) {

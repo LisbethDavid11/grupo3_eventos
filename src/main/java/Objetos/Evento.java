@@ -8,6 +8,9 @@ public class Evento {
     private java.util.Date fecha;
     private java.sql.Time inicio;
     private java.sql.Time fin;
+    private String estado;
+    private String codigoEvento;
+    private int usuario_id;
 
     public static String nombreTabla = "eventos";
 
@@ -15,10 +18,10 @@ public class Evento {
     }
 
     public Object[] toTableRow() {
-        return new Object[]{id, clienteId, direccion, tipo, fecha, inicio, fin};
+        return new Object[]{id, clienteId, direccion, tipo, fecha, inicio, fin, codigoEvento};
     }
 
-    public Evento(int id, int clienteId, String direccion, String tipo, java.util.Date fecha, java.sql.Time inicio, java.sql.Time fin) {
+    public Evento(int id, int clienteId, String direccion, String tipo, java.util.Date fecha, java.sql.Time inicio, java.sql.Time fin, String estado, int usuario_id, String codigoEvento) {
         this.id = id;
         this.clienteId = clienteId;
         this.direccion = direccion;
@@ -26,6 +29,9 @@ public class Evento {
         this.fecha = fecha;
         this.inicio = inicio;
         this.fin = fin;
+        this.estado = estado;
+        this.usuario_id = usuario_id;
+        this.codigoEvento = codigoEvento;
     }
 
     public int getId() {
@@ -82,5 +88,29 @@ public class Evento {
 
     public void setFin(java.sql.Time fin) {
         this.fin = fin;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public int getUsuario_id() {
+        return usuario_id;
+    }
+
+    public void setUsuario_id(int usuario_id) {
+        this.usuario_id = usuario_id;
+    }
+
+    public String getCodigoEvento() {
+        return codigoEvento;
+    }
+
+    public void setCodigoEvento(String codigoEvento) {
+        this.codigoEvento = codigoEvento;
     }
 }
