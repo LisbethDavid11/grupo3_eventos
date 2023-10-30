@@ -511,6 +511,31 @@ public class CrearAlquileres extends JFrame {
                         JOptionPane.showMessageDialog(null, "La descripcion debe tener entre 2 y 200 caracteres.", "Validación", JOptionPane.ERROR_MESSAGE);
                     }
                 }
+                String amPmInicial = comboBox1.getSelectedItem().toString();
+                String amPmFinal = comboBox2.getSelectedItem().toString();
+
+                // Convertir a formato de 24 horas
+                if (amPmInicial.equals("PM")) {
+                    if (horaInicial < 12) {
+                        horaInicial += 12;
+                    }
+                }
+
+                // Convertir a formato de 24 horas
+                if (amPmFinal.equals("PM")) {
+                    if (horaFinal < 12) {
+                        horaFinal += 12;
+                    }
+                }
+
+                // Crear objetos Time para la hora inicial y final
+                Time inicio = Time.valueOf(String.format("%02d:%02d:00", horaInicial, minutoInicial));
+                Time fin = Time.valueOf(String.format("%02d:%02d:00", horaFinal, minutoFinal));
+
+                if (inicio.compareTo(fin) >= 0) {
+                    JOptionPane.showMessageDialog(null,"La hora de inicio debe ser mayor que el tiempo de finalización.", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
 
                 JButton btnSave = new JButton("Sí");
                 JButton btnCancel = new JButton("No");
@@ -701,11 +726,13 @@ public class CrearAlquileres extends JFrame {
                 }
 
                 if (!materialDuplicado) {
-                    // Llamar al método guardarDetalleEvento con los tres argumentos
-                    guardarDetalleAlquiler(id_materialEntero, cantidadMaterial, l.getTipo());
+
+
 
                     // Crear el material temporal y agregarlo a la lista temporal
                     PoliProductosGeneral materialTemporal = new PoliMaterial();
+                    // Llamar al método guardarDetalleEvento con los tres argumentos
+                    materialTemporal.setIdDetalle(guardarDetalleAlquiler(id_materialEntero, cantidadMaterial, l.getTipo()));
                     materialTemporal.setID(id_materialEntero);
                     materialTemporal.setNombre( l.getNombre());
                     materialTemporal.setCantidad(cantidadMaterial);
@@ -1120,11 +1147,27 @@ public class CrearAlquileres extends JFrame {
                     // Obtén el ID del detalle de pedido utilizando getIdDetalle
                     int detallePedidoId = producto.getIdDetalle();
 
-                    try (Connection connection = sql.conectamysql();
-                         PreparedStatement preparedStatement = connection.prepareStatement(
-                                 "DELETE FROM detalles_alquileres WHERE id = ?")) {
-                        preparedStatement.setInt(1, detallePedidoId);
-                        preparedStatement.executeUpdate();
+
+                    try {
+                        Connection connection = sql.conectamysql();
+                         PreparedStatement preparedStatement1 = connection.prepareStatement("SELECT * FROM detalles_alquileres WHERE id = ?");
+                         preparedStatement1.setInt(1,detallePedidoId);
+                         ResultSet resultSet = preparedStatement1.executeQuery();
+                        System.out.println("Id detalle "+detallePedidoId);
+                        if(resultSet.next()){
+                            System.out.println(resultSet.getInt("detalle_id"));
+                            PreparedStatement preparedStatemen3 = connection.prepareStatement("update mobiliario SET cantidad = cantidad+? WHERE id = ?");
+                            preparedStatemen3.setInt(1,resultSet.getInt("cantidad"));
+                            preparedStatemen3.setInt(2,resultSet.getInt("detalle_id"));
+                            preparedStatemen3.executeUpdate();
+
+                            PreparedStatement preparedStatement = connection.prepareStatement(
+                                    "DELETE FROM detalles_alquileres WHERE id = ?");
+                            preparedStatement.setInt(1, detallePedidoId);
+                            preparedStatement.executeUpdate();
+                        }
+
+
                     } catch (SQLException ex) {
                         ex.printStackTrace();
                         // Manejo de excepciones en caso de error en la eliminación en la base de datos.
@@ -1258,6 +1301,8 @@ public class CrearAlquileres extends JFrame {
         Time inicio = Time.valueOf(String.format("%02d:%02d:00", horaInicial, minutoInicial));
         Time fin = Time.valueOf(String.format("%02d:%02d:00", horaFinal, minutoFinal));
 
+
+
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO alquileres (cliente_id,empleado_id, descripcion, tipo, fecha, hora_inicial, hora_final) VALUES (?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setInt(1, cliente_id); // Reemplaza cliente_id con el valor adecuado
@@ -1312,29 +1357,45 @@ public class CrearAlquileres extends JFrame {
         return availableQuantity;
     }
 
-    private void guardarDetalleAlquiler(int id_material, int cantidad, String tipo) {
+    private int guardarDetalleAlquiler(int id_material, int cantidad, String tipo) {
         double availableQuantity = obtenerCantidadMaterialDesdeBD(id_material, tipo);
 
         if (cantidad <= 0) {
             showErrorDialog("La cantidad debe ser mayor a 0.");
-            return;
+            return 0;
         } else if (cantidad > availableQuantity) {
             showErrorDialog("El número ingresado es mayor a la cantidad disponible en la base de datos.");
-            return;
+            return 0;
         }
-        try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO detalles_alquileres (tipo_detalle, detalle_id, cantidad,precio) VALUES (?, ?, ?, ?)")) {
+        try {
+            Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO detalles_alquileres (tipo_detalle, detalle_id, cantidad,precio) VALUES (?, ?, ?, ?)",Statement.RETURN_GENERATED_KEYS);
             preparedStatement.setString(1, tiposDescripcion.get(tipo));
             preparedStatement.setInt(2, id_material);
             preparedStatement.setInt(3, cantidad);
             preparedStatement.setDouble(4, obtenerPrecioMaterialDesdeBD(id_material,tipo)); // Obtener el precio del material desde la base de datos
             preparedStatement.executeUpdate();
 
+            PreparedStatement preparedStatement2 = connection.prepareStatement("UPDATE mobiliario SET cantidad = cantidad - ? where id= ?");
+            preparedStatement2.setInt(1, cantidad);
+            preparedStatement2.setInt(2, id_material);
+            preparedStatement2.executeUpdate();
+
+            ResultSet resultSet = preparedStatement.getGeneratedKeys();
+            int lastId = 0;
+            if (resultSet.next()) {
+                lastId = resultSet.getInt(1);
+            }
+
             JOptionPane.showMessageDialog(null, "Detalle agregado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            return lastId;
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error al agregar el detalle del alquiler", "Error", JOptionPane.ERROR_MESSAGE);
         }
+
+
+        return 0;
     }
 
 
