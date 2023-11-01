@@ -560,7 +560,7 @@ public class CrearActividad extends JFrame {
         optionPane.setOptions(new Object[]{btnAceptar});
 
         // Crea un JDialog para mostrar el JOptionPane
-        JDialog dialog = optionPane.createDialog("Éxito");
+        JDialog dialog = optionPane.createDialog("Validación");
 
         // Añade un ActionListener al botón
         btnAceptar.addActionListener(new ActionListener() {
@@ -595,7 +595,7 @@ public class CrearActividad extends JFrame {
         optionPane.setOptions(new Object[]{btnAceptar});
 
         // Crea un JDialog para mostrar el JOptionPane
-        JDialog dialog = optionPane.createDialog("Error");
+        JDialog dialog = optionPane.createDialog("Validación");
 
         // Añade un ActionListener al botón
         btnAceptar.addActionListener(new ActionListener() {
