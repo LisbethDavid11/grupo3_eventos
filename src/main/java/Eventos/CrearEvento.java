@@ -1186,7 +1186,7 @@ public class CrearEvento extends JFrame {
 
         JOptionPane optionPane = new JOptionPane(
                 message,
-                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.ERROR_MESSAGE,
                 JOptionPane.DEFAULT_OPTION,
                 null,
                 new Object[]{},

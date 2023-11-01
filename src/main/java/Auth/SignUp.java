@@ -138,7 +138,7 @@ public class SignUp extends javax.swing.JFrame {
         // Crea un JOptionPane
         JOptionPane optionPane = new JOptionPane(
                 mensaje,                           // Mensaje a mostrar
-                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
+                JOptionPane.ERROR_MESSAGE,   // Tipo de mensaje
                 JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
                 null,                              // Icono (puede ser null)
                 new Object[]{},                    // No se usan opciones estándar
