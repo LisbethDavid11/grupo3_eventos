@@ -551,6 +551,18 @@ public class ListaVentas extends JFrame {
                         }
                         break;
 
+                    case "resumen_promocion":
+                        try (PreparedStatement promocionStatement = connection.prepareStatement(
+                                "SELECT promocion FROM resumen_promociones WHERE id = ?")) {
+
+                            promocionStatement.setInt(1, productoId);
+                            ResultSet promocionRs = promocionStatement.executeQuery();
+                            if (promocionRs.next()) {
+                                precioProducto = promocionRs.getDouble("promocion");
+                            }
+                        }
+                        break;
+
                     case "mobiliario":
                         try (PreparedStatement mobiliarioStatement = connection.prepareStatement(
                                 "SELECT precioUnitario FROM mobiliario WHERE id = ?")) {
@@ -625,6 +637,10 @@ public class ListaVentas extends JFrame {
                     case "mobiliario":
                         query = "SELECT nombreMobiliario FROM mobiliario WHERE id = ?";
                         columnName = "nombreMobiliario";
+                        break;
+                    case "resumen_promocion":
+                        query = "SELECT descripcion FROM resumen_promociones WHERE id = ?";
+                        columnName = "descripcion";
                         break;
                     default:
                         return "Tipo de detalle no reconocido";

@@ -540,48 +540,36 @@ public class CrearActividad extends JFrame {
     }
 
     public void mostrarDialogoPersonalizadoExito(String mensaje, Color colorFondoBoton) {
-        // Crea un botón personalizado
         JButton btnAceptar = new JButton("ACEPTAR");
         btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
         btnAceptar.setForeground(Color.WHITE);
         btnAceptar.setFocusPainted(false);
 
-        // Crea un JOptionPane
         JOptionPane optionPane = new JOptionPane(
                 mensaje,                           // Mensaje a mostrar
-                JOptionPane.INFORMATION_MESSAGE,   // Tipo de mensaje
+                JOptionPane.PLAIN_MESSAGE,   // Tipo de mensaje
                 JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
                 null,                              // Icono (puede ser null)
                 new Object[]{},                    // No se usan opciones estándar
                 null                               // Valor inicial (no necesario aquí)
         );
-
-        // Añade el botón al JOptionPane
         optionPane.setOptions(new Object[]{btnAceptar});
-
-        // Crea un JDialog para mostrar el JOptionPane
         JDialog dialog = optionPane.createDialog("Validación");
-
-        // Añade un ActionListener al botón
         btnAceptar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+                dialog.dispose();
             }
         });
-
-        // Muestra el diálogo
         dialog.setVisible(true);
     }
 
     public void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
-        // Crea un botón personalizado
         JButton btnAceptar = new JButton("ACEPTAR");
         btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
         btnAceptar.setForeground(Color.WHITE);
         btnAceptar.setFocusPainted(false);
 
-        // Crea un JOptionPane
         JOptionPane optionPane = new JOptionPane(
                 mensaje,                           // Mensaje a mostrar
                 JOptionPane.ERROR_MESSAGE,   // Tipo de mensaje
@@ -591,21 +579,14 @@ public class CrearActividad extends JFrame {
                 null                               // Valor inicial (no necesario aquí)
         );
 
-        // Añade el botón al JOptionPane
         optionPane.setOptions(new Object[]{btnAceptar});
-
-        // Crea un JDialog para mostrar el JOptionPane
         JDialog dialog = optionPane.createDialog("Validación");
-
-        // Añade un ActionListener al botón
         btnAceptar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+                dialog.dispose();
             }
         });
-
-        // Muestra el diálogo
         dialog.setVisible(true);
     }
 

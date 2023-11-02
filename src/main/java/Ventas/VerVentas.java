@@ -181,10 +181,10 @@ public class VerVentas extends JFrame {
             TableColumnModel columnModel = productos.getColumnModel();
 
             columnModel.getColumn(0).setPreferredWidth(20);
-            columnModel.getColumn(1).setPreferredWidth(220);
+            columnModel.getColumn(1).setPreferredWidth(270);
             columnModel.getColumn(2).setPreferredWidth(100);
             columnModel.getColumn(3).setPreferredWidth(100);
-            columnModel.getColumn(4).setPreferredWidth(100);
+            columnModel.getColumn(4).setPreferredWidth(50);
 
             columnModel.getColumn(0).setCellRenderer(new VerVentas.CenterAlignedRenderer());
             columnModel.getColumn(1).setCellRenderer(new VerVentas.LeftAlignedRenderer());
@@ -280,6 +280,7 @@ public class VerVentas extends JFrame {
                                 "   WHEN 'floristeria' THEN f.nombre " +
                                 "   WHEN 'manualidad' THEN ma.nombre " +
                                 "   WHEN 'arreglo' THEN a.nombre " +
+                                "   WHEN 'resumen_promocion' THEN p.descripcion " +
                                 "   WHEN 'desayuno' THEN d.nombre " +
                                 "END AS nombre_detalle, " +
                                 "CASE dv.tipo_detalle " +
@@ -288,6 +289,7 @@ public class VerVentas extends JFrame {
                                 "   WHEN 'floristeria' THEN f.precio " +
                                 "   WHEN 'manualidad' THEN ma.precio_manualidad " +
                                 "   WHEN 'arreglo' THEN a.precio " +
+                                "   WHEN 'resumen_promocion' THEN p.promocion " +
                                 "   WHEN 'desayuno' THEN d.precio_desayuno " +
                                 "END AS precio_detalle " +
                                 "FROM detalles_ventas dv " +
@@ -296,6 +298,7 @@ public class VerVentas extends JFrame {
                                 "LEFT JOIN floristeria f ON dv.detalle_id = f.id AND dv.tipo_detalle = 'floristeria' " +
                                 "LEFT JOIN manualidades ma ON dv.detalle_id = ma.id AND dv.tipo_detalle = 'manualidad' " +
                                 "LEFT JOIN arreglos a ON dv.detalle_id = a.id AND dv.tipo_detalle = 'arreglo' " +
+                                "LEFT JOIN resumen_promociones p ON dv.detalle_id = p.id AND dv.tipo_detalle = 'resumen_promocion' " +
                                 "LEFT JOIN desayunos d ON dv.detalle_id = d.id AND dv.tipo_detalle = 'desayuno' " +
                                 "WHERE dv.venta_id = ?;"
                 );

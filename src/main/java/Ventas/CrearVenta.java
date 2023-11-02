@@ -33,6 +33,7 @@ public class CrearVenta extends JFrame {
     private int categoriaSeleccionada = 0;
     private JButton botonLimpiar;
     private JTextField buscarCliente;
+    private JButton agregarPromocionButton;
     private Conexion sql;
     public CrearVenta crearVenta = this;
     private Materiales.TextPrompt placeholder = new TextPrompt(" Buscar por nombre de producto", filtroBusqueda);
@@ -45,6 +46,7 @@ public class CrearVenta extends JFrame {
     private List<PoliArreglo> arregloList = new ArrayList<>();
     private List<PoliDesayuno> desayunoList = new ArrayList<>();
     private List<PoliManualidad> manualidadList = new ArrayList<>();
+    private List<PoliResumenPromocion> promocionList = new ArrayList<>();
     private Map<String,String> tiposDescripcion = new HashMap<>();
     private Map<String,String> tiposTablas = new HashMap<>();
     private List<VentaListener> ventaListeners = new ArrayList<>();
@@ -86,7 +88,7 @@ public class CrearVenta extends JFrame {
 
     public CrearVenta() {
         super("");
-        setSize(1050, 650);
+        setSize(1170, 650);
         setLocationRelativeTo(null);
         setContentPane(panel1);
         sql = new Conexion();
@@ -100,6 +102,7 @@ public class CrearVenta extends JFrame {
         tiposDescripcion.put("T","tarjeta");
         tiposDescripcion.put("A","arreglo");
         tiposDescripcion.put("D","desayuno");
+        tiposDescripcion.put("P","resumen_promocion");
 
         tiposTablas.put("F","floristeria");
         tiposTablas.put("M","materiales");
@@ -107,6 +110,7 @@ public class CrearVenta extends JFrame {
         tiposTablas.put("T","tarjetas");
         tiposTablas.put("A","arreglos");
         tiposTablas.put("D","desayunos");
+        tiposTablas.put("P","resumen_promociones");
 
         agregarProductoButton.addActionListener(new ActionListener() {
             @Override
@@ -118,6 +122,7 @@ public class CrearVenta extends JFrame {
                 listas.put(5,tarjetaList);
                 listas.put(6,arregloList);
                 listas.put(7,desayunoList);
+                listas.put(8,promocionList);
 
                 if (tablaProductos.getSelectedRow() == -1) {
                     // Crea un botón personalizado
@@ -195,6 +200,9 @@ public class CrearVenta extends JFrame {
                 }else  if ( l instanceof PoliDesayuno p){
                     id_materialEntero = p.getID();
                     id_material = "D-"+p.getID();
+                } else  if ( l instanceof PoliResumenPromocion p){
+                    id_materialEntero = p.getID();
+                    id_material = "P-"+p.getID();
                 }
 
                 for (PoliProducto materialTemporal : productosListTemporal) {
@@ -227,6 +235,7 @@ public class CrearVenta extends JFrame {
                     agregarTarjetasButton.setVisible(true);
                     agregarArregloButton.setVisible(true);
                     agregarDesayunoButton.setVisible(true);
+                    agregarPromocionButton.setVisible(true);
                     // Actualizar la tabla con los detalles actualizados
                     tablaProductos.setModel(cargarDetallesMateriales());
                     tablaProductos.getColumnModel().getColumn(5).setCellRenderer(new CrearVenta.ButtonRenderer());
@@ -344,6 +353,10 @@ public class CrearVenta extends JFrame {
         agregarDesayunoButton.setBackground(Color.decode("#3F51B5"));
         agregarDesayunoButton.setFocusPainted(false);
 
+        agregarPromocionButton.setForeground(Color.WHITE);
+        agregarPromocionButton.setBackground(Color.decode("#E64A19"));
+        agregarPromocionButton.setFocusPainted(false);
+
         JTableHeader header = tablaProductos.getTableHeader();
         header.setForeground(Color.WHITE);
         header.setBackground(Color.decode("#263238"));
@@ -384,6 +397,7 @@ public class CrearVenta extends JFrame {
                 agregarTarjetasButton.setVisible(false);
                 agregarManualidadButton.setVisible(false);
                 agregarDesayunoButton.setVisible(false);
+                agregarPromocionButton.setVisible(false);
                 tablaProductos.setModel(cargarDatosMaterial());
             }
         });
@@ -401,6 +415,7 @@ public class CrearVenta extends JFrame {
                 agregarTarjetasButton.setVisible(false);
                 agregarManualidadButton.setVisible(false);
                 agregarDesayunoButton.setVisible(false);
+                agregarPromocionButton.setVisible(false);
                 tablaProductos.setModel(cargarDatosArreglo());
             }
         });
@@ -418,6 +433,7 @@ public class CrearVenta extends JFrame {
                 agregarTarjetasButton.setVisible(false);
                 agregarManualidadButton.setVisible(false);
                 agregarDesayunoButton.setVisible(false);
+                agregarPromocionButton.setVisible(false);
                 tablaProductos.setModel(cargarDatosFloristeria());
             }
         });
@@ -435,6 +451,7 @@ public class CrearVenta extends JFrame {
                 agregarTarjetasButton.setVisible(false);
                 agregarManualidadButton.setVisible(false);
                 agregarDesayunoButton.setVisible(false);
+                agregarPromocionButton.setVisible(false);
                 tablaProductos.setModel(cargarDatosTarjeta());
             }
         });
@@ -452,6 +469,7 @@ public class CrearVenta extends JFrame {
                 agregarTarjetasButton.setVisible(false);
                 agregarManualidadButton.setVisible(false);
                 agregarDesayunoButton.setVisible(false);
+                agregarPromocionButton.setVisible(false);
                 tablaProductos.setModel(cargarDatosDesayuno());
             }
         });
@@ -469,7 +487,26 @@ public class CrearVenta extends JFrame {
                 agregarTarjetasButton.setVisible(false);
                 agregarManualidadButton.setVisible(false);
                 agregarDesayunoButton.setVisible(false);
+                agregarPromocionButton.setVisible(false);
                 tablaProductos.setModel(cargarDatosManualidad());
+            }
+        });
+
+        agregarPromocionButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                categoriaSeleccionada = 6;
+                filtroBusqueda.setVisible(true);
+                agregarProductoButton.setVisible(true);
+                cancelarProductoButton.setVisible(true);
+                agregarMaterialButton.setVisible(false);
+                agregarFloresButton.setVisible(false);
+                agregarArregloButton.setVisible(false);
+                agregarTarjetasButton.setVisible(false);
+                agregarManualidadButton.setVisible(false);
+                agregarDesayunoButton.setVisible(false);
+                agregarPromocionButton.setVisible(false);
+                tablaProductos.setModel(cargarDatosPromocion());
             }
         });
 
@@ -485,6 +522,7 @@ public class CrearVenta extends JFrame {
                 agregarTarjetasButton.setVisible(true);
                 agregarArregloButton.setVisible(true);
                 agregarDesayunoButton.setVisible(true);
+                agregarPromocionButton.setVisible(true);
                 tablaProductos.setModel(cargarDetallesMateriales());
 
                 actualizarLbl8y10();
@@ -1158,15 +1196,16 @@ public class CrearVenta extends JFrame {
             TableColumnModel columnModel = tablaProductos.getColumnModel();
 
             columnModel.getColumn(0).setPreferredWidth(20); // Id
-            columnModel.getColumn(1).setPreferredWidth(200); // Nombre
-            columnModel.getColumn(2).setPreferredWidth(60);  // Precio
-            columnModel.getColumn(3).setPreferredWidth(100); // Proveedor
+            columnModel.getColumn(1).setPreferredWidth(250); // Nombre
+            columnModel.getColumn(2).setPreferredWidth(60); // Cantidad
+            columnModel.getColumn(3).setPreferredWidth(60); // Precio
+            columnModel.getColumn(4).setPreferredWidth(60); // Total
 
             columnModel.getColumn(0).setCellRenderer(new CrearVenta.CenterAlignedRenderer());
             columnModel.getColumn(1).setCellRenderer(new CrearVenta.LeftAlignedRenderer());
             columnModel.getColumn(2).setCellRenderer(new CrearVenta.LeftAlignedRenderer());
             columnModel.getColumn(3).setCellRenderer(new CrearVenta.LeftAlignedRenderer());
-
+            columnModel.getColumn(4).setCellRenderer(new CrearVenta.LeftAlignedRenderer());
         }
     }
 
@@ -1182,59 +1221,69 @@ public class CrearVenta extends JFrame {
         int idUsuarioActual = SesionUsuario.getInstance().getIdUsuario();
         int clienteId = Integer.parseInt(boxCliente.getSelectedItem().toString().split(" - ")[0]);
 
-        try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement(
-                     "INSERT INTO ventas (codigo_venta, fecha, cliente_id, usuario_id) VALUES (?, ?, ?, ?)",
-                     Statement.RETURN_GENERATED_KEYS
-             )) {
+        Integer usuario = SesionUsuario.getInstance().getIdUsuario();
 
-            preparedStatement.setString(1, codigoVenta);
-            preparedStatement.setString(2, fechaVenta);
-            preparedStatement.setInt(3, clienteId);
-            preparedStatement.setInt(4, idUsuarioActual);
-            preparedStatement.executeUpdate();
+        if (usuario == 0) {
+            JOptionPane.showMessageDialog(null, "Recuerde que para poder crear una venta, debe iniciar sesión", "Error de sesión", JOptionPane.ERROR_MESSAGE);
+            limpiarTablaMateriales();
+            eliminarDetallesMaterial();
+            dispose();
+            // Y aquí manejar la lógica para redirigir al usuario a la pantalla de inicio de sesión o lo que corresponda
+        } else {
+            try (Connection connection = sql.conectamysql();
+                 PreparedStatement preparedStatement = connection.prepareStatement(
+                         "INSERT INTO ventas (codigo_venta, fecha, cliente_id, usuario_id) VALUES (?, ?, ?, ?)",
+                         Statement.RETURN_GENERATED_KEYS
+                 )) {
 
-            ResultSet resultSet = preparedStatement.getGeneratedKeys();
-            int lastId = 0;
-            if (resultSet.next()) {
-                lastId = resultSet.getInt(1);
-            }
+                preparedStatement.setString(1, codigoVenta);
+                preparedStatement.setString(2, fechaVenta);
+                preparedStatement.setInt(3, clienteId);
+                preparedStatement.setInt(4, idUsuarioActual);
+                preparedStatement.executeUpdate();
 
-            try (PreparedStatement prepared = connection.prepareStatement(
-                    "UPDATE detalles_ventas SET venta_id = ? WHERE venta_id IS NULL")) {
-                prepared.setInt(1, lastId);
-                prepared.executeUpdate();
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-                mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
-                materialList = new ArrayList<>();
-            }
+                ResultSet resultSet = preparedStatement.getGeneratedKeys();
+                int lastId = 0;
+                if (resultSet.next()) {
+                    lastId = resultSet.getInt(1);
+                }
 
-            // Actualizar cantidades en las tablas correspondientes
-            for (PoliProducto detalle : productosListTemporal) {
-                String tipoDetalle = detalle.getTipo();
-                int detalleId = detalle.getID();
-                int cantidadDetalle = detalle.getCantidad();
+                try (PreparedStatement prepared = connection.prepareStatement(
+                        "UPDATE detalles_ventas SET venta_id = ? WHERE venta_id IS NULL")) {
+                    prepared.setInt(1, lastId);
+                    prepared.executeUpdate();
+                } catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                    mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
+                    materialList = new ArrayList<>();
+                }
 
-                if (tipoDetalle.equals("F") || tipoDetalle.equals("A") || tipoDetalle.equals("M")
-                        || tipoDetalle.equals("T") || tipoDetalle.equals("D") || tipoDetalle.equals("X")) {
+                // Actualizar cantidades en las tablas correspondientes
+                for (PoliProducto detalle : productosListTemporal) {
+                    String tipoDetalle = detalle.getTipo();
+                    int detalleId = detalle.getID();
+                    int cantidadDetalle = detalle.getCantidad();
 
-                    String tablaDetalle = tiposTablas.get(tipoDetalle);
-                    try (PreparedStatement updateStatement = connection.prepareStatement(
-                            "UPDATE " + tablaDetalle + " SET cantidad = cantidad - ? WHERE id = ?")) {
-                        updateStatement.setInt(1, cantidadDetalle);
-                        updateStatement.setInt(2, detalleId);
-                        updateStatement.executeUpdate();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                        mostrarDialogoPersonalizadoError("Error al intentar actualizar las cantidades en la base de datos.", Color.decode("#C62828"));
+                    if (tipoDetalle.equals("F") || tipoDetalle.equals("A") || tipoDetalle.equals("M")
+                            || tipoDetalle.equals("T") || tipoDetalle.equals("D") || tipoDetalle.equals("X") || tipoDetalle.equals("P")) {
+
+                        String tablaDetalle = tiposTablas.get(tipoDetalle);
+                        try (PreparedStatement updateStatement = connection.prepareStatement(
+                                "UPDATE " + tablaDetalle + " SET cantidad = cantidad - ? WHERE id = ?")) {
+                            updateStatement.setInt(1, cantidadDetalle);
+                            updateStatement.setInt(2, detalleId);
+                            updateStatement.executeUpdate();
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                            mostrarDialogoPersonalizadoError("Error al intentar actualizar las cantidades en la base de datos.", Color.decode("#C62828"));
+                        }
                     }
                 }
+                mostrarDialogoPersonalizadoExito("Venta registrada exitosamente.", Color.decode("#263238"));
+            } catch (SQLException e) {
+                e.printStackTrace();
+                mostrarDialogoPersonalizadoError("Error al guardar la venta.", Color.decode("#C62828"));
             }
-            mostrarDialogoPersonalizadoExito("Venta registrada exitosamente.", Color.decode("#263238"));
-        } catch (SQLException e) {
-            e.printStackTrace();
-            mostrarDialogoPersonalizadoError("Error al guardar la venta.", Color.decode("#C62828"));
         }
     }
 
@@ -1296,6 +1345,8 @@ public class CrearVenta extends JFrame {
             precioColumn = "precio_manualidad";
         } else if (tipo.equals("D")) {
             precioColumn = "precio_desayuno";
+        } else if (tipo.equals("P")) {
+            precioColumn = "promocion";
         } else {
             precioColumn = "precio";
         }
@@ -1354,7 +1405,13 @@ public class CrearVenta extends JFrame {
 
                              " SELECT detalles_ventas.*,'M' AS 'tipo',materiales.nombre AS 'nombre', (detalles_ventas.cantidad * detalles_ventas.precio) AS 'total' FROM detalles_ventas "+
                              " JOIN materiales ON materiales.id = detalles_ventas.detalle_id "+
-                             " WHERE detalles_ventas.venta_id IS NULL AND detalles_ventas.tipo_detalle = 'material';"
+                             " WHERE detalles_ventas.venta_id IS NULL AND detalles_ventas.tipo_detalle = 'material'" +
+
+                            " UNION "+
+
+                             " SELECT detalles_ventas.*,'P' AS 'tipo',resumen_promociones.descripcion AS 'nombre', (detalles_ventas.cantidad * detalles_ventas.precio) AS 'total' FROM detalles_ventas "+
+                             " JOIN resumen_promociones ON resumen_promociones.id = detalles_ventas.detalle_id "+
+                             " WHERE detalles_ventas.venta_id IS NULL AND detalles_ventas.tipo_detalle = 'resumen_promocion';"
              )
         ) {
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -1609,6 +1666,41 @@ public class CrearVenta extends JFrame {
         return modeloDesayuno;
     }
 
+    private PoliModeloResumenPromocion cargarDatosPromocion() {
+        sql = new Conexion();
+        materialList.clear();
+        selectTabla = 8;
+        try (Connection mysql = sql.conectamysql();
+             PreparedStatement preparedStatement = mysql.prepareStatement(
+                     "SELECT * FROM resumen_promociones WHERE descripcion LIKE CONCAT('%', ?, '%')"
+             )
+        ) {
+            preparedStatement.setString(1, filtroBusqueda.getText());
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                PoliResumenPromocion promocion = new PoliResumenPromocion();
+                promocion.setID(resultSet.getInt("id"));
+                promocion.setNombre(resultSet.getString("descripcion"));
+                promocion.setCantidad(resultSet.getInt("cantidad"));
+                promocion.setPrecio(resultSet.getDouble("promocion"));
+                promocion.setTipo("P");
+                promocionList.add(promocion);
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
+            materialList = new ArrayList<>();
+        }
+
+        PoliModeloResumenPromocion modeloResumenPromocion = new PoliModeloResumenPromocion(promocionList, sql);
+        tablaProductos.setModel(modeloResumenPromocion);
+        configurarTablaMateriales();
+        return modeloResumenPromocion;
+    }
+
     private int obtenerCantidadMaterial() {
         final int[] cantidadMaterial = new int[] {-1};
 
@@ -1728,7 +1820,7 @@ public class CrearVenta extends JFrame {
         // Crea un JOptionPane
         JOptionPane optionPane = new JOptionPane(
                 mensaje,                           // Mensaje a mostrar
-                JOptionPane.INFORMATION_MESSAGE,   // Tipo de mensaje
+                JOptionPane.PLAIN_MESSAGE,   // Tipo de mensaje
                 JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
                 null,                              // Icono (puede ser null)
                 new Object[]{},                    // No se usan opciones estándar
@@ -1739,7 +1831,7 @@ public class CrearVenta extends JFrame {
         optionPane.setOptions(new Object[]{btnAceptar});
 
         // Crea un JDialog para mostrar el JOptionPane
-        JDialog dialog = optionPane.createDialog("Éxito");
+        JDialog dialog = optionPane.createDialog("Validación");
 
         // Añade un ActionListener al botón
         btnAceptar.addActionListener(new ActionListener() {
@@ -1763,7 +1855,7 @@ public class CrearVenta extends JFrame {
         // Crea un JOptionPane
         JOptionPane optionPane = new JOptionPane(
                 mensaje,                           // Mensaje a mostrar
-                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
+                JOptionPane.ERROR_MESSAGE,   // Tipo de mensaje
                 JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
                 null,                              // Icono (puede ser null)
                 new Object[]{},                    // No se usan opciones estándar
@@ -1774,7 +1866,7 @@ public class CrearVenta extends JFrame {
         optionPane.setOptions(new Object[]{btnAceptar});
 
         // Crea un JDialog para mostrar el JOptionPane
-        JDialog dialog = optionPane.createDialog("Error");
+        JDialog dialog = optionPane.createDialog("Validación");
 
         // Añade un ActionListener al botón
         btnAceptar.addActionListener(new ActionListener() {
