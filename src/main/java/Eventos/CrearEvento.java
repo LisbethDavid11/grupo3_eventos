@@ -1,5 +1,5 @@
 package Eventos;
-import Auth.SesionUsuario;
+import Login.SesionUsuario;
 import Materiales.TextPrompt;
 import Modelos.*;
 import Objetos.*;

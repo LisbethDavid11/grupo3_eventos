@@ -1,10 +1,9 @@
 package Pedidos;
 
-import Auth.SesionUsuario;
+import Login.SesionUsuario;
 import Materiales.TextPrompt;
 import Modelos.*;
 import Objetos.*;
-import Promociones.CrearPromocion;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;

@@ -3,9 +3,6 @@ package SubMenu;
 import Actividades.CalendarioDeActividades;
 import Alquileres.ListaAlquileres;
 import Arreglos.ListaArreglos;
-import Auth.Login;
-import Auth.SesionUsuario;
-import Auth.VerPerfil;
 import Clientes.ListaClientes;
 import Compras.ListaCompras;
 import Desayunos.ListaDesayunos;
@@ -13,6 +10,9 @@ import Empleados.ListaEmpleados;
 import Eventos.ListaEventos;
 import Floristerias.ListaFloristerias;
 import Globos.ListaGlobos;
+import Login.Login;
+import Login.SesionUsuario;
+import Login.VerPerfil;
 import Manualidades.ListaManualidades;
 import Materiales.ListaMateriales;
 import Mobiliario.ListaMobiliario;
@@ -454,10 +454,8 @@ public class SubMenu extends JFrame {
                     public void actionPerformed(ActionEvent e) {
                         dispose();
                         dialog.dispose();
-                        Login LoginFrame = new Login();
-                        LoginFrame.setVisible(true);
-                        LoginFrame.pack();
-                        LoginFrame.setLocationRelativeTo(null);
+                        Login login = new Login();
+                        login.setVisible(true);
                     }
                 });
 

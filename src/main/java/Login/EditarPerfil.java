@@ -1,7 +1,6 @@
-package Auth;
+package Login;
 
 import Objetos.Conexion;
-import SubMenu.SubMenu;
 import org.jdesktop.swingx.prompt.PromptSupport;
 import org.mindrot.jbcrypt.BCrypt;
 

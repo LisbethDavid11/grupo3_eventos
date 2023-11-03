@@ -1,4 +1,4 @@
-package Auth;
+package Login;
 
 public class DatosUsuario {
     private int id;

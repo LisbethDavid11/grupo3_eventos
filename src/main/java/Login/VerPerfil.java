@@ -1,7 +1,8 @@
-package Auth;
+package Login;
 
+import Login.EditarPerfil;
+import Login.SesionUsuario;
 import Objetos.Conexion;
-import SubMenu.SubMenu;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;

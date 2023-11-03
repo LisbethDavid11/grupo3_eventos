@@ -1,12 +1,9 @@
-import Auth.Login;
-import Auth.VerPerfil;
+import Login.Login;
 
 import java.sql.SQLException;
 public class Main {
     public static void main(String[] args) throws SQLException {
-        Login LoginFrame = new Login();
-        LoginFrame.setVisible(true);
-        LoginFrame.pack();
-        LoginFrame.setLocationRelativeTo(null);
+        Login login = new Login();
+        login.setVisible(true);
     }
 }

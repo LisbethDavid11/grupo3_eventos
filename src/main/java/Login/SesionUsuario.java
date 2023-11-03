@@ -1,4 +1,4 @@
-package Auth;
+package Login;
 
 public class SesionUsuario {
     private static SesionUsuario instancia = new SesionUsuario();
