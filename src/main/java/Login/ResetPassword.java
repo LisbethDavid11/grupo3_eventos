@@ -126,6 +126,7 @@ public class ResetPassword extends JFrame {
             @Override
             public void keyTyped(KeyEvent e) {
                 String correo = campoCorreo.getText();
+                char c = e.getKeyChar();
 
                 // Verificar si se excede la longitud máxima
                 if (correo.length() >= 45) {
@@ -134,15 +135,14 @@ public class ResetPassword extends JFrame {
                 }
 
                 // Verificar si se está ingresando un espacio en blanco
-                if (Character.isWhitespace(e.getKeyChar())) {
+                if (Character.isWhitespace(c)) {
                     e.consume(); // Ignorar el espacio en blanco
                     return;
                 }
 
-                // Verificar si el carácter no es una letra, guion, arroba o punto
-                if (!Character.isLetter(e.getKeyChar()) && e.getKeyChar() != '-' && e.getKeyChar() != '@' && e.getKeyChar() != '.') {
-                    e.consume(); // Ignorar el carácter si no es una letra, guion, arroba o punto
-                    return;
+                // Verificar si el carácter es válido (letra, número, guion, arroba o punto)
+                if (!Character.isLetterOrDigit(c) && c != '-' && c != '@' && c != '.') {
+                    e.consume(); // Ignorar el carácter si no es válido
                 }
             }
         });

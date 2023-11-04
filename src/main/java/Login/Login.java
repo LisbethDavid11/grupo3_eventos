@@ -109,6 +109,7 @@ public class Login extends JFrame {
             @Override
             public void keyTyped(KeyEvent e) {
                 String correo = campoCorreo.getText();
+                char c = e.getKeyChar();
 
                 // Verificar si se excede la longitud máxima
                 if (correo.length() >= 45) {
@@ -117,15 +118,14 @@ public class Login extends JFrame {
                 }
 
                 // Verificar si se está ingresando un espacio en blanco
-                if (Character.isWhitespace(e.getKeyChar())) {
+                if (Character.isWhitespace(c)) {
                     e.consume(); // Ignorar el espacio en blanco
                     return;
                 }
 
-                // Verificar si el carácter no es una letra, guion, arroba o punto
-                if (!Character.isLetter(e.getKeyChar()) && e.getKeyChar() != '-' && e.getKeyChar() != '@' && e.getKeyChar() != '.') {
-                    e.consume(); // Ignorar el carácter si no es una letra, guion, arroba o punto
-                    return;
+                // Verificar si el carácter es válido (letra, número, guion, arroba o punto)
+                if (!Character.isLetterOrDigit(c) && c != '-' && c != '@' && c != '.') {
+                    e.consume(); // Ignorar el carácter si no es válido
                 }
             }
         });
@@ -133,27 +133,30 @@ public class Login extends JFrame {
         campoContrasena.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                String correo = campoContrasena.getText();
+                String contrasena = campoContrasena.getText();
+                char c = e.getKeyChar();
 
                 // Verificar si se excede la longitud máxima
-                if (correo.length() >= 25) {
-                    e.consume(); // Ignorar el evento si se alcanza el límite máximo de caracteres (45)
+                if (contrasena.length() >= 25) {
+                    e.consume(); // Ignorar el evento si se alcanza el límite máximo de caracteres (25)
                     return;
                 }
 
                 // Verificar si se está ingresando un espacio en blanco
-                if (Character.isWhitespace(e.getKeyChar())) {
+                if (Character.isWhitespace(c)) {
                     e.consume(); // Ignorar el espacio en blanco
                     return;
                 }
 
-                // Verificar si el carácter no es una letra, guion, arroba o punto
-                if (!Character.isLetter(e.getKeyChar()) && e.getKeyChar() != '-' && e.getKeyChar() != '@' && e.getKeyChar() != '.') {
-                    e.consume(); // Ignorar el carácter si no es una letra, guion, arroba o punto
-                    return;
+                // Para las contraseñas, usualmente se permite una mayor variedad de caracteres.
+                // Aquí puedes agregar las restricciones que consideres necesarias.
+                // El siguiente ejemplo permite letras, números y algunos caracteres especiales comunes.
+                if (!Character.isLetterOrDigit(c) && c != '-' && c != '@' && c != '.' && c != '!' && c != '#' && c != '$' && c != '%' && c != '&' && c != '*') {
+                    e.consume();
                 }
             }
         });
+
 
 
         botonLogin.addActionListener(new java.awt.event.ActionListener() {
