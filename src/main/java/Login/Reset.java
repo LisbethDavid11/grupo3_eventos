@@ -5,8 +5,7 @@ import org.jdesktop.swingx.prompt.PromptSupport;
 import org.mindrot.jbcrypt.BCrypt;
 import javax.mail.*;
 import javax.mail.internet.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.sql.ResultSet;
 import java.util.Date;
 import java.util.Properties;
@@ -14,8 +13,6 @@ import java.util.Properties;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -146,6 +143,81 @@ public class Reset extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 mostrarContrasenas();
+            }
+        });
+
+        campoContrasenaAnterior.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                String correo = campoContrasenaAnterior.getText();
+
+                // Verificar si se excede la longitud máxima
+                if (correo.length() >= 25) {
+                    e.consume(); // Ignorar el evento si se alcanza el límite máximo de caracteres (45)
+                    return;
+                }
+
+                // Verificar si se está ingresando un espacio en blanco
+                if (Character.isWhitespace(e.getKeyChar())) {
+                    e.consume(); // Ignorar el espacio en blanco
+                    return;
+                }
+
+                // Verificar si el carácter no es una letra, guion, arroba o punto
+                if (!Character.isLetter(e.getKeyChar()) && e.getKeyChar() != '-' && e.getKeyChar() != '@' && e.getKeyChar() != '.') {
+                    e.consume(); // Ignorar el carácter si no es una letra, guion, arroba o punto
+                    return;
+                }
+            }
+        });
+
+        campoContrasenaActual.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                String correo = campoContrasenaActual.getText();
+
+                // Verificar si se excede la longitud máxima
+                if (correo.length() >= 25) {
+                    e.consume(); // Ignorar el evento si se alcanza el límite máximo de caracteres (45)
+                    return;
+                }
+
+                // Verificar si se está ingresando un espacio en blanco
+                if (Character.isWhitespace(e.getKeyChar())) {
+                    e.consume(); // Ignorar el espacio en blanco
+                    return;
+                }
+
+                // Verificar si el carácter no es una letra, guion, arroba o punto
+                if (!Character.isLetter(e.getKeyChar()) && e.getKeyChar() != '-' && e.getKeyChar() != '@' && e.getKeyChar() != '.') {
+                    e.consume(); // Ignorar el carácter si no es una letra, guion, arroba o punto
+                    return;
+                }
+            }
+        });
+
+        campoContrasenaConfirmar.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                String correo = campoContrasenaConfirmar.getText();
+
+                // Verificar si se excede la longitud máxima
+                if (correo.length() >= 25) {
+                    e.consume(); // Ignorar el evento si se alcanza el límite máximo de caracteres (45)
+                    return;
+                }
+
+                // Verificar si se está ingresando un espacio en blanco
+                if (Character.isWhitespace(e.getKeyChar())) {
+                    e.consume(); // Ignorar el espacio en blanco
+                    return;
+                }
+
+                // Verificar si el carácter no es una letra, guion, arroba o punto
+                if (!Character.isLetter(e.getKeyChar()) && e.getKeyChar() != '-' && e.getKeyChar() != '@' && e.getKeyChar() != '.') {
+                    e.consume(); // Ignorar el carácter si no es una letra, guion, arroba o punto
+                    return;
+                }
             }
         });
     }

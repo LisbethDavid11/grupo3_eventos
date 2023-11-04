@@ -172,6 +172,81 @@ public class EditarPerfil extends JFrame {
             }
         });
 
+        campoContrasenaAnterior.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                String correo = campoContrasenaAnterior.getText();
+
+                // Verificar si se excede la longitud máxima
+                if (correo.length() >= 25) {
+                    e.consume(); // Ignorar el evento si se alcanza el límite máximo de caracteres (45)
+                    return;
+                }
+
+                // Verificar si se está ingresando un espacio en blanco
+                if (Character.isWhitespace(e.getKeyChar())) {
+                    e.consume(); // Ignorar el espacio en blanco
+                    return;
+                }
+
+                // Verificar si el carácter no es una letra, guion, arroba o punto
+                if (!Character.isLetter(e.getKeyChar()) && e.getKeyChar() != '-' && e.getKeyChar() != '@' && e.getKeyChar() != '.') {
+                    e.consume(); // Ignorar el carácter si no es una letra, guion, arroba o punto
+                    return;
+                }
+            }
+        });
+
+        campoContrasenaNueva.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                String correo = campoContrasenaNueva.getText();
+
+                // Verificar si se excede la longitud máxima
+                if (correo.length() >= 25) {
+                    e.consume(); // Ignorar el evento si se alcanza el límite máximo de caracteres (45)
+                    return;
+                }
+
+                // Verificar si se está ingresando un espacio en blanco
+                if (Character.isWhitespace(e.getKeyChar())) {
+                    e.consume(); // Ignorar el espacio en blanco
+                    return;
+                }
+
+                // Verificar si el carácter no es una letra, guion, arroba o punto
+                if (!Character.isLetter(e.getKeyChar()) && e.getKeyChar() != '-' && e.getKeyChar() != '@' && e.getKeyChar() != '.') {
+                    e.consume(); // Ignorar el carácter si no es una letra, guion, arroba o punto
+                    return;
+                }
+            }
+        });
+
+        campoContrasenaConfirmar.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                String correo = campoContrasenaConfirmar.getText();
+
+                // Verificar si se excede la longitud máxima
+                if (correo.length() >= 25) {
+                    e.consume(); // Ignorar el evento si se alcanza el límite máximo de caracteres (45)
+                    return;
+                }
+
+                // Verificar si se está ingresando un espacio en blanco
+                if (Character.isWhitespace(e.getKeyChar())) {
+                    e.consume(); // Ignorar el espacio en blanco
+                    return;
+                }
+
+                // Verificar si el carácter no es una letra, guion, arroba o punto
+                if (!Character.isLetter(e.getKeyChar()) && e.getKeyChar() != '-' && e.getKeyChar() != '@' && e.getKeyChar() != '.') {
+                    e.consume(); // Ignorar el carácter si no es una letra, guion, arroba o punto
+                    return;
+                }
+            }
+        });
+
         panel.setBackground(Color.decode("#F5F5F5"));
         panelImg.setBackground(Color.decode("#F5F5F5"));
         panel1.setBackground(Color.decode("#F5F5F5"));
@@ -397,7 +472,6 @@ public class EditarPerfil extends JFrame {
 
             }
         });
-
 
         botonCargarImagen.addActionListener(new ActionListener() {
             @Override

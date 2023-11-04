@@ -329,6 +329,56 @@ public class SignUp extends JFrame {
                 }
             }
         });
+
+        campoCorreo.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                String correo = campoCorreo.getText();
+
+                // Verificar si se excede la longitud máxima
+                if (correo.length() >= 50) {
+                    e.consume(); // Ignorar el evento si se alcanza el límite máximo de caracteres (45)
+                    return;
+                }
+
+                // Verificar si se está ingresando un espacio en blanco
+                if (Character.isWhitespace(e.getKeyChar())) {
+                    e.consume(); // Ignorar el espacio en blanco
+                    return;
+                }
+
+                // Verificar si el carácter no es una letra, guion, arroba o punto
+                if (!Character.isLetter(e.getKeyChar()) && e.getKeyChar() != '-' && e.getKeyChar() != '@' && e.getKeyChar() != '.') {
+                    e.consume(); // Ignorar el carácter si no es una letra, guion, arroba o punto
+                    return;
+                }
+            }
+        });
+
+        campoContrasena.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                String correo = campoContrasena.getText();
+
+                // Verificar si se excede la longitud máxima
+                if (correo.length() >= 25) {
+                    e.consume(); // Ignorar el evento si se alcanza el límite máximo de caracteres (45)
+                    return;
+                }
+
+                // Verificar si se está ingresando un espacio en blanco
+                if (Character.isWhitespace(e.getKeyChar())) {
+                    e.consume(); // Ignorar el espacio en blanco
+                    return;
+                }
+
+                // Verificar si el carácter no es una letra, guion, arroba o punto
+                if (!Character.isLetter(e.getKeyChar()) && e.getKeyChar() != '-' && e.getKeyChar() != '@' && e.getKeyChar() != '.') {
+                    e.consume(); // Ignorar el carácter si no es una letra, guion, arroba o punto
+                    return;
+                }
+            }
+        });
     }
 
     private void personalizeButton(JButton button, Color primary, Color light, Color dark) {

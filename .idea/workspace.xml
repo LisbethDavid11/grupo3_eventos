@@ -5,14 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="18fd5814-fc96-4447-888d-4dd9792a3bfd" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Arreglos/CrearArreglo.form" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Arreglos/CrearArreglo.form" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Arreglos/CrearArreglo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Arreglos/CrearArreglo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Arreglos/EditarArreglo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Arreglos/EditarArreglo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Arreglos/VerArreglo.form" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Arreglos/VerArreglo.form" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Arreglos/VerArreglo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Arreglos/VerArreglo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Floristerias/EditarFloristeria.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Floristerias/EditarFloristeria.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Objetos/Conexion.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Objetos/Conexion.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Login/EditarPerfil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Login/EditarPerfil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Login/Login.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Login/Login.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Login/Reset.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Login/Reset.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Login/ResetPassword.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Login/ResetPassword.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Login/SignUp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Login/SignUp.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,13 +28,10 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="MavenImportPreferences">
-    <option name="generalSettings">
-      <MavenGeneralSettings>
-        <option name="useMavenConfig" value="true" />
-      </MavenGeneralSettings>
-    </option>
-  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 4
+}</component>
   <component name="ProjectId" id="2RD7lWR6qXrPcQWFXPN3bD8qyNh" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
@@ -54,8 +50,9 @@
     &quot;UI_DESIGNER_EDITOR_MODE.UIDesignerToolWindowManager.STATE&quot;: &quot;left&quot;,
     &quot;UI_DESIGNER_EDITOR_MODE.UIDesignerToolWindowManager.WIDTH&quot;: &quot;223&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Laragon/www/grupo3_eventos&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Laragon/www/grupo3_eventos/src/main/java/Login&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -74,11 +71,11 @@
       <recent name="Clientes" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Laragon\www\grupo3_eventos\src\main\java\Login" />
       <recent name="C:\Laragon\www\grupo3_eventos\src\main\lib" />
       <recent name="C:\Laragon\www\grupo3_eventos\src\main\java\Arreglos" />
       <recent name="C:\Laragon\www\grupo3_eventos\src\main\java\Floristerias" />
       <recent name="C:\Laragon\www\grupo3_eventos\src\main\java\SubMenu\SubMenu" />
-      <recent name="C:\Laragon\www\grupo3_eventos\src\main\java\Empleados" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Laragon\www\grupo3_eventos\src\main\java\SubMenu" />
@@ -92,11 +89,11 @@
       <recent name="SubMenu" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="Login" />
+      <recent name="Actividades" />
       <recent name="Facturas" />
       <recent name="Objetos" />
       <recent name="Materiales" />
-      <recent name="Empleados" />
-      <recent name="Floristeria" />
     </key>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
@@ -113,6 +110,28 @@
       <workItem from="1687811059365" duration="515000" />
       <workItem from="1688087220882" duration="5612000" />
       <workItem from="1688166403985" duration="9656000" />
+      <workItem from="1698193071020" duration="10471000" />
+      <workItem from="1698205081595" duration="79000" />
+      <workItem from="1698247946982" duration="995000" />
+      <workItem from="1698249124156" duration="94000" />
+      <workItem from="1698251022208" duration="389000" />
+      <workItem from="1698251705078" duration="739000" />
+      <workItem from="1698296009600" duration="2884000" />
+      <workItem from="1698356475665" duration="29930000" />
+      <workItem from="1698388416518" duration="1674000" />
+      <workItem from="1698422972170" duration="16281000" />
+      <workItem from="1698441910079" duration="7908000" />
+      <workItem from="1698457869296" duration="14282000" />
+      <workItem from="1698502593825" duration="25127000" />
+      <workItem from="1698536774888" duration="28166000" />
+      <workItem from="1698593644673" duration="2187000" />
+      <workItem from="1698596687770" duration="625000" />
+      <workItem from="1698623205201" duration="12093000" />
+      <workItem from="1698858932165" duration="585000" />
+      <workItem from="1698860752420" duration="86000" />
+      <workItem from="1698881827817" duration="9329000" />
+      <workItem from="1699025475291" duration="23152000" />
+      <workItem from="1699061388725" duration="1047000" />
     </task>
     <servers />
   </component>
