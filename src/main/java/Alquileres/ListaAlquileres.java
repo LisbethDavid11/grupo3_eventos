@@ -186,8 +186,8 @@ public class ListaAlquileres extends JFrame {
                     JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
                     return;
                 }
-              //  VerEventos verEventos = new VerEventos(listaEvento.get(listaEventos.getSelectedRow()).getId());
-               // verEventos.setVisible(true);
+               VerAlquileres verAlquileres = new VerAlquileres(listaalAlquilers.get(listaAlquileres.getSelectedRow()).getId());
+               verAlquileres.setVisible(true);
                 actual.dispose();
             }
         });
@@ -199,8 +199,8 @@ public class ListaAlquileres extends JFrame {
                     JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
                     return;
                 }
-               // EditarEvento editarEvento = new EditarEvento(listaEvento.get(listaEventos.getSelectedRow()), listaEvento.get(listaEventos.getSelectedRow()).getId());
-               // editarEvento.setVisible(true);
+               EditarAlquileres editarAlquileres = new EditarAlquileres(listaalAlquilers.get(listaAlquileres.getSelectedRow()).getId());
+                editarAlquileres.setVisible(true);
                 actual.dispose();
             }
         });
