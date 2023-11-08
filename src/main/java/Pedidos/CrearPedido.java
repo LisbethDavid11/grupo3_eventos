@@ -153,7 +153,6 @@ public class CrearPedido extends JFrame {
             handleDateChange(dateModel, tomorrow);
         });
 
-        handleDateChange(dateModel, tomorrow);
         campoFechaEntrega.add(datePicker);
 
         campoDescripcion.setLineWrap(true);
@@ -596,12 +595,12 @@ public class CrearPedido extends JFrame {
                         mensaje += "Precio del envío\n";
                     }  else {
                         if (!precioText.matches("\\d{1,5}(\\.\\d{1,2})?")) {
-                            JOptionPane.showMessageDialog(null, "Precio de envío inválido. Debe tener el formato correcto (ejemplo: 1234 o 1234.56).", "Validación", JOptionPane.ERROR_MESSAGE);
+                            mostrarDialogoPersonalizadoAtencion("Precio de envío inválido. Debe tener el formato correcto (ejemplo: 1234 o 1234.56).", Color.decode("#F57F17"));
                             return;
                         } else {
                             double precio = Double.parseDouble(precioText);
                             if (precio < 1.00 || precio > 99999.99) {
-                                JOptionPane.showMessageDialog(null, "Precio de envío fuera del rango válido (1.00 - 99999.99).", "Validación", JOptionPane.ERROR_MESSAGE);
+                                mostrarDialogoPersonalizadoAtencion("Precio de envío fuera del rango válido (1.00 - 99999.99).", Color.decode("#F57F17"));
                                 return;
                             }
                         }
@@ -630,13 +629,13 @@ public class CrearPedido extends JFrame {
                 }
 
                 if (validacion > 0) {
-                    JOptionPane.showMessageDialog(null, mensaje, "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoAtencion(mensaje, Color.decode("#F57F17"));
                     return;
                 }
 
                 String clientes = comboBoxCliente.getSelectedItem().toString();
                 if (clientes.equals("Seleccione un cliente")) {
-                    JOptionPane.showMessageDialog(null, "Debe seleccionar un cliente.", "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoAtencion("Debe seleccionar un cliente.", Color.decode("#F57F17"));
                     return;
                 }
 
@@ -645,7 +644,7 @@ public class CrearPedido extends JFrame {
                     int longitud = texto.length();
 
                     if (longitud < 2 || longitud > 200) {
-                        JOptionPane.showMessageDialog(null, "La descripción debe tener entre 2 y 200 caracteres.", "Validación", JOptionPane.ERROR_MESSAGE);
+                        mostrarDialogoPersonalizadoAtencion("La descripción debe tener entre 2 y 200 caracteres.", Color.decode("#F57F17"));
                     }
                 }
 
@@ -850,13 +849,13 @@ public class CrearPedido extends JFrame {
                 if (jtableMateriales.getSelectedRow() == -1) {
                     // Crea un botón personalizado
                     JButton btnOK = new JButton("OK");
-                    btnOK.setBackground(darkColorAqua);
+                    btnOK.setBackground(Color.decode("#F57F17"));
                     btnOK.setForeground(Color.WHITE);
                     btnOK.setFocusPainted(false);
 
                     // Crea un JOptionPane
                     JOptionPane optionPane = new JOptionPane(
-                            "Seleccione una fila para continuar",
+                            "Seleccione una fila para continuar.",
                             JOptionPane.DEFAULT_OPTION,
                             JOptionPane.DEFAULT_OPTION,
                             null,
@@ -868,7 +867,7 @@ public class CrearPedido extends JFrame {
                     optionPane.setOptions(new Object[]{btnOK});
 
                     // Crea un JDialog y muestra el JOptionPane
-                    JDialog dialog = optionPane.createDialog("Seleccionar");
+                    JDialog dialog = optionPane.createDialog("Validación");
 
                     // Añade un ActionListener al botón
                     btnOK.addActionListener(new ActionListener() {
@@ -1172,42 +1171,53 @@ public class CrearPedido extends JFrame {
         String precioText = campoPrecioEnvio.getText().replace("L ", "").replace(",", "").replace("_", "");
         double precioEnvio = Double.parseDouble(precioText);
         int clienteId = Integer.parseInt(clienteText.split(" - ")[0]);
-        int idUsuarioActual = SesionUsuario.getInstance().getIdUsuario();
+
         String estado = "Proceso";
 
-        try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO pedidos (codigo_pedido, fecha_pedido, fecha_entrega, descripcion, cliente_id, entrega, precio_envio, usuario_id, estado) VALUES (?,?,?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setString(1, codigoPedido);
-            preparedStatement.setString(2, fechaPedido);
-            preparedStatement.setString(3, fechaEntrega);
-            preparedStatement.setString(4, descripcion);
-            preparedStatement.setInt(5, clienteId);
-            preparedStatement.setString(6, entrega);
-            preparedStatement.setDouble(7, precioEnvio);
-            preparedStatement.setInt(8, idUsuarioActual);
-            preparedStatement.setString(9, estado);
-            preparedStatement.executeUpdate();
+       Integer idUsuarioActual = SesionUsuario.getInstance().getIdUsuario();
 
-            ResultSet resultSet = preparedStatement.getGeneratedKeys();
-            int lastId = 0;
-            if (resultSet.next()) {
-                lastId = resultSet.getInt(1);
-            }
+        if (idUsuarioActual == 0) {
+            mostrarDialogoPersonalizadoError("Recuerde que para poder crear un evento, debe iniciar sesión", Color.decode("#C62828"));
+            eliminarDetallesMaterial();
+            dispose();
+            // Y aquí manejar la lógica para redirigir al usuario a la pantalla de inicio de sesión o lo que corresponda
+        } else {
+            // Tu lógica para un usuario con sesión iniciada
 
-            try (PreparedStatement prepared = connection.prepareStatement(
-                    "UPDATE detalles_pedidos SET pedido_id = ? WHERE pedido_id IS NULL")) {
-                prepared.setInt(1, lastId);
-                prepared.executeUpdate();
+            try (Connection connection = sql.conectamysql();
+                 PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO pedidos (codigo_pedido, fecha_pedido, fecha_entrega, descripcion, cliente_id, entrega, precio_envio, usuario_id, estado) VALUES (?,?,?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+                preparedStatement.setString(1, codigoPedido);
+                preparedStatement.setString(2, fechaPedido);
+                preparedStatement.setString(3, fechaEntrega);
+                preparedStatement.setString(4, descripcion);
+                preparedStatement.setInt(5, clienteId);
+                preparedStatement.setString(6, entrega);
+                preparedStatement.setDouble(7, precioEnvio);
+                preparedStatement.setInt(8, idUsuarioActual);
+                preparedStatement.setString(9, estado);
+                preparedStatement.executeUpdate();
+
+                ResultSet resultSet = preparedStatement.getGeneratedKeys();
+                int lastId = 0;
+                if (resultSet.next()) {
+                    lastId = resultSet.getInt(1);
+                }
+
+                try (PreparedStatement prepared = connection.prepareStatement(
+                        "UPDATE detalles_pedidos SET pedido_id = ? WHERE pedido_id IS NULL")) {
+                    prepared.setInt(1, lastId);
+                    prepared.executeUpdate();
+                } catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                    mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
+                    materialList = new ArrayList<>();
+                }
+
+                mostrarDialogoPersonalizadoExito("Pedido guardado exitosamente.", Color.decode("#263238"));
             } catch (SQLException e) {
-                System.out.println(e.getMessage());
-                JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
-                materialList = new ArrayList<>();
+                e.printStackTrace();
+                mostrarDialogoPersonalizadoError("Error al guardar el pedido.", Color.decode("#C62828"));
             }
-
-            JOptionPane.showMessageDialog(null, "Pedido guardado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al guardar el pedido", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -1226,20 +1236,21 @@ public class CrearPedido extends JFrame {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al obtener la cantidad desde la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
+            mostrarDialogoPersonalizadoError("Error al intentar obtener la cantidad desde la base de datos", Color.decode("#C62828"));
         }
 
         return availableQuantity;
     }
+
     private void guardarDetallePedido(int id_material, int cantidad, String tipo) {
 
         double availableQuantity = obtenerCantidadMaterialDesdeBD(id_material, tipo);
 
         if (cantidad <= 0) {
-            showErrorDialog("La cantidad debe ser mayor a 0.");
+            mostrarDialogoPersonalizadoError("La cantidad debe ser mayor a 0", Color.decode("#C62828"));
             return;
         } else if (cantidad > availableQuantity) {
-            showErrorDialog("El número ingresado es mayor a la cantidad disponible en la base de datos.");
+            mostrarDialogoPersonalizadoError("El número ingresado es mayor a la cantidad disponible en la base de datos.", Color.decode("#C62828"));
             return;
         }
 
@@ -1251,10 +1262,10 @@ public class CrearPedido extends JFrame {
             preparedStatement.setDouble(4, obtenerPrecioMaterialDesdeBD(id_material, tipo)); // Obtener el precio del material desde la base de datos
             preparedStatement.executeUpdate();
 
-            JOptionPane.showMessageDialog(null, "Detalle agregado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            mostrarDialogoPersonalizadoExito("Detalle agregado exitosamente.", Color.decode("#263238"));
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al agregar el detalle del pedido", "Error", JOptionPane.ERROR_MESSAGE);
+            mostrarDialogoPersonalizadoError("Error al agregar el detalle del pedido.", Color.decode("#C62828"));
         }
     }
 
@@ -1294,7 +1305,7 @@ public class CrearPedido extends JFrame {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al obtener el precio del material desde la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
+            mostrarDialogoPersonalizadoError("Error al intentar obtener el precio del producto desde la base de datos.", Color.decode("#C62828"));
         }
 
         return precio;
@@ -1361,7 +1372,7 @@ public class CrearPedido extends JFrame {
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
             productosListTemporal = new ArrayList<>();
         }
 
@@ -1403,7 +1414,7 @@ public class CrearPedido extends JFrame {
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
             arregloList = new ArrayList<>();
         }
 
@@ -1442,7 +1453,7 @@ public class CrearPedido extends JFrame {
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
             floristeriaList = new ArrayList<>();
         }
 
@@ -1477,7 +1488,7 @@ public class CrearPedido extends JFrame {
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
             manualidadList = new ArrayList<>();
         }
 
@@ -1513,7 +1524,7 @@ public class CrearPedido extends JFrame {
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
             tarjetaList = new ArrayList<>();
         }
 
@@ -1548,7 +1559,7 @@ public class CrearPedido extends JFrame {
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
             desayunoList = new ArrayList<>();
         }
 
@@ -1583,7 +1594,7 @@ public class CrearPedido extends JFrame {
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
             materialList = new ArrayList<>();
         }
 
@@ -1632,13 +1643,13 @@ public class CrearPedido extends JFrame {
                     cantidadMaterial[0] = Integer.parseInt(field.getText());
 
                     if (cantidadMaterial[0] < 1) {
-                        showErrorDialog("La cantidad debe ser mayor o igual a 1");
+                        mostrarDialogoPersonalizadoError("La cantidad ingresada debe ser mayor o igual a 1.", Color.decode("#C62828"));
                         cantidadMaterial[0] = -1;
                     }
 
                     dialog.dispose();
                 } catch (NumberFormatException ex) {
-                    showErrorDialog("La cantidad debe ser un número válido");
+                    mostrarDialogoPersonalizadoError("La cantidad ingresada debe ser un número válido.", Color.decode("#C62828"));
                 }
             }
         });
@@ -1722,35 +1733,6 @@ public class CrearPedido extends JFrame {
 
         // Actualizar lbl11 con el total con aumento
         lbl11.setText(String.format("L. %.2f", totalConAumento));
-    }
-
-    private void showErrorDialog(String message) {
-        JButton btnOK = new JButton("Aceptar");
-        btnOK.setBackground(darkColorAqua);
-        btnOK.setForeground(Color.WHITE);
-        btnOK.setFocusPainted(false);
-
-        JOptionPane optionPane = new JOptionPane(
-                message,
-                JOptionPane.DEFAULT_OPTION,
-                JOptionPane.DEFAULT_OPTION,
-                null,
-                new Object[]{},
-                null
-        );
-
-        optionPane.setOptions(new Object[]{btnOK});
-
-        JDialog dialog = optionPane.createDialog("Error");
-
-        btnOK.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dialog.dispose();
-            }
-        });
-
-        dialog.setVisible(true);
     }
 
     private void eliminarDetallesMaterial() {
@@ -1852,7 +1834,6 @@ public class CrearPedido extends JFrame {
     public void handleDateChange(UtilDateModel dateModel, Calendar tomorrow) {
         java.util.Date selectedDate = dateModel.getValue();
         if (selectedDate != null && isDateOutOfRange(selectedDate, tomorrow)) {
-            JOptionPane.showMessageDialog(null, "La fecha seleccionada está fuera del rango permitido", "Error", JOptionPane.ERROR_MESSAGE);
             selectedDate = null; // Anula la selección en lugar de restablecerla a hoy
             dateModel.setValue(selectedDate);
         }
@@ -1873,6 +1854,12 @@ public class CrearPedido extends JFrame {
     public void setFormattedDate(java.util.Date selectedDate) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, d 'de' MMMM yyyy", new Locale("es", "ES")); // Formato en español
         String formattedDate = (selectedDate != null) ? dateFormat.format(selectedDate) : "";
+
+        // Asegura que la primera letra sea mayúscula
+        if (!formattedDate.isEmpty()) {
+            formattedDate = Character.toUpperCase(formattedDate.charAt(0)) + formattedDate.substring(1);
+        }
+
         datePicker.getJFormattedTextField().setText(formattedDate);
     }
 
@@ -1897,6 +1884,111 @@ public class CrearPedido extends JFrame {
             }
             return "";
         }
+    }
+
+    public void mostrarDialogoPersonalizadoExito(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado
+        JButton btnAceptar = new JButton("OK");
+        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE);
+        btnAceptar.setFocusPainted(false);
+
+        // Crea un JOptionPane
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                           // Mensaje a mostrar
+                JOptionPane.INFORMATION_MESSAGE,   // Tipo de mensaje
+                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
+                null,                              // Icono (puede ser null)
+                new Object[]{},                    // No se usan opciones estándar
+                null                               // Valor inicial (no necesario aquí)
+        );
+
+        // Añade el botón al JOptionPane
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Validación");
+
+        // Añade un ActionListener al botón
+        btnAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+            }
+        });
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
+    }
+
+    public void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado
+        JButton btnAceptar = new JButton("OK");
+        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE);
+        btnAceptar.setFocusPainted(false);
+
+        // Crea un JOptionPane
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                           // Mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
+                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
+                null,                              // Icono (puede ser null)
+                new Object[]{},                    // No se usan opciones estándar
+                null                               // Valor inicial (no necesario aquí)
+        );
+
+        // Añade el botón al JOptionPane
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Validación");
+
+        // Añade un ActionListener al botón
+        btnAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+            }
+        });
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
+    }
+
+    public void mostrarDialogoPersonalizadoAtencion(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado
+        JButton btnAceptar = new JButton("OK");
+        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE);
+        btnAceptar.setFocusPainted(false);
+
+        // Crea un JOptionPane
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                           // Mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
+                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
+                null,                              // Icono (puede ser null)
+                new Object[]{},                    // No se usan opciones estándar
+                null                               // Valor inicial (no necesario aquí)
+        );
+
+        // Añade el botón al JOptionPane
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Validación");
+
+        // Añade un ActionListener al botón
+        btnAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+            }
+        });
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
     }
 
     public static void main(String[] args) {

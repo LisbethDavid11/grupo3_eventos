@@ -1420,7 +1420,7 @@ public class CrearEvento extends JFrame {
             // Y aquí manejar la lógica para redirigir al usuario a la pantalla de inicio de sesión o lo que corresponda
         } else {
             // Tu lógica para un usuario con sesión iniciada
-            int idUsuario = usuario; // Aquí usas el valor de usuario como un int
+
             try (Connection connection = sql.conectamysql();
                  PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO eventos (cliente_id, direccion, tipo, fecha, inicio, fin, usuario_id, estado, codigo_evento) VALUES (?, ?, ?,?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
                 preparedStatement.setInt(1, cliente_id); // Reemplaza cliente_id con el valor adecuado

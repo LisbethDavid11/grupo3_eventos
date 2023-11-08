@@ -441,7 +441,7 @@
                   <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <icon value="IconosBotones/icon_flor_16x16.png"/>
+                  <icon value="IconosBotones/icon_manualidad_16x16.png"/>
                   <text value="MANUALIDADES"/>
                 </properties>
               </component>
@@ -450,7 +450,7 @@
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <icon value="IconosBotones/icon_globo_16x16.png"/>
+                  <icon value="IconosBotones/icon_arreglo_16x16.png"/>
                   <text value="ARREGLOS"/>
                 </properties>
               </component>
@@ -468,7 +468,7 @@
                   <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <icon value="IconosBotones/icon_tarjeta_16x16.png"/>
+                  <icon value="IconosBotones/icon_desayuno_16x16.png"/>
                   <text value="DESAYUNOS"/>
                 </properties>
               </component>

@@ -1073,6 +1073,16 @@ public class EditarDesayuno extends JFrame {
     }
 
     private void guardarDetalleDesayuno(int id_material, int cantidad, String tipo) {
+        double availableQuantity = obtenerCantidadMaterialDesdeBD(id_material, tipo);
+
+        if (cantidad <= 0) {
+            mostrarDialogoPersonalizadoError("La cantidad debe ser mayor a 0", Color.decode("#C62828"));
+            return;
+        } else if (cantidad > availableQuantity) {
+            mostrarDialogoPersonalizadoError("El número ingresado es mayor a la cantidad disponible en la base de datos.", Color.decode("#C62828"));
+            return;
+        }
+
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO detalles_desayunos (tipo_detalle, detalle_id, cantidad,precio,desayuno_id) VALUES (?, ?, ?, ?, ?)")) {
             preparedStatement.setString(1, tiposDescripcion.get(tipo));
@@ -1086,6 +1096,27 @@ public class EditarDesayuno extends JFrame {
             e.printStackTrace();
             mostrarDialogoPersonalizadoError("Error al agregar el detalle del desayuno", Color.decode("#C62828"));
         }
+    }
+
+    private int obtenerCantidadMaterialDesdeBD(int id_material, String tipo) {
+        int availableQuantity = 0;
+
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "SELECT cantidad FROM " + tiposTablas.get(tipo) + " WHERE id = ?"
+             )) {
+            preparedStatement.setInt(1, id_material);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                availableQuantity = resultSet.getInt("cantidad");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            mostrarDialogoPersonalizadoError("Error al intentar obtener la cantidad desde la base de datos", Color.decode("#C62828"));
+        }
+
+        return availableQuantity;
     }
 
     private double obtenerPrecioMaterialDesdeBD(int id_material, String tipo) {
@@ -1736,7 +1767,7 @@ public class EditarDesayuno extends JFrame {
 
     public void mostrarDialogoPersonalizadoExito(String mensaje, Color colorFondoBoton) {
         // Crea un botón personalizado
-        JButton btnAceptar = new JButton("ACEPTAR");
+        JButton btnAceptar = new JButton("OK");
         btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
         btnAceptar.setForeground(Color.WHITE);
         btnAceptar.setFocusPainted(false);
@@ -1755,7 +1786,7 @@ public class EditarDesayuno extends JFrame {
         optionPane.setOptions(new Object[]{btnAceptar});
 
         // Crea un JDialog para mostrar el JOptionPane
-        JDialog dialog = optionPane.createDialog("Éxito");
+        JDialog dialog = optionPane.createDialog("Validación");
 
         // Añade un ActionListener al botón
         btnAceptar.addActionListener(new ActionListener() {
@@ -1771,7 +1802,7 @@ public class EditarDesayuno extends JFrame {
 
     public void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
         // Crea un botón personalizado
-        JButton btnAceptar = new JButton("ACEPTAR");
+        JButton btnAceptar = new JButton("OK");
         btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
         btnAceptar.setForeground(Color.WHITE);
         btnAceptar.setFocusPainted(false);
@@ -1779,7 +1810,7 @@ public class EditarDesayuno extends JFrame {
         // Crea un JOptionPane
         JOptionPane optionPane = new JOptionPane(
                 mensaje,                           // Mensaje a mostrar
-                JOptionPane.ERROR_MESSAGE,   // Tipo de mensaje
+                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
                 JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
                 null,                              // Icono (puede ser null)
                 new Object[]{},                    // No se usan opciones estándar
@@ -1790,7 +1821,42 @@ public class EditarDesayuno extends JFrame {
         optionPane.setOptions(new Object[]{btnAceptar});
 
         // Crea un JDialog para mostrar el JOptionPane
-        JDialog dialog = optionPane.createDialog("Error");
+        JDialog dialog = optionPane.createDialog("Validación");
+
+        // Añade un ActionListener al botón
+        btnAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+            }
+        });
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
+    }
+
+    public void mostrarDialogoPersonalizadoAtencion(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado
+        JButton btnAceptar = new JButton("OK");
+        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE);
+        btnAceptar.setFocusPainted(false);
+
+        // Crea un JOptionPane
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                           // Mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
+                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
+                null,                              // Icono (puede ser null)
+                new Object[]{},                    // No se usan opciones estándar
+                null                               // Valor inicial (no necesario aquí)
+        );
+
+        // Añade el botón al JOptionPane
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Validación");
 
         // Añade un ActionListener al botón
         btnAceptar.addActionListener(new ActionListener() {
