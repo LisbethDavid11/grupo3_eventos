@@ -1379,6 +1379,16 @@ public class EditarPedido extends JFrame {
     }
 
     private void guardarDetallePedido(int id_material, int cantidad, String tipo) {
+        double availableQuantity = obtenerCantidadMaterialDesdeBD(id_material, tipo);
+
+        if (cantidad <= 0) {
+            mostrarDialogoPersonalizadoError("La cantidad debe ser mayor a 0", Color.decode("#C62828"));
+            return;
+        } else if (cantidad > availableQuantity) {
+            mostrarDialogoPersonalizadoError("El número ingresado es mayor a la cantidad disponible en la base de datos.", Color.decode("#C62828"));
+            return;
+        }
+
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO detalles_pedidos (tipo_detalle, detalle_id, cantidad, precio, pedido_id) VALUES (?, ?, ?, ?, ?)")) {
             preparedStatement.setString(1, tiposDescripcion.get(tipo));
@@ -1392,6 +1402,27 @@ public class EditarPedido extends JFrame {
             e.printStackTrace();
             mostrarDialogoPersonalizadoError("Error al agregar el detalle al pedido.", Color.decode("#C62828"));
         }
+    }
+
+    private int obtenerCantidadMaterialDesdeBD(int id_material, String tipo) {
+        int availableQuantity = 0;
+
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "SELECT cantidad FROM " + tiposTablas.get(tipo) + " WHERE id = ?"
+             )) {
+            preparedStatement.setInt(1, id_material);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                availableQuantity = resultSet.getInt("cantidad");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            mostrarDialogoPersonalizadoError("Error al intentar obtener la cantidad desde la base de datos", Color.decode("#C62828"));
+        }
+
+        return availableQuantity;
     }
 
     private double obtenerPrecioMaterialDesdeBD(int id_material, String tipo) {

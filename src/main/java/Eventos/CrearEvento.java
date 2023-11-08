@@ -1380,6 +1380,7 @@ public class CrearEvento extends JFrame {
             mostrarDialogoPersonalizadoError("El número ingresado es mayor a la cantidad disponible en la base de datos.", Color.decode("#C62828"));
             return;
         }
+
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO detalles_eventos (tipo_detalle, detalle_id, cantidad,precio) VALUES (?, ?, ?, ?)")) {
             preparedStatement.setString(1, tiposDescripcion.get(tipo));
