@@ -611,7 +611,7 @@ public class EditarPedido extends JFrame {
                 Date fechaMaxima = calendarFin.getTime();
 
                 if (fechaActual.before(fechaMinima) || fechaActual.after(fechaMaxima)) {
-                    mostrarDialogoPersonalizadoAtencion("       Corrige la fecha de entrega; ya que debe estar entre: \nel " + dateFormat.format(fechaMinima)
+                    mostrarDialogoPersonalizadoAtencion("       Corrige la fecha de entrega; ya que debe estár entre: \nel " + dateFormat.format(fechaMinima)
                             + " y el " + dateFormat.format(fechaMaxima), Color.decode("#F57F17"));
                     return; // No proceder con la actualización si la fecha no es válida
                 }
@@ -2040,7 +2040,7 @@ public class EditarPedido extends JFrame {
         // Crea un JOptionPane
         JOptionPane optionPane = new JOptionPane(
                 mensaje,                           // Mensaje a mostrar
-                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
+                JOptionPane.ERROR_MESSAGE,   // Tipo de mensaje
                 JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
                 null,                              // Icono (puede ser null)
                 new Object[]{},                    // No se usan opciones estándar

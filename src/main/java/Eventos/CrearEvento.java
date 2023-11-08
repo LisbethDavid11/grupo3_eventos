@@ -144,7 +144,6 @@ public class CrearEvento extends JFrame {
             handleDateChange(dateModel, tomorrow);
         });
 
-        handleDateChange(dateModel, tomorrow);
         panelFecha.add(datePicker);
         panelFecha.setBackground(Color.decode("#F5F5F5"));
 
@@ -585,12 +584,12 @@ public class CrearEvento extends JFrame {
                 }
 
                 if (validacion > 0) {
-                    JOptionPane.showMessageDialog(null, mensaje, "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoAtencion(mensaje, Color.decode("#F57F17"));
                     return;
                 }
 
                 if (horaFinal == horaInicial && minutoInicial == minutoFinal && amPmInicial == amPmFinal){
-                    JOptionPane.showMessageDialog(null, "La hora inicial no puede ser la misma que la hora final", "Validación", JOptionPane.ERROR_MESSAGE);
+                    mostrarDialogoPersonalizadoAtencion("La hora inicial no puede ser igual que la hora final.", Color.decode("#F57F17"));
                     return;
                 }
 
@@ -599,7 +598,7 @@ public class CrearEvento extends JFrame {
                     int longitud = texto.length();
 
                     if (longitud < 2 || longitud > 200) {
-                        JOptionPane.showMessageDialog(null, "La dirección debe tener entre 2 y 200 caracteres.", "Validación", JOptionPane.ERROR_MESSAGE);
+                        mostrarDialogoPersonalizadoAtencion("La dirección debe tener entre 2 y 200 caracteres.", Color.decode("#F57F17"));
                     }
                 }
 
@@ -785,10 +784,10 @@ public class CrearEvento extends JFrame {
                 int availableQuantity = obtenerCantidadMaterialDesdeBD(id_materialEntero, l.getTipo());
 
                 if (cantidadMaterial <= 0) {
-                    showErrorDialog("La cantidad debe ser mayor o igual a 1");
+                    mostrarDialogoPersonalizadoError("La cantidad debe ser mayor o igual a 1.", Color.decode("#C62828"));
                     return;
                 } else if (cantidadMaterial > availableQuantity) {
-                    showErrorDialog("La cantidad supera la cantidad disponible en la base de datos");
+                    mostrarDialogoPersonalizadoError("La cantidad ingresada supera la cantidad disponible en la base de datos.", Color.decode("#C62828"));
                     return;
                 }
 
@@ -960,7 +959,7 @@ public class CrearEvento extends JFrame {
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
             mobiliarioList = new ArrayList<>();
         }
 
@@ -999,7 +998,7 @@ public class CrearEvento extends JFrame {
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
             floristeriaList = new ArrayList<>();
         }
 
@@ -1034,7 +1033,7 @@ public class CrearEvento extends JFrame {
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
             globoList = new ArrayList<>();
         }
 
@@ -1070,7 +1069,7 @@ public class CrearEvento extends JFrame {
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
             arregloList = new ArrayList<>();
         }
 
@@ -1106,7 +1105,7 @@ public class CrearEvento extends JFrame {
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
             manualidadList = new ArrayList<>();
         }
 
@@ -1155,13 +1154,13 @@ public class CrearEvento extends JFrame {
                     cantidadMaterial[0] = Integer.parseInt(field.getText());
 
                     if (cantidadMaterial[0] < 1) {
-                        showErrorDialog("La cantidad debe ser mayor o igual a 1");
+                        mostrarDialogoPersonalizadoError("La cantidad debe ser mayor o igual a 1.", Color.decode("#C62828"));
                         cantidadMaterial[0] = -1;
                     }
 
                     dialog.dispose();
                 } catch (NumberFormatException ex) {
-                    showErrorDialog("La cantidad debe ser un número válido");
+                    mostrarDialogoPersonalizadoError("La cantidad debe ser un número válido.", Color.decode("#C62828"));
                 }
             }
         });
@@ -1176,35 +1175,6 @@ public class CrearEvento extends JFrame {
         dialog.setVisible(true);
 
         return cantidadMaterial[0];
-    }
-
-    private void showErrorDialog(String message) {
-        JButton btnOK = new JButton("Aceptar");
-        btnOK.setBackground(darkColorAqua);
-        btnOK.setForeground(Color.WHITE);
-        btnOK.setFocusPainted(false);
-
-        JOptionPane optionPane = new JOptionPane(
-                message,
-                JOptionPane.ERROR_MESSAGE,
-                JOptionPane.DEFAULT_OPTION,
-                null,
-                new Object[]{},
-                null
-        );
-
-        optionPane.setOptions(new Object[]{btnOK});
-
-        JDialog dialog = optionPane.createDialog("Error");
-
-        btnOK.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dialog.dispose();
-            }
-        });
-
-        dialog.setVisible(true);
     }
 
     class ButtonRenderer extends JButton implements TableCellRenderer {
@@ -1295,66 +1265,6 @@ public class CrearEvento extends JFrame {
         }
     }
 
-    public Calendar getTomorrow() {
-        Calendar tomorrow = Calendar.getInstance();
-        tomorrow.add(Calendar.DAY_OF_MONTH, 1);
-        tomorrow.set(Calendar.HOUR_OF_DAY, 0);
-        tomorrow.set(Calendar.MINUTE, 0);
-        tomorrow.set(Calendar.SECOND, 0);
-        tomorrow.set(Calendar.MILLISECOND, 0);
-        return tomorrow;
-    }
-
-    public void handleDateChange(UtilDateModel dateModel, Calendar tomorrow) {
-        java.util.Date selectedDate = dateModel.getValue();
-        if (selectedDate != null && isDateOutOfRange(selectedDate, tomorrow)) {
-            JOptionPane.showMessageDialog(null, "La fecha seleccionada está fuera del rango permitido", "Error", JOptionPane.ERROR_MESSAGE);
-            selectedDate = null; // Anula la selección en lugar de restablecerla a hoy
-            dateModel.setValue(selectedDate);
-        }
-        setFormattedDate(selectedDate);
-    }
-
-    public boolean isDateOutOfRange(Date selectedDate, Calendar tomorrow) {
-        Calendar selectedCal = Calendar.getInstance();
-        selectedCal.setTime(selectedDate);
-
-        // Calcula la fecha límite (30 días después de mañana)
-        Calendar maxDate = (Calendar) tomorrow.clone();
-        maxDate.add(Calendar.DAY_OF_MONTH, 30);
-
-        return selectedCal.before(tomorrow) || selectedCal.after(maxDate);
-    }
-
-    public void setFormattedDate(java.util.Date selectedDate) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, d 'de' MMMM yyyy", new Locale("es", "ES")); // Formato en español
-        String formattedDate = (selectedDate != null) ? dateFormat.format(selectedDate) : "";
-        datePicker.getJFormattedTextField().setText(formattedDate);
-    }
-
-    public class SimpleDateFormatter extends JFormattedTextField.AbstractFormatter {
-
-        private final String datePattern = "EEEE, d 'de' MMMM yyyy";
-        private final SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);
-
-        @Override
-        public Object stringToValue(String text) throws ParseException {
-            return dateFormatter.parse(text);
-        }
-
-        @Override
-        public String valueToString(Object value) throws ParseException {
-            if (value != null) {
-                if (value instanceof java.util.Date) {
-                    return dateFormatter.format((java.util.Date) value);
-                } else if (value instanceof Calendar) {
-                    return dateFormatter.format(((Calendar) value).getTime());
-                }
-            }
-            return "";
-        }
-    }
-
     private void guardarEvento() {
         Date fechaActual = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMyyyy");
@@ -1413,7 +1323,7 @@ public class CrearEvento extends JFrame {
         Integer usuario = SesionUsuario.getInstance().getIdUsuario();
 
         if (usuario == 0) {
-            JOptionPane.showMessageDialog(null, "Recuerde que para poder crear un evento, debe iniciar sesión", "Error de sesión", JOptionPane.ERROR_MESSAGE);
+            mostrarDialogoPersonalizadoError("Recuerde que para poder crear un evento, debe iniciar sesión.", Color.decode("#C62828"));
             limpiarTablaMateriales();
             eliminarDetallesMaterial();
             dispose();
@@ -1446,13 +1356,13 @@ public class CrearEvento extends JFrame {
                     prepared.executeUpdate();
                 } catch (SQLException e) {
                     System.out.println(e.getMessage());
-                    JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+                    mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
                     mobiliarioList = new ArrayList<>();
                 }
-                JOptionPane.showMessageDialog(null, "Evento guardado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                mostrarDialogoPersonalizadoExito("Evento guardado exitosamente.", Color.decode("#263238"));
             } catch (SQLException e) {
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Error al guardar el evento", "Error", JOptionPane.ERROR_MESSAGE);
+                mostrarDialogoPersonalizadoError("Error al guardar el evento.", Color.decode("#C62828"));
             }
         }
 
@@ -1464,10 +1374,10 @@ public class CrearEvento extends JFrame {
         double availableQuantity = obtenerCantidadMaterialDesdeBD(id_material, tipo);
 
         if (cantidad <= 0) {
-            showErrorDialog("La cantidad debe ser mayor a 0.");
+            mostrarDialogoPersonalizadoError("La cantidad debe ser mayor a 0.", Color.decode("#C62828"));
             return;
         } else if (cantidad > availableQuantity) {
-            showErrorDialog("El número ingresado es mayor a la cantidad disponible en la base de datos.");
+            mostrarDialogoPersonalizadoError("El número ingresado es mayor a la cantidad disponible en la base de datos.", Color.decode("#C62828"));
             return;
         }
         try (Connection connection = sql.conectamysql();
@@ -1477,11 +1387,10 @@ public class CrearEvento extends JFrame {
             preparedStatement.setInt(3, cantidad);
             preparedStatement.setDouble(4, obtenerPrecioMaterialDesdeBD(id_material,tipo)); // Obtener el precio del material desde la base de datos
             preparedStatement.executeUpdate();
-
-            JOptionPane.showMessageDialog(null, "Detalle agregado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            mostrarDialogoPersonalizadoExito("Detalle agregado exitosamente.", Color.decode("#263238"));
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al agregar el detalle del evento", "Error", JOptionPane.ERROR_MESSAGE);
+            mostrarDialogoPersonalizadoError("Error al intentar agregar el detalle del evento.", Color.decode("#C62828"));
         }
     }
 
@@ -1500,7 +1409,7 @@ public class CrearEvento extends JFrame {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al obtener la cantidad desde la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
+            mostrarDialogoPersonalizadoError("Error al intentar obtener la cantidad desde la base de datos.", Color.decode("#C62828"));
         }
 
         return availableQuantity;
@@ -1545,7 +1454,7 @@ public class CrearEvento extends JFrame {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error al obtener el precio del material desde la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
+            mostrarDialogoPersonalizadoError("Error al intentar obtener el precio del producto desde la base de datos.", Color.decode("#C62828"));
         }
 
         return precio;
@@ -1609,6 +1518,176 @@ public class CrearEvento extends JFrame {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public Calendar getTomorrow() {
+        Calendar tomorrow = Calendar.getInstance();
+        tomorrow.add(Calendar.DAY_OF_MONTH, 1);
+        tomorrow.set(Calendar.HOUR_OF_DAY, 0);
+        tomorrow.set(Calendar.MINUTE, 0);
+        tomorrow.set(Calendar.SECOND, 0);
+        tomorrow.set(Calendar.MILLISECOND, 0);
+        return tomorrow;
+    }
+
+    public void handleDateChange(UtilDateModel dateModel, Calendar tomorrow) {
+        java.util.Date selectedDate = dateModel.getValue();
+        if (selectedDate != null && isDateOutOfRange(selectedDate, tomorrow)) {
+            selectedDate = null; // Anula la selección en lugar de restablecerla a hoy
+            dateModel.setValue(selectedDate);
+        }
+        setFormattedDate(selectedDate);
+    }
+
+    public boolean isDateOutOfRange(Date selectedDate, Calendar tomorrow) {
+        Calendar selectedCal = Calendar.getInstance();
+        selectedCal.setTime(selectedDate);
+
+        // Calcula la fecha límite (30 días después de mañana)
+        Calendar maxDate = (Calendar) tomorrow.clone();
+        maxDate.add(Calendar.DAY_OF_MONTH, 30);
+
+        return selectedCal.before(tomorrow) || selectedCal.after(maxDate);
+    }
+
+    public void setFormattedDate(java.util.Date selectedDate) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, d 'de' MMMM yyyy", new Locale("es", "ES")); // Formato en español
+        String formattedDate = (selectedDate != null) ? dateFormat.format(selectedDate) : "";
+
+        // Asegura que la primera letra sea mayúscula
+        if (!formattedDate.isEmpty()) {
+            formattedDate = Character.toUpperCase(formattedDate.charAt(0)) + formattedDate.substring(1);
+        }
+
+        datePicker.getJFormattedTextField().setText(formattedDate);
+    }
+
+    public class SimpleDateFormatter extends JFormattedTextField.AbstractFormatter {
+
+        private final String datePattern = "EEEE, d 'de' MMMM yyyy";
+        private final SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);
+
+        @Override
+        public Object stringToValue(String text) throws ParseException {
+            return dateFormatter.parse(text);
+        }
+
+        @Override
+        public String valueToString(Object value) throws ParseException {
+            if (value != null) {
+                if (value instanceof java.util.Date) {
+                    return dateFormatter.format((java.util.Date) value);
+                } else if (value instanceof Calendar) {
+                    return dateFormatter.format(((Calendar) value).getTime());
+                }
+            }
+            return "";
+        }
+    }
+
+    public void mostrarDialogoPersonalizadoExito(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado
+        JButton btnAceptar = new JButton("OK");
+        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE);
+        btnAceptar.setFocusPainted(false);
+
+        // Crea un JOptionPane
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                           // Mensaje a mostrar
+                JOptionPane.INFORMATION_MESSAGE,   // Tipo de mensaje
+                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
+                null,                              // Icono (puede ser null)
+                new Object[]{},                    // No se usan opciones estándar
+                null                               // Valor inicial (no necesario aquí)
+        );
+
+        // Añade el botón al JOptionPane
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Validación");
+
+        // Añade un ActionListener al botón
+        btnAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+            }
+        });
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
+    }
+
+    public void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado
+        JButton btnAceptar = new JButton("OK");
+        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE);
+        btnAceptar.setFocusPainted(false);
+
+        // Crea un JOptionPane
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                           // Mensaje a mostrar
+                JOptionPane.ERROR_MESSAGE,   // Tipo de mensaje
+                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
+                null,                              // Icono (puede ser null)
+                new Object[]{},                    // No se usan opciones estándar
+                null                               // Valor inicial (no necesario aquí)
+        );
+
+        // Añade el botón al JOptionPane
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Validación");
+
+        // Añade un ActionListener al botón
+        btnAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+            }
+        });
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
+    }
+
+    public void mostrarDialogoPersonalizadoAtencion(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado
+        JButton btnAceptar = new JButton("OK");
+        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE);
+        btnAceptar.setFocusPainted(false);
+
+        // Crea un JOptionPane
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                           // Mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
+                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
+                null,                              // Icono (puede ser null)
+                new Object[]{},                    // No se usan opciones estándar
+                null                               // Valor inicial (no necesario aquí)
+        );
+
+        // Añade el botón al JOptionPane
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Validación");
+
+        // Añade un ActionListener al botón
+        btnAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+            }
+        });
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
     }
 
     public static void main(String[] args) {
