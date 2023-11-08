@@ -182,6 +182,8 @@ public class VerPerfil extends JFrame {
                     etiquetaRol.setText("  Administrador");
                 } else if ("general".equals(rol)){
                     etiquetaRol.setText("  General");
+                } else if ("variado".equals(rol)){
+                    etiquetaRol.setText("  Variado");
                 }
 
                 String imagenNombre = resultSet.getString("imagen");
