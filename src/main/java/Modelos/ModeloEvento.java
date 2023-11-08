@@ -67,7 +67,7 @@ public class ModeloEvento extends AbstractTableModel {
             case 6: // Inicio
                 return "   " + evento.getEstado();
             case 7: // Fin
-                return " ➔ ";
+                return "Comenzar";
             default:
                 return null;
         }
@@ -108,7 +108,7 @@ public class ModeloEvento extends AbstractTableModel {
 
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-        if (columnIndex == 7 && aValue instanceof String && aValue.equals(" ➔ ")) {
+        if (columnIndex == 7 && aValue instanceof String && aValue.equals("Comenzar")) {
             // Aquí puedes realizar la lógica para eliminar la fila en la base de datos si es necesario
             eventos.remove(rowIndex);
             fireTableRowsDeleted(rowIndex, rowIndex);

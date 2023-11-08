@@ -150,7 +150,7 @@ public class ListaCompras extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (listaCompras.getSelectedRow() == -1) {
-                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar", "Validación", JOptionPane.WARNING_MESSAGE);
+                    mostrarDialogoPersonalizadoAtencion("Seleccione una fila para continuar.", Color.decode("#F57F17"));
                     return;
                 }
                 VerCompras compras = new VerCompras(compraList.get(listaCompras.getSelectedRow()).getId());
@@ -163,7 +163,7 @@ public class ListaCompras extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (listaCompras.getSelectedRow() == -1) {
-                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
+                    mostrarDialogoPersonalizadoAtencion("Seleccione una fila para continuar.", Color.decode("#F57F17"));
                     return;
                 }
 
@@ -343,7 +343,7 @@ public class ListaCompras extends JFrame {
         } catch (SQLException e) {
             // En caso de error en la conexión o consulta, se muestra un mensaje de error.
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
         }
 
         return material;
@@ -363,7 +363,7 @@ public class ListaCompras extends JFrame {
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
         }
 
         if (exento) {
@@ -413,7 +413,7 @@ public class ListaCompras extends JFrame {
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
             compraList = new ArrayList<>();
         }
         if (listaCompras.getColumnCount() > 0) {
@@ -532,7 +532,7 @@ public class ListaCompras extends JFrame {
             lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount(mesSeleccionado));
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
             compraList = new ArrayList<>();
         }
     }
@@ -560,7 +560,7 @@ public class ListaCompras extends JFrame {
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
         }
         int totalPageCount = (int) Math.ceil((double) count / 20);
         return totalPageCount;
@@ -743,7 +743,7 @@ public class ListaCompras extends JFrame {
             String numeroAleatorioFormateado = String.format("%04d", numeroAleatorio);
 
             // Generar el nombre del archivo PDF
-            String nombreArchivo = "Factura " + fechaActual + " " + horaActual + " " + numeroAleatorioFormateado + ".pdf";
+            String nombreArchivo = "Factura de compra N° " + fechaActual + " " + horaActual + " " + numeroAleatorioFormateado + ".pdf";
 
             // Reemplazar los caracteres no válidos en el nombre del archivo
             nombreArchivo = nombreArchivo.replace(":", "-");
@@ -767,11 +767,11 @@ public class ListaCompras extends JFrame {
                 File fileToSave = fileChooser.getSelectedFile();
                 doc.save(fileToSave.getAbsolutePath());
 
-                // Mostrar un JOptionPane para informar al usuario que el archivo se ha guardado correctamente
-                JOptionPane.showMessageDialog(null, "Archivo guardado exitosamente como: " + fileToSave.getName(), "Archivo guardado", JOptionPane.INFORMATION_MESSAGE);
+                // Mostrar un mensaje para informar al usuario que el archivo se ha guardado correctamente
+                mostrarDialogoPersonalizadoExito("El archivo ha sido guardado exitosamente como: \n" + fileToSave.getName(), Color.decode("#263238"));
             } else {
                 // Si el usuario ha cancelado el diálogo de selección de archivos, no guardar el archivo PDF
-                JOptionPane.showMessageDialog(null, "Guardado cancelado", "Error", JOptionPane.ERROR_MESSAGE);
+                mostrarDialogoPersonalizadoError("El archivo no ha sido guardado, se ha cancelado la acción.", Color.decode("#C62828"));
             }
 
             // Cerrar el documento
@@ -779,6 +779,111 @@ public class ListaCompras extends JFrame {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void mostrarDialogoPersonalizadoExito(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado
+        JButton btnAceptar = new JButton("OK");
+        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE);
+        btnAceptar.setFocusPainted(false);
+
+        // Crea un JOptionPane
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                           // Mensaje a mostrar
+                JOptionPane.INFORMATION_MESSAGE,   // Tipo de mensaje
+                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
+                null,                              // Icono (puede ser null)
+                new Object[]{},                    // No se usan opciones estándar
+                null                               // Valor inicial (no necesario aquí)
+        );
+
+        // Añade el botón al JOptionPane
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Validación");
+
+        // Añade un ActionListener al botón
+        btnAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+            }
+        });
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
+    }
+
+    public void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado
+        JButton btnAceptar = new JButton("OK");
+        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE);
+        btnAceptar.setFocusPainted(false);
+
+        // Crea un JOptionPane
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                           // Mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
+                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
+                null,                              // Icono (puede ser null)
+                new Object[]{},                    // No se usan opciones estándar
+                null                               // Valor inicial (no necesario aquí)
+        );
+
+        // Añade el botón al JOptionPane
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Validación");
+
+        // Añade un ActionListener al botón
+        btnAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+            }
+        });
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
+    }
+
+    public void mostrarDialogoPersonalizadoAtencion(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado
+        JButton btnAceptar = new JButton("OK");
+        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE);
+        btnAceptar.setFocusPainted(false);
+
+        // Crea un JOptionPane
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                           // Mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
+                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
+                null,                              // Icono (puede ser null)
+                new Object[]{},                    // No se usan opciones estándar
+                null                               // Valor inicial (no necesario aquí)
+        );
+
+        // Añade el botón al JOptionPane
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Validación");
+
+        // Añade un ActionListener al botón
+        btnAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+            }
+        });
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
     }
 
     public static void main(String[] args) {

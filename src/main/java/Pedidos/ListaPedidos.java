@@ -95,7 +95,7 @@ public class ListaPedidos extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (listaPedidos.getSelectedRow() == -1) {
-                    mostrarDialogoPersonalizadoError("Seleccione una fila para continuar.", Color.decode("#C62828"));
+                    mostrarDialogoPersonalizadoAtencion("Seleccione una fila para continuar.", Color.decode("#F57F17"));
                     return;
                 }
                 VerPedidos verPedidos = new VerPedidos(pedidoList.get(listaPedidos.getSelectedRow()).getId());
@@ -108,7 +108,7 @@ public class ListaPedidos extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (listaPedidos.getSelectedRow() == -1) {
-                    mostrarDialogoPersonalizadoError("Seleccione una fila para continuar", Color.decode("#C62828"));
+                    mostrarDialogoPersonalizadoAtencion("Seleccione una fila para continuar.", Color.decode("#F57F17"));
                     return;
                 }
                 EditarPedido editarPedido = new EditarPedido(pedidoList.get(listaPedidos.getSelectedRow()), pedidoList.get(listaPedidos.getSelectedRow()).getId());
@@ -475,7 +475,7 @@ public class ListaPedidos extends JFrame {
 
     public void mostrarDialogoPersonalizadoExito(String mensaje, Color colorFondoBoton) {
         // Crea un botón personalizado
-        JButton btnAceptar = new JButton("ACEPTAR");
+        JButton btnAceptar = new JButton("OK");
         btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
         btnAceptar.setForeground(Color.WHITE);
         btnAceptar.setFocusPainted(false);
@@ -494,7 +494,7 @@ public class ListaPedidos extends JFrame {
         optionPane.setOptions(new Object[]{btnAceptar});
 
         // Crea un JDialog para mostrar el JOptionPane
-        JDialog dialog = optionPane.createDialog("Éxito");
+        JDialog dialog = optionPane.createDialog("Validación");
 
         // Añade un ActionListener al botón
         btnAceptar.addActionListener(new ActionListener() {
@@ -510,7 +510,7 @@ public class ListaPedidos extends JFrame {
 
     public void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
         // Crea un botón personalizado
-        JButton btnAceptar = new JButton("ACEPTAR");
+        JButton btnAceptar = new JButton("OK");
         btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
         btnAceptar.setForeground(Color.WHITE);
         btnAceptar.setFocusPainted(false);
@@ -529,7 +529,42 @@ public class ListaPedidos extends JFrame {
         optionPane.setOptions(new Object[]{btnAceptar});
 
         // Crea un JDialog para mostrar el JOptionPane
-        JDialog dialog = optionPane.createDialog("Error");
+        JDialog dialog = optionPane.createDialog("Validación");
+
+        // Añade un ActionListener al botón
+        btnAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+            }
+        });
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
+    }
+
+    public void mostrarDialogoPersonalizadoAtencion(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado
+        JButton btnAceptar = new JButton("OK");
+        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE);
+        btnAceptar.setFocusPainted(false);
+
+        // Crea un JOptionPane
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                           // Mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
+                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
+                null,                              // Icono (puede ser null)
+                new Object[]{},                    // No se usan opciones estándar
+                null                               // Valor inicial (no necesario aquí)
+        );
+
+        // Añade el botón al JOptionPane
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Validación");
 
         // Añade un ActionListener al botón
         btnAceptar.addActionListener(new ActionListener() {

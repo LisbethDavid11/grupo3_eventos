@@ -4,7 +4,6 @@ import Manualidades.TextPrompt;
 import Modelos.ModeloEvento;
 import Objetos.Conexion;
 import Objetos.Evento;
-import Pedidos.ListaPedidos;
 import Ventas.ListaVentas;
 import com.toedter.calendar.JDateChooser;
 
@@ -198,7 +197,7 @@ public class ListaEventos extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (listaEventos.getSelectedRow() == -1) {
-                    mostrarDialogoPersonalizadoError("Seleccione una fila para continuar.", Color.decode("#C62828"));
+                    mostrarDialogoPersonalizadoAtencion("Seleccione una fila para continuar.", Color.decode("#F57F17"));
                     return;
                 }
                 VerEventos verEventos = new VerEventos(listaEvento.get(listaEventos.getSelectedRow()).getId());
@@ -211,7 +210,7 @@ public class ListaEventos extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (listaEventos.getSelectedRow() == -1) {
-                    mostrarDialogoPersonalizadoError("Seleccione una fila para continuar", Color.decode("#C62828"));
+                    mostrarDialogoPersonalizadoAtencion("Seleccione una fila para continuar.", Color.decode("#F57F17"));
                     return;
                 }
                 EditarEvento editarEvento = new EditarEvento(listaEvento.get(listaEventos.getSelectedRow()), listaEvento.get(listaEventos.getSelectedRow()).getId());
@@ -271,7 +270,7 @@ public class ListaEventos extends JFrame {
         columnModel.getColumn(4).setPreferredWidth(80);
         columnModel.getColumn(5).setPreferredWidth(80);
         columnModel.getColumn(6).setPreferredWidth(100);
-        columnModel.getColumn(7).setPreferredWidth(70);
+        columnModel.getColumn(7).setPreferredWidth(100);
 
         columnModel.getColumn(0).setCellRenderer(new CenterAlignedRenderer());
         columnModel.getColumn(1).setCellRenderer(new LeftAlignedRenderer());
@@ -370,7 +369,7 @@ public class ListaEventos extends JFrame {
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
+            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos", Color.decode("#C62828"));
             listaEvento = new ArrayList<>();
         }
 
@@ -433,7 +432,7 @@ public class ListaEventos extends JFrame {
         }
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            setText(" ➔ ");
+            setText("Comenzar");
             return this;
         }
     }
@@ -454,7 +453,7 @@ public class ListaEventos extends JFrame {
         }
 
         public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-            button.setText(" ➔ ");
+            button.setText("Comenzar");
             this.table = table;
             this.row = row;
             this.col = column;
@@ -462,7 +461,7 @@ public class ListaEventos extends JFrame {
         }
 
         public Object getCellEditorValue() {
-            return " ➔ ";
+            return "Comenzar";
         }
 
         public void actionPerformed(ActionEvent e) {
@@ -582,7 +581,7 @@ public class ListaEventos extends JFrame {
 
     public void mostrarDialogoPersonalizadoExito(String mensaje, Color colorFondoBoton) {
         // Crea un botón personalizado
-        JButton btnAceptar = new JButton("ACEPTAR");
+        JButton btnAceptar = new JButton("OK");
         btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
         btnAceptar.setForeground(Color.WHITE);
         btnAceptar.setFocusPainted(false);
@@ -601,7 +600,7 @@ public class ListaEventos extends JFrame {
         optionPane.setOptions(new Object[]{btnAceptar});
 
         // Crea un JDialog para mostrar el JOptionPane
-        JDialog dialog = optionPane.createDialog("Éxito");
+        JDialog dialog = optionPane.createDialog("Validación");
 
         // Añade un ActionListener al botón
         btnAceptar.addActionListener(new ActionListener() {
@@ -617,7 +616,7 @@ public class ListaEventos extends JFrame {
 
     public void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
         // Crea un botón personalizado
-        JButton btnAceptar = new JButton("ACEPTAR");
+        JButton btnAceptar = new JButton("OK");
         btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
         btnAceptar.setForeground(Color.WHITE);
         btnAceptar.setFocusPainted(false);
@@ -636,7 +635,42 @@ public class ListaEventos extends JFrame {
         optionPane.setOptions(new Object[]{btnAceptar});
 
         // Crea un JDialog para mostrar el JOptionPane
-        JDialog dialog = optionPane.createDialog("Error");
+        JDialog dialog = optionPane.createDialog("Validación");
+
+        // Añade un ActionListener al botón
+        btnAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+            }
+        });
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
+    }
+
+    public void mostrarDialogoPersonalizadoAtencion(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado
+        JButton btnAceptar = new JButton("OK");
+        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE);
+        btnAceptar.setFocusPainted(false);
+
+        // Crea un JOptionPane
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                           // Mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
+                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
+                null,                              // Icono (puede ser null)
+                new Object[]{},                    // No se usan opciones estándar
+                null                               // Valor inicial (no necesario aquí)
+        );
+
+        // Añade el botón al JOptionPane
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Validación");
 
         // Añade un ActionListener al botón
         btnAceptar.addActionListener(new ActionListener() {
