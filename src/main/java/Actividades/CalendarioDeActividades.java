@@ -1,6 +1,5 @@
 package Actividades;
 
-
 import Objetos.Actividad;
 import Objetos.Conexion;
 import org.jdesktop.swingx.prompt.PromptSupport;
@@ -217,28 +216,31 @@ public class CalendarioDeActividades extends JFrame {
 
         calendarTable.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                int row = calendarTable.getSelectedRow();
-                int col = calendarTable.getSelectedColumn();
-                Object value = calendarTable.getValueAt(row, col); // Obtener el valor de la celda
+                if (e.getClickCount() == 1) { // Ensure that it responds to a single click
+                    int row = calendarTable.getSelectedRow();
+                    int col = calendarTable.getSelectedColumn();
+                    Object value = calendarTable.getValueAt(row, col); // Obtener el valor de la celda
 
-                // Cambiar el fondo del día seleccionado y el día actual
-                calendarTable.setSelectionBackground(secondaryColor);
-                calendarTable.setSelectionForeground(textColor);
+                    // Cambiar el fondo del día seleccionado y el día actual
+                    calendarTable.setSelectionBackground(secondaryColor);
+                    calendarTable.setSelectionForeground(textColor);
 
-                if (value != null) {
-                    String day = value.toString(); // Convertir el valor a String
+                    if (value != null) {
+                        String day = value.toString(); // Convertir el valor a String
 
-                    if (!day.isEmpty()) {
-                        // Eliminar caracteres no numéricos antes de analizar el número
-                        String strippedDay = day.replaceAll("[^0-9]", "");
-                        if (!strippedDay.isEmpty()) {
-                            int selectedDay = Integer.parseInt(strippedDay);
-                            mostrarActividadesDelDia(selectedDay, currentMonth, currentYear);
+                        if (!day.isEmpty()) {
+                            // Eliminar caracteres no numéricos antes de analizar el número
+                            String strippedDay = day.replaceAll("[^0-9]", "");
+                            if (!strippedDay.isEmpty()) {
+                                int selectedDay = Integer.parseInt(strippedDay);
+                                mostrarActividadesDelDia(selectedDay, currentMonth, currentYear);
+                            }
                         }
                     }
                 }
             }
         });
+
 
         busquedaTextField.getDocument().addDocumentListener(new DocumentListener() {
             @Override
@@ -392,7 +394,6 @@ public class CalendarioDeActividades extends JFrame {
         this.repaint();
     }
 
-
     public void refreshCalendar(int month, int year) {
         String[] months = {"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"};
         int numberOfDays, startOfMonth;
@@ -416,44 +417,28 @@ public class CalendarioDeActividades extends JFrame {
         numberOfDays = cal.getActualMaximum(GregorianCalendar.DAY_OF_MONTH);
         startOfMonth = cal.get(GregorianCalendar.DAY_OF_WEEK);
 
-
-        for (int i = 1; i <= numberOfDays; i++) {
-            int row = (i + startOfMonth - 2) / 7;
-            int column = (i + startOfMonth - 2) % 7;
-            calendarModel.setValueAt(i, row, column);
-
-            // Marcar el día actual
-            if (i == realDay && month == realMonth && year == realYear) {
-                calendarTable.setValueAt(i + " ❖", row, column); // Agrega el punto
-
-
-            }
-        }
-
         for (int i = 1; i <= numberOfDays; i++) {
             int row = (i + startOfMonth - 2) / 7;
             int column = (i + startOfMonth - 2) % 7;
             String dayValue = String.valueOf(i); // Convierte el valor de i a una cadena
             calendarModel.setValueAt(dayValue, row, column);
 
+            // Marcar el día actual con un color específico
             if (i == realDay && month == realMonth && year == realYear) {
-                // Marca el día actual con un punto azul
-                String dayWithDot = i + " ❋";
-                calendarTable.setValueAt("<html>" + dayWithDot + "</html>", row, column);
-
+                String dayWithDot = "<html><font color='red'>" + i + " ❋</font></html>";
+                calendarTable.setValueAt(dayWithDot, row, column);
             } else {
                 boolean hasActivities = hasActivitiesOnDay(i, month, year);
                 if (hasActivities) {
-                    // Marca los días con actividades con un punto azul
-
-
-                    String dayWithDot = i + " ❖";
-                    calendarTable.setValueAt("<html>" + dayWithDot + "</html>", row, column);
+                    // Marcar los días con actividades con un color específico
+                    String dayWithDot = "<html><font color='yellow'>" + i + " ❖</font></html>";
+                    calendarTable.setValueAt(dayWithDot, row, column);
                 } else {
                     // No agrega el punto, solo el número del día
                     calendarTable.setValueAt(dayValue, row, column);
                 }
             }
+
         }
     }
 
@@ -640,3 +625,4 @@ public class CalendarioDeActividades extends JFrame {
         calendarioDeActividades.setVisible(true);
     }
 }
+
