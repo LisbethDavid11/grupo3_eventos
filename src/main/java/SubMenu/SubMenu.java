@@ -415,6 +415,20 @@ public class SubMenu extends JFrame {
             }
         });
 
+        JMenuItem menuItemAcercaDe = new JMenuItem("Acerca De");
+        menuItemAcercaDe.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JDialog dialog = new JDialog(); // Crea un nuevo diálogo
+                dialog.setTitle("Acerca De"); // Establece el título
+                dialog.setContentPane(new AcercaDe()); // añade el panel AcercaDe
+                dialog.setSize(600, 400); // Establece el tamaño del diálogo
+                dialog.setModal(true); // Hace que el diálogo bloquee las otras ventanas hasta que se cierre
+                dialog.setLocationRelativeTo(null); // Centra el diálogo en la pantalla
+                dialog.setVisible(true); // Hace visible el diálogo
+            }
+        });
+
         // Suponiendo que estás en una clase que extiende JFrame
         JMenuItem menuItemCerrarSesion = new JMenuItem("Cerrar Sesión");
         menuItemCerrarSesion.addActionListener(new ActionListener() {
@@ -476,7 +490,9 @@ public class SubMenu extends JFrame {
             }
         });
 
+
         userMenu.add(menuItemPerfil);
+        userMenu.add(menuItemAcercaDe);
         userMenu.add(menuItemCerrarSesion);
 
         // Evento para mostrar el menú al hacer clic en el nombre del usuario

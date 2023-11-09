@@ -424,7 +424,9 @@ public class CalendarioDeActividades extends JFrame {
 
             // Marcar el día actual
             if (i == realDay && month == realMonth && year == realYear) {
-                calendarTable.setValueAt(i + " ●", row, column); // Agrega el punto
+                calendarTable.setValueAt(i + " ❖", row, column); // Agrega el punto
+
+
             }
         }
 
@@ -436,13 +438,16 @@ public class CalendarioDeActividades extends JFrame {
 
             if (i == realDay && month == realMonth && year == realYear) {
                 // Marca el día actual con un punto azul
-                String dayWithDot = i + " ●";
+                String dayWithDot = i + " ❋";
                 calendarTable.setValueAt("<html>" + dayWithDot + "</html>", row, column);
+
             } else {
                 boolean hasActivities = hasActivitiesOnDay(i, month, year);
                 if (hasActivities) {
                     // Marca los días con actividades con un punto azul
-                    String dayWithDot = i + " ●";
+
+
+                    String dayWithDot = i + " ❖";
                     calendarTable.setValueAt("<html>" + dayWithDot + "</html>", row, column);
                 } else {
                     // No agrega el punto, solo el número del día
