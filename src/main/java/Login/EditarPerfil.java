@@ -78,9 +78,11 @@ public class EditarPerfil extends JFrame {
         setLocationRelativeTo(null);
         setContentPane(panel);
         sql = new Conexion();
+        this.mysql = sql.conectamysql(); // Asegúrate de que esta línea se ejecute correctamente
         this.id = id;
-
+        cargarRoles();
         mostrar();
+
         defaultEchoChar = campoContrasenaAnterior.getEchoChar();
         // Crear una instancia de Dimension con las dimensiones deseadas
         Dimension panelImgSize = new Dimension(panelImgWidth, panelImgHeight);
