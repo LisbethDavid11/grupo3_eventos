@@ -13,19 +13,22 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class CrearRol extends JFrame {
+public class EditarRol extends JFrame {
     Color darkColorRed = new Color(244, 67, 54);
     Color darkColorBlue = new Color(33, 150, 243);
     private JTextField nombreField;
     private JCheckBox clienteCheckBox, empleadoCheckBox, floristeriaCheckBox, arregloCheckBox, usuarioCheckBox, materialCheckBox, proveedorCheckBox, compraCheckBox, tarjetaCheckBox, manualidadCheckBox, globoCheckBox, desayunoCheckBox, ventaCheckBox, mobiliarioCheckBox, pedidoCheckBox, promocionCheckBox, eventoCheckBox, actividadCheckBox, alquilerCheckBox, rolCheckBox;
     private Conexion sql;
     private JFrame mainFrame;
-    public CrearRol() {
+
+    public int id;
+    public EditarRol(int id) {
         super("");
         setSize(850, 505);
         setLocationRelativeTo(null);
-
         sql = new Conexion();
+        this.id = id;
+
         setLayout(new BorderLayout(0, 20)); // Espacio entre componentes
         setBackground(new Color(238, 238, 238)); // Fondo claro estilo Material
 
@@ -36,7 +39,7 @@ public class CrearRol extends JFrame {
         centerPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // Margen alrededor del panel central
 
         // Título
-        JLabel titleLabel = new JLabel("INGRESAR LOS DATOS DEL ROL", JLabel.CENTER);
+        JLabel titleLabel = new JLabel("ACTUALIZAR LOS DATOS DEL ROL", JLabel.CENTER);
         titleLabel.setFont(new Font("Century Gothic", Font.BOLD, 22)); // Fuente grande para el título
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT); // Alineación al centro
         centerPanel.add(titleLabel);
@@ -97,7 +100,6 @@ public class CrearRol extends JFrame {
         checkboxPanel.add(rolCheckBox);
 
         centerPanel.add(checkboxPanel);
-
         add(centerPanel, BorderLayout.CENTER);
 
         // Panel para botones
@@ -105,8 +107,8 @@ public class CrearRol extends JFrame {
         buttonPanel.setBackground(new Color(238, 238, 238)); // Fondo al estilo Material
         buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
-        // Botón Guardar
-        JButton saveButton = new JButton("Guardar");
+        // Botón Actualizar
+        JButton saveButton = new JButton("Actualizar");
         styleMaterialButton(saveButton, "#2c3e50", "#34495e");
         buttonPanel.add(saveButton);
 
@@ -170,7 +172,7 @@ public class CrearRol extends JFrame {
 
                 // Contador para el número de checkboxes seleccionados
                 int contadorSeleccionados = 0;
-                JCheckBox[] checkBoxes = {clienteCheckBox, empleadoCheckBox, floristeriaCheckBox, arregloCheckBox, usuarioCheckBox, materialCheckBox, proveedorCheckBox, compraCheckBox, tarjetaCheckBox, manualidadCheckBox, globoCheckBox, desayunoCheckBox, ventaCheckBox, mobiliarioCheckBox, pedidoCheckBox, promocionCheckBox, eventoCheckBox, actividadCheckBox, alquilerCheckBox};
+                JCheckBox[] checkBoxes = {clienteCheckBox, empleadoCheckBox, floristeriaCheckBox, arregloCheckBox, usuarioCheckBox, materialCheckBox, proveedorCheckBox, compraCheckBox, tarjetaCheckBox, manualidadCheckBox, globoCheckBox, desayunoCheckBox, ventaCheckBox, mobiliarioCheckBox, pedidoCheckBox, promocionCheckBox, eventoCheckBox, actividadCheckBox, alquilerCheckBox, rolCheckBox};
 
                 for (JCheckBox checkBox : checkBoxes) {
                     if (checkBox.isSelected()) {
@@ -194,12 +196,15 @@ public class CrearRol extends JFrame {
                     return;
                 }
 
-                // Verifica si no se seleccionó ningún checkbox o si se seleccionaron todos
-                if (contadorSeleccionados == 0) {
-                    mostrarDialogoPersonalizadoAtencion("Debe seleccionar al menos un permiso.", Color.decode("#F57F17"));
+                // Para el administrador, permitir todos los permisos
+                if (id == 1 && contadorSeleccionados < checkBoxes.length) {
+                    mostrarDialogoPersonalizadoAtencion("El administrador debe seleccionar todos los permisos.", Color.decode("#F57F17"));
                     return;
-                } else if (contadorSeleccionados == checkBoxes.length) {
-                    mostrarDialogoPersonalizadoAtencion("No puede seleccionar todos los permisos:\nYa se asignaron al administrador.", Color.decode("#F57F17"));
+                } else if (id != 1 && contadorSeleccionados == 20) {
+                    mostrarDialogoPersonalizadoAtencion("No puede seleccionar todos los permisos; ya que fueron asignados al administrador.", Color.decode("#F57F17"));
+                    return;
+                } else if (id != 1 && contadorSeleccionados == 0) {
+                    mostrarDialogoPersonalizadoAtencion("Debe seleccionar por lo menos un permiso.", Color.decode("#F57F17"));
                     return;
                 }
 
@@ -236,7 +241,7 @@ public class CrearRol extends JFrame {
 
                 // Crea un JOptionPane
                 JOptionPane optionPane = new JOptionPane(
-                        "¿Desea guardar la información rol de usuario?",
+                        "¿Desea actualizar la información del rol de usuario?",
                         JOptionPane.QUESTION_MESSAGE,
                         JOptionPane.DEFAULT_OPTION,
                         null,
@@ -252,7 +257,7 @@ public class CrearRol extends JFrame {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         // Acciones para el botón Sí
-                        guardarRol();
+                        actualizarRol();
                         dialog.dispose();
                         ListaRoles listaRoles = new ListaRoles();
                         listaRoles.setVisible(true);
@@ -277,6 +282,7 @@ public class CrearRol extends JFrame {
 
             }
         });
+        mostrarRol();
     }
 
     private JPanel createLabeledField(String label, JTextField textField) {
@@ -315,70 +321,88 @@ public class CrearRol extends JFrame {
         });
     }
 
-    private void guardarRol() {
+    private void actualizarRol() {
         String nombre = nombreField.getText().trim();
-        boolean cliente = clienteCheckBox.isSelected();
-        boolean empleado = empleadoCheckBox.isSelected();
-        boolean floristeria = floristeriaCheckBox.isSelected();
-        boolean arreglo = arregloCheckBox.isSelected();
-        boolean usuario = usuarioCheckBox.isSelected();
-        boolean material = materialCheckBox.isSelected();
-        boolean proveedor = proveedorCheckBox.isSelected();
-        boolean compra = compraCheckBox.isSelected();
-        boolean tarjeta = tarjetaCheckBox.isSelected();
-        boolean manualidad = manualidadCheckBox.isSelected();
-        boolean globo = globoCheckBox.isSelected();
-        boolean desayuno = desayunoCheckBox.isSelected();
-        boolean venta = ventaCheckBox.isSelected();
-        boolean mobiliario = mobiliarioCheckBox.isSelected();
-        boolean pedido = pedidoCheckBox.isSelected();
-        boolean promocion = promocionCheckBox.isSelected();
-        boolean evento = eventoCheckBox.isSelected();
-        boolean actividad = actividadCheckBox.isSelected();
-        boolean alquiler = alquilerCheckBox.isSelected();
-        boolean rol = rolCheckBox.isSelected();
-
         try (Connection connection = sql.conectamysql();
              PreparedStatement checkStmt = connection.prepareStatement(
-                     "SELECT COUNT(*) FROM roles WHERE nombre = ?")) {
-                    checkStmt.setString(1, nombre);
-                    ResultSet rs = checkStmt.executeQuery();
+                     "SELECT COUNT(*) FROM roles WHERE id = ?")) {
+            checkStmt.setInt(1, this.id);
+            ResultSet rs = checkStmt.executeQuery();
 
-                    if (rs.next() && rs.getInt(1) > 0) {
-                        mostrarDialogoPersonalizadoError("Un rol con este nombre ya existe.", Color.decode("#C62828"));
-                    } else {
-
-                        try (PreparedStatement preparedStatement = connection.prepareStatement(
-                             "INSERT INTO roles (nombre, cliente, empleado, floristeria, arreglo, usuario, material, proveedor, compra, tarjeta, manualidad, globo, desayuno, venta, mobiliario, pedido, promocion, evento, actividad, alquiler, rol) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
-                    preparedStatement.setString(1, nombre);
-                    preparedStatement.setBoolean(2, cliente);
-                    preparedStatement.setBoolean(3, empleado);
-                    preparedStatement.setBoolean(4, floristeria);
-                    preparedStatement.setBoolean(5, arreglo);
-                    preparedStatement.setBoolean(6, usuario);
-                    preparedStatement.setBoolean(7, material);
-                    preparedStatement.setBoolean(8, proveedor);
-                    preparedStatement.setBoolean(9, compra);
-                    preparedStatement.setBoolean(10, tarjeta);
-                    preparedStatement.setBoolean(11, manualidad);
-                    preparedStatement.setBoolean(12, globo);
-                    preparedStatement.setBoolean(13, desayuno);
-                    preparedStatement.setBoolean(14, venta);
-                    preparedStatement.setBoolean(15, mobiliario);
-                    preparedStatement.setBoolean(16, pedido);
-                    preparedStatement.setBoolean(17, promocion);
-                    preparedStatement.setBoolean(18, evento);
-                    preparedStatement.setBoolean(19, actividad);
-                    preparedStatement.setBoolean(20, alquiler);
-                    preparedStatement.setBoolean(21, rol);
+            if (rs.next() && rs.getInt(1) > 0) {
+                try (PreparedStatement preparedStatement = connection.prepareStatement(
+                        "UPDATE roles SET cliente=?, empleado=?, floristeria=?, arreglo=?, usuario=?, material=?, proveedor=?, compra=?, tarjeta=?, manualidad=?, globo=?, desayuno=?, venta=?, mobiliario=?, pedido=?, promocion=?, evento=?, actividad=?, alquiler=?, rol=?,nombre=? WHERE id = ?")) {
+                    preparedStatement.setBoolean(1, clienteCheckBox.isSelected());
+                    preparedStatement.setBoolean(2, empleadoCheckBox.isSelected());
+                    preparedStatement.setBoolean(3, floristeriaCheckBox.isSelected());
+                    preparedStatement.setBoolean(4,arregloCheckBox.isSelected());
+                    preparedStatement.setBoolean(5, usuarioCheckBox.isSelected());
+                    preparedStatement.setBoolean(6, materialCheckBox.isSelected());
+                    preparedStatement.setBoolean(7, proveedorCheckBox.isSelected());
+                    preparedStatement.setBoolean(8, compraCheckBox.isSelected());
+                    preparedStatement.setBoolean(9, tarjetaCheckBox.isSelected());
+                    preparedStatement.setBoolean(10, manualidadCheckBox.isSelected());
+                    preparedStatement.setBoolean(11, globoCheckBox.isSelected());
+                    preparedStatement.setBoolean(12, desayunoCheckBox.isSelected());
+                    preparedStatement.setBoolean(13, ventaCheckBox.isSelected());
+                    preparedStatement.setBoolean(14, mobiliarioCheckBox.isSelected());
+                    preparedStatement.setBoolean(15,pedidoCheckBox.isSelected());
+                    preparedStatement.setBoolean(16, promocionCheckBox.isSelected());
+                    preparedStatement.setBoolean(17, eventoCheckBox.isSelected());
+                    preparedStatement.setBoolean(18, actividadCheckBox.isSelected());
+                    preparedStatement.setBoolean(19, alquilerCheckBox.isSelected());
+                    preparedStatement.setBoolean(20, rolCheckBox.isSelected());
+                    preparedStatement.setString(21, nombre);
+                    preparedStatement.setInt(22, id);
 
                     preparedStatement.executeUpdate();
-                    mostrarDialogoPersonalizadoExito("Rol guardado exitosamente.", Color.decode("#263238"));
+                    mostrarDialogoPersonalizadoExito("Rol actualizado exitosamente.", Color.decode("#263238"));
                 }
+            } else {
+                mostrarDialogoPersonalizadoError("El rol con no existe.", Color.decode("#C62828"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            mostrarDialogoPersonalizadoError("Error al guardar el rol.", Color.decode("#C62828"));
+            mostrarDialogoPersonalizadoError("Error al actualizar el rol.", Color.decode("#C62828"));
+        }
+    }
+
+    private void mostrarRol() {
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "SELECT * FROM roles WHERE id = ?")) {
+            preparedStatement.setInt(1, this.id);
+            ResultSet rs = preparedStatement.executeQuery();
+
+            if (rs.next()) {
+                clienteCheckBox.setSelected(rs.getBoolean("cliente"));
+                empleadoCheckBox.setSelected(rs.getBoolean("empleado"));
+                floristeriaCheckBox.setSelected(rs.getBoolean("floristeria"));
+                arregloCheckBox.setSelected(rs.getBoolean("arreglo"));
+                usuarioCheckBox.setSelected(rs.getBoolean("usuario"));
+                materialCheckBox.setSelected(rs.getBoolean("material"));
+                proveedorCheckBox.setSelected(rs.getBoolean("proveedor"));
+                compraCheckBox.setSelected(rs.getBoolean("compra"));
+                tarjetaCheckBox.setSelected(rs.getBoolean("tarjeta"));
+                manualidadCheckBox.setSelected(rs.getBoolean("manualidad"));
+                globoCheckBox.setSelected(rs.getBoolean("globo"));
+                desayunoCheckBox.setSelected(rs.getBoolean("desayuno"));
+                ventaCheckBox.setSelected(rs.getBoolean("venta"));
+                mobiliarioCheckBox.setSelected(rs.getBoolean("mobiliario"));
+                pedidoCheckBox.setSelected(rs.getBoolean("pedido"));
+                promocionCheckBox.setSelected(rs.getBoolean("promocion"));
+                eventoCheckBox.setSelected(rs.getBoolean("evento"));
+                actividadCheckBox.setSelected(rs.getBoolean("actividad"));
+                alquilerCheckBox.setSelected(rs.getBoolean("alquiler"));
+                rolCheckBox.setSelected(rs.getBoolean("rol"));
+                nombreField.setText(rs.getString("nombre"));
+
+                } else {
+                mostrarDialogoPersonalizadoError("El rol con este nombre no existe.", Color.decode("#C62828"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            mostrarDialogoPersonalizadoError("Error al cargar los datos del rol.", Color.decode("#C62828"));
         }
     }
 
@@ -488,7 +512,7 @@ public class CrearRol extends JFrame {
     }
 
     public static void main(String[] args) {
-        CrearRol roles = new CrearRol();
-        roles.setVisible(true);
+        EditarRol editarRol = new EditarRol(1);
+        editarRol.setVisible(true);
     }
 }

@@ -109,16 +109,15 @@ public class ListaRoles extends JFrame {
             }
         });
 
-        /*
         botonVer.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (listaClientes.getSelectedRow() == -1) {
+                if (listaRoles.getSelectedRow() == -1) {
                     JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
                     return;
                 }
-                VerCliente cliente = new VerCliente(listaCliente.get(listaClientes.getSelectedRow()).getId());
-                cliente.setVisible(true);
+                VerRol rol = new VerRol(listaRol.get(listaRoles.getSelectedRow()).getId());
+                rol.setVisible(true);
                 actual.dispose();
             }
         });
@@ -126,16 +125,15 @@ public class ListaRoles extends JFrame {
         botonEditar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (listaClientes.getSelectedRow() == -1) {
+                if (listaRoles.getSelectedRow() == -1) {
                     JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
                     return;
                 }
-                EditarCliente cliente = new EditarCliente(listaCliente.get(listaClientes.getSelectedRow()).getId());
+                EditarRol cliente = new EditarRol(listaRol.get(listaRoles.getSelectedRow()).getId());
                 cliente.setVisible(true);
                 actual.dispose();
             }
         });
-        */
 
         // Establecer color de fondo para el encabezado
         JTableHeader header = listaRoles.getTableHeader();
