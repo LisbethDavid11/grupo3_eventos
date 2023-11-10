@@ -134,6 +134,7 @@ public class CalendarioDeActividades extends JFrame {
 
         calendarTable.setBackground(darkColor);
         calendarTable.setForeground(textColor);
+        calendarTable.setFont(new Font(null, Font.BOLD, 22));
 
         JTableHeader encabezado = calendarTable.getTableHeader();
         encabezado.setForeground(Color.WHITE);
