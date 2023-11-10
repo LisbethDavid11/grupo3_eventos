@@ -170,21 +170,21 @@ public class VerPerfil extends JFrame {
         mysql = sql.conectamysql();
 
         try {
-            PreparedStatement statement = mysql.prepareStatement("SELECT * FROM usuarios WHERE id = ?;");
+            PreparedStatement statement = mysql.prepareStatement(
+                    "SELECT usuarios.correo, usuarios.nombre, usuarios.imagen, roles.nombre as nombre_rol " +
+                            "FROM usuarios " +
+                            "JOIN roles ON usuarios.rol_id = roles.id " +
+                            "WHERE usuarios.id = ?;"
+            );
+
             statement.setInt(1, this.id);
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
                 etiquetaCorreo.setText("  " + resultSet.getString("correo"));
                 etiquetaNombre.setText("  " + resultSet.getString("nombre"));
-                String rol = resultSet.getString("rol");
-                if ("admin".equals(rol)){
-                    etiquetaRol.setText("  Administrador");
-                } else if ("general".equals(rol)){
-                    etiquetaRol.setText("  General");
-                } else if ("variado".equals(rol)){
-                    etiquetaRol.setText("  Variado");
-                }
+                String nombreRol = resultSet.getString("nombre_rol");
+                etiquetaRol.setText("  " + nombreRol);
 
                 String imagenNombre = resultSet.getString("imagen");
                 String imagenPath = "img/usuarios/" + imagenNombre;

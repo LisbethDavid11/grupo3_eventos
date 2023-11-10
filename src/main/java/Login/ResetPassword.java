@@ -73,7 +73,6 @@ public class ResetPassword extends JFrame {
     private JLabel label3;
     private JButton botonRecupera;
     private JButton botonLogin;
-    private JButton botonRegistrar;
     private JTextField campoCorreo;
     private JTextArea textArea1;
     private JPasswordField campoContrasenaAnterior;
@@ -120,7 +119,6 @@ public class ResetPassword extends JFrame {
         // Personalización de los botones al estilo Material UI
         personalizeButton(botonRecupera, darkColorBlue, lightColorBlue, darkColorBlue);
         personalizeButton(botonLogin, darkColorAqua, lightColorAqua, darkColorAqua);
-        personalizeButton(botonRegistrar, darkColorRed, lightColorRosado, darkColorRosado);
 
         campoCorreo.addKeyListener(new KeyAdapter() {
             @Override
@@ -152,15 +150,6 @@ public class ResetPassword extends JFrame {
             public void actionPerformed(ActionEvent evt) {
                 Login login = new Login();
                 login.setVisible(true);
-                dispose();
-            }
-        });
-
-        botonRegistrar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                SignUp signUp = new SignUp();
-                signUp.setVisible(true);
                 dispose();
             }
         });

@@ -7,7 +7,7 @@ public class SesionUsuario {
     private String correoUsuario;
     private String contrasenaUsuario;  // Considerar medidas de seguridad para manejar contraseñas
     private String imagenUsuario;
-    private String rolUsuario;
+    private int rolId;
 
     private SesionUsuario() {}
 
@@ -56,11 +56,11 @@ public class SesionUsuario {
         this.imagenUsuario = imagenUsuario;
     }
 
-    public String getRolUsuario() {
-        return rolUsuario;
+    public int getRolId() {
+        return rolId;
     }
 
-    public void setRolUsuario(String rolUsuario) {
-        this.rolUsuario = rolUsuario;
+    public void setRolId(int rolId) {
+        this.rolId = rolId;
     }
 }

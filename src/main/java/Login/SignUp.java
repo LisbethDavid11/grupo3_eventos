@@ -229,6 +229,8 @@ public class SignUp extends JFrame {
                         // Acciones para el botón Sí
                         dialog.dispose();
                         dialog.dispose();
+
+                        /*
                         DatosUsuario datosUsuario = guardarUsuario();
                         if (datosUsuario != null) {
                             SesionUsuario sesion = SesionUsuario.getInstance();
@@ -236,7 +238,7 @@ public class SignUp extends JFrame {
                             sesion.setNombreUsuario(datosUsuario.getNombre());
                             sesion.setCorreoUsuario(datosUsuario.getCorreo());
                             sesion.setImagenUsuario(datosUsuario.getImagen());
-                            sesion.setRolUsuario(datosUsuario.getRol());
+                            //sesion.setRolUsuario(datosUsuario.getRol());
 
                             SubMenu menu = new SubMenu();
                             menu.setIdUsuarioActual(datosUsuario.getId());
@@ -244,7 +246,9 @@ public class SignUp extends JFrame {
                             menu.setImagenUsuario(datosUsuario.getImagen());
                             menu.setVisible(true);
                             dispose(); // Cierra el formulario actual
-                        }
+
+                         */
+
                     }
                 });
 
@@ -434,7 +438,7 @@ public class SignUp extends JFrame {
                 preparedStatement.setString(2, correo);
                 preparedStatement.setString(3, contrasenaEncriptada);
                 preparedStatement.setString(4, imagenSeleccionada);
-                preparedStatement.setString(5, rol);
+                //preparedStatement.setString(5, rol);
 
                 int rowsInserted = preparedStatement.executeUpdate();
                 if (rowsInserted > 0) {
@@ -444,7 +448,7 @@ public class SignUp extends JFrame {
                     try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
                         if (generatedKeys.next()) {
                             int id = generatedKeys.getInt(1);
-                            return new DatosUsuario(id, nombre, correo, contrasenaEncriptada, imagenSeleccionada, rol); // Devuelve los datos del usuario
+                            //return new DatosUsuario(id, nombre, correo, contrasenaEncriptada, imagenSeleccionada, rol); // Devuelve los datos del usuario
                         }
                     }
                 } else {

@@ -11,14 +11,17 @@ import Eventos.ListaEventos;
 import Floristerias.ListaFloristerias;
 import Globos.ListaGlobos;
 import Login.Login;
+import Login.ListaUsuarios;
 import Login.SesionUsuario;
 import Login.VerPerfil;
 import Manualidades.ListaManualidades;
 import Materiales.ListaMateriales;
 import Mobiliario.ListaMobiliario;
+import Objetos.Rol;
 import Pedidos.ListaPedidos;
 import Promociones.ListaPromociones;
 import Proveedores.ListaProveedores;
+import Roles.ListaRoles;
 import Tarjetas.ListaTarjetas;
 import Ventas.ListaVentas;
 
@@ -34,7 +37,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class SubMenu extends JFrame {
-    private JButton proveedoresButton, empleadosButton, clientesButton, floristeriaButton, arreglosButton, materialesButton, comprasButton,tarjetaButton, manualidadesButton, globosButton, desayunosButton, ventasButton, mobiliarioButton, pedidosButton, eventosButton, promocionesButton, actividadesButton, alquileresButton;
+    private JButton rolesButton,usuariosButton, proveedoresButton, empleadosButton, clientesButton, floristeriaButton, arreglosButton, materialesButton, comprasButton,tarjetaButton, manualidadesButton, globosButton, desayunosButton, ventasButton, mobiliarioButton, pedidosButton, eventosButton, promocionesButton, actividadesButton, alquileresButton;
     private JPanel panel, panel2, panel3;
     private ListaClientes listaCliente;
     private ListaEmpleados listaEmpleados;
@@ -54,6 +57,8 @@ public class SubMenu extends JFrame {
     private ListaEventos listaEventos;
     private CalendarioDeActividades listaActividades;
     private ListaAlquileres listaAlquileres;
+    private ListaRoles listaRoles;
+    private ListaUsuarios listaUsuarios;
     private JPanel navbarPanel;
     private JLabel userLabel, userNameLabel;
     private JPopupMenu userMenu;
@@ -61,13 +66,13 @@ public class SubMenu extends JFrame {
     private String imagen;
     private int id;
     private int usuarioActualId;
-    public SubMenu() {
+
+    public SubMenu(Rol permisos) {
         super("Menú Principal");
         setSize(1100, 640);
         setLocationRelativeTo(null);
         // Inicialización y configuración del Navbar
         setupNavbar();
-
         // Añadir el navbar al JFrame
         add(navbarPanel, BorderLayout.NORTH);
         panel = new JPanel(new GridLayout(1, 1)); // Cambia a una sola fila
@@ -145,6 +150,16 @@ public class SubMenu extends JFrame {
         alquileresButton.setBackground(Color.decode("#e68b84"));
         alquileresButton.setPreferredSize(new Dimension(100, 40)); // Ajustar tamaño
 
+        // Establecer colores Material Design a los botones
+        usuariosButton = new JButton("Usuarios");
+        usuariosButton.setBackground(Color.decode("#F44336"));
+        usuariosButton.setPreferredSize(new Dimension(100, 40)); // Ajustar tamaño
+
+        rolesButton = new JButton("Roles");
+        rolesButton.setBackground(Color.decode("#9C27B0"));
+        rolesButton.setPreferredSize(new Dimension(100, 40)); // Ajustar tamaño
+
+        configurarBotonesSegunPermisos(permisos);
         // Crear un GridLayout con 2 filas y 8 columnas
         GridLayout gridLayout = new GridLayout(2, 8);
 
@@ -170,6 +185,8 @@ public class SubMenu extends JFrame {
         panel.add(eventosButton);
         panel.add(actividadesButton);
         panel.add(alquileresButton);
+        panel.add(usuariosButton);
+        panel.add(rolesButton);
 
         // Crea el panel de imagen y lo coloca en el centro
         ImagePanel imagenPanel = new ImagePanel();
@@ -199,6 +216,8 @@ public class SubMenu extends JFrame {
         eventosButton.setFocusPainted(false);
         actividadesButton.setFocusPainted(false);
         alquileresButton.setFocusPainted(false);
+        usuariosButton.setFocusPainted(false);
+        rolesButton.setFocusPainted(false);
 
         promocionesButton.setForeground(Color.WHITE);
         eventosButton.setForeground(Color.WHITE);
@@ -218,6 +237,8 @@ public class SubMenu extends JFrame {
         clientesButton.setForeground(Color.WHITE);
         proveedoresButton.setForeground(Color.WHITE);
         alquileresButton.setForeground(Color.WHITE);
+        usuariosButton.setForeground(Color.WHITE);
+        rolesButton.setForeground(Color.WHITE);
         add(panel3);
 
         // Crear instancias de las ventanas
@@ -239,6 +260,8 @@ public class SubMenu extends JFrame {
         listaEventos = new ListaEventos();
         listaActividades = new CalendarioDeActividades();
         listaAlquileres = new ListaAlquileres();
+        listaUsuarios = new ListaUsuarios();
+        listaRoles = new ListaRoles();
 
         clientesButton.addActionListener(new ActionListener() {
             @Override
@@ -361,16 +384,35 @@ public class SubMenu extends JFrame {
 
         alquileresButton.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) { listaAlquileres.setVisible(true);
+            public void actionPerformed(ActionEvent e) {
+                listaAlquileres.setVisible(true);
 
             }
         });
+
+        usuariosButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                listaUsuarios.setVisible(true);
+
+            }
+        });
+
+        rolesButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                listaRoles.setVisible(true);
+
+            }
+        });
+
     }
 
     public void setNombreUsuario(String nombre) {
         this.nombre = nombre;
         userNameLabel.setText("Bienvenido, " + nombre + " ▼ ");
     }
+
 
     public void setImagenUsuario(String imagen) {
         this.imagen = imagen;
@@ -490,7 +532,6 @@ public class SubMenu extends JFrame {
             }
         });
 
-
         userMenu.add(menuItemPerfil);
         userMenu.add(menuItemAcercaDe);
         userMenu.add(menuItemCerrarSesion);
@@ -546,13 +587,37 @@ public class SubMenu extends JFrame {
         return resizedImg;
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                SubMenu subMenu = new SubMenu();
-                subMenu.setVisible(true);
-            }
-        });
+    private void configurarBotonesSegunPermisos(Rol rol) {
+        promocionesButton.setEnabled(rol.isPromocion());
+        eventosButton.setEnabled(rol.isEvento());
+        materialesButton.setEnabled(rol.isMaterial());
+        floristeriaButton.setEnabled(rol.isFloristeria());
+        empleadosButton.setEnabled(rol.isEmpleado());
+        arreglosButton.setEnabled(rol.isArreglo());
+        comprasButton.setEnabled(rol.isCompra());
+        tarjetaButton.setEnabled(rol.isTarjeta());
+        manualidadesButton.setEnabled(rol.isManualidad());
+        globosButton.setEnabled(rol.isGlobo());
+        desayunosButton.setEnabled(rol.isDesayuno());
+        ventasButton.setEnabled(rol.isVenta());
+        mobiliarioButton.setEnabled(rol.isMobiliario());
+        pedidosButton.setEnabled(rol.isPedido());
+        actividadesButton.setEnabled(rol.isActividad());
+        clientesButton.setEnabled(rol.isCliente());
+        proveedoresButton.setEnabled(rol.isProveedor());
+        alquileresButton.setEnabled(rol.isAlquiler());
     }
+
+    private void configurarBoton(JButton boton, boolean habilitado) {
+        boton.setEnabled(habilitado);
+        if (habilitado) {
+            boton.setBackground(Color.LIGHT_GRAY); // O el color por defecto cuando está habilitado
+            boton.setForeground(Color.BLACK); // Color del texto cuando está habilitado
+        } else {
+            boton.setBackground(new Color(44, 62, 80)); // Color de fondo para deshabilitado
+            boton.setForeground(Color.WHITE); // Color del texto para deshabilitado
+        }
+    }
+
+
 }

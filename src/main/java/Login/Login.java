@@ -1,6 +1,7 @@
 package Login;
 
 import Objetos.Conexion;
+import Objetos.Rol;
 import SubMenu.SubMenu;
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -64,7 +65,6 @@ public class Login extends JFrame {
     private JLabel label2;
     private JLabel label3;
     private JButton botonLogin;
-    private JButton botonRegistro;
     private JButton botonRecuperar;
     private JButton botonMostrar;
     private JTextField campoCorreo;
@@ -101,7 +101,6 @@ public class Login extends JFrame {
 
         // Personalización de los botones al estilo Material UI
         personalizeButton(botonLogin, darkColorBlue, lightColorBlue, darkColorBlue);
-        personalizeButton(botonRegistro, darkColorAqua, lightColorAqua, darkColorAqua);
         personalizeButton(botonRecuperar, darkColorRed, lightColorRosado, darkColorRosado);
         personalizeButton(botonMostrar, darkColorGray, darkColorGray, darkColorGray);
 
@@ -188,15 +187,6 @@ public class Login extends JFrame {
             }
         });
 
-        botonRegistro.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                SignUp register = new SignUp();
-                register.setVisible(true);
-                dispose();
-            }
-        });
-
         botonRecuperar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
@@ -211,7 +201,7 @@ public class Login extends JFrame {
         Conexion sql = new Conexion();
         Connection connection = sql.conectamysql();
         try {
-            String query = "SELECT id, nombre, correo, contrasena, imagen, rol FROM usuarios WHERE correo = ?";
+            String query = "SELECT id, nombre, correo, contrasena, imagen, rol_id FROM usuarios WHERE correo = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, correo);
 
@@ -220,14 +210,45 @@ public class Login extends JFrame {
             if (resultSet.next()) {
                 String contrasenaEncriptada = resultSet.getString("contrasena");
                 if (BCrypt.checkpw(contrasena, contrasenaEncriptada)) {
-                    return new DatosUsuario(
-                            resultSet.getInt("id"),
-                            resultSet.getString("nombre"),
-                            resultSet.getString("correo"),
-                            resultSet.getString("contrasena"), // Considerar seguridad
-                            resultSet.getString("imagen"),
-                            resultSet.getString("rol")
-                    );
+                    int rolId = resultSet.getInt("rol_id");
+                    // Obtener los permisos del rol
+                    PreparedStatement psRol = connection.prepareStatement("SELECT * FROM roles WHERE id = ?");
+                    psRol.setInt(1, rolId);
+                    ResultSet rsRol = psRol.executeQuery();
+
+                    if (rsRol.next()) {
+                        // Aquí creas un objeto Rol con todos los permisos
+                        Rol rol = new Rol();
+                        rol.setCliente(rsRol.getBoolean("cliente"));
+                        rol.setEmpleado(rsRol.getBoolean("empleado"));
+                        rol.setFloristeria(rsRol.getBoolean("floristeria"));
+                        rol.setArreglo(rsRol.getBoolean("arreglo"));
+                        rol.setUsuario(rsRol.getBoolean("usuario"));
+                        rol.setMaterial(rsRol.getBoolean("material"));
+                        rol.setProveedor(rsRol.getBoolean("proveedor"));
+                        rol.setCompra(rsRol.getBoolean("compra"));
+                        rol.setTarjeta(rsRol.getBoolean("tarjeta"));
+                        rol.setManualidad(rsRol.getBoolean("manualidad"));
+                        rol.setGlobo(rsRol.getBoolean("globo"));
+                        rol.setDesayuno(rsRol.getBoolean("desayuno"));
+                        rol.setVenta(rsRol.getBoolean("venta"));
+                        rol.setMobiliario(rsRol.getBoolean("mobiliario"));
+                        rol.setPedido(rsRol.getBoolean("pedido"));
+                        rol.setPromocion(rsRol.getBoolean("promocion"));
+                        rol.setEvento(rsRol.getBoolean("evento"));
+                        rol.setActividad(rsRol.getBoolean("actividad"));
+                        rol.setAlquiler(rsRol.getBoolean("alquiler"));
+                        rol.setRol(rsRol.getBoolean("rol"));
+
+                        return new DatosUsuario(
+                                resultSet.getInt("id"),
+                                resultSet.getString("nombre"),
+                                resultSet.getString("correo"),
+                                resultSet.getString("contrasena"), // Considerar seguridad
+                                resultSet.getString("imagen"),
+                                rol // Pasa el objeto Rol completo
+                        );
+                    }
                 }
             }
             return null;
@@ -256,11 +277,12 @@ public class Login extends JFrame {
             sesion.setNombreUsuario(datosUsuario.getNombre());
             sesion.setCorreoUsuario(datosUsuario.getCorreo());
             sesion.setImagenUsuario(datosUsuario.getImagen());
-            sesion.setRolUsuario(datosUsuario.getRol());
+            sesion.setRolId(datosUsuario.getRolId());
 
             mostrarDialogoPersonalizadoExito("Inicio de sesión exitoso. Bienvenido " + datosUsuario.getNombre() + ".", Color.decode("#263238"));
 
-            SubMenu menu = new SubMenu();
+            // Crea una instancia de SubMenu y pasa los permisos
+            SubMenu menu = new SubMenu(datosUsuario.getRol());
             menu.setIdUsuarioActual(datosUsuario.getId());
             menu.setNombreUsuario(datosUsuario.getNombre());
             menu.setImagenUsuario(datosUsuario.getImagen());

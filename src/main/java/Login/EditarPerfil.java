@@ -396,6 +396,7 @@ public class EditarPerfil extends JFrame {
 
                     // Verificar el dominio del correo electrónico
                     if (!correoElectronico.endsWith("@gmail.com") &&
+                            !correoElectronico.endsWith("@unah.edu.hn") &&
                             !correoElectronico.endsWith("@unah.hn") &&
                             !correoElectronico.endsWith("@yahoo.com") &&
                             !correoElectronico.endsWith("@yahoo.es") &&
@@ -658,38 +659,41 @@ public class EditarPerfil extends JFrame {
         campoContrasenaConfirmar.setEchoChar(modoEco);
     }
 
+    private void cargarRoles() {
+        try {
+            PreparedStatement psRoles = mysql.prepareStatement("SELECT nombre FROM roles;");
+            ResultSet rsRoles = psRoles.executeQuery();
+
+            while (rsRoles.next()) {
+                String nombreRol = rsRoles.getString("nombre");
+                campoRol.addItem(nombreRol);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al cargar roles: " + e.getMessage());
+        }
+    }
+
+
     private void mostrar() {
         sql = new Conexion();
         mysql = sql.conectamysql();
 
         try {
-            PreparedStatement statement = mysql.prepareStatement("SELECT * FROM usuarios WHERE id = ?;");
+            PreparedStatement statement = mysql.prepareStatement(
+                    "SELECT usuarios.nombre, usuarios.correo, usuarios.imagen, roles.nombre AS rol_nombre " +
+                            "FROM usuarios JOIN roles ON usuarios.rol_id = roles.id " +
+                            "WHERE usuarios.id = ?;"
+            );
+
             statement.setInt(1, this.id);
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
                 campoNombre.setText(resultSet.getString("nombre"));
                 campoCorreo.setText(resultSet.getString("correo"));
-                String rol = resultSet.getString("rol");
-                int indiceRol;
-
-                switch (rol) {
-                    case "admin":
-                        indiceRol = 1;
-                        break;
-                    case "general":
-                        indiceRol = 2;
-                        break;
-                    case "variado":
-                        indiceRol = 3;
-                        break;
-                    default:
-                        indiceRol = -1; // O algún valor por defecto que indique una selección no válida
-                }
-
-                if (indiceRol != -1) {
-                    campoRol.setSelectedIndex(indiceRol);
-                }
+                String rolNombre = resultSet.getString("rol_nombre");
+                // Asumiendo que ya has llenado el JComboBox con los roles
+                campoRol.setSelectedItem(rolNombre);
 
                 String imagenNombre = resultSet.getString("imagen");
                 String imagenPath = "img/usuarios/" + imagenNombre;
@@ -795,71 +799,74 @@ public class EditarPerfil extends JFrame {
 
     private void actualizarUsuario() {
         try {
-            // Obtener solo el nombre del archivo de la imagen
             String nombreArchivoImagen = obtenerNombreDeArchivo(imagePath);
             String nombre = campoNombre.getText().trim();
             String contrasena = new String(campoContrasenaNueva.getPassword());
             String correo = campoCorreo.getText().trim();
             Object itemRol = campoRol.getSelectedItem();
-            String rol = "";
+            String rolSeleccionado = itemRol != null ? itemRol.toString() : "";
 
-            if (itemRol instanceof String) {
-                rol = (String) itemRol;
-                switch (rol) {
-                    case "Administrador":
-                        rol = "admin";
-                        break;
-                    case "General":
-                        rol = "general";
-                        break;
-                    case "Variado":
-                        rol = "variado";
-                        break;
-                    default:
-                        return;
-                }
+            String rolActual = obtenerRolActual(id); // Método para obtener el rol actual del usuario
+
+            boolean rolCambiado = !rolSeleccionado.equals(rolActual);
+            String query;
+            if (contrasena.isEmpty()) {
+                query = "UPDATE usuarios SET nombre = ?, correo = ?, imagen = ? WHERE id = ?";
             } else {
-                return;
+                query = "UPDATE usuarios SET nombre = ?, correo = ?, imagen = ?, contrasena = ? WHERE id = ?";
             }
 
             try (Connection connection = sql.conectamysql()) {
-                String query;
-                if (contrasena.isEmpty()) {
-                    query = "UPDATE usuarios SET nombre = ?, correo = ?, imagen = ?, rol = ? WHERE id = ?";
-                } else {
-                    query = "UPDATE usuarios SET nombre = ?, correo = ?, imagen = ?, contrasena = ?, rol = ? WHERE id = ?";
-                }
-
                 PreparedStatement preparedStatement = connection.prepareStatement(query);
                 preparedStatement.setString(1, nombre);
                 preparedStatement.setString(2, correo);
                 preparedStatement.setString(3, nombreFile);
-                preparedStatement.setString(4, rol);
 
+                int parameterIndex = 4;
                 if (!contrasena.isEmpty()) {
                     String contrasenaEncriptada = BCrypt.hashpw(contrasena, BCrypt.gensalt());
-                    preparedStatement.setString(4, contrasenaEncriptada);
-                    preparedStatement.setString(5, rol);
-                    preparedStatement.setInt(6, id);
-                } else {
-                    preparedStatement.setInt(5, id);
+                    preparedStatement.setString(parameterIndex++, contrasenaEncriptada);
                 }
 
+                preparedStatement.setInt(parameterIndex, id);
                 preparedStatement.executeUpdate();
-                mostrarDialogoPersonalizadoExito("     Usuario actualizado exitosamente.\nPor tu seguridad, vuelve a iniciar sesión.", Color.decode("#263238"));
+
+                if (rolCambiado) {
+                    mostrarDialogoPersonalizadoAtencion("Usuario actualizado, pero el rol no se ha cambiado.", Color.decode("#F57F17"));
+                } else {
+                    mostrarDialogoPersonalizadoExito("Usuario actualizado exitosamente.", Color.decode("#263238"));
+                }
             } catch (SQLException e) {
-                e.printStackTrace();
                 mostrarDialogoPersonalizadoError("Error al actualizar el usuario.", Color.decode("#C62828"));
+                e.printStackTrace();
             }
         } catch (Exception e) {
-            e.printStackTrace();
             mostrarDialogoPersonalizadoError("Error al actualizar el usuario.", Color.decode("#C62828"));
+            e.printStackTrace();
         }
+    }
+
+    private String obtenerRolActual(int userId) {
+        try (Connection connection = sql.conectamysql()) {
+            PreparedStatement ps = connection.prepareStatement(
+                    "SELECT roles.nombre AS rol_nombre FROM usuarios " +
+                            "JOIN roles ON usuarios.rol_id = roles.id " +
+                            "WHERE usuarios.id = ?"
+            );
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getString("rol_nombre");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al obtener el rol actual: " + e.getMessage());
+        }
+        return "";
     }
 
     public void mostrarDialogoPersonalizadoExito(String mensaje, Color colorFondoBoton) {
         // Crea un botón personalizado
-        JButton btnAceptar = new JButton("ACEPTAR");
+        JButton btnAceptar = new JButton("OK");
         btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
         btnAceptar.setForeground(Color.WHITE);
         btnAceptar.setFocusPainted(false);
@@ -878,7 +885,7 @@ public class EditarPerfil extends JFrame {
         optionPane.setOptions(new Object[]{btnAceptar});
 
         // Crea un JDialog para mostrar el JOptionPane
-        JDialog dialog = optionPane.createDialog("Éxito");
+        JDialog dialog = optionPane.createDialog("Validación");
 
         // Añade un ActionListener al botón
         btnAceptar.addActionListener(new ActionListener() {
@@ -894,7 +901,7 @@ public class EditarPerfil extends JFrame {
 
     public void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
         // Crea un botón personalizado
-        JButton btnAceptar = new JButton("ACEPTAR");
+        JButton btnAceptar = new JButton("OK");
         btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
         btnAceptar.setForeground(Color.WHITE);
         btnAceptar.setFocusPainted(false);
@@ -902,7 +909,7 @@ public class EditarPerfil extends JFrame {
         // Crea un JOptionPane
         JOptionPane optionPane = new JOptionPane(
                 mensaje,                           // Mensaje a mostrar
-                JOptionPane.ERROR_MESSAGE,   // Tipo de mensaje
+                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
                 JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
                 null,                              // Icono (puede ser null)
                 new Object[]{},                    // No se usan opciones estándar
@@ -913,7 +920,42 @@ public class EditarPerfil extends JFrame {
         optionPane.setOptions(new Object[]{btnAceptar});
 
         // Crea un JDialog para mostrar el JOptionPane
-        JDialog dialog = optionPane.createDialog("Error");
+        JDialog dialog = optionPane.createDialog("Validación");
+
+        // Añade un ActionListener al botón
+        btnAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+            }
+        });
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
+    }
+
+    public void mostrarDialogoPersonalizadoAtencion(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado
+        JButton btnAceptar = new JButton("OK");
+        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE);
+        btnAceptar.setFocusPainted(false);
+
+        // Crea un JOptionPane
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                           // Mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
+                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
+                null,                              // Icono (puede ser null)
+                new Object[]{},                    // No se usan opciones estándar
+                null                               // Valor inicial (no necesario aquí)
+        );
+
+        // Añade el botón al JOptionPane
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Validación");
 
         // Añade un ActionListener al botón
         btnAceptar.addActionListener(new ActionListener() {
@@ -936,10 +978,7 @@ public class EditarPerfil extends JFrame {
 
         Login loginFrame = new Login();
         loginFrame.setVisible(true);
-        loginFrame.pack();
-        loginFrame.setLocationRelativeTo(null);
     }
-
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
