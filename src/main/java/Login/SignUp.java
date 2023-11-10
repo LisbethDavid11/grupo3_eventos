@@ -63,8 +63,6 @@ public class SignUp extends JFrame {
     private JLabel label2;
     private JLabel label3;
     private JButton botonRegistrar;
-    private JButton botonLogin;
-    private JButton botonRecuperar;
     private JButton botonMostrar;
     private JTextField campoNombre;
     private JTextField campoCorreo;
@@ -76,7 +74,7 @@ public class SignUp extends JFrame {
 
     public SignUp() {
         super("");
-        setSize(745,500);
+        setSize(620,450);
         setLocationRelativeTo(null);
         setContentPane(panel1);
         sql = new Conexion();
@@ -85,7 +83,6 @@ public class SignUp extends JFrame {
         panel1.setBackground(lightColorPrincipal);
         panel2.setBackground(darkColorGray);
         panel3.setBackground(lightColorPrincipal);
-        panel4.setBackground(lightColorPrincipal);
         panel5.setBackground(lightColorPrincipal);
 
         label1.setForeground(blancoColorPrincipal);
@@ -101,8 +98,6 @@ public class SignUp extends JFrame {
 
         // Personalización de los botones al estilo Material UI
         personalizeButton(botonRegistrar, darkColorBlue, lightColorBlue, darkColorBlue);
-        personalizeButton(botonLogin, darkColorAqua, lightColorAqua, darkColorAqua);
-        personalizeButton(botonRecuperar, darkColorRed, lightColorRosado, darkColorRosado);
         personalizeButton(botonMostrar, darkColorGray, darkColorGray, darkColorGray);
 
         botonRegistrar.addActionListener(new ActionListener() {
@@ -170,6 +165,7 @@ public class SignUp extends JFrame {
                     // Verificar el dominio del correo electrónico
                     if (!correoElectronico.endsWith("@gmail.com") &&
                             !correoElectronico.endsWith("@unah.hn") &&
+                            !correoElectronico.endsWith("@unah.edu.hn") &&
                             !correoElectronico.endsWith("@yahoo.com") &&
                             !correoElectronico.endsWith("@yahoo.es") &&
                             !correoElectronico.endsWith("@hotmail.com")) {
@@ -228,9 +224,9 @@ public class SignUp extends JFrame {
                     public void actionPerformed(ActionEvent e) {
                         // Acciones para el botón Sí
                         dialog.dispose();
-                        dialog.dispose();
 
-                        /*
+
+
                         DatosUsuario datosUsuario = guardarUsuario();
                         if (datosUsuario != null) {
                             SesionUsuario sesion = SesionUsuario.getInstance();
@@ -238,16 +234,22 @@ public class SignUp extends JFrame {
                             sesion.setNombreUsuario(datosUsuario.getNombre());
                             sesion.setCorreoUsuario(datosUsuario.getCorreo());
                             sesion.setImagenUsuario(datosUsuario.getImagen());
-                            //sesion.setRolUsuario(datosUsuario.getRol());
+                            sesion.setRolId(datosUsuario.getRolId());
 
+                            ListaUsuarios listaUsuarios = new ListaUsuarios();
+                            listaUsuarios.setVisible(true);
+
+                            /*
                             SubMenu menu = new SubMenu();
                             menu.setIdUsuarioActual(datosUsuario.getId());
                             menu.setNombreUsuario(datosUsuario.getNombre());
                             menu.setImagenUsuario(datosUsuario.getImagen());
                             menu.setVisible(true);
+                            */
+
                             dispose(); // Cierra el formulario actual
 
-                         */
+                        }
 
                     }
                 });
@@ -274,24 +276,6 @@ public class SignUp extends JFrame {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 mostrarContrasena();
-            }
-        });
-
-        botonLogin.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                Login login = new Login();
-                login.setVisible(true);
-                dispose();
-            }
-        });
-
-        botonRecuperar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                ResetPassword reset = new ResetPassword();
-                reset.setVisible(true);
-                dispose();
             }
         });
 
@@ -424,7 +408,7 @@ public class SignUp extends JFrame {
             String nombre = campoNombre.getText().trim();
             String correo = campoCorreo.getText().trim();
             String contrasena = new String(campoContrasena.getPassword());
-            String rol = "general"; // Asumiendo que todos los nuevos usuarios serán 'general'
+            int rol = 2; // Asumiendo que todos los nuevos usuarios serán 'general'
 
             String contrasenaEncriptada = BCrypt.hashpw(contrasena, BCrypt.gensalt());
 
@@ -432,13 +416,13 @@ public class SignUp extends JFrame {
             String[] imagenes = {"imagen 1.jpg", "imagen 2.jpg", "imagen 3.jpg", "imagen 4.jpg", "imagen 5.jpg", "imagen 6.jpg", "imagen 7.jpg", "imagen 8.jpg", "imagen 9.jpg", "imagen 10.jpg"};
             String imagenSeleccionada = imagenes[new Random().nextInt(imagenes.length)];
 
-            String query = "INSERT INTO usuarios (nombre, correo, contrasena, imagen, rol) VALUES (?, ?, ?, ?, ?)";
+            String query = "INSERT INTO usuarios (nombre, correo, contrasena, imagen, rol_id) VALUES (?, ?, ?, ?, ?)";
             try (PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
                 preparedStatement.setString(1, nombre);
                 preparedStatement.setString(2, correo);
                 preparedStatement.setString(3, contrasenaEncriptada);
                 preparedStatement.setString(4, imagenSeleccionada);
-                //preparedStatement.setString(5, rol);
+                preparedStatement.setInt(5, rol);
 
                 int rowsInserted = preparedStatement.executeUpdate();
                 if (rowsInserted > 0) {
@@ -448,7 +432,7 @@ public class SignUp extends JFrame {
                     try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
                         if (generatedKeys.next()) {
                             int id = generatedKeys.getInt(1);
-                            //return new DatosUsuario(id, nombre, correo, contrasenaEncriptada, imagenSeleccionada, rol); // Devuelve los datos del usuario
+                            return new DatosUsuario(id, nombre, correo, contrasenaEncriptada, imagenSeleccionada, null); // Devuelve los datos del usuario
                         }
                     }
                 } else {
