@@ -6,8 +6,8 @@ import java.awt.*;
 public class AcercaDe extends JPanel {
 
     public AcercaDe() {
-        setLayout(new BorderLayout(0, 20)); // Añade espacio entre los componentes
-        setBackground(new Color(238, 238, 238)); // Fondo claro al estilo Material
+        setLayout(new BorderLayout(0, 0)); // Añade espacio entre los componentes
+        setBackground(new Color(149, 165, 166)); // Fondo claro al estilo Material
 
         // Información del sistema en el centro
         JPanel centerPanel = new JPanel();
@@ -15,8 +15,8 @@ public class AcercaDe extends JPanel {
         centerPanel.setBackground(new Color(245, 245, 245)); // Fondo más claro para el contenido
         centerPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // Margen alrededor del panel central
 
-        JLabel nameLabel = new JLabel("Eventos Chelsea", JLabel.CENTER);
-        nameLabel.setFont(new Font("Arial", Font.BOLD, 40)); // Fuente más grande para el nombre
+        JLabel nameLabel = new JLabel("EVENTOS CHELSEA", JLabel.CENTER);
+        nameLabel.setFont(new Font("Century Gothic", Font.BOLD, 40)); // Fuente más grande para el nombre
         nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT); // Asegura la alineación al centro
         centerPanel.add(nameLabel);
 
@@ -31,10 +31,6 @@ public class AcercaDe extends JPanel {
                         "Visite nuestro local o contáctenos."
         );
         centerPanel.add(Box.createVerticalStrut(20)); // Espacio antes del link
-
-
-
-        centerPanel.add(Box.createVerticalStrut(10)); // Espacio después del link
 
         // Version del software
         JLabel versionLabel = new JLabel("v1.0", JLabel.CENTER);
@@ -62,7 +58,7 @@ public class AcercaDe extends JPanel {
 
         // Botones en la parte inferior
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setBackground(new Color(238, 238, 238)); // Fondo al estilo Material para el panel de botones
+        buttonPanel.setBackground(new Color(149, 165, 166)); // Fondo al estilo Material para el panel de botones
         buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
         JButton closeButton = new JButton("Cerrar");
@@ -87,7 +83,7 @@ public class AcercaDe extends JPanel {
         textArea.setEditable(false);
         textArea.setFocusable(false);
         textArea.setBackground(UIManager.getColor("Label.background"));
-        textArea.setFont(UIManager.getFont("Label.font"));
+        textArea.setFont(new Font("Century Gothic", Font.BOLD, 16));
         textArea.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20)); // Añade un borde invisible para espacio extra
         textArea.setAlignmentX(Component.CENTER_ALIGNMENT);
         panel.add(textArea);
@@ -123,7 +119,7 @@ public class AcercaDe extends JPanel {
     public static void main(String[] args) {
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(600, 400);
+        frame.setSize(620, 460);
         frame.setLocationRelativeTo(null);
         frame.add(new AcercaDe());
         frame.setVisible(true);
