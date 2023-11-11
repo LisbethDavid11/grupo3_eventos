@@ -1,5 +1,6 @@
 package Roles;
 
+import Login.SesionUsuario;
 import Objetos.Conexion;
 
 import javax.swing.*;
@@ -156,7 +157,8 @@ public class CrearRol extends JFrame {
         cancelButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ListaRoles listaRoles = new ListaRoles();
+                int idUsuarioActual = SesionUsuario.getInstance().getIdUsuario();
+                ListaRoles listaRoles = new ListaRoles(idUsuarioActual);
                 listaRoles.setVisible(true);
                 dispose();
             }
@@ -254,7 +256,8 @@ public class CrearRol extends JFrame {
                         // Acciones para el botón Sí
                         guardarRol();
                         dialog.dispose();
-                        ListaRoles listaRoles = new ListaRoles();
+                        int idUsuarioActual = SesionUsuario.getInstance().getIdUsuario();
+                        ListaRoles listaRoles = new ListaRoles(idUsuarioActual);
                         listaRoles.setVisible(true);
                         dispose();
                     }
@@ -349,7 +352,7 @@ public class CrearRol extends JFrame {
                     } else {
 
                         try (PreparedStatement preparedStatement = connection.prepareStatement(
-                             "INSERT INTO roles (nombre, cliente, empleado, floristeria, arreglo, usuario, material, proveedor, compra, tarjeta, manualidad, globo, desayuno, venta, mobiliario, pedido, promocion, evento, actividad, alquiler, rol) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+                             "INSERT INTO roles (nombre, cliente, empleado, floristeria, arreglo, usuario, material, proveedor, compra, tarjeta, manualidad, globo, desayuno, venta, mobiliario, pedido, promocion, evento, actividad, alquiler, rol) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
                     preparedStatement.setString(1, nombre);
                     preparedStatement.setBoolean(2, cliente);
                     preparedStatement.setBoolean(3, empleado);

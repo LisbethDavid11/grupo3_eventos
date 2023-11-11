@@ -6,9 +6,7 @@ import Objetos.Conexion;
 import Objetos.Rol;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableColumnModel;
+import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -41,16 +39,25 @@ public class ListaRoles extends JFrame {
     Color primaryColor = Color.decode("#37474f"); // Gris azul oscuro
     Color lightColor = Color.decode("#cfd8dc"); // Gris azul claro
     Color darkColor = Color.decode("#263238"); // Gris azul más oscuro
-    public ListaRoles() {
+    Color darkColorRed = new Color(244, 67, 54);
+    Color darkColorBlue = new Color(33, 150, 243);
+    public int id;
+    private UsuarioService usuarioService; // Asume que esta es tu clase de servicio
+
+    public ListaRoles(int id) {
         super("");
         setSize(850, 505);
         setLocationRelativeTo(null);
         setContentPane(panelPrincipal);
         campoBusqueda.setText("");
+        Conexion sql = new Conexion(); // Asume que esto crea una conexión válida
+        this.id = id;
+        this.usuarioService = new UsuarioService(sql);
 
         listaRoles.setModel(cargarDatos());
         configurarTablaRoles();
-
+        listaRoles.getColumnModel().getColumn(3).setCellRenderer(new ListaRoles.ButtonRenderer());
+        listaRoles.getColumnModel().getColumn(3).setCellEditor(new ListaRoles.ButtonEditor());
         lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
 
         botonAtras.setEnabled(false);
@@ -66,6 +73,8 @@ public class ListaRoles extends JFrame {
                 }
                 listaRoles.setModel(cargarDatos());
                 configurarTablaRoles();
+                listaRoles.getColumnModel().getColumn(3).setCellRenderer(new ListaRoles.ButtonRenderer());
+                listaRoles.getColumnModel().getColumn(3).setCellEditor(new ListaRoles.ButtonEditor());
                 lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
@@ -82,6 +91,8 @@ public class ListaRoles extends JFrame {
                 }
                 listaRoles.setModel(cargarDatos());
                 configurarTablaRoles();
+                listaRoles.getColumnModel().getColumn(3).setCellRenderer(new ListaRoles.ButtonRenderer());
+                listaRoles.getColumnModel().getColumn(3).setCellEditor(new ListaRoles.ButtonEditor());
                 lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
@@ -95,6 +106,8 @@ public class ListaRoles extends JFrame {
                 botonAtras.setEnabled(pagina > 0);
                 listaRoles.setModel(cargarDatos());
                 configurarTablaRoles();
+                listaRoles.getColumnModel().getColumn(3).setCellRenderer(new ListaRoles.ButtonRenderer());
+                listaRoles.getColumnModel().getColumn(3).setCellEditor(new ListaRoles.ButtonEditor());
                 lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
@@ -186,10 +199,12 @@ public class ListaRoles extends JFrame {
         columnModel.getColumn(0).setPreferredWidth(20);
         columnModel.getColumn(1).setPreferredWidth(150);
         columnModel.getColumn(2).setPreferredWidth(400);
+        columnModel.getColumn(3).setPreferredWidth(50);
 
         columnModel.getColumn(0).setCellRenderer(new ListaRoles.CenterAlignedRenderer());
         columnModel.getColumn(1).setCellRenderer(new ListaRoles.LeftAlignedRenderer());
         columnModel.getColumn(2).setCellRenderer(new ListaRoles.LeftAlignedRenderer());
+        columnModel.getColumn(3).setCellRenderer(new ListaRoles.CenterAlignedRenderer());
     }
 
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
@@ -295,8 +310,164 @@ public class ListaRoles extends JFrame {
         return totalPageCount; // Retorna el total de páginas necesarias
     }
 
+    class ButtonRenderer extends JButton implements TableCellRenderer {
+        public ButtonRenderer() {
+            setOpaque(true);
+            setForeground(Color.WHITE);
+            setBackground(darkColor);
+            setFocusPainted(false);
+        }
+
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            setText("X");
+            return this;
+        }
+    }
+
+    class ButtonEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
+        private JButton button;
+        private int row, col;
+        private JTable table;
+
+        public ButtonEditor() {
+            button = new JButton();
+            button.setOpaque(true);
+            button.addActionListener(this);
+            button.setForeground(Color.WHITE);
+            button.setBackground(darkColor);
+            button.setFocusPainted(false);
+            //button.setBorder(margin);
+        }
+
+        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+            button.setText("X");
+            this.table = table;
+            this.row = row;
+            this.col = column;
+            return button;
+        }
+
+        public Object getCellEditorValue() {
+            return "X";
+        }
+
+        public void actionPerformed(ActionEvent e) {
+
+            JButton btnSave = new JButton("Sí");
+            JButton btnCancel = new JButton("No");
+
+            // Personaliza los botones aquí
+            btnSave.setBackground(darkColorBlue);
+            btnCancel.setBackground(darkColorRed);
+
+            // Personaliza los fondos de los botones aquí
+            btnSave.setForeground(Color.WHITE);
+            btnCancel.setForeground(Color.WHITE);
+
+            // Elimina el foco
+            btnSave.setFocusPainted(false);
+            btnCancel.setFocusPainted(false);
+
+            // Crea un JOptionPane
+            JOptionPane optionPane = new JOptionPane(
+                    "¿Desea eliminar el rol de usuario?",
+                    JOptionPane.QUESTION_MESSAGE,
+                    JOptionPane.DEFAULT_OPTION,
+                    null,
+                    new Object[]{}, // no options
+                    null
+            );
+
+            // Crea un JDialog
+            JDialog dialog = optionPane.createDialog("Eliminar rol");
+
+            // Añade ActionListener a los botones
+            btnSave.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    // Verificar si el usuario es administrador
+                    boolean esAdmin = usuarioService.esAdministrador(id);
+
+                    // Lógica adicional basada en si es administrador o no
+                    if (esAdmin) {
+                        System.out.println("El usuario es administrador.");
+                        if (table != null) {
+                            int modelRow = table.convertRowIndexToModel(row);
+                            TableModel model = table.getModel();
+
+                            if (model instanceof ModeloRol) {
+                                ModeloRol rolModel = (ModeloRol) model;
+                                Rol rol = rolModel.getRol(modelRow);
+                                int rolId = rol.getId();
+
+                                try (Connection connection = sql.conectamysql()) {
+                                    // Verificar si hay usuarios asociados a este rol
+                                    boolean tieneUsuarios = false;
+                                    try (PreparedStatement checkUsuarios = connection.prepareStatement(
+                                            "SELECT COUNT(*) FROM usuarios WHERE rol_id = ?")) {
+                                        checkUsuarios.setInt(1, rolId);
+                                        ResultSet rs = checkUsuarios.executeQuery();
+                                        if (rs.next() && rs.getInt(1) > 0) {
+                                            tieneUsuarios = true;
+                                        }
+                                    }
+
+                                    if (!tieneUsuarios) {
+                                        // Eliminar el rol si no hay usuarios asociados
+                                        try (PreparedStatement deleteRol = connection.prepareStatement(
+                                                "DELETE FROM roles WHERE id = ?")) {
+                                            deleteRol.setInt(1, rolId);
+                                            deleteRol.executeUpdate();
+
+                                            // Elimina el rol de la lista y actualiza la tabla
+                                            rolModel.removeRow(modelRow);
+                                            table.repaint();
+                                            table.revalidate();
+                                            JOptionPane.showMessageDialog(null, "El rol de usuario ha sido eliminado con éxito.");
+
+                                            // Otros métodos de actualización si es necesario
+                                        }
+                                    } else {
+                                        // Manejar el caso donde hay usuarios asociados
+                                        JOptionPane.showMessageDialog(null, "No se puede eliminar el rol porque hay usuarios asociados.");
+                                    }
+                                } catch (SQLException ex) {
+                                    ex.printStackTrace();
+                                    // Manejo de excepciones en caso de error en la eliminación en la base de datos
+                                }
+                            }
+                        }
+
+                        dialog.dispose();
+                        lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+                        listaRoles.setModel(cargarDatos());
+                        configurarTablaRoles();
+                        listaRoles.getColumnModel().getColumn(3).setCellRenderer(new ListaRoles.ButtonRenderer());
+                        listaRoles.getColumnModel().getColumn(3).setCellEditor(new ListaRoles.ButtonEditor());
+                        fireEditingStopped();
+                    } else {
+                        System.out.println("El usuario NO es administrador.");
+                        dialog.dispose();
+                        JOptionPane.showMessageDialog(null, "No tienes permiso para eliminar este rol de usuario.");
+                    }
+                }
+            });
+
+            btnCancel.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    dialog.dispose();
+                    fireEditingCanceled();
+                }
+            });
+
+            optionPane.setOptions(new Object[]{btnSave, btnCancel});
+            dialog.setVisible(true);
+        }
+    }
+
     public static void main(String[] args) {
-        ListaRoles listaRoles = new ListaRoles();
+        ListaRoles listaRoles = new ListaRoles(1);
         listaRoles.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         listaRoles.setVisible(true);
     }

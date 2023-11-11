@@ -1,5 +1,6 @@
 package Roles;
 
+import Login.SesionUsuario;
 import Objetos.Conexion;
 
 import javax.swing.*;
@@ -158,7 +159,8 @@ public class EditarRol extends JFrame {
         cancelButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ListaRoles listaRoles = new ListaRoles();
+                int idUsuarioActual = SesionUsuario.getInstance().getIdUsuario();
+                ListaRoles listaRoles = new ListaRoles(idUsuarioActual);
                 listaRoles.setVisible(true);
                 dispose();
             }
@@ -259,7 +261,8 @@ public class EditarRol extends JFrame {
                         // Acciones para el botón Sí
                         actualizarRol();
                         dialog.dispose();
-                        ListaRoles listaRoles = new ListaRoles();
+                        int idUsuarioActual = SesionUsuario.getInstance().getIdUsuario();
+                        ListaRoles listaRoles = new ListaRoles(idUsuarioActual);
                         listaRoles.setVisible(true);
                         dispose();
                     }
@@ -322,7 +325,13 @@ public class EditarRol extends JFrame {
     }
 
     private void actualizarRol() {
-        String nombre = nombreField.getText().trim();
+        String nombre;
+        if (id == 1){
+            nombre = "Administrador";
+        } else {
+            nombre = nombreField.getText().trim();
+        }
+
         try (Connection connection = sql.conectamysql();
              PreparedStatement checkStmt = connection.prepareStatement(
                      "SELECT COUNT(*) FROM roles WHERE id = ?")) {

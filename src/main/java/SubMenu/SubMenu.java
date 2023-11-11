@@ -261,7 +261,7 @@ public class SubMenu extends JFrame {
         listaActividades = new CalendarioDeActividades();
         listaAlquileres = new ListaAlquileres();
         listaUsuarios = new ListaUsuarios();
-        listaRoles = new ListaRoles();
+        listaRoles = new ListaRoles(1);
 
         clientesButton.addActionListener(new ActionListener() {
             @Override
@@ -401,11 +401,11 @@ public class SubMenu extends JFrame {
         rolesButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                int idUsuarioActual = SesionUsuario.getInstance().getIdUsuario();
+                ListaRoles listaRoles = new ListaRoles(idUsuarioActual);
                 listaRoles.setVisible(true);
-
             }
         });
-
     }
 
     public void setNombreUsuario(String nombre) {

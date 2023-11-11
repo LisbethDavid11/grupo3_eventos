@@ -2,12 +2,13 @@ package Modelos;
 
 import Objetos.Rol;
 
+import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class ModeloRol extends AbstractTableModel {
-    private final String[] columnas = {"N°", "Nombre", "Accesos"};
+    private final String[] columnas = {"N°", "Nombre", "Accesos", "Eliminar"};
     private final List<Rol> roles;
 
     public ModeloRol(List<Rol> roles) {
@@ -48,6 +49,8 @@ public class ModeloRol extends AbstractTableModel {
                 return "  " + rol.getNombre();
             case 2:
                 return "  " + obtenerCadenaAccesos(rol);
+            case 3:
+                return "X"; // Texto del botón
             default:
                 return null;
         }
@@ -81,4 +84,33 @@ public class ModeloRol extends AbstractTableModel {
         return accesos.stream().filter(s -> !s.isEmpty()).collect(Collectors.joining(", "));
     }
 
+    @Override
+    public Class<?> getColumnClass(int columnIndex) {
+        if (columnIndex == 3) {
+            return JButton.class;
+        }
+        return super.getColumnClass(columnIndex);
+    }
+
+    @Override
+    public boolean isCellEditable(int rowIndex, int columnIndex) {
+        return columnIndex == 3;
+    }
+
+    @Override
+    public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+        if (columnIndex == 3) {
+            // Suponiendo que 3 es el índice de la columna de eliminar
+            removeRow(rowIndex);
+            fireTableRowsDeleted(rowIndex, rowIndex);
+        }
+    }
+
+
+    public void removeRow(int rowIndex) {
+        if (rowIndex >= 0 && rowIndex < roles.size()) {
+            roles.remove(rowIndex);
+            fireTableRowsDeleted(rowIndex, rowIndex);
+        }
+    }
 }

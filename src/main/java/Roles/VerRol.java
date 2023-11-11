@@ -1,4 +1,5 @@
 package Roles;
+import Login.SesionUsuario;
 import Objetos.Conexion;
 
 import javax.swing.*;
@@ -82,7 +83,8 @@ public class VerRol extends JFrame {
         closeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ListaRoles listaRoles = new ListaRoles();
+                int idUsuarioActual = SesionUsuario.getInstance().getIdUsuario();
+                ListaRoles listaRoles = new ListaRoles(idUsuarioActual);
                 listaRoles.setVisible(true);
                 dispose();
             }
