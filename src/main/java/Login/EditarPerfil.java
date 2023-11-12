@@ -22,6 +22,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class EditarPerfil extends JFrame {
     private JTextField campoNombre, campoCorreo;
@@ -105,6 +107,12 @@ public class EditarPerfil extends JFrame {
         gbc.weighty = 1.0;
         labelImagen.setHorizontalAlignment(SwingConstants.CENTER);
         panelImg.add(labelImagen, gbc);
+
+        if (usuarioEsAdministradorSesion(id) && this.id != 1){
+            campoRol.setEnabled(true);
+        } else {
+            campoRol.setEnabled(false);
+        }
 
         PromptSupport.init("  Actual", Color.GRAY, null, campoContrasenaAnterior);
         PromptSupport.init("  Nueva", Color.GRAY, null, campoContrasenaNueva);
@@ -805,17 +813,12 @@ public class EditarPerfil extends JFrame {
             String nombre = campoNombre.getText().trim();
             String contrasena = new String(campoContrasenaNueva.getPassword());
             String correo = campoCorreo.getText().trim();
-            Object itemRol = campoRol.getSelectedItem();
-            String rolSeleccionado = itemRol != null ? itemRol.toString() : "";
-
-            String rolActual = obtenerRolActual(id); // Método para obtener el rol actual del usuario
-
-            boolean rolCambiado = !rolSeleccionado.equals(rolActual);
+            int item = campoRol.getSelectedIndex() + 1;
             String query;
             if (contrasena.isEmpty()) {
-                query = "UPDATE usuarios SET nombre = ?, correo = ?, imagen = ? WHERE id = ?";
+                query = "UPDATE usuarios SET nombre = ?, correo = ?, imagen = ?, rol_id = ? WHERE id = ?";
             } else {
-                query = "UPDATE usuarios SET nombre = ?, correo = ?, imagen = ?, contrasena = ? WHERE id = ?";
+                query = "UPDATE usuarios SET nombre = ?, correo = ?, imagen = ?, contrasena = ?, rol_id WHERE id = ?";
             }
 
             try (Connection connection = sql.conectamysql()) {
@@ -823,8 +826,9 @@ public class EditarPerfil extends JFrame {
                 preparedStatement.setString(1, nombre);
                 preparedStatement.setString(2, correo);
                 preparedStatement.setString(3, nombreFile);
+                preparedStatement.setInt(4, item);
 
-                int parameterIndex = 4;
+                int parameterIndex = 5;
                 if (!contrasena.isEmpty()) {
                     String contrasenaEncriptada = BCrypt.hashpw(contrasena, BCrypt.gensalt());
                     preparedStatement.setString(parameterIndex++, contrasenaEncriptada);
@@ -832,12 +836,8 @@ public class EditarPerfil extends JFrame {
 
                 preparedStatement.setInt(parameterIndex, id);
                 preparedStatement.executeUpdate();
+                mostrarDialogoPersonalizadoExito("Usuario actualizado exitosamente.", Color.decode("#263238"));
 
-                if (rolCambiado) {
-                    mostrarDialogoPersonalizadoAtencion("Usuario actualizado, pero el rol no se ha cambiado.", Color.decode("#F57F17"));
-                } else {
-                    mostrarDialogoPersonalizadoExito("Usuario actualizado exitosamente.", Color.decode("#263238"));
-                }
             } catch (SQLException e) {
                 mostrarDialogoPersonalizadoError("Error al actualizar el usuario.", Color.decode("#C62828"));
                 e.printStackTrace();
@@ -846,24 +846,6 @@ public class EditarPerfil extends JFrame {
             mostrarDialogoPersonalizadoError("Error al actualizar el usuario.", Color.decode("#C62828"));
             e.printStackTrace();
         }
-    }
-
-    private String obtenerRolActual(int userId) {
-        try (Connection connection = sql.conectamysql()) {
-            PreparedStatement ps = connection.prepareStatement(
-                    "SELECT roles.nombre AS rol_nombre FROM usuarios " +
-                            "JOIN roles ON usuarios.rol_id = roles.id " +
-                            "WHERE usuarios.id = ?"
-            );
-            ps.setInt(1, userId);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return rs.getString("rol_nombre");
-            }
-        } catch (SQLException e) {
-            System.out.println("Error al obtener el rol actual: " + e.getMessage());
-        }
-        return "";
     }
 
     public void mostrarDialogoPersonalizadoExito(String mensaje, Color colorFondoBoton) {
@@ -982,9 +964,27 @@ public class EditarPerfil extends JFrame {
         loginFrame.setVisible(true);
     }
 
+    public boolean usuarioEsAdministradorSesion(int userId) {
+        String query = "SELECT roles.nombre FROM usuarios INNER JOIN roles ON usuarios.rol_id = roles.id WHERE usuarios.id = ?";
+
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, this.id);
+            ResultSet rs = preparedStatement.executeQuery();
+
+            if (rs.next()) {
+                String rol = rs.getString("nombre");
+                return "Administrador".equals(rol);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            EditarPerfil editarPerfil = new EditarPerfil(1);
+            EditarPerfil editarPerfil = new EditarPerfil(3);
             editarPerfil.setVisible(true);
         });
     }
