@@ -225,8 +225,6 @@ public class SignUp extends JFrame {
                         // Acciones para el botón Sí
                         dialog.dispose();
 
-
-
                         DatosUsuario datosUsuario = guardarUsuario();
                         if (datosUsuario != null) {
                             SesionUsuario sesion = SesionUsuario.getInstance();
@@ -236,7 +234,7 @@ public class SignUp extends JFrame {
                             sesion.setImagenUsuario(datosUsuario.getImagen());
                             sesion.setRolId(datosUsuario.getRolId());
 
-                            ListaUsuarios listaUsuarios = new ListaUsuarios();
+                            ListaUsuarios listaUsuarios = new ListaUsuarios(1);
                             listaUsuarios.setVisible(true);
 
                             /*
