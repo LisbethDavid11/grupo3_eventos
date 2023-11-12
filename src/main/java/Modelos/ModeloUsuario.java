@@ -36,6 +36,10 @@ public class ModeloUsuario extends AbstractTableModel {
         return columnas[column];
     }
 
+    public List<Usuario> getUsuarios() {
+        return this.usuarios;
+    }
+
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         Usuario usuario = usuarios.get(rowIndex);
@@ -87,9 +91,9 @@ public class ModeloUsuario extends AbstractTableModel {
 
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-        if (columnIndex == 4 && aValue instanceof String && aValue.equals("X")) {
-            // Aquí puedes realizar la lógica para eliminar la fila en la base de datos si es necesario
-            usuarios.remove(rowIndex);
+        if (columnIndex == 4) {
+            // Suponiendo que 3 es el índice de la columna de eliminar
+            removeRow(rowIndex);
             fireTableRowsDeleted(rowIndex, rowIndex);
         }
     }
