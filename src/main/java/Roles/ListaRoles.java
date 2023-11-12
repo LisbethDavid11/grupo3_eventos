@@ -41,8 +41,8 @@ public class ListaRoles extends JFrame {
     Color darkColor = Color.decode("#263238"); // Gris azul más oscuro
     Color darkColorRed = new Color(244, 67, 54);
     Color darkColorBlue = new Color(33, 150, 243);
+
     public int id;
-    private UsuarioService usuarioService; // Asume que esta es tu clase de servicio
 
     public ListaRoles(int id) {
         super("");
@@ -52,7 +52,6 @@ public class ListaRoles extends JFrame {
         campoBusqueda.setText("");
         Conexion sql = new Conexion(); // Asume que esto crea una conexión válida
         this.id = id;
-        this.usuarioService = new UsuarioService(sql);
 
         listaRoles.setModel(cargarDatos());
         configurarTablaRoles();
@@ -126,7 +125,7 @@ public class ListaRoles extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (listaRoles.getSelectedRow() == -1) {
-                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
+                    mostrarDialogoPersonalizadoAtencion("Seleccione una fila para continuar.", Color.decode("#F57F17"));
                     return;
                 }
                 VerRol rol = new VerRol(listaRol.get(listaRoles.getSelectedRow()).getId());
@@ -139,7 +138,7 @@ public class ListaRoles extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (listaRoles.getSelectedRow() == -1) {
-                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
+                    mostrarDialogoPersonalizadoAtencion("Seleccione una fila para continuar.", Color.decode("#F57F17"));
                     return;
                 }
                 EditarRol cliente = new EditarRol(listaRol.get(listaRoles.getSelectedRow()).getId());
@@ -284,7 +283,7 @@ public class ListaRoles extends JFrame {
             mysql.close();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
+            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
             listaRol = new ArrayList<>();
         }
         return new ModeloRol(listaRol);
@@ -302,7 +301,8 @@ public class ListaRoles extends JFrame {
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos","Error", JOptionPane.ERROR_MESSAGE);
+
+            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
         }
 
         int totalPageCount = (int) Math.ceil((double) count / 20); // Divide el total de elementos por 20 para obtener la cantidad de páginas completas
@@ -386,11 +386,7 @@ public class ListaRoles extends JFrame {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     // Verificar si el usuario es administrador
-                    boolean esAdmin = usuarioService.esAdministrador(id);
-
-                    // Lógica adicional basada en si es administrador o no
-                    if (esAdmin) {
-                        System.out.println("El usuario es administrador.");
+                    if (esUsuarioAdministrador(id)) {
                         if (table != null) {
                             int modelRow = table.convertRowIndexToModel(row);
                             TableModel model = table.getModel();
@@ -399,6 +395,21 @@ public class ListaRoles extends JFrame {
                                 ModeloRol rolModel = (ModeloRol) model;
                                 Rol rol = rolModel.getRol(modelRow);
                                 int rolId = rol.getId();
+
+                                // Restricción para roles específicos
+                                if (rolId == 1) {
+                                    dialog.dispose();
+                                    mostrarDialogoPersonalizadoError("No se puede eliminar el rol de administrador.", Color.decode("#C62828"));
+                                    fireEditingCanceled();
+                                    return; // Salir del método si se intenta eliminar un rol restringido
+                                }
+
+                                if (rolId == 2) {
+                                    dialog.dispose();
+                                    mostrarDialogoPersonalizadoError("No se puede eliminar el rol de cajero principal.", Color.decode("#C62828"));
+                                    fireEditingCanceled();
+                                    return; // Salir del método si se intenta eliminar un rol restringido
+                                }
 
                                 try (Connection connection = sql.conectamysql()) {
                                     // Verificar si hay usuarios asociados a este rol
@@ -423,13 +434,15 @@ public class ListaRoles extends JFrame {
                                             rolModel.removeRow(modelRow);
                                             table.repaint();
                                             table.revalidate();
-                                            JOptionPane.showMessageDialog(null, "El rol de usuario ha sido eliminado con éxito.");
-
+                                            dialog.dispose();
+                                            mostrarDialogoPersonalizadoExito("El rol de usuario " + rol.getNombre() +" ha sido eliminado con éxito.", Color.decode("#263238"));
                                             // Otros métodos de actualización si es necesario
                                         }
                                     } else {
                                         // Manejar el caso donde hay usuarios asociados
-                                        JOptionPane.showMessageDialog(null, "No se puede eliminar el rol porque hay usuarios asociados.");
+                                        dialog.dispose();
+                                        mostrarDialogoPersonalizadoError("No se puede eliminar el rol porque existen usuarios asociados.", Color.decode("#C62828"));
+                                        fireEditingCanceled();
                                     }
                                 } catch (SQLException ex) {
                                     ex.printStackTrace();
@@ -446,9 +459,9 @@ public class ListaRoles extends JFrame {
                         listaRoles.getColumnModel().getColumn(3).setCellEditor(new ListaRoles.ButtonEditor());
                         fireEditingStopped();
                     } else {
-                        System.out.println("El usuario NO es administrador.");
                         dialog.dispose();
-                        JOptionPane.showMessageDialog(null, "No tienes permiso para eliminar este rol de usuario.");
+                        mostrarDialogoPersonalizadoError("No tienes permiso para eliminar este rol de usuario.", Color.decode("#C62828"));
+                        fireEditingCanceled();
                     }
                 }
             });
@@ -464,6 +477,130 @@ public class ListaRoles extends JFrame {
             optionPane.setOptions(new Object[]{btnSave, btnCancel});
             dialog.setVisible(true);
         }
+    }
+
+    public boolean esUsuarioAdministrador(int idUser) {
+        String query = "SELECT roles.nombre FROM usuarios INNER JOIN roles ON usuarios.rol_id = roles.id WHERE usuarios.id = ?";
+
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, idUser);
+            ResultSet rs = preparedStatement.executeQuery();
+
+            if (rs.next()) {
+                String rol = rs.getString("nombre");
+                return "Administrador".equals(rol);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+
+    public void mostrarDialogoPersonalizadoExito(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado
+        JButton btnAceptar = new JButton("OK");
+        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE);
+        btnAceptar.setFocusPainted(false);
+
+        // Crea un JOptionPane
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                           // Mensaje a mostrar
+                JOptionPane.INFORMATION_MESSAGE,   // Tipo de mensaje
+                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
+                null,                              // Icono (puede ser null)
+                new Object[]{},                    // No se usan opciones estándar
+                null                               // Valor inicial (no necesario aquí)
+        );
+
+        // Añade el botón al JOptionPane
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Validación");
+
+        // Añade un ActionListener al botón
+        btnAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+            }
+        });
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
+    }
+
+    public void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado
+        JButton btnAceptar = new JButton("OK");
+        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE);
+        btnAceptar.setFocusPainted(false);
+
+        // Crea un JOptionPane
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                           // Mensaje a mostrar
+                JOptionPane.ERROR_MESSAGE,   // Tipo de mensaje
+                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
+                null,                              // Icono (puede ser null)
+                new Object[]{},                    // No se usan opciones estándar
+                null                               // Valor inicial (no necesario aquí)
+        );
+
+        // Añade el botón al JOptionPane
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Validación");
+
+        // Añade un ActionListener al botón
+        btnAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+            }
+        });
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
+    }
+
+    public void mostrarDialogoPersonalizadoAtencion(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado
+        JButton btnAceptar = new JButton("OK");
+        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE);
+        btnAceptar.setFocusPainted(false);
+
+        // Crea un JOptionPane
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                           // Mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
+                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
+                null,                              // Icono (puede ser null)
+                new Object[]{},                    // No se usan opciones estándar
+                null                               // Valor inicial (no necesario aquí)
+        );
+
+        // Añade el botón al JOptionPane
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Validación");
+
+        // Añade un ActionListener al botón
+        btnAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+            }
+        });
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
     }
 
     public static void main(String[] args) {

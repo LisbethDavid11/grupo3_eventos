@@ -260,8 +260,8 @@ public class SubMenu extends JFrame {
         listaEventos = new ListaEventos();
         listaActividades = new CalendarioDeActividades();
         listaAlquileres = new ListaAlquileres();
-        listaUsuarios = new ListaUsuarios();
-        listaRoles = new ListaRoles(1);
+        listaUsuarios = new ListaUsuarios(id);
+        listaRoles = new ListaRoles(id);
 
         clientesButton.addActionListener(new ActionListener() {
             @Override
@@ -386,15 +386,15 @@ public class SubMenu extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 listaAlquileres.setVisible(true);
-
             }
         });
 
         usuariosButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                int idUsuarioActual = SesionUsuario.getInstance().getIdUsuario();
+                ListaUsuarios listaUsuarios = new ListaUsuarios(idUsuarioActual);
                 listaUsuarios.setVisible(true);
-
             }
         });
 
