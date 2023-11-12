@@ -52,7 +52,7 @@
         <properties>
           <font name="Arial" size="14" style="1"/>
           <foreground color="-16315129"/>
-          <text value="VISUALIZAR DATOS DEL USUARIO"/>
+          <text value="VISUALIZAR DATOS DEL PERFIL DE USUARIO"/>
         </properties>
       </component>
       <component id="fa49f" class="javax.swing.JLabel" binding="lbl1">
