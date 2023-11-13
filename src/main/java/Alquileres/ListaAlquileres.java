@@ -183,7 +183,7 @@ public class ListaAlquileres extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (listaAlquileres.getSelectedRow() == -1) {
-                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
+                    mostrarDialogoPersonalizadoAtencion("Seleccione una fila para continuar.", Color.decode("#F57F17"));
                     return;
                 }
                VerAlquileres verAlquileres = new VerAlquileres(listaalAlquilers.get(listaAlquileres.getSelectedRow()).getId());
@@ -196,7 +196,7 @@ public class ListaAlquileres extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (listaAlquileres.getSelectedRow() == -1) {
-                    JOptionPane.showMessageDialog(null, "Seleccione una fila para continuar","Validación",JOptionPane.WARNING_MESSAGE);
+                    mostrarDialogoPersonalizadoAtencion("Seleccione una fila para continuar.", Color.decode("#F57F17"));
                     return;
                 }
                EditarAlquileres editarAlquileres = new EditarAlquileres(listaalAlquilers.get(listaAlquileres.getSelectedRow()).getId());
@@ -346,7 +346,7 @@ public class ListaAlquileres extends JFrame {
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos", Color.decode("#C62828"));
             listaalAlquilers = new ArrayList<>();
         }
 
@@ -389,7 +389,7 @@ public class ListaAlquileres extends JFrame {
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos", Color.decode("#C62828"));
         }
 
         int totalPageCount = count / 20;
@@ -399,6 +399,76 @@ public class ListaAlquileres extends JFrame {
         }
 
         return totalPageCount;
+    }
+
+    public void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado
+        JButton btnAceptar = new JButton("OK");
+        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE);
+        btnAceptar.setFocusPainted(false);
+
+        // Crea un JOptionPane
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                           // Mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
+                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
+                null,                              // Icono (puede ser null)
+                new Object[]{},                    // No se usan opciones estándar
+                null                               // Valor inicial (no necesario aquí)
+        );
+
+        // Añade el botón al JOptionPane
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Validación");
+
+        // Añade un ActionListener al botón
+        btnAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+            }
+        });
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
+    }
+
+    public void mostrarDialogoPersonalizadoAtencion(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado
+        JButton btnAceptar = new JButton("OK");
+        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE);
+        btnAceptar.setFocusPainted(false);
+
+        // Crea un JOptionPane
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                           // Mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
+                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
+                null,                              // Icono (puede ser null)
+                new Object[]{},                    // No se usan opciones estándar
+                null                               // Valor inicial (no necesario aquí)
+        );
+
+        // Añade el botón al JOptionPane
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Validación");
+
+        // Añade un ActionListener al botón
+        btnAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+            }
+        });
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
     }
 
     public static void main(String[] args) {
