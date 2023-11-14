@@ -575,7 +575,7 @@ public class EditarEvento extends JFrame {
 
                 // OBTENER LA FECHA SELECCIONADA EN EL FORMATO "yyyy-MM-dd"
                 java.util.Date fechaActual = (java.util.Date) datePicker.getModel().getValue(); // Obtiene la fecha del selector
-                SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, d 'de' MMMM yyyy");
+                SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE d 'de' MMMM yyyy");
 
                 // Verificar que la fecha de entrega esté en el rango permitido (de mañana hasta 30 días a partir de hoy)
                 Calendar calendar = Calendar.getInstance();
@@ -587,7 +587,7 @@ public class EditarEvento extends JFrame {
                 Date fechaMaxima = calendarFin.getTime();
 
                 if (fechaActual.before(fechaMinima) || fechaActual.after(fechaMaxima)) {
-                    mostrarDialogoPersonalizadoAtencion("       Corrige la fecha del evento; ya que debe estár entre: \nel " + dateFormat.format(fechaMinima)
+                    mostrarDialogoPersonalizadoAtencion("       Corrige la fecha del evento ya que debe estár entre: \nel " + dateFormat.format(fechaMinima)
                             + " y el " + dateFormat.format(fechaMaxima), Color.decode("#F57F17"));
                     return; // No proceder con la actualización si la fecha no es válida
                 }
@@ -1377,7 +1377,7 @@ public class EditarEvento extends JFrame {
     }
 
     public void setFormattedDate(java.util.Date selectedDate) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, d 'de' MMMM yyyy", new Locale("es", "ES")); // Formato en español
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE d 'de' MMMM yyyy", new Locale("es", "ES")); // Formato en español
         String formattedDate = (selectedDate != null) ? dateFormat.format(selectedDate) : "";
 
         // Asegura que la primera letra sea mayúscula
@@ -1390,7 +1390,7 @@ public class EditarEvento extends JFrame {
 
     public class SimpleDateFormatter extends JFormattedTextField.AbstractFormatter {
 
-        private final String datePattern = "EEEE, d 'de' MMMM yyyy";
+        private final String datePattern = "EEEE d 'de' MMMM yyyy";
         private final SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);
 
         @Override
