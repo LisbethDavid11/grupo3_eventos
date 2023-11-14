@@ -684,8 +684,6 @@ public class ListaEventos extends JFrame {
         dialog.setVisible(true);
     }
 
-
-
     public static void main(String[] args) {
         ListaEventos listaEventos = new ListaEventos();
         listaEventos.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
