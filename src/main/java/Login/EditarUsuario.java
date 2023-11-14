@@ -72,7 +72,9 @@ public class EditarUsuario extends JFrame {
 
     // Crea un margen de 10 píxeles desde el borde inferior
     EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
-    public EditarUsuario(int id) {
+    int idUsuarioActual = SesionUsuario.getInstance().getIdUsuario();
+
+    public EditarUsuario(int id, int idUsuarioActual) {
         super("");
         setSize(560, 640);
         setLocationRelativeTo(null);
@@ -80,6 +82,7 @@ public class EditarUsuario extends JFrame {
         sql = new Conexion();
         this.mysql = sql.conectamysql(); // Asegúrate de que esta línea se ejecute correctamente
         this.id = id;
+        this.idUsuarioActual = idUsuarioActual;
         cargarRoles();
         mostrar();
 
@@ -640,7 +643,6 @@ public class EditarUsuario extends JFrame {
         });
     }
 
-    private int idUsuarioActual;
 
     private char defaultEchoChar;
 
@@ -966,7 +968,8 @@ public class EditarUsuario extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            EditarUsuario editarUsuario = new EditarUsuario(1);
+            int idUsuarioActual = SesionUsuario.getInstance().getIdUsuario();
+            EditarUsuario editarUsuario = new EditarUsuario(1, idUsuarioActual);
             editarUsuario.setVisible(true);
         });
     }

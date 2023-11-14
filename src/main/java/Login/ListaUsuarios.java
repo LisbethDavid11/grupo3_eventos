@@ -113,10 +113,11 @@ public class ListaUsuarios extends JFrame {
         botonCrear.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (usuarioEsAdministradorSesion(id)) {
+                int idUsuarioActual = SesionUsuario.getInstance().getIdUsuario();
+                if (usuarioEsAdministradorSesion( idUsuarioActual)) {
                     SignUp crearUsuario = new SignUp(); // Pasa la referencia a listaUsuarios
                     crearUsuario.setVisible(true);
-                    actual.dispose();
+                    dispose();
                 } else {
                     mostrarDialogoPersonalizadoError("No cuentas con los permisos necesarios para crear un usuario.", Color.decode("#C62828"));
                 }
@@ -126,12 +127,13 @@ public class ListaUsuarios extends JFrame {
         botonEditar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (usuarioEsAdministradorSesion(id)) {
+                int idUsuarioActual = SesionUsuario.getInstance().getIdUsuario();
+                if (usuarioEsAdministradorSesion(idUsuarioActual)) {
                     if (listaUsuarios.getSelectedRow() == -1) {
                         mostrarDialogoPersonalizadoAtencion("Seleccione una fila para continuar.", Color.decode("#F57F17"));
                         return;
                     }
-                    EditarUsuario cliente = new EditarUsuario(listaUsuario.get(listaUsuarios.getSelectedRow()).getId());
+                    EditarUsuario cliente = new EditarUsuario(listaUsuario.get(listaUsuarios.getSelectedRow()).getId(), idUsuarioActual);
                     cliente.setVisible(true);
                     actual.dispose();
                 } else {
@@ -143,11 +145,12 @@ public class ListaUsuarios extends JFrame {
         botonVer.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                int idUsuarioActual = SesionUsuario.getInstance().getIdUsuario();
                 if (listaUsuarios.getSelectedRow() == -1) {
                     mostrarDialogoPersonalizadoAtencion("Seleccione una fila para continuar.", Color.decode("#F57F17"));
                     return;
                 }
-                VerUsuario usuario = new VerUsuario(listaUsuario.get(listaUsuarios.getSelectedRow()).getId());
+                VerUsuario usuario = new VerUsuario(listaUsuario.get(listaUsuarios.getSelectedRow()).getId(), idUsuarioActual);
                 usuario.setVisible(true);
                 actual.dispose();
             }

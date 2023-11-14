@@ -60,11 +60,13 @@ public class VerUsuario extends JFrame {
     Color darkColorRed = new Color(244, 67, 54);
     Color darkColorBlue = new Color(33, 150, 243);
     EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
-    public VerUsuario(int id) {
+    int idUsuarioActual = SesionUsuario.getInstance().getIdUsuario();
+    public VerUsuario(int id, int idUsuarioActual) {
         super("");
         setSize(550, 600);
         setLocationRelativeTo(null);
         setContentPane(panel1);
+        this.idUsuarioActual = idUsuarioActual;
         this.id = id;
 
         Dimension panelImgSize = new Dimension(panelImgWidth, panelImgHeight);
@@ -140,16 +142,10 @@ public class VerUsuario extends JFrame {
         etiquetaRol.setFont(font);
 
         volverButton.addActionListener(e -> {
-            ListaUsuarios listaUsuarios = new ListaUsuarios(id);
+            ListaUsuarios listaUsuarios = new ListaUsuarios(idUsuarioActual);
             listaUsuarios.setVisible(true);
             actual.dispose();
         });
-    }
-
-    private int idUsuarioActual;
-
-    public void setIdUsuarioActual(int id) {
-        this.idUsuarioActual = id;
     }
 
     private void mostrar() {
@@ -216,7 +212,8 @@ public class VerUsuario extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            VerUsuario verPerfil = new VerUsuario(1);
+            int idUsuarioActual = SesionUsuario.getInstance().getIdUsuario();
+            VerUsuario verPerfil = new VerUsuario(1, idUsuarioActual);
             verPerfil.setVisible(true);
         });
     }

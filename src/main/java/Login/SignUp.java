@@ -67,6 +67,7 @@ public class SignUp extends JFrame {
     private JTextField campoNombre;
     private JTextField campoCorreo;
     private JPasswordField campoContrasena;
+    private JComboBox campoRol;
     private Conexion sql;
     private Connection mysql;
     private char defaultEchoChar;
@@ -78,6 +79,7 @@ public class SignUp extends JFrame {
         setLocationRelativeTo(null);
         setContentPane(panel1);
         sql = new Conexion();
+        mysql = sql.conectamysql();
 
         defaultEchoChar = campoContrasena.getEchoChar();
         panel1.setBackground(lightColorPrincipal);
@@ -99,6 +101,9 @@ public class SignUp extends JFrame {
         // Personalización de los botones al estilo Material UI
         personalizeButton(botonRegistrar, darkColorBlue, lightColorBlue, darkColorBlue);
         personalizeButton(botonMostrar, darkColorGray, darkColorGray, darkColorGray);
+
+        campoRol.addItem("Seleccione un rol de usuario:");
+        cargarRoles();
 
         botonRegistrar.addActionListener(new ActionListener() {
             @Override
@@ -138,6 +143,12 @@ public class SignUp extends JFrame {
                     return;
                 }
 
+                String proveedorText = campoRol.getSelectedItem().toString();
+                if (proveedorText.equals("Seleccione un rol de usuario:")) {
+                    mostrarDialogoPersonalizadoError("Debes seleccionar un rol de usuario de la lista..", Color.decode("#C62828"));
+                    return;
+                }
+
                 String nombre = campoNombre.getText().trim();
                 if (!nombre.isEmpty()) {
                     if (nombre.length() > 50) {
@@ -156,20 +167,9 @@ public class SignUp extends JFrame {
 
                 String correoElectronico = campoCorreo.getText().trim();
                 if (!correoElectronico.isEmpty()) {
-                    // Verificar el formato del correo electrónico utilizando una expresión regular
-                    if (!correoElectronico.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+                    // Verificar el formato del correo electrónico utilizando una expresión regular mejorada
+                    if (!correoElectronico.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
                         mostrarDialogoPersonalizadoError("El correo electrónico ingresado no tiene un formato válido.", Color.decode("#C62828"));
-                        return;
-                    }
-
-                    // Verificar el dominio del correo electrónico
-                    if (!correoElectronico.endsWith("@gmail.com") &&
-                            !correoElectronico.endsWith("@unah.hn") &&
-                            !correoElectronico.endsWith("@unah.edu.hn") &&
-                            !correoElectronico.endsWith("@yahoo.com") &&
-                            !correoElectronico.endsWith("@yahoo.es") &&
-                            !correoElectronico.endsWith("@hotmail.com")) {
-                        mostrarDialogoPersonalizadoError("El dominio del correo electrónico no es válido.", Color.decode("#C62828"));
                         return;
                     }
                 } else {
@@ -234,8 +234,11 @@ public class SignUp extends JFrame {
                             sesion.setImagenUsuario(datosUsuario.getImagen());
                             sesion.setRolId(datosUsuario.getRolId());
 
-                            ListaUsuarios listaUsuarios = new ListaUsuarios(1);
-                            listaUsuarios.setVisible(true);
+
+                            dialog.dispose();
+                            dispose();
+                            cerrarVentanas();
+                            mostrarDialogoPersonalizadoExito("    Usuario registrado exitosamente.\nInicia sesión con los datos que guardaste.", Color.decode("#263238"));
 
                             /*
                             SubMenu menu = new SubMenu();
@@ -245,10 +248,7 @@ public class SignUp extends JFrame {
                             menu.setVisible(true);
                             */
 
-                            dispose(); // Cierra el formulario actual
-
                         }
-
                     }
                 });
 
@@ -399,14 +399,43 @@ public class SignUp extends JFrame {
         });
     }
 
+    private void cargarRoles() {
+        ResultSet rsRoles = null;
+        PreparedStatement psRoles = null;
+
+        try {
+            psRoles = mysql.prepareStatement("SELECT * FROM roles;");
+            rsRoles = psRoles.executeQuery();
+
+            while (rsRoles.next()) {
+                String nombreRol = rsRoles.getString("nombre");
+                if (campoRol != null) {
+                    campoRol.addItem(nombreRol);
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al cargar roles: " + e.getMessage());
+            // Considera agregar alguna forma de notificar al usuario de la interfaz sobre este error.
+        } finally {
+            // Cierra los recursos en el bloque finally para asegurarte de que siempre se cierren.
+            try {
+                if (rsRoles != null) rsRoles.close();
+                if (psRoles != null) psRoles.close();
+            } catch (SQLException e) {
+                System.out.println("Error al cerrar recursos: " + e.getMessage());
+            }
+        }
+    }
+
+
     private DatosUsuario guardarUsuario() {
         Conexion sql = new Conexion();
 
         try (Connection connection = sql.conectamysql()) {
             String nombre = campoNombre.getText().trim();
             String correo = campoCorreo.getText().trim();
+            int rol = campoRol.getSelectedIndex();
             String contrasena = new String(campoContrasena.getPassword());
-            int rol = 2; // Asumiendo que todos los nuevos usuarios serán 'general'
 
             String contrasenaEncriptada = BCrypt.hashpw(contrasena, BCrypt.gensalt());
 
@@ -547,6 +576,17 @@ public class SignUp extends JFrame {
 
         // Muestra el diálogo
         dialog.setVisible(true);
+    }
+
+    public void cerrarVentanas() {
+        for (Frame frame : Frame.getFrames()) {
+            if (frame instanceof JFrame) {
+                frame.dispose();
+            }
+        }
+
+        Login loginFrame = new Login();
+        loginFrame.setVisible(true);
     }
 
     public static void main(String[] args) {
