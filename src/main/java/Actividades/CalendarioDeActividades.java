@@ -426,7 +426,7 @@ public class CalendarioDeActividades extends JFrame {
 
             // Marcar el día actual con un color específico
             if (i == realDay && month == realMonth && year == realYear) {
-                String dayWithDot = "<html><font color='red'>" + i + " ❋</font></html>";
+                String dayWithDot = "<html><font color='red'>" + i + "</font></html>";
                 calendarTable.setValueAt(dayWithDot, row, column);
             } else {
                 boolean hasActivities = hasActivitiesOnDay(i, month, year);
