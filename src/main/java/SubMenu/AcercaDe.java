@@ -9,6 +9,22 @@ public class AcercaDe extends JPanel {
         setLayout(new BorderLayout(0, 0)); // Añade espacio entre los componentes
         setBackground(new Color(149, 165, 166)); // Fondo claro al estilo Material
 
+        // Panel para las imágenes
+        JPanel imagePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        imagePanel.setBackground(new Color(245, 245, 245));
+
+        // Cargar y añadir el logo de IA
+        ImageIcon iaLogo = new ImageIcon("img/logo ia.jpeg");
+        JLabel iaLogoLabel = new JLabel(resizeIcon(iaLogo, 225, 225));
+        imagePanel.add(iaLogoLabel);
+
+        // Cargar y añadir el logo de UNAH
+        ImageIcon unahLogo = new ImageIcon("img/logo unah.png");
+        JLabel unahLogoLabel = new JLabel(resizeIcon(unahLogo, 400, 267));
+        imagePanel.add(unahLogoLabel);
+
+        add(imagePanel, BorderLayout.NORTH);
+
         // Información del sistema en el centro
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
@@ -116,10 +132,16 @@ public class AcercaDe extends JPanel {
         });
     }
 
+    private ImageIcon resizeIcon(ImageIcon icon, int width, int height) {
+        Image img = icon.getImage();
+        Image resizedImage = img.getScaledInstance(width, height,  Image.SCALE_SMOOTH);
+        return new ImageIcon(resizedImage);
+    }
+
     public static void main(String[] args) {
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(620, 460);
+        frame.setSize(980, 760);
         frame.setLocationRelativeTo(null);
         frame.add(new AcercaDe());
         frame.setVisible(true);
