@@ -464,7 +464,7 @@ public class SubMenu extends JFrame {
                 JDialog dialog = new JDialog(); // Crea un nuevo diálogo
                 dialog.setTitle("Acerca De"); // Establece el título
                 dialog.setContentPane(new AcercaDe()); // añade el panel AcercaDe
-                dialog.setSize(600, 400); // Establece el tamaño del diálogo
+                dialog.setSize(950, 630); // Establece el tamaño del diálogo
                 dialog.setModal(true); // Hace que el diálogo bloquee las otras ventanas hasta que se cierre
                 dialog.setLocationRelativeTo(null); // Centra el diálogo en la pantalla
                 dialog.setVisible(true); // Hace visible el diálogo

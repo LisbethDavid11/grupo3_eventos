@@ -5,24 +5,24 @@ import java.awt.*;
 
 public class AcercaDe extends JPanel {
 
+    private ImageIcon iaLogo, unahLogo;
+    private JLabel iaLogoLabel, unahLogoLabel;
+
     public AcercaDe() {
-        setLayout(new BorderLayout(0, 0)); // Añade espacio entre los componentes
-        setBackground(new Color(149, 165, 166)); // Fondo claro al estilo Material
+        setLayout(new BorderLayout(0, 0));
+        setBackground(new Color(149, 165, 166));
+
+        // Carga de imágenes
+        iaLogo = new ImageIcon("img/logo ia.jpeg");
+        unahLogo = new ImageIcon("img/logo unah.png");
 
         // Panel para las imágenes
         JPanel imagePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         imagePanel.setBackground(new Color(245, 245, 245));
-
-        // Cargar y añadir el logo de IA
-        ImageIcon iaLogo = new ImageIcon("img/logo ia.jpeg");
-        JLabel iaLogoLabel = new JLabel(resizeIcon(iaLogo, 225, 225));
+        iaLogoLabel = new JLabel();
+        unahLogoLabel = new JLabel();
         imagePanel.add(iaLogoLabel);
-
-        // Cargar y añadir el logo de UNAH
-        ImageIcon unahLogo = new ImageIcon("img/logo unah.png");
-        JLabel unahLogoLabel = new JLabel(resizeIcon(unahLogo, 400, 267));
         imagePanel.add(unahLogoLabel);
-
         add(imagePanel, BorderLayout.NORTH);
 
         // Información del sistema en el centro
@@ -36,17 +36,16 @@ public class AcercaDe extends JPanel {
         nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT); // Asegura la alineación al centro
         centerPanel.add(nameLabel);
 
-        centerPanel.add(Box.createVerticalStrut(10)); // Añade un pequeño espacio
+        centerPanel.add(Box.createVerticalStrut(5)); // Añade un pequeño espacio
 
         // Texto de descripción
         addCenteredTextToPanel(centerPanel,
                 "Bienvenido a Eventos Chelsea, su socio de confianza en la creación de momentos inolvidables. \n\n" +
                         "Con una trayectoria destacada en arreglos florales, coordinación de eventos y servicios personalizados de floristería, " +
                         "nos enorgullecemos de nuestra habilidad para diseñar experiencias únicas y personalizadas. " +
-
                         "Visite nuestro local o contáctenos."
         );
-        centerPanel.add(Box.createVerticalStrut(20)); // Espacio antes del link
+        centerPanel.add(Box.createVerticalStrut(5)); // Espacio antes del link
 
         // Version del software
         JLabel versionLabel = new JLabel("v1.0", JLabel.CENTER);
@@ -88,10 +87,37 @@ public class AcercaDe extends JPanel {
 
         buttonPanel.add(closeButton);
         add(buttonPanel, BorderLayout.SOUTH);
+
+        // Ajuste de tamaño de ventana
+        addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentResized(java.awt.event.ComponentEvent evt) {
+                resizeImages();
+            }
+        });
+    }
+
+    private void resizeImages() {
+        // Calcula nuevas dimensiones basadas en el tamaño de la ventana
+        int width = getWidth();
+        int iaWidth = width / 10;
+        int unahWidth = iaWidth * 400 / 225;
+
+        // Actualiza los íconos con las nuevas dimensiones
+        iaLogoLabel.setIcon(resizeIcon(iaLogo, iaWidth, iaWidth));
+        unahLogoLabel.setIcon(resizeIcon(unahLogo, unahWidth, iaWidth));
+
+        revalidate();
+        repaint();
+    }
+
+    private ImageIcon resizeIcon(ImageIcon icon, int width, int height) {
+        Image img = icon.getImage();
+        Image resizedImage = img.getScaledInstance(width, height,  Image.SCALE_SMOOTH);
+        return new ImageIcon(resizedImage);
     }
 
     private void addCenteredTextToPanel(JPanel panel, String text) {
-        JTextArea textArea = new JTextArea(6, 20); // Ajusta el número de líneas y la anchura según sea necesario
+        JTextArea textArea = new JTextArea(3, 20); // Ajusta el número de líneas y la anchura según sea necesario
         textArea.setText(text);
         textArea.setWrapStyleWord(true);
         textArea.setLineWrap(true);
@@ -132,16 +158,10 @@ public class AcercaDe extends JPanel {
         });
     }
 
-    private ImageIcon resizeIcon(ImageIcon icon, int width, int height) {
-        Image img = icon.getImage();
-        Image resizedImage = img.getScaledInstance(width, height,  Image.SCALE_SMOOTH);
-        return new ImageIcon(resizedImage);
-    }
-
     public static void main(String[] args) {
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(980, 760);
+        frame.setSize(950, 630);
         frame.setLocationRelativeTo(null);
         frame.add(new AcercaDe());
         frame.setVisible(true);
