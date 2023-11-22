@@ -156,6 +156,9 @@ public class ListaUsuarios extends JFrame {
             }
         });
 
+        botonCrear.setEnabled(false);
+        botonVer.setEnabled(false);
+
         // Establecer color de fondo para el encabezado
         JTableHeader header = listaUsuarios.getTableHeader();
         header.setForeground(Color.WHITE);
