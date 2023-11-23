@@ -19,6 +19,7 @@ import Materiales.ListaMateriales;
 import Mobiliario.ListaMobiliario;
 import Objetos.Rol;
 import Pedidos.ListaPedidos;
+import Permisos.ListaPermisos;
 import Promociones.ListaPromociones;
 import Proveedores.ListaProveedores;
 import Roles.ListaRoles;
@@ -37,7 +38,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class SubMenu extends JFrame {
-    private JButton rolesButton,usuariosButton, proveedoresButton, empleadosButton, clientesButton, floristeriaButton, arreglosButton, materialesButton, comprasButton,tarjetaButton, manualidadesButton, globosButton, desayunosButton, ventasButton, mobiliarioButton, pedidosButton, eventosButton, promocionesButton, actividadesButton, alquileresButton;
+    private JButton rolesButton,usuariosButton, proveedoresButton, empleadosButton, clientesButton, floristeriaButton, arreglosButton, materialesButton, comprasButton,tarjetaButton, manualidadesButton, globosButton, desayunosButton, ventasButton, mobiliarioButton, pedidosButton, eventosButton, promocionesButton, actividadesButton, alquileresButton, permisosButton;
     private JPanel panel, panel2, panel3;
     private ListaClientes listaCliente;
     private ListaEmpleados listaEmpleados;
@@ -59,6 +60,7 @@ public class SubMenu extends JFrame {
     private ListaAlquileres listaAlquileres;
     private ListaRoles listaRoles;
     private ListaUsuarios listaUsuarios;
+    private ListaPermisos listaPermisos;
     private JPanel navbarPanel;
     private JLabel userLabel, userNameLabel;
     private JPopupMenu userMenu;
@@ -159,9 +161,13 @@ public class SubMenu extends JFrame {
         rolesButton.setBackground(Color.decode("#9C27B0"));
         rolesButton.setPreferredSize(new Dimension(100, 40)); // Ajustar tamaño
 
+        permisosButton = new JButton("Permisos");
+        permisosButton.setBackground(Color.decode("#6D97C1"));
+        permisosButton.setPreferredSize(new Dimension(100, 40)); // Ajustar tamaño
+
         configurarBotonesSegunPermisos(permisos);
         // Crear un GridLayout con 2 filas y 8 columnas
-        GridLayout gridLayout = new GridLayout(2, 8);
+        GridLayout gridLayout = new GridLayout(3, 8);
 
         // Establecer el diseño del panel
         panel.setLayout(gridLayout);
@@ -187,6 +193,7 @@ public class SubMenu extends JFrame {
         panel.add(alquileresButton);
         panel.add(usuariosButton);
         panel.add(rolesButton);
+        panel.add(permisosButton);
 
         // Crea el panel de imagen y lo coloca en el centro
         ImagePanel imagenPanel = new ImagePanel();
@@ -218,6 +225,7 @@ public class SubMenu extends JFrame {
         alquileresButton.setFocusPainted(false);
         usuariosButton.setFocusPainted(false);
         rolesButton.setFocusPainted(false);
+        permisosButton.setFocusPainted(false);
 
         promocionesButton.setForeground(Color.WHITE);
         eventosButton.setForeground(Color.WHITE);
@@ -239,6 +247,7 @@ public class SubMenu extends JFrame {
         alquileresButton.setForeground(Color.WHITE);
         usuariosButton.setForeground(Color.WHITE);
         rolesButton.setForeground(Color.WHITE);
+        permisosButton.setForeground(Color.WHITE);
         add(panel3);
 
         // Crear instancias de las ventanas
@@ -262,6 +271,7 @@ public class SubMenu extends JFrame {
         listaAlquileres = new ListaAlquileres();
         listaUsuarios = new ListaUsuarios(id);
         listaRoles = new ListaRoles(id);
+        listaPermisos = new ListaPermisos();
 
         clientesButton.addActionListener(new ActionListener() {
             @Override
@@ -404,6 +414,14 @@ public class SubMenu extends JFrame {
                 int idUsuarioActual = SesionUsuario.getInstance().getIdUsuario();
                 ListaRoles listaRoles = new ListaRoles(idUsuarioActual);
                 listaRoles.setVisible(true);
+            }
+        });
+        permisosButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int idUsuarioActual = SesionUsuario.getInstance().getIdUsuario();
+                ListaPermisos listaPermisos1 = new ListaPermisos();
+                listaPermisos1.setVisible(true);
             }
         });
     }
