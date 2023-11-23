@@ -156,7 +156,7 @@ public class ListaUsuarios extends JFrame {
             }
         });
 
-        botonCrear.setEnabled(false);
+
         botonVer.setEnabled(false);
 
         // Establecer color de fondo para el encabezado
