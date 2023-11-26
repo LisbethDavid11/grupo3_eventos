@@ -120,7 +120,7 @@ public class ListaPermisos extends JFrame {
                     CrearPermisos permisos = new CrearPermisos(mode.getPermiso(seleccion).getId());
                     permisos.setVisible(true);
                 }else{
-                    JOptionPane.showMessageDialog(null,"Debe selecion");
+                    mostrarDialogoPersonalizadoAtencion("Seleccione una fila para continuar.", Color.decode("#F57F17"));
                 }
 
             }
