@@ -38,13 +38,16 @@ public class AcercaDe extends JPanel {
 
         centerPanel.add(Box.createVerticalStrut(5)); // Añade un pequeño espacio
 
-        // Texto de descripción
         addCenteredTextToPanel(centerPanel,
                 "Bienvenido a Eventos Chelsea, su socio de confianza en la creación de momentos inolvidables. \n\n" +
                         "Con una trayectoria destacada en arreglos florales, coordinación de eventos y servicios personalizados de floristería, " +
                         "nos enorgullecemos de nuestra habilidad para diseñar experiencias únicas y personalizadas. " +
-                        "Visite nuestro local o contáctenos."
+                        "Visite nuestro local o contáctenos.\n\n" +
+                        "Proyecto elaborado por estudiantes de la Licenciatura en Informática Administrativa " +
+                        "de la Universidad Nacional Autónoma de Honduras, Centro Tecnológico de Danlí, durante el año 2023, en las asignaturas:"
+                        +"Análisis y Diseño de Sistemas y Programación e Implementación de Sistemas."
         );
+
         centerPanel.add(Box.createVerticalStrut(5)); // Espacio antes del link
 
         // Version del software
