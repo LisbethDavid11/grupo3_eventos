@@ -109,7 +109,6 @@ public class EditarUsuario extends JFrame {
         labelImagen.setHorizontalAlignment(SwingConstants.CENTER);
         panelImg.add(labelImagen, gbc);
 
-
         if (this.id != 1){
             campoRol.setEnabled(true);
         } else {
@@ -318,7 +317,8 @@ public class EditarUsuario extends JFrame {
         botonCancelar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ListaUsuarios listaUsuarios = new ListaUsuarios(id);
+                int idUsuarioActual = SesionUsuario.getInstance().getIdUsuario();
+                ListaUsuarios listaUsuarios = new ListaUsuarios(idUsuarioActual);
                 listaUsuarios.setVisible(true);
                 actual.dispose();
             }
@@ -402,20 +402,9 @@ public class EditarUsuario extends JFrame {
 
                 String correoElectronico = campoCorreo.getText().trim();
                 if (!correoElectronico.isEmpty()) {
-                    // Verificar el formato del correo electrónico utilizando una expresión regular
-                    if (!correoElectronico.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+                    // Verificar el formato del correo electrónico utilizando una expresión regular mejorada
+                    if (!correoElectronico.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
                         mostrarDialogoPersonalizadoError("El correo electrónico ingresado no tiene un formato válido.", Color.decode("#C62828"));
-                        return;
-                    }
-
-                    // Verificar el dominio del correo electrónico
-                    if (!correoElectronico.endsWith("@gmail.com") &&
-                            !correoElectronico.endsWith("@unah.edu.hn") &&
-                            !correoElectronico.endsWith("@unah.hn") &&
-                            !correoElectronico.endsWith("@yahoo.com") &&
-                            !correoElectronico.endsWith("@yahoo.es") &&
-                            !correoElectronico.endsWith("@hotmail.com")) {
-                        mostrarDialogoPersonalizadoError("El dominio del correo electrónico no es válido.", Color.decode("#C62828"));
                         return;
                     }
                 } else {
@@ -460,11 +449,12 @@ public class EditarUsuario extends JFrame {
                 btnSave.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
+                        actualizarUsuario();
                         dialog.dispose();
                         actual.dispose();
-                        ListaUsuarios listaUsuarios = new ListaUsuarios(id);
+                        int idUsuarioActual = SesionUsuario.getInstance().getIdUsuario();
+                        ListaUsuarios listaUsuarios = new ListaUsuarios(idUsuarioActual);
                         listaUsuarios.setVisible(true);
-                        actualizarUsuario();
                     }
                 });
 
