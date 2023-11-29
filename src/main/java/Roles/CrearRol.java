@@ -18,12 +18,12 @@ public class CrearRol extends JFrame {
     Color darkColorRed = new Color(244, 67, 54);
     Color darkColorBlue = new Color(33, 150, 243);
     private JTextField nombreField;
-    private JCheckBox clienteCheckBox, empleadoCheckBox, floristeriaCheckBox, arregloCheckBox, usuarioCheckBox, materialCheckBox, proveedorCheckBox, compraCheckBox, tarjetaCheckBox, manualidadCheckBox, globoCheckBox, desayunoCheckBox, ventaCheckBox, mobiliarioCheckBox, pedidoCheckBox, promocionCheckBox, eventoCheckBox, actividadCheckBox, alquilerCheckBox, rolCheckBox;
+    private JTextArea descripcionTextArea;
     private Conexion sql;
     private JFrame mainFrame;
     public CrearRol() {
         super("");
-        setSize(850, 505);
+        setSize(405, 405);
         setLocationRelativeTo(null);
 
         sql = new Conexion();
@@ -44,60 +44,31 @@ public class CrearRol extends JFrame {
 
         centerPanel.add(Box.createVerticalStrut(10)); // Espacio tras el título
 
-        // Campo para el nombre del rol
-        nombreField = new JTextField(20); // Correcto, asigna a la variable de instancia
+        // Campo para la nombre del rol
+        nombreField = new JTextField(20);
         nombreField.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, Color.GRAY));
         nombreField.setOpaque(false);
         nombreField.setFont(new Font("Century Gothic", Font.BOLD, 14));
+        nombreField.setHorizontalAlignment(JTextField.CENTER);
         centerPanel.add(createLabeledField("Nombre del Rol:", nombreField));
 
-        clienteCheckBox = createCheckbox("Clientes");
-        empleadoCheckBox = createCheckbox("Empleados");
-        floristeriaCheckBox = createCheckbox("Floristerías");
-        arregloCheckBox = createCheckbox("Arreglos");
-        usuarioCheckBox = createCheckbox("Usuarios");
-        materialCheckBox = createCheckbox("Materiales");
-        proveedorCheckBox = createCheckbox("Proveedores");
-        compraCheckBox = createCheckbox("Compras");
-        tarjetaCheckBox = createCheckbox("Tarjetas");
-        manualidadCheckBox = createCheckbox("Manualidades");
-        globoCheckBox = createCheckbox("Globos");
-        desayunoCheckBox = createCheckbox("Desayunos");
-        ventaCheckBox = createCheckbox("Ventas");
-        mobiliarioCheckBox = createCheckbox("Mobiliarios");
-        pedidoCheckBox = createCheckbox("Pedidos");
-        promocionCheckBox = createCheckbox("Promociones");
-        eventoCheckBox = createCheckbox("Eventos");
-        actividadCheckBox = createCheckbox("Actividades");
-        alquilerCheckBox = createCheckbox("Alquileres");
-        rolCheckBox = createCheckbox("Roles");
+        // Espacio entre los campos
+        centerPanel.add(Box.createVerticalStrut(10));
 
-        // Panel para checkboxes organizados en tres columnas
-        JPanel checkboxPanel = new JPanel(new GridLayout(0, 3, 10, 10)); // Filas dinámicas, 3 columnas, espacio entre elementos
-        checkboxPanel.setBackground(new Color(245, 245, 245)); // Fondo claro
+        // Etiqueta para "Descripción"
+        JLabel descriptionLabel = new JLabel("Descripción:");
+        descriptionLabel.setFont(new Font("Century Gothic", Font.BOLD, 14));
+        centerPanel.add(descriptionLabel);
 
-        checkboxPanel.add(clienteCheckBox);
-        checkboxPanel.add(empleadoCheckBox);
-        checkboxPanel.add(floristeriaCheckBox);
-        checkboxPanel.add(arregloCheckBox);
-        checkboxPanel.add(usuarioCheckBox);
-        checkboxPanel.add(materialCheckBox);
-        checkboxPanel.add(proveedorCheckBox);
-        checkboxPanel.add(compraCheckBox);
-        checkboxPanel.add(tarjetaCheckBox);
-        checkboxPanel.add(manualidadCheckBox);
-        checkboxPanel.add(globoCheckBox);
-        checkboxPanel.add(desayunoCheckBox);
-        checkboxPanel.add(ventaCheckBox);
-        checkboxPanel.add(mobiliarioCheckBox);
-        checkboxPanel.add(pedidoCheckBox);
-        checkboxPanel.add(promocionCheckBox);
-        checkboxPanel.add(eventoCheckBox);
-        checkboxPanel.add(actividadCheckBox);
-        checkboxPanel.add(alquilerCheckBox);
-        checkboxPanel.add(rolCheckBox);
-
-        centerPanel.add(checkboxPanel);
+        // Campo para la descripción del rol (JTextArea)
+        descripcionTextArea = new JTextArea(3, 20);
+        descripcionTextArea.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.GRAY)); // Borde más grueso
+        descripcionTextArea.setOpaque(false);
+        descripcionTextArea.setFont(new Font("Century Gothic", Font.BOLD, 14));
+        descripcionTextArea.setLineWrap(true); // Para que el texto se ajuste automáticamente al ancho
+        descripcionTextArea.setWrapStyleWord(true); // Para que las palabras se rompan correctamente
+        JScrollPane scrollPane = new JScrollPane(descripcionTextArea); // Agrega un JScrollPane para manejar el área de texto grande
+        centerPanel.add(scrollPane); // Agrega el JScrollPane al panel central
 
         add(centerPanel, BorderLayout.CENTER);
 
@@ -137,7 +108,7 @@ public class CrearRol extends JFrame {
                     int trimmedLength = trimmedText.length();
 
                     // Verificar si se está ingresando una letra
-                    if (Character.isLetter(e.getKeyChar())) {
+                    if (Character.isLetterOrDigit(e.getKeyChar())) {
                         // Verificar si se excede el límite de caracteres
                         if (trimmedLength >= 100) {
                             e.consume(); // Ignorar la letra
@@ -150,6 +121,36 @@ public class CrearRol extends JFrame {
                     } else {
                         e.consume(); // Ignorar cualquier otro tipo de carácter
                     }
+                }
+            }
+        });
+
+        descripcionTextArea.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                String texto = descripcionTextArea.getText();
+                int caretPosition = descripcionTextArea.getCaretPosition();
+
+                // Verificar la longitud del texto
+                if (texto.length() >= 200) {
+                    e.consume(); // Ignorar el evento si se alcanza el límite máximo de caracteres (200)
+                    return;
+                }
+
+                // Verificar si se están ingresando más de un espacio en blanco seguido
+                if (e.getKeyChar() == ' ' && texto.endsWith(" ")) {
+                    e.consume(); // Ignorar el evento y no agregar el espacio en blanco adicional
+                    return;
+                }
+
+                // Convertir la primera letra en mayúscula
+                if (texto.length() == 0 && Character.isLowerCase(e.getKeyChar())) {
+                    e.setKeyChar(Character.toUpperCase(e.getKeyChar()));
+                }
+
+                // Permitir números, letras, espacios, punto, coma y tildes
+                if (!Character.isLetterOrDigit(e.getKeyChar()) && !Character.isSpaceChar(e.getKeyChar()) && e.getKeyChar() != '.' && e.getKeyChar() != ',' && !Character.isWhitespace(e.getKeyChar()) && !Character.isIdeographic(e.getKeyChar())) {
+                    e.consume(); // Ignorar el evento si no es una letra, número, espacio, punto, coma o tilde
                 }
             }
         });
@@ -170,38 +171,18 @@ public class CrearRol extends JFrame {
                 int validacion = 0;
                 String mensaje = "Faltó ingresar: \n";
 
-                // Contador para el número de checkboxes seleccionados
-                int contadorSeleccionados = 0;
-                JCheckBox[] checkBoxes = {clienteCheckBox, empleadoCheckBox, floristeriaCheckBox, arregloCheckBox, usuarioCheckBox, materialCheckBox, proveedorCheckBox, compraCheckBox, tarjetaCheckBox, manualidadCheckBox, globoCheckBox, desayunoCheckBox, ventaCheckBox, mobiliarioCheckBox, pedidoCheckBox, promocionCheckBox, eventoCheckBox, actividadCheckBox, alquilerCheckBox};
-
-                for (JCheckBox checkBox : checkBoxes) {
-                    if (checkBox.isSelected()) {
-                        contadorSeleccionados++;
-                    }
-                }
-
                 if (nombreField.getText().trim().isEmpty()) {
                     validacion++;
                     mensaje += "Nombre del rol\n";
                 }
 
-                // Verifica si no se seleccionó ningún checkbox o si se seleccionaron todos
-                if (contadorSeleccionados == 0) {
+                if (descripcionTextArea.getText().trim().isEmpty()) {
                     validacion++;
-                    mensaje += "Permisos\n";
+                    mensaje += "Descripción\n";
                 }
 
                 if (validacion > 0) {
                     mostrarDialogoPersonalizadoAtencion(mensaje, Color.decode("#F57F17"));
-                    return;
-                }
-
-                // Verifica si no se seleccionó ningún checkbox o si se seleccionaron todos
-                if (contadorSeleccionados == 0) {
-                    mostrarDialogoPersonalizadoAtencion("Debe seleccionar al menos un permiso.", Color.decode("#F57F17"));
-                    return;
-                } else if (contadorSeleccionados == checkBoxes.length) {
-                    mostrarDialogoPersonalizadoAtencion("No puede seleccionar todos los permisos:\nYa se asignaron al administrador.", Color.decode("#F57F17"));
                     return;
                 }
 
@@ -320,26 +301,7 @@ public class CrearRol extends JFrame {
 
     private void guardarRol() {
         String nombre = nombreField.getText().trim();
-        boolean cliente = clienteCheckBox.isSelected();
-        boolean empleado = empleadoCheckBox.isSelected();
-        boolean floristeria = floristeriaCheckBox.isSelected();
-        boolean arreglo = arregloCheckBox.isSelected();
-        boolean usuario = usuarioCheckBox.isSelected();
-        boolean material = materialCheckBox.isSelected();
-        boolean proveedor = proveedorCheckBox.isSelected();
-        boolean compra = compraCheckBox.isSelected();
-        boolean tarjeta = tarjetaCheckBox.isSelected();
-        boolean manualidad = manualidadCheckBox.isSelected();
-        boolean globo = globoCheckBox.isSelected();
-        boolean desayuno = desayunoCheckBox.isSelected();
-        boolean venta = ventaCheckBox.isSelected();
-        boolean mobiliario = mobiliarioCheckBox.isSelected();
-        boolean pedido = pedidoCheckBox.isSelected();
-        boolean promocion = promocionCheckBox.isSelected();
-        boolean evento = eventoCheckBox.isSelected();
-        boolean actividad = actividadCheckBox.isSelected();
-        boolean alquiler = alquilerCheckBox.isSelected();
-        boolean rol = rolCheckBox.isSelected();
+        String descripcion = descripcionTextArea.getText().trim();
 
         try (Connection connection = sql.conectamysql();
              PreparedStatement checkStmt = connection.prepareStatement(
@@ -352,29 +314,9 @@ public class CrearRol extends JFrame {
                     } else {
 
                         try (PreparedStatement preparedStatement = connection.prepareStatement(
-                             "INSERT INTO roles (nombre, cliente, empleado, floristeria, arreglo, usuario, material, proveedor, compra, tarjeta, manualidad, globo, desayuno, venta, mobiliario, pedido, promocion, evento, actividad, alquiler, rol) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+                             "INSERT INTO roles (nombre, descripcion) VALUES (?, ?)")) {
                     preparedStatement.setString(1, nombre);
-                    preparedStatement.setBoolean(2, cliente);
-                    preparedStatement.setBoolean(3, empleado);
-                    preparedStatement.setBoolean(4, floristeria);
-                    preparedStatement.setBoolean(5, arreglo);
-                    preparedStatement.setBoolean(6, usuario);
-                    preparedStatement.setBoolean(7, material);
-                    preparedStatement.setBoolean(8, proveedor);
-                    preparedStatement.setBoolean(9, compra);
-                    preparedStatement.setBoolean(10, tarjeta);
-                    preparedStatement.setBoolean(11, manualidad);
-                    preparedStatement.setBoolean(12, globo);
-                    preparedStatement.setBoolean(13, desayuno);
-                    preparedStatement.setBoolean(14, venta);
-                    preparedStatement.setBoolean(15, mobiliario);
-                    preparedStatement.setBoolean(16, pedido);
-                    preparedStatement.setBoolean(17, promocion);
-                    preparedStatement.setBoolean(18, evento);
-                    preparedStatement.setBoolean(19, actividad);
-                    preparedStatement.setBoolean(20, alquiler);
-                    preparedStatement.setBoolean(21, rol);
-
+                    preparedStatement.setString(2, descripcion);
                     preparedStatement.executeUpdate();
                     mostrarDialogoPersonalizadoExito("Rol guardado exitosamente.", Color.decode("#263238"));
                 }

@@ -257,27 +257,7 @@ public class ListaRoles extends JFrame {
                 Rol rol = new Rol();
                 rol.setId(resultSet.getInt("id"));
                 rol.setNombre(resultSet.getString("nombre"));
-                rol.setCliente(resultSet.getBoolean("cliente"));
-                rol.setEmpleado(resultSet.getBoolean("empleado"));
-                rol.setFloristeria(resultSet.getBoolean("floristeria"));
-                rol.setArreglo(resultSet.getBoolean("arreglo"));
-                rol.setUsuario(resultSet.getBoolean("usuario"));
-                rol.setMaterial(resultSet.getBoolean("material"));
-                rol.setProveedor(resultSet.getBoolean("proveedor"));
-                rol.setCompra(resultSet.getBoolean("compra"));
-                rol.setTarjeta(resultSet.getBoolean("tarjeta"));
-                rol.setManualidad(resultSet.getBoolean("manualidad"));
-                rol.setGlobo(resultSet.getBoolean("globo"));
-                rol.setDesayuno(resultSet.getBoolean("desayuno"));
-                rol.setVenta(resultSet.getBoolean("venta"));
-                rol.setMobiliario(resultSet.getBoolean("mobiliario"));
-                rol.setPedido(resultSet.getBoolean("pedido"));
-                rol.setPromocion(resultSet.getBoolean("promocion"));
-                rol.setEvento(resultSet.getBoolean("evento"));
-                rol.setActividad(resultSet.getBoolean("actividad"));
-                rol.setAlquiler(resultSet.getBoolean("alquiler"));
-                rol.setRol(resultSet.getBoolean("rol"));
-                // ... Continúa con el resto de los campos booleanos ...
+                rol.setDescripcion(resultSet.getString("descripcion"));
                 listaRol.add(rol);
             }
             mysql.close();

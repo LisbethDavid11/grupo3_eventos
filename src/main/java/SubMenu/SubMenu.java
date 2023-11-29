@@ -165,7 +165,6 @@ public class SubMenu extends JFrame {
         permisosButton.setBackground(Color.decode("#6D97C1"));
         permisosButton.setPreferredSize(new Dimension(100, 40)); // Ajustar tamaño
 
-        configurarBotonesSegunPermisos(permisos);
         // Crear un GridLayout con 2 filas y 8 columnas
         GridLayout gridLayout = new GridLayout(3, 8);
 
@@ -604,38 +603,4 @@ public class SubMenu extends JFrame {
         g2.dispose();
         return resizedImg;
     }
-
-    private void configurarBotonesSegunPermisos(Rol rol) {
-        promocionesButton.setEnabled(rol.isPromocion());
-        eventosButton.setEnabled(rol.isEvento());
-        materialesButton.setEnabled(rol.isMaterial());
-        floristeriaButton.setEnabled(rol.isFloristeria());
-        empleadosButton.setEnabled(rol.isEmpleado());
-        arreglosButton.setEnabled(rol.isArreglo());
-        comprasButton.setEnabled(rol.isCompra());
-        tarjetaButton.setEnabled(rol.isTarjeta());
-        manualidadesButton.setEnabled(rol.isManualidad());
-        globosButton.setEnabled(rol.isGlobo());
-        desayunosButton.setEnabled(rol.isDesayuno());
-        ventasButton.setEnabled(rol.isVenta());
-        mobiliarioButton.setEnabled(rol.isMobiliario());
-        pedidosButton.setEnabled(rol.isPedido());
-        actividadesButton.setEnabled(rol.isActividad());
-        clientesButton.setEnabled(rol.isCliente());
-        proveedoresButton.setEnabled(rol.isProveedor());
-        alquileresButton.setEnabled(rol.isAlquiler());
-    }
-
-    private void configurarBoton(JButton boton, boolean habilitado) {
-        boton.setEnabled(habilitado);
-        if (habilitado) {
-            boton.setBackground(Color.LIGHT_GRAY); // O el color por defecto cuando está habilitado
-            boton.setForeground(Color.BLACK); // Color del texto cuando está habilitado
-        } else {
-            boton.setBackground(new Color(44, 62, 80)); // Color de fondo para deshabilitado
-            boton.setForeground(Color.WHITE); // Color del texto para deshabilitado
-        }
-    }
-
-
 }

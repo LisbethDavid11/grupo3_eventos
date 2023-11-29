@@ -443,7 +443,7 @@ public class SignUp extends JFrame {
             String[] imagenes = {"imagen 1.jpg", "imagen 2.jpg", "imagen 3.jpg", "imagen 4.jpg", "imagen 5.jpg", "imagen 6.jpg", "imagen 7.jpg", "imagen 8.jpg", "imagen 9.jpg", "imagen 10.jpg"};
             String imagenSeleccionada = imagenes[new Random().nextInt(imagenes.length)];
 
-            String query = "INSERT INTO usuarios (nombre, correo, contrasena, imagen, rol_id) VALUES (?, ?, ?, ?, ?)";
+            String query = "INSERT INTO usuarios (nombre, correo, contrasena, imagen) VALUES (?, ?, ?, ?, ?)";
             try (PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
                 preparedStatement.setString(1, nombre);
                 preparedStatement.setString(2, correo);
@@ -459,7 +459,7 @@ public class SignUp extends JFrame {
                     try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
                         if (generatedKeys.next()) {
                             int id = generatedKeys.getInt(1);
-                            return new DatosUsuario(id, nombre, correo, contrasenaEncriptada, imagenSeleccionada, null); // Devuelve los datos del usuario
+                            return new DatosUsuario(id, nombre, correo, contrasenaEncriptada, imagenSeleccionada); // Devuelve los datos del usuario
                         }
                     }
                 } else {

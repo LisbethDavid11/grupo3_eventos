@@ -12,13 +12,12 @@ public class DatosUsuario {
     private Rol rol;
 
     // Constructor con todos los campos
-    public DatosUsuario(int id, String nombre, String correo, String contrasena, String imagen, Rol rol) {
+    public DatosUsuario(int id, String nombre, String correo, String contrasena, String imagen) {
         this.id = id;
         this.nombre = nombre;
         this.correo = correo;
         this.contrasena = contrasena;
         this.imagen = imagen;
-        this.rol = rol;
     }
 
     // Getters y setters

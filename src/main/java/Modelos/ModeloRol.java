@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ModeloRol extends AbstractTableModel {
-    private final String[] columnas = {"N°", "Nombre", "Accesos", "Eliminar"};
+    private final String[] columnas = {"N°", "Nombre", "Descripción", "Eliminar"};
     private final List<Rol> roles;
 
     public ModeloRol(List<Rol> roles) {
@@ -48,40 +48,12 @@ public class ModeloRol extends AbstractTableModel {
             case 1:
                 return "  " + rol.getNombre();
             case 2:
-                return "  " + obtenerCadenaAccesos(rol);
+                return "  " + rol.getDescripcion();
             case 3:
                 return "X"; // Texto del botón
             default:
                 return null;
         }
-    }
-
-    private String obtenerCadenaAccesos(Rol rol) {
-        List<String> accesos = List.of(
-                rol.isCliente() ? "Cliente" : "",
-                rol.isEmpleado() ? "Empleado" : "",
-                rol.isFloristeria() ? "Floristería" : "",
-                rol.isArreglo() ? "Arreglo" : "",
-                rol.isUsuario() ? "Usuario" : "",
-                rol.isMaterial() ? "Material" : "",
-                rol.isProveedor() ? "Proveedor" : "",
-                rol.isCompra() ? "Compra" : "",
-                rol.isTarjeta() ? "Tarjeta" : "",
-                rol.isManualidad() ? "Manualidad" : "",
-                rol.isGlobo() ? "Globo" : "",
-                rol.isDesayuno() ? "Desayuno" : "",
-                rol.isVenta() ? "Venta" : "",
-                rol.isMobiliario() ? "Mobiliario" : "",
-                rol.isPedido() ? "Pedido" : "",
-                rol.isPromocion() ? "Promoción" : "",
-                rol.isEvento() ? "Evento" : "",
-                rol.isActividad() ? "Actividad" : "",
-                rol.isAlquiler() ? "Alquiler" : "",
-                rol.isRol() ? "Rol" : ""
-        );
-
-        // Filtrar y unir las cadenas no vacías con comas
-        return accesos.stream().filter(s -> !s.isEmpty()).collect(Collectors.joining(", "));
     }
 
     @Override
@@ -105,7 +77,6 @@ public class ModeloRol extends AbstractTableModel {
             fireTableRowsDeleted(rowIndex, rowIndex);
         }
     }
-
 
     public void removeRow(int rowIndex) {
         if (rowIndex >= 0 && rowIndex < roles.size()) {
