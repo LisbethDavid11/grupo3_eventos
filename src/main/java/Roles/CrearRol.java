@@ -20,7 +20,7 @@ public class CrearRol extends JFrame {
     private JTextField nombreField;
     private JTextArea descripcionTextArea;
     private Conexion sql;
-    private JFrame mainFrame;
+
     public CrearRol() {
         super("");
         setSize(405, 405);
@@ -45,11 +45,11 @@ public class CrearRol extends JFrame {
         centerPanel.add(Box.createVerticalStrut(10)); // Espacio tras el título
 
         // Campo para la nombre del rol
-        nombreField = new JTextField(20);
+        nombreField = new JTextField(30);
         nombreField.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, Color.GRAY));
         nombreField.setOpaque(false);
         nombreField.setFont(new Font("Century Gothic", Font.BOLD, 14));
-        nombreField.setHorizontalAlignment(JTextField.CENTER);
+        nombreField.setHorizontalAlignment(JTextField.LEFT);
         centerPanel.add(createLabeledField("Nombre del Rol:", nombreField));
 
         // Espacio entre los campos
@@ -58,6 +58,7 @@ public class CrearRol extends JFrame {
         // Etiqueta para "Descripción"
         JLabel descriptionLabel = new JLabel("Descripción:");
         descriptionLabel.setFont(new Font("Century Gothic", Font.BOLD, 14));
+        descriptionLabel.setAlignmentX(Component.LEFT_ALIGNMENT); // Alinea la etiqueta a la izquierda
         centerPanel.add(descriptionLabel);
 
         // Campo para la descripción del rol (JTextArea)
@@ -193,8 +194,8 @@ public class CrearRol extends JFrame {
                         return;
                     }
 
-                    if (!nombre.matches("[a-zA-ZñÑ]{2,}(\\s[a-zA-ZñÑ]+\\s*)*")) {
-                        mostrarDialogoPersonalizadoAtencion("El nombre debe tener mínimo 2 letras y máximo 1 espacio entre palabras.", Color.decode("#F57F17"));
+                    if (!nombre.matches("[a-zA-ZñÑ0-9]{2,}(\\s[a-zA-ZñÑ0-9]+\\s*)*")) {
+                        mostrarDialogoPersonalizadoAtencion("El nombre debe tener mínimo 2 letras/números y máximo 1 espacio entre palabras.", Color.decode("#F57F17"));
                         return;
                     }
                 } else {

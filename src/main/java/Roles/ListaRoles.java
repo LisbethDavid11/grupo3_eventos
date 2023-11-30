@@ -21,7 +21,7 @@ import java.util.List;
 
 public class ListaRoles extends JFrame {
     private JPanel panelPrincipal, panelTitulo;
-    private JButton botonCrear, botonVer, botonEditar, botonAtras, botonAdelante;
+    private JButton botonCrear, botonVer, botonAtras, botonAdelante;
     private JTable listaRoles;
     private JTextField campoBusqueda;
     private TextPrompt placeholder = new TextPrompt(" Buscar por nombre",campoBusqueda);
@@ -134,19 +134,6 @@ public class ListaRoles extends JFrame {
             }
         });
 
-        botonEditar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (listaRoles.getSelectedRow() == -1) {
-                    mostrarDialogoPersonalizadoAtencion("Seleccione una fila para continuar.", Color.decode("#F57F17"));
-                    return;
-                }
-                EditarRol cliente = new EditarRol(listaRol.get(listaRoles.getSelectedRow()).getId());
-                cliente.setVisible(true);
-                actual.dispose();
-            }
-        });
-
         // Establecer color de fondo para el encabezado
         JTableHeader header = listaRoles.getTableHeader();
         header.setForeground(Color.WHITE);
@@ -162,7 +149,6 @@ public class ListaRoles extends JFrame {
         botonAdelante.setBackground(darkColor);
         botonAtras.setBackground(darkColor);
         botonVer.setBackground(darkColor);
-        botonEditar.setBackground(darkColor);
         botonCrear.setBackground(darkColor);
         header.setBackground(darkColor);
 
@@ -170,7 +156,6 @@ public class ListaRoles extends JFrame {
         botonAtras.setForeground(Color.WHITE);
         botonVer.setForeground(Color.WHITE);
         botonCrear.setForeground(Color.WHITE);
-        botonEditar.setForeground(Color.WHITE);
         campoBusqueda.setForeground(darkColor);
         placeholder.setForeground(darkColor);
         lblPagina.setForeground(Color.WHITE);
@@ -180,7 +165,6 @@ public class ListaRoles extends JFrame {
         botonAtras.setFont(font);
         botonVer.setFont(font);
         botonCrear.setFont(font);
-        botonEditar.setFont(font);
         placeholder.setFont(font);
         lblPagina.setFont(font);
         lbl0.setFont(fontTitulo);
@@ -189,7 +173,6 @@ public class ListaRoles extends JFrame {
         botonAtras.setFocusable(false);
         botonCrear.setFocusable(false);
         botonVer.setFocusable(false);
-        botonEditar.setFocusable(false);
     }
 
     private void configurarTablaRoles() {
