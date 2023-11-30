@@ -1,4 +1,5 @@
 package Compras;
+import Login.SesionUsuario;
 import Modelos.ModeloCompra;
 import Modelos.ModeloCompraDetalle;
 import Objetos.Compra;
@@ -224,6 +225,9 @@ public class ListaCompras extends JFrame {
         botonVer.setFocusable(false);
         botonImprimir.setFocusable(false);
         fechaComboBox.setFocusable(false);
+
+        botonVer.setVisible(SesionUsuario.user.getRol().getPermisos().isVer());
+        botonCrear.setVisible(SesionUsuario.user.getRol().getPermisos().isCrear());
     }
 
     private void configurarTablaCompras() {

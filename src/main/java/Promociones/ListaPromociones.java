@@ -1,5 +1,6 @@
 package Promociones;
 
+import Login.SesionUsuario;
 import Manualidades.TextPrompt;
 import Modelos.ModeloPromocion;
 import Objetos.Conexion;
@@ -226,6 +227,10 @@ public class ListaPromociones extends JFrame {
         botonAtras.setFocusable(false);
         botonCrear.setFocusable(false);
         botonVer.setFocusable(false);
+
+
+        botonVer.setVisible(SesionUsuario.user.getRol().getPermisos().isVer());
+        botonCrear.setVisible(SesionUsuario.user.getRol().getPermisos().isCrear());
     }
 
     private void configurarTablaManualidades() {

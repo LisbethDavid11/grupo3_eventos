@@ -1,6 +1,7 @@
 package Login;
 
 import Objetos.Conexion;
+import Objetos.Permisos;
 import Objetos.Rol;
 import SubMenu.SubMenu;
 import org.mindrot.jbcrypt.BCrypt;
@@ -201,7 +202,7 @@ public class Login extends JFrame {
         Conexion sql = new Conexion();
         Connection connection = sql.conectamysql();
         try {
-            String query = "SELECT id, nombre, correo, contrasena, imagen FROM usuarios WHERE correo = ?";
+            String query = "SELECT id, nombre, correo, contrasena, imagen, rol_id FROM usuarios WHERE correo = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, correo);
 
@@ -210,14 +211,44 @@ public class Login extends JFrame {
             if (resultSet.next()) {
                 String contrasenaEncriptada = resultSet.getString("contrasena");
                 if (BCrypt.checkpw(contrasena, contrasenaEncriptada)) {
-
-                    return new DatosUsuario(
+                    DatosUsuario datosUsuario = new DatosUsuario(
                             resultSet.getInt("id"),
                             resultSet.getString("nombre"),
                             resultSet.getString("correo"),
                             resultSet.getString("contrasena"), // Considerar seguridad
                             resultSet.getString("imagen")
                     );
+
+                    String query2 = "SELECT * FROM roles WHERE roles.id = ?";
+                    PreparedStatement preparedStatement2 = connection.prepareStatement(query2);
+                    preparedStatement2.setString(1, resultSet.getString("rol_id"));
+
+                    ResultSet resultSet2 = preparedStatement2.executeQuery();
+                    Rol rol = new Rol();
+                    if (resultSet2.next()) {
+
+                        rol.setNombre(resultSet2.getString("nombre"));
+                        rol.setDescripcion(resultSet2.getString("descripcion"));
+                        rol.setId(resultSet2.getInt("id"));
+                    }
+
+                    String query3 = "SELECT * FROM permisos WHERE permisos.id_rol = ?";
+                    PreparedStatement preparedStatement3 = connection.prepareStatement(query3);
+                    preparedStatement3.setString(1, resultSet.getString("rol_id"));
+
+                    ResultSet resultSet3 = preparedStatement3.executeQuery();
+                    Permisos permisos = new Permisos();
+                    if (resultSet3.next()) {
+                        permisos.setCrear(resultSet3.getBoolean("crear"));
+                        permisos.setEditar(resultSet3.getBoolean("editar"));
+                        permisos.setVer(resultSet3.getBoolean("ver"));
+                        permisos.setListar(resultSet3.getBoolean("listar"));
+                    }
+
+                    rol.setPermisos(permisos);
+                    datosUsuario.setRol(rol);
+                    return datosUsuario;
+
                 }
             }
             return null;
@@ -241,6 +272,7 @@ public class Login extends JFrame {
         DatosUsuario datosUsuario = verificarCredenciales(correo, contrasena);
 
         if (datosUsuario != null) {
+            SesionUsuario.user = datosUsuario;
             SesionUsuario sesion = SesionUsuario.getInstance();
             sesion.setIdUsuario(datosUsuario.getId());
             sesion.setNombreUsuario(datosUsuario.getNombre());

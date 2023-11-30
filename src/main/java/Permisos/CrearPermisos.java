@@ -1,26 +1,32 @@
 package Permisos;
-import Modelos.ModeloPermisos;
+import Login.SesionUsuario;
 import Objetos.Conexion;
-import Objetos.Pedido;
-import Objetos.Permisos;
+import Objetos.Rol;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.List;
 
 public class CrearPermisos extends JFrame{
     private JButton  botonCancelar;
     private JPanel panel, panel1, panel2;
     private JLabel label0;
+    private JButton VERButton;
+    private JButton LISTARButton;
+    private JButton EDITARButton;
+    private JButton CREARButton;
+    private JButton GUARDARButton;
+    private JCheckBox crear;
+    private JCheckBox editar;
+    private JCheckBox listar;
+    private JCheckBox ver;
+    private JComboBox<Rol> jcbRoles;
 
-    private JTable jt_permisos;
     private CrearPermisos actual = this;
     private Connection mysql;
     private Conexion sql;
@@ -61,18 +67,39 @@ public class CrearPermisos extends JFrame{
         setContentPane(panel);
         sql = new Conexion();
 
+        cargar();
+
         panel.setBackground(Color.decode("#F5F5F5"));
         panel1.setBackground(Color.decode("#F5F5F5"));
         panel2.setBackground(Color.decode("#F5F5F5"));
 
-        JTableHeader header = jt_permisos.getTableHeader();
-        header.setForeground(Color.WHITE);
-        header.setBackground(darkColorRosado);
+        CREARButton.setBackground(Color.DARK_GRAY);
+        EDITARButton.setBackground(Color.DARK_GRAY);
+        VERButton.setBackground(Color.DARK_GRAY);
+        LISTARButton.setBackground(Color.DARK_GRAY);
+
+        CREARButton.setForeground(Color.WHITE);
+        EDITARButton.setForeground(Color.WHITE);
+        VERButton.setForeground(Color.WHITE);
+        LISTARButton.setForeground(Color.WHITE);
+
+        GUARDARButton.setFocusPainted(false);
+        botonCancelar.setFocusPainted(false);
+        CREARButton.setFocusPainted(false);
+        EDITARButton.setFocusPainted(false);
+        VERButton.setFocusPainted(false);
+        LISTARButton.setFocusPainted(false);
+        
 
         botonCancelar.setForeground(Color.WHITE);
         botonCancelar.setBackground(darkColorBlue);
         botonCancelar.setFocusPainted(false);
         botonCancelar.setBorder(margin);
+
+        GUARDARButton.setForeground(Color.WHITE);
+        GUARDARButton.setBackground(darkColorAqua);
+        GUARDARButton.setFocusPainted(false);
+        GUARDARButton.setBorder(margin);
 
         botonCancelar.addActionListener(new ActionListener() {
             @Override
@@ -82,90 +109,158 @@ public class CrearPermisos extends JFrame{
                 listaPermisos.setVisible(true);
             }
         });
+        CREARButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                crear.setSelected(!crear.isSelected());
+            }
+        });
+        EDITARButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                editar.setSelected(!editar.isSelected());
+            }
+        });
+        VERButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ver.setSelected(!ver.isSelected());
+            }
+        });
+        LISTARButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                listar.setSelected(!listar.isSelected());
+            }
+        });
+        botonCancelar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+            }
+        });
+        GUARDARButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                guardarPermiso();
+                ListaPermisos permisos = new ListaPermisos();
+                permisos.setVisible(true);
+                dispose();
+            }
+        });
 
-        List<Permisos> permisos = traer_ventanas_rol(id_rol);
-        ModeloPermisos modeloPermisos = new ModeloPermisos(permisos);
-        jt_permisos.setModel(modeloPermisos);
-        // Agregar el editor de celda con el evento de los checkboxes
-        TableColumnModel columnModel = jt_permisos.getColumnModel();
-
-        for (int columnIndex = 2; columnIndex <= 5; columnIndex++) {
-            columnModel.getColumn(columnIndex).setCellEditor(new ModeloPermisos.CheckBoxEditor(permisos));
-        }
 
     }
-    public  List<Permisos> traer_ventanas_rol(int id){
-        List<Permisos> permisos = new ArrayList<>();
+
+    public void ver_modl(){
+        if (jcbRoles.getModel().getSize() <= 0) {
+            JOptionPane.showMessageDialog(null,"No hay mas roles para asignarle permisos");
+            ListaPermisos permisos = new ListaPermisos();
+            permisos.setVisible(true);
+            dispose();
+        }
+    }
+
+
+    public void cargar(){
 
         sql = new Conexion();
         try {
             Connection mysql = sql.conectamysql();
-            PreparedStatement preparedStatement = mysql.prepareStatement("SELECT * FROM roles WHERE roles.id = ?;");
-            preparedStatement.setInt(1, id);
+            PreparedStatement preparedStatement = mysql.prepareStatement("SELECT * FROM roles " +
+                    "left join permisos on permisos.id_rol = roles.id " +
+                    "where permisos.id is null and nombre != 'Administrador'");
 
             ResultSet resultSet = preparedStatement.executeQuery();
-            ResultSetMetaData metaData = resultSet.getMetaData();
-            int columnCount = metaData.getColumnCount();
-            resultSet.next();
-            List<String> column = new ArrayList<>();
-            label0.setText("INGRESAR PERMISOS DEL ROL: "+resultSet.getString("nombre"));
-            for (int i = 1; i <= columnCount; i++) {
-                if (3<=i){
-                    if (resultSet.getBoolean(metaData.getColumnName(i))){
-                        column.add(metaData.getColumnName(i));
-                    }else {
-                        PreparedStatement preparedStatement1 = mysql.prepareStatement("DELETE FROM eventos.permisos WHERE id_rol = ? AND nombre_ventana = ?;");
-                        preparedStatement1.setInt(1, id);
-                        preparedStatement1.setString(2,metaData.getColumnName(i));
-                        preparedStatement1.executeUpdate();
-                    }
-                }
+
+            while (resultSet.next()){
+                Rol rol = new Rol();
+                rol.setNombre(resultSet.getString("nombre"));
+                rol.setId(resultSet.getInt("id"));
+                jcbRoles.addItem(rol);
             }
 
-            for (String c: column ) {
 
-                    System.out.println("Nombre de columna: " +  c);
-                    PreparedStatement preparedStatement1 = mysql.prepareStatement("SELECT * FROM eventos.permisos WHERE id_rol = ? AND nombre_ventana = ?;");
-                    preparedStatement1.setInt(1, id);
-                    preparedStatement1.setString(2,c);
-                    resultSet = preparedStatement1.executeQuery();
 
-                    Permisos permiso = new Permisos();
-                    if (!resultSet.next()) {
-                        // Si no hay resultados, el registro no existe, entonces crearlo
-                        PreparedStatement preparedStatement2 = mysql.prepareStatement("INSERT INTO eventos.permisos (id_rol, nombre_ventana, crear, editar, ver, listar) VALUES (?,?,1,1,1,1);", Statement.RETURN_GENERATED_KEYS);
-                        preparedStatement2.setInt(1, id);
-                        preparedStatement2.setString(2, c);
-                        preparedStatement2.executeUpdate();
-                        System.out.println("Se ha creado un nuevo registro.");
-                        ResultSet generatedKeys = preparedStatement2.getGeneratedKeys();
-                        if (generatedKeys.next()) {
-                            int idGenerado = generatedKeys.getInt(1);
-                            permiso.setId(idGenerado);
-                            permiso.setNombre(c);
-                            permiso.setCrear(true);
-                            permiso.setEditar(true);
-                            permiso.setVer(true);
-                            permiso.setListar(true);
-                            permisos.add(permiso);
-                        }
 
-                        preparedStatement2.close();
-                    } else {
-                        permiso.setId(resultSet.getInt("id"));
-                        permiso.setNombre(resultSet.getString("nombre_ventana"));
-                        permiso.setCrear(resultSet.getBoolean("crear"));
-                        permiso.setEditar(resultSet.getBoolean("editar"));
-                        permiso.setVer(resultSet.getBoolean("ver"));
-                        permiso.setListar(resultSet.getBoolean("listar"));
-                        permisos.add(permiso);
-                    }
-            }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-        return permisos;
     }
+
+    private void guardarPermiso() {
+        Integer idUsuarioActual = SesionUsuario.getInstance().getIdUsuario();
+
+        if (idUsuarioActual == 0) {
+            mostrarDialogoPersonalizadoError("Recuerde que para poder crear un evento, debe iniciar sesión", Color.decode("#C62828"));
+            eliminarDetallesMaterial();
+            dispose();
+
+        } else {
+
+            try (Connection connection = sql.conectamysql();
+                 PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO permisos(id_rol,crear,editar,ver,listar) VALUES (?,?,?,?,?)")) {
+                preparedStatement.setInt(1, ((Rol) jcbRoles.getSelectedItem()).getId());
+                preparedStatement.setBoolean(2, crear.isSelected());
+                preparedStatement.setBoolean(3, editar.isSelected());
+                preparedStatement.setBoolean(4, ver.isSelected());
+                preparedStatement.setBoolean(5, listar.isSelected());
+                preparedStatement.executeUpdate();
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+                mostrarDialogoPersonalizadoError("Error al guardar el pedido.", Color.decode("#C62828"));
+            }
+        }
+    }
+
+    public void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado
+        JButton btnAceptar = new JButton("OK");
+        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE);
+        btnAceptar.setFocusPainted(false);
+
+        // Crea un JOptionPane
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                           // Mensaje a mostrar
+                JOptionPane.ERROR_MESSAGE,   // Tipo de mensaje
+                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
+                null,                              // Icono (puede ser null)
+                new Object[]{},                    // No se usan opciones estándar
+                null                               // Valor inicial (no necesario aquí)
+        );
+
+        // Añade el botón al JOptionPane
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Validación");
+
+        // Añade un ActionListener al botón
+        btnAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+            }
+        });
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
+    }
+
+    private void eliminarDetallesMaterial() {
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "DELETE FROM detalles_pedidos WHERE pedido_id IS NULL OR pedido_id NOT IN (SELECT id FROM pedidos)"
+             )) {
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
     public static void main(String[] args) {
         CrearPermisos permisos = new CrearPermisos(1);
         permisos.setVisible(true);

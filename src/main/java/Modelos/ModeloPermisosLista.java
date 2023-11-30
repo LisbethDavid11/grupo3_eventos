@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class ModeloPermisosLista extends AbstractTableModel {
-    private final String[] columnas = {"N°", "Nombre", "Permiso", "Crear", "Editar", "Ver", "Listar"};
+    private final String[] columnas = {"N°", "Nombre", "Crear", "Editar", "Ver", "Listar"};
 
     private final List<Permisos> permisos;
 
@@ -53,15 +53,13 @@ public class ModeloPermisosLista extends AbstractTableModel {
                 return rowIndex + 1;
             case 1: // Nombre
                 return permiso.getNombre();
-            case 2: // Nombre
-                return permiso.getNombre_permiso();
-            case 3: // Crear
+            case 2: // Crear
                 return permiso.isCrear() ? "Permitido" : "No Permitido";
-            case 4: // Editar
+            case 3: // Editar
                 return permiso.isEditar() ? "Permitido" : "No Permitido";
-            case 5: // Listar
+            case 4: // Listar
                 return permiso.isVer() ? "Permitido" : "No Permitido";
-            case 6: // Ver
+            case 5: // Ver
                 return permiso.isListar() ? "Permitido" : "No Permitido";
             default:
                 return null;

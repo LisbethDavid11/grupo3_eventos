@@ -1,4 +1,5 @@
 package Alquileres;
+import Login.SesionUsuario;
 import Manualidades.TextPrompt;
 import Modelos.ModeloAlquileres;
 import Modelos.ModeloEvento;
@@ -247,6 +248,10 @@ public class ListaAlquileres extends JFrame {
         botonCrear.setFocusable(false);
         botonVer.setFocusable(false);
         botonEditar.setFocusable(false);
+
+        botonEditar.setVisible(SesionUsuario.user.getRol().getPermisos().isEditar());
+        botonVer.setVisible(SesionUsuario.user.getRol().getPermisos().isVer());
+        botonCrear.setVisible(SesionUsuario.user.getRol().getPermisos().isCrear());
     }
 
     private void configurarTablaManualidades() {

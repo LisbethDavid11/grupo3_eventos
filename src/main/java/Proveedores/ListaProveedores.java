@@ -1,5 +1,6 @@
 package Proveedores;
 import Empleados.TextPrompt;
+import Login.SesionUsuario;
 import Modelos.ModeloProveedor;
 import Objetos.Conexion;
 import Objetos.Proveedor;
@@ -182,6 +183,10 @@ public class ListaProveedores extends JFrame {
         botonAtras.setFocusable(false);
         botonCrear.setFocusable(false);
         botonVer.setFocusable(false);
+
+        botonEditar.setVisible(SesionUsuario.user.getRol().getPermisos().isEditar());
+        botonVer.setVisible(SesionUsuario.user.getRol().getPermisos().isVer());
+        botonCrear.setVisible(SesionUsuario.user.getRol().getPermisos().isCrear());
     }
 
     private void configurarTablaProveedores() {

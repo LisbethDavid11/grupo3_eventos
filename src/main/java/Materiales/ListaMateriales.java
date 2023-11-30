@@ -1,4 +1,5 @@
 package Materiales;
+import Login.SesionUsuario;
 import Modelos.ModeloMaterial;
 import Objetos.Conexion;
 import Objetos.Material;
@@ -209,6 +210,10 @@ public class ListaMateriales extends JFrame {
         botonAtras.setFocusable(false);
         botonEditar.setFocusable(false);
         botonVer.setFocusable(false);
+
+        botonEditar.setVisible(SesionUsuario.user.getRol().getPermisos().isEditar());
+        botonVer.setVisible(SesionUsuario.user.getRol().getPermisos().isVer());
+        botonCrear.setVisible(SesionUsuario.user.getRol().getPermisos().isCrear());
     }
 
     private void configurarTablaMateriales() {

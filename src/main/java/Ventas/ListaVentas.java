@@ -1,4 +1,5 @@
 package Ventas;
+import Login.SesionUsuario;
 import Modelos.ModeloCompra;
 import Modelos.ModeloVenta;
 import Modelos.ModeloVentaDetalle;
@@ -227,6 +228,9 @@ public class ListaVentas extends JFrame {
                 actualizarModeloTablaConMesSeleccionado(mesSeleccionado);
             }
         });
+
+        botonVer.setVisible(SesionUsuario.user.getRol().getPermisos().isVer());
+        botonCrear.setVisible(SesionUsuario.user.getRol().getPermisos().isCrear());
     }
 
     private void configurarTablaVentas() {

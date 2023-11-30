@@ -1,6 +1,7 @@
 package Roles;
 
 import Arreglos.TextPrompt;
+import Login.SesionUsuario;
 import Modelos.ModeloRol;
 import Objetos.Conexion;
 import Objetos.Rol;
@@ -173,6 +174,9 @@ public class ListaRoles extends JFrame {
         botonAtras.setFocusable(false);
         botonCrear.setFocusable(false);
         botonVer.setFocusable(false);
+
+        botonVer.setVisible(SesionUsuario.user.getRol().getPermisos().isVer());
+        botonCrear.setVisible(SesionUsuario.user.getRol().getPermisos().isCrear());
     }
 
     private void configurarTablaRoles() {

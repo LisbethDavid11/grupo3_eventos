@@ -1,4 +1,5 @@
 package Floristerias;
+import Login.SesionUsuario;
 import Modelos.ModeloFloristeria;
 import Objetos.Conexion;
 import Objetos.Floristeria;
@@ -172,6 +173,10 @@ public class ListaFloristerias extends JFrame {
         botonAtras.setFocusable(false);
         botonEditar.setFocusable(false);
         botonVer.setFocusable(false);
+
+        botonEditar.setVisible(SesionUsuario.user.getRol().getPermisos().isEditar());
+        botonVer.setVisible(SesionUsuario.user.getRol().getPermisos().isVer());
+        botonCrear.setVisible(SesionUsuario.user.getRol().getPermisos().isCrear());
     }
 
     private void configurarTablaFloristerias() {

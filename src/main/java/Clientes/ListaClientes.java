@@ -1,5 +1,6 @@
 package Clientes;
 import Arreglos.TextPrompt;
+import Login.SesionUsuario;
 import Modelos.ModeloCliente;
 import Objetos.Cliente;
 import Objetos.Conexion;
@@ -176,6 +177,10 @@ public class ListaClientes extends JFrame {
         botonCrear.setFocusable(false);
         botonVer.setFocusable(false);
         botonEditar.setFocusable(false);
+
+        botonEditar.setVisible(SesionUsuario.user.getRol().getPermisos().isEditar());
+        botonVer.setVisible(SesionUsuario.user.getRol().getPermisos().isVer());
+        botonCrear.setVisible(SesionUsuario.user.getRol().getPermisos().isCrear());
     }
 
     private void configurarTablaClientes() {

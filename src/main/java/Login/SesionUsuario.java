@@ -2,6 +2,8 @@ package Login;
 
 public class SesionUsuario {
     private static SesionUsuario instancia = new SesionUsuario();
+
+    public static DatosUsuario user;
     private int idUsuario;
     private String nombreUsuario;
     private String correoUsuario;

@@ -1,6 +1,7 @@
 package Permisos;
 
 import Arreglos.TextPrompt;
+import Login.SesionUsuario;
 import Modelos.ModeloPermisosLista;
 import Modelos.ModeloRol;
 import Objetos.Conexion;
@@ -113,15 +114,11 @@ public class ListaPermisos extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                int seleccion = tablaPermisos.getSelectedRow();
-                ModeloPermisosLista mode = (ModeloPermisosLista)tablaPermisos.getModel();
-                if (seleccion != -1){
                     actual.dispose();
-                    CrearPermisos permisos = new CrearPermisos(mode.getPermiso(seleccion).getId());
+                    CrearPermisos permisos = new CrearPermisos(0);
                     permisos.setVisible(true);
-                }else{
-                    mostrarDialogoPersonalizadoAtencion("Seleccione una fila para continuar.", Color.decode("#F57F17"));
-                }
+                    permisos.ver_modl();
+
 
             }
         });
@@ -195,6 +192,10 @@ public class ListaPermisos extends JFrame {
         botonCrear.setFocusable(false);
         botonVer.setFocusable(false);
         botonEditar.setFocusable(false);
+
+        botonEditar.setVisible(SesionUsuario.user.getRol().getPermisos().isEditar());
+        botonVer.setVisible(SesionUsuario.user.getRol().getPermisos().isVer());
+        botonCrear.setVisible(SesionUsuario.user.getRol().getPermisos().isCrear());
     }
 
     private void configurarTablaPermisos() {
@@ -251,7 +252,7 @@ public class ListaPermisos extends JFrame {
         try {
             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT *, permisos.id as id_permisos, roles.id as id_roles " +
                     "FROM permisos " +
-                    " right join roles on roles.id = permisos.id_rol WHERE nombre LIKE CONCAT('%',?,'%') LIMIT ?,20");
+                    " inner join roles on roles.id = permisos.id_rol WHERE nombre LIKE CONCAT('%',?,'%') LIMIT ?,20");
             preparedStatement.setString(1, busqueda);
             preparedStatement.setInt(2, pagina * 20);
 
@@ -263,7 +264,6 @@ public class ListaPermisos extends JFrame {
                 rol.setId(resultSet.getInt("id_roles"));
                 rol.setId_permiso(resultSet.getInt("id_permisos"));
                 rol.setNombre(resultSet.getString("nombre"));
-                rol.setNombre_permiso(resultSet.getString("nombre_ventana"));
                 rol.setListar(resultSet.getBoolean("listar"));
                 rol.setVer(resultSet.getBoolean("ver"));
                 rol.setCrear(resultSet.getBoolean("crear"));
@@ -286,7 +286,8 @@ public class ListaPermisos extends JFrame {
     private int getTotalPageCount() {
         int count = 0;
         try (Connection mysql = sql.conectamysql();
-             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT COUNT(*) AS total FROM permisos WHERE nombre_ventana LIKE CONCAT('%',?,'%')")) {
+             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT COUNT(*) AS total FROM permisos " +
+                     " inner join roles on roles.id = permisos.id_rol WHERE nombre LIKE CONCAT('%',?,'%')")) {
             preparedStatement.setString(1, busqueda);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {

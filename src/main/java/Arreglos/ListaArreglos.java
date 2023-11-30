@@ -1,4 +1,5 @@
 package Arreglos;
+import Login.SesionUsuario;
 import Modelos.ModeloArreglo;
 import Objetos.Arreglo;
 import Objetos.Conexion;
@@ -207,6 +208,10 @@ public class ListaArreglos extends JFrame {
         botonEditar.setFocusable(false);
         noCheckBox.setFocusable(false);
         siCheckBox.setFocusable(false);
+
+        botonEditar.setVisible(SesionUsuario.user.getRol().getPermisos().isEditar());
+        botonVer.setVisible(SesionUsuario.user.getRol().getPermisos().isVer());
+        botonCrear.setVisible(SesionUsuario.user.getRol().getPermisos().isCrear());
     }
 
     private void configurarTablaArreglos() {

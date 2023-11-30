@@ -5,6 +5,9 @@ public class Rol {
     private String nombre;
     private String descripcion;
 
+    private Permisos permisos;
+
+
     public Rol() {
     }
 
@@ -36,5 +39,18 @@ public class Rol {
 
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
+    }
+
+    public Permisos getPermisos() {
+        return permisos;
+    }
+
+    public void setPermisos(Permisos permisos) {
+        this.permisos = permisos;
+    }
+
+    @Override
+    public String toString() {
+        return getNombre();
     }
 }

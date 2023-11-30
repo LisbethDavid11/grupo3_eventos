@@ -247,6 +247,28 @@ public class SubMenu extends JFrame {
         usuariosButton.setForeground(Color.WHITE);
         rolesButton.setForeground(Color.WHITE);
         permisosButton.setForeground(Color.WHITE);
+
+        promocionesButton.setVisible(SesionUsuario.user.getRol().getPermisos().isListar());
+        eventosButton.setVisible(SesionUsuario.user.getRol().getPermisos().isListar());
+        materialesButton.setVisible(SesionUsuario.user.getRol().getPermisos().isListar());
+        floristeriaButton.setVisible(SesionUsuario.user.getRol().getPermisos().isListar());
+        empleadosButton.setVisible(SesionUsuario.user.getRol().getPermisos().isListar());
+        arreglosButton.setVisible(SesionUsuario.user.getRol().getPermisos().isListar());
+        comprasButton.setVisible(SesionUsuario.user.getRol().getPermisos().isListar());
+        tarjetaButton.setVisible(SesionUsuario.user.getRol().getPermisos().isListar());
+        manualidadesButton.setVisible(SesionUsuario.user.getRol().getPermisos().isListar());
+        globosButton.setVisible(SesionUsuario.user.getRol().getPermisos().isListar());
+        desayunosButton.setVisible(SesionUsuario.user.getRol().getPermisos().isListar());
+        ventasButton.setVisible(SesionUsuario.user.getRol().getPermisos().isListar());
+        mobiliarioButton.setVisible(SesionUsuario.user.getRol().getPermisos().isListar());
+        pedidosButton.setVisible(SesionUsuario.user.getRol().getPermisos().isListar());
+        actividadesButton.setVisible(SesionUsuario.user.getRol().getPermisos().isListar());
+        clientesButton.setVisible(SesionUsuario.user.getRol().getPermisos().isListar());
+        proveedoresButton.setVisible(SesionUsuario.user.getRol().getPermisos().isListar());
+        alquileresButton.setVisible(SesionUsuario.user.getRol().getPermisos().isListar());
+        usuariosButton.setVisible(SesionUsuario.user.getRol().getPermisos().isListar());
+        rolesButton.setVisible(SesionUsuario.user.getRol().getPermisos().isListar());
+        permisosButton.setVisible(SesionUsuario.user.getRol().getPermisos().isListar());
         add(panel3);
 
         // Crear instancias de las ventanas

@@ -1,4 +1,5 @@
 package Tarjetas;
+import Login.SesionUsuario;
 import Modelos.ModeloTarjeta;
 import Objetos.Conexion;
 import Objetos.Tarjeta;
@@ -222,6 +223,10 @@ public class ListaTarjetas extends JFrame {
         botonAtras.setFocusable(false);
         botonEditar.setFocusable(false);
         botonVer.setFocusable(false);
+
+        botonEditar.setVisible(SesionUsuario.user.getRol().getPermisos().isEditar());
+        botonVer.setVisible(SesionUsuario.user.getRol().getPermisos().isVer());
+        botonCrear.setVisible(SesionUsuario.user.getRol().getPermisos().isCrear());
     }
 
     private void configurarTablaTarjetas() {
