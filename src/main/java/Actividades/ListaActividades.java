@@ -59,9 +59,6 @@ public class ListaActividades extends JFrame {
         setContentPane(panelPrincipal);
         campoBusqueda.setText("");
 
-        botonEditar.setVisible(SesionUsuario.user.getRol().getPermisos().isEditar());
-        botonVer.setVisible(SesionUsuario.user.getRol().getPermisos().isVer());
-        botonCrear.setVisible(SesionUsuario.user.getRol().getPermisos().isCrear());
 
         JLabel jl_desde = new JLabel("Desde");
         panel_fecha.add(jl_desde);

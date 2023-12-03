@@ -185,9 +185,6 @@ public class ListaMobiliario extends JFrame {
         botonCrear.setFocusable(false);
         botonVer.setFocusable(false);
 
-        botonEditar.setVisible(SesionUsuario.user.getRol().getPermisos().isEditar());
-        botonVer.setVisible(SesionUsuario.user.getRol().getPermisos().isVer());
-        botonCrear.setVisible(SesionUsuario.user.getRol().getPermisos().isCrear());
     }
 
     private void configurarTablaArreglos() {

@@ -1,25 +1,12 @@
 package Modelos;
 
-import Objetos.Conexion;
 import Objetos.Permisos;
 
-import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class ModeloPermisos extends AbstractTableModel {
-    private final String[] columnas = {"N°", "Nombre", "Crear", "Editar", "Listar", "Ver"};
+    private final String[] columnas = {"N°", "Rol", "Permisos"};
 
     private final List<Permisos> permisos;
 
@@ -50,128 +37,85 @@ public class ModeloPermisos extends AbstractTableModel {
         switch (columnIndex) {
             case 0: // N°
                 return rowIndex + 1;
-            case 1: // Nombre
-                return permiso.getNombre();
-            case 2: // Crear
-                return permiso.isCrear();
-            case 3: // Editar
-                return permiso.isEditar();
-            case 4: // Listar
-                return permiso.isVer();
-            case 5: // Ver
-                return permiso.isListar();
+            case 1: // Nombre de Permiso
+                return permiso.obtenerNombreRol();
+            case 2: // Permiso (booleano)
+                return obtenerNombresPermisos(permiso);
             default:
                 return null;
         }
     }
 
-    @Override
-    public Class<?> getColumnClass(int columnIndex) {
-        if (columnIndex >= 2 && columnIndex <= 5) {
-            return Boolean.class; // Las columnas de checkboxes son de tipo Boolean
+    private String obtenerNombresPermisos(Permisos permiso) {
+        StringBuilder nombres = new StringBuilder();
+
+        if (permiso.isCliente()) {
+            nombres.append("Cliente").append(", ");
         }
-        return super.getColumnClass(columnIndex);
+        if (permiso.isEmpleado()) {
+            nombres.append("Empleado").append(", ");
+        }
+        if (permiso.isFloristeria()) {
+            nombres.append("Floristeria").append(", ");
+        }
+        if (permiso.isArreglo()) {
+            nombres.append("Arreglo").append(", ");
+        }
+        if (permiso.isUsuario()) {
+            nombres.append("Usuario").append(", ");
+        }
+        if (permiso.isMaterial()) {
+            nombres.append("Material").append(", ");
+        }
+        if (permiso.isProveedor()) {
+            nombres.append("Proveedor").append(", ");
+        }
+        if (permiso.isCompra()) {
+            nombres.append("Compra").append(", ");
+        }
+        if (permiso.isTarjeta()) {
+            nombres.append("Tarjeta").append(", ");
+        }
+        if (permiso.isManualidad()) {
+            nombres.append("Manualidad").append(", ");
+        }
+        if (permiso.isGlobo()) {
+            nombres.append("Globo").append(", ");
+        }
+        if (permiso.isDesayuno()) {
+            nombres.append("Desayuno").append(", ");
+        }
+        if (permiso.isVenta()) {
+            nombres.append("Venta").append(", ");
+        }
+        if (permiso.isMobiliario()) {
+            nombres.append("Mobiliario").append(", ");
+        }
+        if (permiso.isPedido()) {
+            nombres.append("Pedido").append(", ");
+        }
+        if (permiso.isPromocion()) {
+            nombres.append("Promocion").append(", ");
+        }
+        if (permiso.isEvento()) {
+            nombres.append("Evento").append(", ");
+        }
+        if (permiso.isActividad()) {
+            nombres.append("Actividad").append(", ");
+        }
+        if (permiso.isAlquiler()) {
+            nombres.append("Alquiler").append(", ");
+        }
+        if (permiso.isRol()) {
+            nombres.append("Rol").append(", ");
+        }
+
+
+        return nombres.toString();
     }
 
-    @Override
-    public boolean isCellEditable(int rowIndex, int columnIndex) {
-        return columnIndex >= 2 && columnIndex <= 5; // Hacer editable las columnas de checkboxes
-    }
 
-    @Override
-    public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-        if (columnIndex >= 2 && columnIndex <= 5 && aValue instanceof Boolean) {
-            switch (columnIndex) {
-                case 2: // Crear
-                    permisos.get(rowIndex).setCrear((Boolean) aValue);
-                    break;
-                case 3: // Editar
-                    permisos.get(rowIndex).setEditar((Boolean) aValue);
-                    break;
-                case 4: // Listar
-                    permisos.get(rowIndex).setVer((Boolean) aValue);
-                    break;
-                case 5: // Ver
-                    permisos.get(rowIndex).setListar((Boolean) aValue);
-                    break;
-                default:
-                    break;
-            }
-            fireTableCellUpdated(rowIndex, columnIndex);
-        }
-    }
 
-    // Renderizador para mostrar el JCheckBox en la tabla
-    public static class CheckBoxRenderer extends JCheckBox implements TableCellRenderer {
-        public CheckBoxRenderer() {
-            super();
-            setHorizontalAlignment(JLabel.CENTER);
-        }
 
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-                                                       boolean hasFocus, int row, int column) {
-            setSelected(value != null && (Boolean) value);
-            return this;
-        }
-    }
-
-    // Editor para permitir la edición del JCheckBox en la tabla
-    public static class CheckBoxEditor extends AbstractCellEditor implements TableCellEditor {
-        private final JCheckBox checkBox;
-        private HashMap<Integer,String> columnas = new HashMap<>();
-        private int lastSelectedRow = -1;
-        private int lastSelectedColumn = -1;
-        public CheckBoxEditor(List<Permisos> permisos) {
-            columnas.put(2, "crear");
-            columnas.put(3, "editar");
-            columnas.put(4, "ver");
-            columnas.put(5, "listar");
-            checkBox = new JCheckBox();
-            checkBox.setHorizontalAlignment(JLabel.CENTER);
-            checkBox.addActionListener(new ActionListener() {
-                                           @Override
-                                           public void actionPerformed(ActionEvent e) {
-
-                                               if (lastSelectedRow==-1){
-
-                                               }else {
-                                                   System.out.println("Fila " + permisos.get(lastSelectedRow).getNombre() + ", Columna " + lastSelectedColumn +
-                                                           (checkBox.isSelected() ? " checkeada." : " descheckeada."));
-                                                   checkUncheck(permisos.get(lastSelectedRow).getId(),columnas.get(lastSelectedColumn),checkBox.isSelected());
-                                               }
-                                           }
-                                       }
-            );
-        }
-
-        public void checkUncheck(int id, String col,  boolean check) {
-            Conexion sql = new Conexion();
-            try {
-                Connection mysql = sql.conectamysql();
-                PreparedStatement preparedStatement = mysql.prepareStatement("UPDATE permisos SET "+col+" = ? WHERE id = ?;");
-                preparedStatement.setBoolean(1, check);
-                preparedStatement.setInt(2, id);
-                preparedStatement.executeUpdate();
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
-        }
-
-        @Override
-        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-            if (value instanceof Boolean) {
-                checkBox.setSelected((Boolean) value);
-            }
-            lastSelectedColumn = column;
-            lastSelectedRow = row;
-            return checkBox;
-        }
-
-        @Override
-        public Object getCellEditorValue() {
-            return checkBox.isSelected();
-        }
-    }
 
 }

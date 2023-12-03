@@ -1,15 +1,11 @@
 package Permisos;
 
 import Arreglos.TextPrompt;
-import Login.SesionUsuario;
-import Modelos.ModeloPermisosLista;
+import Modelos.ModeloPermisos;
 import Modelos.ModeloRol;
 import Objetos.Conexion;
 import Objetos.Permisos;
 import Objetos.Rol;
-import Roles.CrearRol;
-import Roles.EditarRol;
-import Roles.VerRol;
 
 import javax.swing.*;
 import javax.swing.table.*;
@@ -193,21 +189,16 @@ public class ListaPermisos extends JFrame {
         botonVer.setFocusable(false);
         botonEditar.setFocusable(false);
 
-        botonEditar.setVisible(SesionUsuario.user.getRol().getPermisos().isEditar());
-        botonVer.setVisible(SesionUsuario.user.getRol().getPermisos().isVer());
-        botonCrear.setVisible(SesionUsuario.user.getRol().getPermisos().isCrear());
     }
 
     private void configurarTablaPermisos() {
         TableColumnModel columnModel = tablaPermisos.getColumnModel();
 
         columnModel.getColumn(0).setPreferredWidth(20);
-        columnModel.getColumn(1).setPreferredWidth(100);
-        columnModel.getColumn(2).setPreferredWidth(100);
+        columnModel.getColumn(1).setPreferredWidth(50);
 
         columnModel.getColumn(0).setCellRenderer(new ListaPermisos.CenterAlignedRenderer());
         columnModel.getColumn(1).setCellRenderer(new ListaPermisos.LeftAlignedRenderer());
-        columnModel.getColumn(2).setCellRenderer(new ListaPermisos.LeftAlignedRenderer());
     }
 
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
@@ -246,7 +237,7 @@ public class ListaPermisos extends JFrame {
         }
     }
 
-    private ModeloPermisosLista cargarDatos() {
+    private ModeloPermisos cargarDatos() {
         sql = new Conexion();
         mysql = sql.conectamysql();
         try {
@@ -261,13 +252,28 @@ public class ListaPermisos extends JFrame {
 
             while (resultSet.next()) {
                 Permisos rol = new Permisos();
-                rol.setId(resultSet.getInt("id_roles"));
-                rol.setId_permiso(resultSet.getInt("id_permisos"));
-                rol.setNombre(resultSet.getString("nombre"));
-                rol.setListar(resultSet.getBoolean("listar"));
-                rol.setVer(resultSet.getBoolean("ver"));
-                rol.setCrear(resultSet.getBoolean("crear"));
-                rol.setEditar(resultSet.getBoolean("editar"));
+                rol.setId(resultSet.getInt("id_permisos"));
+                rol.setIdRol(resultSet.getInt("id_roles"));
+                rol.setCliente(resultSet.getBoolean("cliente"));
+                rol.setEmpleado(resultSet.getBoolean("empleado"));
+                rol.setFloristeria(resultSet.getBoolean("floristeria"));
+                rol.setArreglo(resultSet.getBoolean("arreglo"));
+                rol.setUsuario(resultSet.getBoolean("usuario"));
+                rol.setMaterial(resultSet.getBoolean("material"));
+                rol.setProveedor(resultSet.getBoolean("proveedor"));
+                rol.setCompra(resultSet.getBoolean("compra"));
+                rol.setTarjeta(resultSet.getBoolean("tarjeta"));
+                rol.setManualidad(resultSet.getBoolean("manualidad"));
+                rol.setGlobo(resultSet.getBoolean("globo"));
+                rol.setDesayuno(resultSet.getBoolean("desayuno"));
+                rol.setVenta(resultSet.getBoolean("venta"));
+                rol.setMobiliario(resultSet.getBoolean("mobiliario"));
+                rol.setPedido(resultSet.getBoolean("pedido"));
+                rol.setPromocion(resultSet.getBoolean("promocion"));
+                rol.setEvento(resultSet.getBoolean("evento"));
+                rol.setActividad(resultSet.getBoolean("actividad"));
+                rol.setAlquiler(resultSet.getBoolean("alquiler"));
+                rol.setRol(resultSet.getBoolean("rol"));
 
 
                 // ... Continúa con el resto de los campos booleanos ...
@@ -279,7 +285,7 @@ public class ListaPermisos extends JFrame {
             mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
             listaRol = new ArrayList<>();
         }
-        return new ModeloPermisosLista(listaRol);
+        return new ModeloPermisos(listaRol);
     }
 
 

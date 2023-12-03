@@ -248,27 +248,29 @@ public class SubMenu extends JFrame {
         rolesButton.setForeground(Color.WHITE);
         permisosButton.setForeground(Color.WHITE);
 
-        promocionesButton.setVisible(SesionUsuario.user.getRol().getPermisos().isListar());
-        eventosButton.setVisible(SesionUsuario.user.getRol().getPermisos().isListar());
-        materialesButton.setVisible(SesionUsuario.user.getRol().getPermisos().isListar());
-        floristeriaButton.setVisible(SesionUsuario.user.getRol().getPermisos().isListar());
-        empleadosButton.setVisible(SesionUsuario.user.getRol().getPermisos().isListar());
-        arreglosButton.setVisible(SesionUsuario.user.getRol().getPermisos().isListar());
-        comprasButton.setVisible(SesionUsuario.user.getRol().getPermisos().isListar());
-        tarjetaButton.setVisible(SesionUsuario.user.getRol().getPermisos().isListar());
-        manualidadesButton.setVisible(SesionUsuario.user.getRol().getPermisos().isListar());
-        globosButton.setVisible(SesionUsuario.user.getRol().getPermisos().isListar());
-        desayunosButton.setVisible(SesionUsuario.user.getRol().getPermisos().isListar());
-        ventasButton.setVisible(SesionUsuario.user.getRol().getPermisos().isListar());
-        mobiliarioButton.setVisible(SesionUsuario.user.getRol().getPermisos().isListar());
-        pedidosButton.setVisible(SesionUsuario.user.getRol().getPermisos().isListar());
-        actividadesButton.setVisible(SesionUsuario.user.getRol().getPermisos().isListar());
-        clientesButton.setVisible(SesionUsuario.user.getRol().getPermisos().isListar());
-        proveedoresButton.setVisible(SesionUsuario.user.getRol().getPermisos().isListar());
-        alquileresButton.setVisible(SesionUsuario.user.getRol().getPermisos().isListar());
-        usuariosButton.setVisible(SesionUsuario.user.getRol().getPermisos().isListar());
-        rolesButton.setVisible(SesionUsuario.user.getRol().getPermisos().isListar());
-        permisosButton.setVisible(SesionUsuario.user.getRol().getPermisos().isListar());
+        promocionesButton.setEnabled(SesionUsuario.user.getRol().getPermisos().isPromocion());
+        eventosButton.setEnabled(SesionUsuario.user.getRol().getPermisos().isEvento());
+        materialesButton.setEnabled(SesionUsuario.user.getRol().getPermisos().isMaterial());
+        floristeriaButton.setEnabled(SesionUsuario.user.getRol().getPermisos().isFloristeria());
+        empleadosButton.setEnabled(SesionUsuario.user.getRol().getPermisos().isEmpleado());
+        arreglosButton.setEnabled(SesionUsuario.user.getRol().getPermisos().isArreglo());
+        comprasButton.setEnabled(SesionUsuario.user.getRol().getPermisos().isCompra());
+        tarjetaButton.setEnabled(SesionUsuario.user.getRol().getPermisos().isTarjeta());
+        manualidadesButton.setEnabled(SesionUsuario.user.getRol().getPermisos().isManualidad());
+        globosButton.setEnabled(SesionUsuario.user.getRol().getPermisos().isGlobo());
+        desayunosButton.setEnabled(SesionUsuario.user.getRol().getPermisos().isDesayuno());
+        ventasButton.setEnabled(SesionUsuario.user.getRol().getPermisos().isVenta());
+        mobiliarioButton.setEnabled(SesionUsuario.user.getRol().getPermisos().isMobiliario());
+        pedidosButton.setEnabled(SesionUsuario.user.getRol().getPermisos().isPedido());
+        actividadesButton.setEnabled(SesionUsuario.user.getRol().getPermisos().isActividad());
+        clientesButton.setEnabled(SesionUsuario.user.getRol().getPermisos().isCliente());
+        proveedoresButton.setEnabled(SesionUsuario.user.getRol().getPermisos().isProveedor());
+        alquileresButton.setEnabled(SesionUsuario.user.getRol().getPermisos().isAlquiler());
+        usuariosButton.setEnabled(SesionUsuario.user.getRol().getPermisos().isUsuario());
+        rolesButton.setEnabled(SesionUsuario.user.getRol().getPermisos().isRol());
+        permisosButton.setEnabled(SesionUsuario.user.getRol().getPermisos().isRol());
+
+
         add(panel3);
 
         // Crear instancias de las ventanas

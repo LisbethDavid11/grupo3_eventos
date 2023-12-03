@@ -178,9 +178,6 @@ public class ListaClientes extends JFrame {
         botonVer.setFocusable(false);
         botonEditar.setFocusable(false);
 
-        botonEditar.setVisible(SesionUsuario.user.getRol().getPermisos().isEditar());
-        botonVer.setVisible(SesionUsuario.user.getRol().getPermisos().isVer());
-        botonCrear.setVisible(SesionUsuario.user.getRol().getPermisos().isCrear());
     }
 
     private void configurarTablaClientes() {

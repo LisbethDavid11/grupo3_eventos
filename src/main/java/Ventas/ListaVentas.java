@@ -229,8 +229,6 @@ public class ListaVentas extends JFrame {
             }
         });
 
-        botonVer.setVisible(SesionUsuario.user.getRol().getPermisos().isVer());
-        botonCrear.setVisible(SesionUsuario.user.getRol().getPermisos().isCrear());
     }
 
     private void configurarTablaVentas() {

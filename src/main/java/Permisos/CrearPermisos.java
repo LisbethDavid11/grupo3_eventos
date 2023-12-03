@@ -16,17 +16,27 @@ public class CrearPermisos extends JFrame{
     private JButton  botonCancelar;
     private JPanel panel, panel1, panel2;
     private JLabel label0;
-    private JButton VERButton;
-    private JButton LISTARButton;
-    private JButton EDITARButton;
     private JButton CREARButton;
     private JButton GUARDARButton;
-    private JCheckBox crear;
-    private JCheckBox editar;
-    private JCheckBox listar;
-    private JCheckBox ver;
-    private JComboBox<Rol> jcbRoles;
+    private JCheckBox checkCliente,checkEmpleados,checkArreglos,
+                    checkFloristeria,checkUsuarios,checkMateriales;
 
+
+    private JComboBox<Rol> jcbRoles;
+    private JCheckBox checkCompras;
+    private JCheckBox checkProveedores;
+    private JCheckBox checkTargetas;
+    private JCheckBox checkManualidades;
+    private JCheckBox checkDesayunos;
+    private JCheckBox checkGlobos;
+    private JCheckBox checkVentas;
+    private JCheckBox checkMobiliario;
+    private JCheckBox checkPromociones;
+    private JCheckBox checkPedidos;
+    private JCheckBox checkEventos;
+    private JCheckBox checkActividades;
+    private JCheckBox checkRoles;
+    private JCheckBox checkAlquileres;
     private CrearPermisos actual = this;
     private Connection mysql;
     private Conexion sql;
@@ -74,21 +84,12 @@ public class CrearPermisos extends JFrame{
         panel2.setBackground(Color.decode("#F5F5F5"));
 
         CREARButton.setBackground(Color.DARK_GRAY);
-        EDITARButton.setBackground(Color.DARK_GRAY);
-        VERButton.setBackground(Color.DARK_GRAY);
-        LISTARButton.setBackground(Color.DARK_GRAY);
 
         CREARButton.setForeground(Color.WHITE);
-        EDITARButton.setForeground(Color.WHITE);
-        VERButton.setForeground(Color.WHITE);
-        LISTARButton.setForeground(Color.WHITE);
 
         GUARDARButton.setFocusPainted(false);
         botonCancelar.setFocusPainted(false);
-        CREARButton.setFocusPainted(false);
-        EDITARButton.setFocusPainted(false);
-        VERButton.setFocusPainted(false);
-        LISTARButton.setFocusPainted(false);
+        CREARButton.setFocusPainted(false);;
         
 
         botonCancelar.setForeground(Color.WHITE);
@@ -109,30 +110,7 @@ public class CrearPermisos extends JFrame{
                 listaPermisos.setVisible(true);
             }
         });
-        CREARButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                crear.setSelected(!crear.isSelected());
-            }
-        });
-        EDITARButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                editar.setSelected(!editar.isSelected());
-            }
-        });
-        VERButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ver.setSelected(!ver.isSelected());
-            }
-        });
-        LISTARButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                listar.setSelected(!listar.isSelected());
-            }
-        });
+
         botonCancelar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -149,7 +127,32 @@ public class CrearPermisos extends JFrame{
             }
         });
 
-
+        CREARButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                boolean chek =  !checkCliente.isSelected();
+                checkCompras.setSelected(chek);
+                checkCliente.setSelected(chek);
+                checkEmpleados.setSelected(chek);
+                checkArreglos.setSelected(chek);
+                checkFloristeria.setSelected(chek);
+                checkUsuarios.setSelected(chek);
+                checkMateriales.setSelected(chek);
+                checkProveedores.setSelected(chek);
+                checkTargetas.setSelected(chek);
+                checkManualidades.setSelected(chek);
+                checkDesayunos.setSelected(chek);
+                checkGlobos.setSelected(chek);
+                checkVentas.setSelected(chek);
+                checkMobiliario.setSelected(chek);
+                checkPromociones.setSelected(chek);
+                checkPedidos.setSelected(chek);
+                checkEventos.setSelected(chek);
+                checkActividades.setSelected(chek);
+                checkRoles.setSelected(chek);
+                checkAlquileres.setSelected(chek);
+            }
+        });
     }
 
     public void ver_modl(){
@@ -193,18 +196,37 @@ public class CrearPermisos extends JFrame{
 
         if (idUsuarioActual == 0) {
             mostrarDialogoPersonalizadoError("Recuerde que para poder crear un evento, debe iniciar sesión", Color.decode("#C62828"));
-            eliminarDetallesMaterial();
             dispose();
 
         } else {
 
             try (Connection connection = sql.conectamysql();
-                 PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO permisos(id_rol,crear,editar,ver,listar) VALUES (?,?,?,?,?)")) {
+                PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO permisos (id_rol, cliente, empleado, floristeria," +
+                                " arreglo, usuario, material, proveedor, compra, tarjeta, manualidad, globo," +
+                                " desayuno, venta, mobiliario, pedido, promocion, evento, actividad, alquiler, rol)" +
+                                " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+
                 preparedStatement.setInt(1, ((Rol) jcbRoles.getSelectedItem()).getId());
-                preparedStatement.setBoolean(2, crear.isSelected());
-                preparedStatement.setBoolean(3, editar.isSelected());
-                preparedStatement.setBoolean(4, ver.isSelected());
-                preparedStatement.setBoolean(5, listar.isSelected());
+                preparedStatement.setBoolean(2, checkCliente.isSelected());
+                preparedStatement.setBoolean(3, checkEmpleados.isSelected());
+                preparedStatement.setBoolean(4, checkFloristeria.isSelected());
+                preparedStatement.setBoolean(5, checkArreglos.isSelected());
+                preparedStatement.setBoolean(6, checkUsuarios.isSelected());
+                preparedStatement.setBoolean(7, checkMateriales.isSelected());
+                preparedStatement.setBoolean(8, checkProveedores.isSelected());
+                preparedStatement.setBoolean(9, checkCompras.isSelected());
+                preparedStatement.setBoolean(10, checkTargetas.isSelected());
+                preparedStatement.setBoolean(11, checkManualidades.isSelected());
+                preparedStatement.setBoolean(12, checkGlobos.isSelected());
+                preparedStatement.setBoolean(13, checkDesayunos.isSelected());
+                preparedStatement.setBoolean(14, checkVentas.isSelected());
+                preparedStatement.setBoolean(15, checkMobiliario.isSelected());
+                preparedStatement.setBoolean(16, checkPedidos.isSelected());
+                preparedStatement.setBoolean(17, checkPromociones.isSelected());
+                preparedStatement.setBoolean(18, checkEventos.isSelected());
+                preparedStatement.setBoolean(19, checkActividades.isSelected());
+                preparedStatement.setBoolean(20, checkAlquileres.isSelected());
+                preparedStatement.setBoolean(21, checkRoles.isSelected());
                 preparedStatement.executeUpdate();
 
             } catch (SQLException e) {
@@ -249,20 +271,13 @@ public class CrearPermisos extends JFrame{
         dialog.setVisible(true);
     }
 
-    private void eliminarDetallesMaterial() {
-        try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement(
-                     "DELETE FROM detalles_pedidos WHERE pedido_id IS NULL OR pedido_id NOT IN (SELECT id FROM pedidos)"
-             )) {
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+
 
 
     public static void main(String[] args) {
         CrearPermisos permisos = new CrearPermisos(1);
         permisos.setVisible(true);
     }
+
+
 }

@@ -228,9 +228,6 @@ public class ListaPromociones extends JFrame {
         botonCrear.setFocusable(false);
         botonVer.setFocusable(false);
 
-
-        botonVer.setVisible(SesionUsuario.user.getRol().getPermisos().isVer());
-        botonCrear.setVisible(SesionUsuario.user.getRol().getPermisos().isCrear());
     }
 
     private void configurarTablaManualidades() {

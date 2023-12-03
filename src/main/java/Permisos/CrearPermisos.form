@@ -3,14 +3,14 @@
   <grid id="27dc6" binding="panel" layout-manager="GridLayoutManager" row-count="3" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="10" left="10" bottom="10" right="10"/>
     <constraints>
-      <xy x="20" y="20" width="928" height="200"/>
+      <xy x="20" y="20" width="928" height="298"/>
     </constraints>
     <properties>
       <background color="-8545088"/>
     </properties>
     <border type="none"/>
     <children>
-      <grid id="e6fa4" binding="panel2" layout-manager="GridLayoutManager" row-count="1" column-count="6" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+      <grid id="e6fa4" binding="panel2" layout-manager="GridLayoutManager" row-count="1" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
           <grid row="2" column="0" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -20,20 +20,11 @@
         <children>
           <component id="91948" class="javax.swing.JButton" binding="botonCancelar">
             <constraints>
-              <grid row="0" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <icon value="IconosBotones/cancelarpp.png"/>
               <text value="CANCELAR"/>
-            </properties>
-          </component>
-          <component id="b3329" class="javax.swing.JButton" binding="EDITARButton" default-binding="true">
-            <constraints>
-              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <icon value="IconosBotones/editarP.png"/>
-              <text value="EDITAR"/>
             </properties>
           </component>
           <component id="19fa" class="javax.swing.JButton" binding="CREARButton" default-binding="true">
@@ -42,34 +33,16 @@
             </constraints>
             <properties>
               <icon value="IconosBotones/crearr.png"/>
-              <text value="CREAR"/>
+              <text value="SELECCIONAR TODO"/>
             </properties>
           </component>
           <component id="5b277" class="javax.swing.JButton" binding="GUARDARButton" default-binding="true">
             <constraints>
-              <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <icon value="IconosBotones/guardarP.png"/>
               <text value="GUARDAR"/>
-            </properties>
-          </component>
-          <component id="dabbd" class="javax.swing.JButton" binding="LISTARButton" default-binding="true">
-            <constraints>
-              <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <icon value="IconosBotones/lista.png"/>
-              <text value="LISTAR"/>
-            </properties>
-          </component>
-          <component id="80a42" class="javax.swing.JButton" binding="VERButton" default-binding="true">
-            <constraints>
-              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <icon value="IconosBotones/Verr.png"/>
-              <text value="VER"/>
             </properties>
           </component>
         </children>
@@ -110,7 +83,7 @@
           </component>
         </children>
       </grid>
-      <grid id="6e986" layout-manager="GridLayoutManager" row-count="1" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+      <grid id="6e986" layout-manager="GridLayoutManager" row-count="5" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
           <grid row="1" column="0" row-span="1" col-span="2" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -118,36 +91,164 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="e8dfb" class="javax.swing.JCheckBox" binding="crear">
+          <component id="e8dfb" class="javax.swing.JCheckBox" binding="checkCliente">
             <constraints>
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Crear"/>
+              <text value="Cliente"/>
             </properties>
           </component>
-          <component id="f1170" class="javax.swing.JCheckBox" binding="editar">
+          <component id="f1170" class="javax.swing.JCheckBox" binding="checkEmpleados">
             <constraints>
               <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Editar"/>
+              <text value="Empleados"/>
             </properties>
           </component>
-          <component id="850f3" class="javax.swing.JCheckBox" binding="listar">
+          <component id="850f3" class="javax.swing.JCheckBox" binding="checkArreglos">
             <constraints>
               <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Listar"/>
+              <text value="Arreglos"/>
             </properties>
           </component>
-          <component id="eff25" class="javax.swing.JCheckBox" binding="ver">
+          <component id="eff25" class="javax.swing.JCheckBox" binding="checkFloristeria">
             <constraints>
               <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Ver"/>
+              <text value="Floristeria"/>
+            </properties>
+          </component>
+          <component id="b3d78" class="javax.swing.JCheckBox" binding="checkUsuarios">
+            <constraints>
+              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Usuarios"/>
+            </properties>
+          </component>
+          <component id="6d5f9" class="javax.swing.JCheckBox" binding="checkMateriales">
+            <constraints>
+              <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Materiales "/>
+            </properties>
+          </component>
+          <component id="38ea2" class="javax.swing.JCheckBox" binding="checkCompras">
+            <constraints>
+              <grid row="1" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Compras"/>
+            </properties>
+          </component>
+          <component id="1f9fe" class="javax.swing.JCheckBox" binding="checkProveedores">
+            <constraints>
+              <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Proveedores"/>
+            </properties>
+          </component>
+          <component id="5e40e" class="javax.swing.JCheckBox" binding="checkTargetas">
+            <constraints>
+              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Tarjetas"/>
+            </properties>
+          </component>
+          <component id="36f5c" class="javax.swing.JCheckBox" binding="checkManualidades">
+            <constraints>
+              <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Manualidades"/>
+            </properties>
+          </component>
+          <component id="4a94c" class="javax.swing.JCheckBox" binding="checkDesayunos">
+            <constraints>
+              <grid row="2" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Desayunos"/>
+            </properties>
+          </component>
+          <component id="f033a" class="javax.swing.JCheckBox" binding="checkGlobos">
+            <constraints>
+              <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Globos"/>
+            </properties>
+          </component>
+          <component id="98eac" class="javax.swing.JCheckBox" binding="checkVentas">
+            <constraints>
+              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Ventas"/>
+            </properties>
+          </component>
+          <component id="b5afd" class="javax.swing.JCheckBox" binding="checkMobiliario">
+            <constraints>
+              <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Mobiliario"/>
+            </properties>
+          </component>
+          <component id="7a179" class="javax.swing.JCheckBox" binding="checkPromociones">
+            <constraints>
+              <grid row="3" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Promociones "/>
+            </properties>
+          </component>
+          <component id="eefd6" class="javax.swing.JCheckBox" binding="checkPedidos">
+            <constraints>
+              <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Pedidos"/>
+            </properties>
+          </component>
+          <component id="d30ef" class="javax.swing.JCheckBox" binding="checkEventos">
+            <constraints>
+              <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Eventos"/>
+            </properties>
+          </component>
+          <component id="d36e3" class="javax.swing.JCheckBox" binding="checkActividades">
+            <constraints>
+              <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Antividades"/>
+            </properties>
+          </component>
+          <component id="1587d" class="javax.swing.JCheckBox" binding="checkRoles">
+            <constraints>
+              <grid row="4" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Roles"/>
+            </properties>
+          </component>
+          <component id="d5d0c" class="javax.swing.JCheckBox" binding="checkAlquileres">
+            <constraints>
+              <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Alquileres"/>
             </properties>
           </component>
         </children>

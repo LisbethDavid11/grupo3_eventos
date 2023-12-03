@@ -226,8 +226,6 @@ public class ListaCompras extends JFrame {
         botonImprimir.setFocusable(false);
         fechaComboBox.setFocusable(false);
 
-        botonVer.setVisible(SesionUsuario.user.getRol().getPermisos().isVer());
-        botonCrear.setVisible(SesionUsuario.user.getRol().getPermisos().isCrear());
     }
 
     private void configurarTablaCompras() {
