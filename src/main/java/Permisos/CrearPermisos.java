@@ -83,9 +83,10 @@ public class CrearPermisos extends JFrame{
         panel1.setBackground(Color.decode("#F5F5F5"));
         panel2.setBackground(Color.decode("#F5F5F5"));
 
-        CREARButton.setBackground(Color.DARK_GRAY);
+        CREARButton.setBackground(Color.decode("#5382a1"));
 
         CREARButton.setForeground(Color.WHITE);
+        CREARButton.setBorder(margin);
 
         GUARDARButton.setFocusPainted(false);
         botonCancelar.setFocusPainted(false);
