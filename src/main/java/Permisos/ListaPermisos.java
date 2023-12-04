@@ -119,18 +119,20 @@ public class ListaPermisos extends JFrame {
             }
         });
 
-        /*botonVer.addActionListener(new ActionListener() {
+        botonVer.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (tablaPermisos.getSelectedRow() == -1) {
                     mostrarDialogoPersonalizadoAtencion("Seleccione una fila para continuar.", Color.decode("#F57F17"));
                     return;
                 }
-                VerRol rol = new VerRol(listaRol.get(tablaPermisos.getSelectedRow()).getId());
+                VerPermiso rol = new VerPermiso(listaRol.get(tablaPermisos.getSelectedRow()).getId());
                 rol.setVisible(true);
                 actual.dispose();
             }
         });
+
+        /*
 
         botonEditar.addActionListener(new ActionListener() {
             @Override
