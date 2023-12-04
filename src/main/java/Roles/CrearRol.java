@@ -1,9 +1,11 @@
 package Roles;
 
+import Desayunos.ListaDesayunos;
 import Login.SesionUsuario;
 import Objetos.Conexion;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,88 +16,89 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class CrearRol extends JFrame {
+public class CrearRol extends JFrame{
+    private JTextField campoNombre;
+    private JTextArea campoDomicilio;
+    private JButton botonGuardar, botonCancelar, botonLimpiar;
+    private JPanel panel, panel1, panel2;
+    private JLabel label0, label1;
+    private CrearRol actual = this;
+    private Connection mysql;
+    private Conexion sql;
+    public CrearRol crearRol = this;
     Color darkColorRed = new Color(244, 67, 54);
     Color darkColorBlue = new Color(33, 150, 243);
-    private JTextField nombreField;
-    private JTextArea descripcionTextArea;
-    private Conexion sql;
+
+    // Color de texto para los JTextField y JRadioButton
+    Color textColor = Color.decode("#212121");
+    Font fontTitulo = new Font("Century Gothic", Font.BOLD, 17);
+    Font font = new Font("Century Gothic", Font.BOLD, 17);
+    Font font2 = new Font("Century Gothic", Font.BOLD, 11);
+
+    // Colores para el botón "Cyan"
+    Color primaryColorCyan = new Color(0, 188, 212); // Cyan primario
+    Color lightColorCyan = new Color(77, 208, 225); // Cyan claro
+    Color darkColorCyan = new Color(0, 151, 167); // Cyan oscuro
+
+    // Colores para el botón "Aqua"
+    Color primaryColorAqua = new Color(0, 150, 136); // Aqua primario
+    Color lightColorAqua = new Color(77, 182, 172); // Aqua claro
+    Color darkColorAqua = new Color(0, 121, 107); // Aqua oscuro
+
+    // Colores para el botón "Rosado"
+    Color primaryColorRosado = new Color(233, 30, 99); // Rosado primario
+    Color lightColorRosado = new Color(240, 98, 146); // Rosado claro
+    Color darkColorRosado = new Color(194, 24, 91); // Rosado oscuro
+
+    // Crea un margen de 10 píxeles desde el borde inferior
+    EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
 
     public CrearRol() {
         super("");
-        setSize(405, 405);
+        setSize(450,350);
         setLocationRelativeTo(null);
-
+        setContentPane(panel);
         sql = new Conexion();
-        setLayout(new BorderLayout(0, 20)); // Espacio entre componentes
-        setBackground(new Color(238, 238, 238)); // Fondo claro estilo Material
 
-        // Panel central con el contenido
-        JPanel centerPanel = new JPanel();
-        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
-        centerPanel.setBackground(new Color(245, 245, 245)); // Fondo más claro para el contenido
-        centerPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // Margen alrededor del panel central
+        campoDomicilio.setLineWrap(true);
+        campoDomicilio.setWrapStyleWord(true);
 
-        // Título
-        JLabel titleLabel = new JLabel("INGRESAR LOS DATOS DEL ROL", JLabel.CENTER);
-        titleLabel.setFont(new Font("Century Gothic", Font.BOLD, 22)); // Fuente grande para el título
-        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT); // Alineación al centro
-        centerPanel.add(titleLabel);
+        panel.setBackground(Color.decode("#F5F5F5"));
+        panel1.setBackground(Color.decode("#F5F5F5"));
+        panel2.setBackground(Color.decode("#F5F5F5"));
 
-        centerPanel.add(Box.createVerticalStrut(10)); // Espacio tras el título
+        campoDomicilio.setForeground(textColor);
 
-        // Campo para la nombre del rol
-        nombreField = new JTextField(30);
-        nombreField.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, Color.GRAY));
-        nombreField.setOpaque(false);
-        nombreField.setFont(new Font("Century Gothic", Font.BOLD, 14));
-        nombreField.setHorizontalAlignment(JTextField.LEFT);
-        centerPanel.add(createLabeledField("Nombre del Rol:", nombreField));
+        botonLimpiar.setForeground(Color.WHITE);
+        botonLimpiar.setBackground(darkColorRed);
+        botonLimpiar.setFocusPainted(false);
+        botonLimpiar.setBorder(margin);
 
-        // Espacio entre los campos
-        centerPanel.add(Box.createVerticalStrut(10));
+        botonCancelar.setForeground(Color.WHITE);
+        botonCancelar.setBackground(darkColorBlue);
+        botonCancelar.setFocusPainted(false);
+        botonCancelar.setBorder(margin);
 
-        // Etiqueta para "Descripción"
-        JLabel descriptionLabel = new JLabel("Descripción:");
-        descriptionLabel.setFont(new Font("Century Gothic", Font.BOLD, 14));
-        descriptionLabel.setAlignmentX(Component.LEFT_ALIGNMENT); // Alinea la etiqueta a la izquierda
-        centerPanel.add(descriptionLabel);
+        botonGuardar.setForeground(Color.WHITE);
+        botonGuardar.setBackground(darkColorAqua);
+        botonGuardar.setFocusPainted(false);
+        botonGuardar.setBorder(margin);
 
-        // Campo para la descripción del rol (JTextArea)
-        descripcionTextArea = new JTextArea(3, 20);
-        descripcionTextArea.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.GRAY)); // Borde más grueso
-        descripcionTextArea.setOpaque(false);
-        descripcionTextArea.setFont(new Font("Century Gothic", Font.BOLD, 14));
-        descripcionTextArea.setLineWrap(true); // Para que el texto se ajuste automáticamente al ancho
-        descripcionTextArea.setWrapStyleWord(true); // Para que las palabras se rompan correctamente
-        JScrollPane scrollPane = new JScrollPane(descripcionTextArea); // Agrega un JScrollPane para manejar el área de texto grande
-        centerPanel.add(scrollPane); // Agrega el JScrollPane al panel central
+        label0.setForeground(textColor);
+        label1.setForeground(textColor);
 
-        add(centerPanel, BorderLayout.CENTER);
 
-        // Panel para botones
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setBackground(new Color(238, 238, 238)); // Fondo al estilo Material
-        buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+        campoDomicilio.setBackground(new Color(215, 215, 215));
 
-        // Botón Guardar
-        JButton saveButton = new JButton("Guardar");
-        styleMaterialButton(saveButton, "#2c3e50", "#34495e");
-        buttonPanel.add(saveButton);
+        label1.setBorder(margin);
+        label0.setFont(fontTitulo);
 
-        // Botón Cancelar
-        JButton cancelButton = new JButton("Cancelar");
-        styleMaterialButton(cancelButton, "#c0392b", "#e74c3c");
-        buttonPanel.add(cancelButton);
-
-        add(buttonPanel, BorderLayout.SOUTH);
-
-        nombreField.addKeyListener(new KeyAdapter() {
+        campoNombre.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                String text = nombreField.getText();
+                String text = campoNombre.getText();
                 int length = text.length();
-                int caretPosition = nombreField.getCaretPosition();
+                int caretPosition = campoNombre.getCaretPosition();
 
                 // Verificar si se está ingresando un espacio en blanco
                 if (e.getKeyChar() == ' ') {
@@ -126,11 +129,11 @@ public class CrearRol extends JFrame {
             }
         });
 
-        descripcionTextArea.addKeyListener(new KeyAdapter() {
+        campoDomicilio.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                String texto = descripcionTextArea.getText();
-                int caretPosition = descripcionTextArea.getCaretPosition();
+                String texto = campoDomicilio.getText();
+                int caretPosition = campoDomicilio.getCaretPosition();
 
                 // Verificar la longitud del texto
                 if (texto.length() >= 200) {
@@ -156,7 +159,7 @@ public class CrearRol extends JFrame {
             }
         });
 
-        cancelButton.addActionListener(new ActionListener() {
+        botonCancelar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int idUsuarioActual = SesionUsuario.getInstance().getIdUsuario();
@@ -166,28 +169,29 @@ public class CrearRol extends JFrame {
             }
         });
 
-        saveButton.addActionListener(new ActionListener() {
+        botonGuardar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
                 int validacion = 0;
                 String mensaje = "Faltó ingresar: \n";
 
-                if (nombreField.getText().trim().isEmpty()) {
+                if (campoNombre.getText().trim().isEmpty()) {
                     validacion++;
                     mensaje += "Nombre del rol\n";
                 }
 
-                if (descripcionTextArea.getText().trim().isEmpty()) {
+                if (campoDomicilio.getText().trim().isEmpty()) {
                     validacion++;
                     mensaje += "Descripción\n";
                 }
 
                 if (validacion > 0) {
-                    mostrarDialogoPersonalizadoAtencion(mensaje, Color.decode("#F57F17"));
+                    JOptionPane.showMessageDialog(null, mensaje, "Validación", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
-                String nombre = nombreField.getText().trim();
+                String nombre = campoNombre.getText().trim();
                 if (!nombre.isEmpty()) {
                     if (nombre.length() > 100) {
                         mostrarDialogoPersonalizadoAtencion("El nombre debe tener como máximo 100 caracteres.", Color.decode("#F57F17"));
@@ -207,7 +211,7 @@ public class CrearRol extends JFrame {
                 JButton btnCancel = new JButton("No");
 
                 // Personaliza los botones aquí
-                btnSave.setBackground(darkColorBlue);
+                btnSave.setBackground(darkColorAqua);
                 btnCancel.setBackground(darkColorRed);
 
                 // Personaliza los fondos de los botones aquí
@@ -220,7 +224,7 @@ public class CrearRol extends JFrame {
 
                 // Crea un JOptionPane
                 JOptionPane optionPane = new JOptionPane(
-                        "¿Desea guardar la información rol de usuario?",
+                        "¿Desea guardar la información del rol?",
                         JOptionPane.QUESTION_MESSAGE,
                         JOptionPane.DEFAULT_OPTION,
                         null,
@@ -235,7 +239,6 @@ public class CrearRol extends JFrame {
                 btnSave.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        // Acciones para el botón Sí
                         guardarRol();
                         dialog.dispose();
                         int idUsuarioActual = SesionUsuario.getInstance().getIdUsuario();
@@ -262,60 +265,82 @@ public class CrearRol extends JFrame {
 
             }
         });
-    }
 
-    private JPanel createLabeledField(String label, JTextField textField) {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        panel.setBackground(new Color(245, 245, 245)); // Fondo claro
-        panel.add(new JLabel(label));
-        panel.add(textField);
-        return panel;
-    }
+        botonLimpiar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JButton btnYes = new JButton("Sí");
+                JButton btnNo = new JButton("No");
 
-    private JCheckBox createCheckbox(String label) {
-        JCheckBox checkBox = new JCheckBox(label);
-        checkBox.setBackground(new Color(245, 245, 245)); // Fondo claro
-        checkBox.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        return checkBox;
-    }
+                // Personaliza los botones aquí
+                btnYes.setBackground(darkColorAqua);
+                btnNo.setBackground(darkColorRed);
 
-    private void styleMaterialButton(JButton button, String color, String hoverColor) {
-        button.setBackground(Color.decode(color));
-        button.setFont(new Font("Arial", Font.BOLD, 14));
-        button.setForeground(Color.WHITE);
-        button.setFocusPainted(false);
-        button.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createRaisedBevelBorder(),
-                BorderFactory.createEmptyBorder(10, 25, 10, 25)
-        ));
+                // Personaliza los fondos de los botones aquí
+                btnYes.setForeground(Color.WHITE);
+                btnNo.setForeground(Color.WHITE);
 
-        button.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                button.setBackground(Color.decode(hoverColor));
-            }
+                // Elimina el foco
+                btnYes.setFocusPainted(false);
+                btnNo.setFocusPainted(false);
 
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                button.setBackground(Color.decode(color));
+                // Crea un JOptionPane
+                JOptionPane optionPane = new JOptionPane(
+                        "¿Estás seguro de que deseas limpiar los datos del rol?",
+                        JOptionPane.DEFAULT_OPTION,
+                        JOptionPane.DEFAULT_OPTION,
+                        null,
+                        new Object[]{}, // no options
+                        null
+                );
+
+                // Crea un JDialog
+                JDialog dialog = optionPane.createDialog("Limpiar");
+
+                // Añade ActionListener a los botones
+                btnYes.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        campoNombre.setText("");
+                        campoDomicilio.setText("");
+                        dialog.dispose();
+                    }
+                });
+
+                btnNo.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // Acciones para el botón No
+                        // No se hace nada, sólo se cierra el diálogo
+                        dialog.dispose();
+                    }
+                });
+
+                // Añade los botones al JOptionPane
+                optionPane.setOptions(new Object[]{btnYes, btnNo});
+
+                // Muestra el diálogo
+                dialog.setVisible(true);
             }
         });
     }
 
     private void guardarRol() {
-        String nombre = nombreField.getText().trim();
-        String descripcion = descripcionTextArea.getText().trim();
+        String nombre = campoNombre.getText().trim();
+        String descripcion = campoDomicilio.getText().trim();
 
         try (Connection connection = sql.conectamysql();
              PreparedStatement checkStmt = connection.prepareStatement(
                      "SELECT COUNT(*) FROM roles WHERE nombre = ?")) {
-                    checkStmt.setString(1, nombre);
-                    ResultSet rs = checkStmt.executeQuery();
+            checkStmt.setString(1, nombre);
+            ResultSet rs = checkStmt.executeQuery();
 
-                    if (rs.next() && rs.getInt(1) > 0) {
-                        mostrarDialogoPersonalizadoError("Un rol con este nombre ya existe.", Color.decode("#C62828"));
-                    } else {
+            if (rs.next() && rs.getInt(1) > 0) {
+                mostrarDialogoPersonalizadoError("Un rol con este nombre ya existe.", Color.decode("#C62828"));
+            } else {
 
-                        try (PreparedStatement preparedStatement = connection.prepareStatement(
-                             "INSERT INTO roles (nombre, descripcion) VALUES (?, ?)")) {
+                try (PreparedStatement preparedStatement = connection.prepareStatement(
+                        "INSERT INTO roles (nombre, descripcion) VALUES (?, ?)")) {
                     preparedStatement.setString(1, nombre);
                     preparedStatement.setString(2, descripcion);
                     preparedStatement.executeUpdate();
