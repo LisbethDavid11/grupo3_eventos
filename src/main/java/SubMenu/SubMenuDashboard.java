@@ -11,6 +11,9 @@ import Eventos.ListaEventos;
 import Floristerias.ListaFloristerias;
 import Globos.ListaGlobos;
 import Login.ListaUsuarios;
+import Login.Login;
+import Login.SesionUsuario;
+import Login.VerPerfil;
 import Manualidades.ListaManualidades;
 import Materiales.ListaMateriales;
 import Mobiliario.ListaMobiliario;
@@ -22,28 +25,11 @@ import Roles.ListaRoles;
 import Tarjetas.ListaTarjetas;
 import Ventas.ListaVentas;
 
-import java.awt.BorderLayout;
-import java.awt.EventQueue;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.RenderingHints;
+import java.awt.*;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import java.awt.Color;
-import javax.swing.JLabel;
-import javax.swing.JMenuItem;
 import javax.imageio.ImageIO;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JSeparator;
-import java.awt.Font;
-import javax.swing.JTree;
-import javax.swing.JPopupMenu;
-import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -77,7 +63,11 @@ public class SubMenuDashboard extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private int id;
-
+	private JPanel navbar;
+	private JLabel userLabel, userNameLabel;
+	private JPopupMenu userMenu;
+	private String nombre;
+	private String imagen;
 	/**
 	 * Launch the application.
 	 */
@@ -100,10 +90,10 @@ public class SubMenuDashboard extends JFrame {
 	public SubMenuDashboard() {
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 1042, 670);
-		setLocationRelativeTo(null);
+		setBounds(100, 100, 1042, 720);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setLocationRelativeTo(null);
 
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
@@ -652,8 +642,10 @@ public class SubMenuDashboard extends JFrame {
 		};
 
 		panel.setBackground(Color.WHITE);
-		panel.setBounds(253, 0, 773, 681);
+		panel.setBounds(253, 55, 773, 626);
 		contentPane.add(panel);
+
+		setupNavbar(this);
 	}
 	private static void addPopup(Component component, final JPopupMenu popup) {
 		component.addMouseListener(new MouseAdapter() {
@@ -672,29 +664,190 @@ public class SubMenuDashboard extends JFrame {
 			}
 		});
 	}
-	
-	
-	class RoundedCornerLabel extends JLabel {
-	    private int radius;
 
-	    public RoundedCornerLabel( int radius) {
-	        this.radius = radius;
-	        setOpaque(false);
-	    }
 
-	    @Override
-	    protected void paintComponent(Graphics g) {
-	        Graphics2D g2 = (Graphics2D) g.create();
-	        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-	        g2.setColor(getBackground());
-	        g2.fillRoundRect(0, 0, getWidth(), getHeight(), radius, radius);
-	        super.paintComponent(g2);
-	        g2.dispose();
-	    }
+	private void setupNavbar(SubMenuDashboard subMenuDashboard) {
+		navbar = new JPanel();
+		navbar.setBounds(255, 0, 771, 55);
+		FlowLayout fl_navbar = new FlowLayout();
+		fl_navbar.setAlignment(FlowLayout.RIGHT);
+		navbar.setLayout(fl_navbar);
+		navbar.setBackground(Color.decode("#607D8B")); // Color del Navbar
 
-	    @Override
-	    public Dimension getPreferredSize() {
-	        return super.getPreferredSize();
-	    }
+		userLabel = new JLabel();
+		userLabel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10)); // Margen para la etiqueta
+
+		// Configurar etiqueta con el nombre del usuario
+		userNameLabel = new JLabel("Nombre de Usuario");
+		userNameLabel.setForeground(Color.WHITE); // Color del texto
+		userNameLabel.setFont(new Font("Arial", Font.BOLD, 14)); // Fuente y tamaño
+		userNameLabel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10)); // Margen para la etiqueta
+
+		// Icono en forma de V
+		ImageIcon vIcon = new ImageIcon("path_to_v_icon.jpg"); // Ruta al ícono en forma de V
+		JLabel vLabel = new JLabel(vIcon);
+		vLabel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
+
+		// Menú Popup para las opciones del usuario
+		userMenu = new JPopupMenu();
+		JMenuItem menuItemPerfil = new JMenuItem("Perfil");
+		menuItemPerfil.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int idUsuarioActual = SesionUsuario.getInstance().getIdUsuario();
+				VerPerfil verPerfil = new VerPerfil(idUsuarioActual);
+				verPerfil.setVisible(true);
+			}
+		});
+
+		JMenuItem menuItemAcercaDe = new JMenuItem("Acerca De");
+		menuItemAcercaDe.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JDialog dialog = new JDialog(); // Crea un nuevo diálogo
+				dialog.setTitle("Acerca De"); // Establece el título
+				dialog.setContentPane(new AcercaDe()); // añade el panel AcercaDe
+				dialog.setSize(950, 630); // Establece el tamaño del diálogo
+				dialog.setModal(true); // Hace que el diálogo bloquee las otras ventanas hasta que se cierre
+				dialog.setLocationRelativeTo(null); // Centra el diálogo en la pantalla
+				dialog.setVisible(true); // Hace visible el diálogo
+			}
+		});
+
+		// Suponiendo que estás en una clase que extiende JFrame
+		JMenuItem menuItemCerrarSesion = new JMenuItem("Cerrar Sesión");
+		menuItemCerrarSesion.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JButton btnYes = new JButton("Sí");
+				JButton btnNo = new JButton("No");
+
+				// Personaliza los botones aquí
+				btnYes.setBackground( Color.decode("#263238"));
+				btnNo.setBackground(Color.decode("#C62828"));
+
+				// Personaliza los fondos de los botones aquí
+				btnYes.setForeground(Color.WHITE);
+				btnNo.setForeground(Color.WHITE);
+
+				// Elimina el foco
+				btnYes.setFocusPainted(false);
+				btnNo.setFocusPainted(false);
+
+				// Crea un JOptionPane
+				JOptionPane optionPane = new JOptionPane(
+						"¿Estás seguro de que deseas cerrar sesión?",
+						JOptionPane.DEFAULT_OPTION,
+						JOptionPane.DEFAULT_OPTION,
+						null,
+						new Object[]{}, // no options
+						null
+				);
+
+				// Crea un JDialog
+				JDialog dialog = optionPane.createDialog("Cerrar sesión");
+
+				// Añade ActionListener a los botones
+				btnYes.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						dispose();
+						dialog.dispose();
+						Login login = new Login();
+						login.setVisible(true);
+					}
+				});
+
+				btnNo.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						// Acciones para el botón No
+						// No se hace nada, sólo se cierra el diálogo
+						dialog.dispose();
+					}
+				});
+
+				// Añade los botones al JOptionPane
+				optionPane.setOptions(new Object[]{btnYes, btnNo});
+
+				// Muestra el diálogo
+				dialog.setVisible(true);
+			}
+		});
+
+		userMenu.add(menuItemPerfil);
+		userMenu.add(menuItemAcercaDe);
+		userMenu.add(menuItemCerrarSesion);
+
+		// Evento para mostrar el menú al hacer clic en el nombre del usuario
+		userNameLabel.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				userMenu.show(userNameLabel, e.getX(), e.getY());
+			}
+		});
+
+		navbar.add(userLabel);
+		navbar.add(vLabel);
+		navbar.add(userNameLabel);
+		subMenuDashboard.getContentPane().add(navbar);
 	}
+
+	public void setNombreUsuario(String nombre) {
+		this.nombre = nombre;
+		userNameLabel.setText("Bienvenido, " + nombre + " ▼ ");
+	}
+
+
+	public void setImagenUsuario(String imagen) {
+		this.imagen = imagen;
+		String imagePath = "img/usuarios/" + imagen; // Ruta actualizada según la imagen
+		userLabel.setIcon(new ImageIcon(getRoundedImage(imagePath, 40, 40)));
+	}
+
+	private Image getRoundedImage(String imagePath, int width, int height) {
+		if (imagePath == null || imagePath.isEmpty()) {
+			System.out.println("Image path is null or empty");
+			return null; // o retornar una imagen por defecto
+		}
+
+		BufferedImage srcImg = null;
+		try {
+			File imageFile = new File(imagePath);
+			if (!imageFile.exists()) {
+				System.out.println("File does not exist: " + imagePath);
+				return null; // o retornar una imagen por defecto
+			}
+			srcImg = ImageIO.read(imageFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("Error al cargar el archivo: " + imagePath);
+			return null; // o retornar una imagen por defecto
+		}
+
+		// Escalado de imagen con alta calidad
+		Image scaledImg = srcImg.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+		BufferedImage resizedImg = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g2 = resizedImg.createGraphics();
+
+		// Mejorar la calidad de renderizado
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+
+		// Aplicar redondeo
+		g2.fillRoundRect(0, 0, width, height, width, height);
+		g2.setComposite(AlphaComposite.SrcIn);
+		g2.drawImage(scaledImg, 0, 0, null);
+
+		g2.dispose();
+		return resizedImg;
+	}
+
+	private int idUsuarioActual;
+
+	public void setIdUsuarioActual(int id) {
+		this.idUsuarioActual = id;
+	}
+
+
 }
