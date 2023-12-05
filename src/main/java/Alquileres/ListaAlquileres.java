@@ -40,6 +40,7 @@ public class ListaAlquileres extends JFrame {
     private JLabel lblTitulo;
     private JTable listaAlquileres;
     private JPanel panel_fecha;
+    private JButton botonDevolucion;
     private List<Alquiler> listaalAlquilers;
     private int pagina = 0;
     private Connection mysql;
@@ -193,6 +194,24 @@ public class ListaAlquileres extends JFrame {
             }
         });
 
+        botonDevolucion.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (listaAlquileres.getSelectedRow() == -1) {
+                    mostrarDialogoPersonalizadoAtencion("Seleccione una fila para continuar.", Color.decode("#F57F17"));
+                    return;
+                }
+                if (listaalAlquilers.get(listaAlquileres.getSelectedRow()).getActivo().equals("I")) {
+                    mostrarDialogoPersonalizadoAtencion("El mobiliario de este alquiler ya fue regresado.", Color.decode("#F57F17"));
+                    return;
+                }
+
+                DevolucionesAlquileres devolucionesAlquileres = new DevolucionesAlquileres(listaalAlquilers.get(listaAlquileres.getSelectedRow()).getId());
+                devolucionesAlquileres.setVisible(true);
+                actual.dispose();
+            }
+        });
+
         botonEditar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -222,6 +241,7 @@ public class ListaAlquileres extends JFrame {
         botonVer.setBackground(darkColor);
         botonEditar.setBackground(darkColor);
         botonCrear.setBackground(darkColor);
+        botonDevolucion.setBackground(darkColor);
         header.setBackground(darkColor);
 
         botonAdelante.setForeground(Color.WHITE);
@@ -229,6 +249,7 @@ public class ListaAlquileres extends JFrame {
         botonVer.setForeground(Color.WHITE);
         botonCrear.setForeground(Color.WHITE);
         botonEditar.setForeground(Color.WHITE);
+        botonDevolucion.setForeground(Color.WHITE);
         campoBusqueda.setForeground(darkColor);
         placeholder.setForeground(darkColor);
         lblPagina.setForeground(Color.WHITE);
@@ -239,6 +260,7 @@ public class ListaAlquileres extends JFrame {
         botonVer.setFont(font);
         botonCrear.setFont(font);
         botonEditar.setFont(font);
+        botonDevolucion.setFont(font);
         placeholder.setFont(font);
         lblPagina.setFont(font);
         lblTitulo.setFont(fontTitulo);
@@ -248,6 +270,7 @@ public class ListaAlquileres extends JFrame {
         botonCrear.setFocusable(false);
         botonVer.setFocusable(false);
         botonEditar.setFocusable(false);
+        botonDevolucion.setFocusable(false);
 
     }
 
@@ -343,6 +366,7 @@ public class ListaAlquileres extends JFrame {
                 alquiler.setFecha(resultSet.getDate("fecha"));
                 alquiler.setInicio(resultSet.getTime("hora_inicial"));
                 alquiler.setFin(resultSet.getTime("hora_final"));
+                alquiler.setActivo(resultSet.getString("activo"));
                 listaalAlquilers.add(alquiler);
             }
 

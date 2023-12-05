@@ -132,7 +132,7 @@ public class ListaPermisos extends JFrame {
             }
         });
 
-        /*
+
 
         botonEditar.addActionListener(new ActionListener() {
             @Override
@@ -141,11 +141,11 @@ public class ListaPermisos extends JFrame {
                     mostrarDialogoPersonalizadoAtencion("Seleccione una fila para continuar.", Color.decode("#F57F17"));
                     return;
                 }
-                EditarRol cliente = new EditarRol(listaRol.get(tablaPermisos.getSelectedRow()).getId());
-                cliente.setVisible(true);
+                EditarPermisos permisos = new EditarPermisos(listaRol.get(tablaPermisos.getSelectedRow()).getId());
+                permisos.setVisible(true);
                 actual.dispose();
             }
-        });*/
+        });
 
         // Establecer color de fondo para el encabezado
         JTableHeader header = tablaPermisos.getTableHeader();

@@ -75,7 +75,7 @@
             </constraints>
             <properties>
               <background color="-532740"/>
-              <enabled value="false"/>
+              <enabled value="true"/>
               <font name="Arial" size="12" style="1"/>
               <icon value="IconosBotones/editarP.png"/>
               <text value="Editar"/>

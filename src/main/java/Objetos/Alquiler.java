@@ -1,13 +1,18 @@
 package Objetos;
 
+import java.sql.Time;
+import java.util.Date;
+
 public class Alquiler {
     private int id;
     private int clienteId;
     private String descripcion;
     private String tipo;
-    private java.util.Date fecha;
-    private java.sql.Time inicio;
-    private java.sql.Time fin;
+    private Date fecha;
+    private Time inicio;
+    private Time fin;
+
+    private String activo;
 
     public static String nombreTabla = "eventos";
 
@@ -18,7 +23,7 @@ public class Alquiler {
         return new Object[]{id, clienteId, descripcion, tipo, fecha, inicio, fin};
     }
 
-    public Alquiler(int id, int clienteId, String descripcion, String tipo, java.util.Date fecha, java.sql.Time inicio, java.sql.Time fin) {
+    public Alquiler(int id, int clienteId, String descripcion, String tipo, Date fecha, Time inicio, Time fin) {
         this.id = id;
         this.clienteId = clienteId;
         this.descripcion = descripcion;
@@ -60,27 +65,35 @@ public class Alquiler {
         this.tipo = tipo;
     }
 
-    public java.util.Date getFecha() {
+    public Date getFecha() {
         return fecha;
     }
 
-    public void setFecha(java.util.Date fecha) {
+    public void setFecha(Date fecha) {
         this.fecha = fecha;
     }
 
-    public java.sql.Time getInicio() {
+    public Time getInicio() {
         return inicio;
     }
 
-    public void setInicio(java.sql.Time inicio) {
+    public void setInicio(Time inicio) {
         this.inicio = inicio;
     }
 
-    public java.sql.Time getFin() {
+    public Time getFin() {
         return fin;
     }
 
-    public void setFin(java.sql.Time fin) {
+    public void setFin(Time fin) {
         this.fin = fin;
+    }
+
+    public void setActivo(String activo) {
+        this.activo = activo;
+    }
+
+    public String getActivo() {
+        return activo;
     }
 }

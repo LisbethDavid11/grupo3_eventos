@@ -13,7 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class ModeloAlquileres extends AbstractTableModel {
-    private final String[] columnas = {"N°", "Cliente", "Tipo", "Fecha", "Hora inicial", "Hora final"};
+    private final String[] columnas = {"N°", "Cliente", "Tipo", "Fecha", "Hora inicial", "Hora final", "Pendiente"};
     private final List<Alquiler> alquilers;
     private final Conexion sql;
     private final SimpleDateFormat fechaFormat = new SimpleDateFormat("dd 'de' MMMM',' yyyy");
@@ -59,6 +59,8 @@ public class ModeloAlquileres extends AbstractTableModel {
                 return "   " + horaFormat.format(alquiler.getInicio());
             case 5: // Fin
                 return "   " + horaFormat.format(alquiler.getFin());
+            case 6: // Fin
+                return alquiler.getActivo().equals("A") ? "Pendiente": "Recibido";
             default:
                 return null;
         }
