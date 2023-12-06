@@ -237,6 +237,35 @@ public class Login extends JFrame {
                     preparedStatement3.setString(1, resultSet.getString("rol_id"));
 
                     ResultSet resultSet3 = preparedStatement3.executeQuery();
+                    Permisos permisos = new Permisos();
+                    if (resultSet3.next()) {
+                        permisos.setId(resultSet3.getInt("id"));
+                        permisos.setIdRol( resultSet.getInt("rol_id"));
+                        System.out.println(permisos.getIdRol());
+                        permisos.setCliente(resultSet3.getBoolean("cliente"));
+                        permisos.setEmpleado(resultSet3.getBoolean("empleado"));
+                        permisos.setFloristeria(resultSet3.getBoolean("floristeria"));
+                        permisos.setArreglo(resultSet3.getBoolean("arreglo"));
+                        permisos.setUsuario(resultSet3.getBoolean("usuario"));
+                        permisos.setMaterial(resultSet3.getBoolean("material"));
+                        permisos.setProveedor(resultSet3.getBoolean("proveedor"));
+                        permisos.setCompra(resultSet3.getBoolean("compra"));
+                        permisos.setTarjeta(resultSet3.getBoolean("tarjeta"));
+                        permisos.setManualidad(resultSet3.getBoolean("manualidad"));
+                        permisos.setGlobo(resultSet3.getBoolean("globo"));
+                        permisos.setDesayuno(resultSet3.getBoolean("desayuno"));
+                        permisos.setVenta(resultSet3.getBoolean("venta"));
+                        permisos.setMobiliario(resultSet3.getBoolean("mobiliario"));
+                        permisos.setPedido(resultSet3.getBoolean("pedido"));
+                        permisos.setPromocion(resultSet3.getBoolean("promocion"));
+                        permisos.setEvento(resultSet3.getBoolean("evento"));
+                        permisos.setActividad(resultSet3.getBoolean("actividad"));
+                        permisos.setAlquiler(resultSet3.getBoolean("alquiler"));
+                        permisos.setRol(resultSet3.getBoolean("rol"));
+                    }else {
+                        permisos.setIdRol( resultSet.getInt("rol_id"));
+                    }
+                    rol.setPermisos(permisos);
                     datosUsuario.setRol(rol);
                     return datosUsuario;
 

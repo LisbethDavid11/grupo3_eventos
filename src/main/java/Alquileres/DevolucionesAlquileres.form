@@ -278,7 +278,7 @@
         </constraints>
         <properties>
           <icon value="IconosBotones/guardarP.png"/>
-          <text value="ACEPTAR DEVOLUCIóN"/>
+          <text value="ACEPTAR DEVOLUCIÓN"/>
         </properties>
       </component>
       <component id="ac03f" class="javax.swing.JButton" binding="cancelarButton">

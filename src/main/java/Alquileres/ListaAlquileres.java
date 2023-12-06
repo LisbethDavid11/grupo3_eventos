@@ -1,11 +1,8 @@
 package Alquileres;
-import Login.SesionUsuario;
 import Manualidades.TextPrompt;
 import Modelos.ModeloAlquileres;
-import Modelos.ModeloEvento;
 import Objetos.Alquiler;
 import Objetos.Conexion;
-import Objetos.Evento;
 import com.toedter.calendar.JDateChooser;
 
 import javax.swing.*;
@@ -41,6 +38,8 @@ public class ListaAlquileres extends JFrame {
     private JTable listaAlquileres;
     private JPanel panel_fecha;
     private JButton botonDevolucion;
+    private JCheckBox pendienteCheckBox;
+    private JCheckBox recibidoCheckBox;
     private List<Alquiler> listaalAlquilers;
     private int pagina = 0;
     private Connection mysql;
@@ -55,7 +54,7 @@ public class ListaAlquileres extends JFrame {
 
     public ListaAlquileres() {
         super("");
-        setSize(850, 505);
+        setSize(1200, 505);
         setLocationRelativeTo(null);
         setContentPane(panelPrincipal);
         campoBusqueda.setText("");
@@ -272,6 +271,29 @@ public class ListaAlquileres extends JFrame {
         botonEditar.setFocusable(false);
         botonDevolucion.setFocusable(false);
 
+        pendienteCheckBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                pagina = 0;
+                botonAdelante.setEnabled((pagina + 1) < getTotalPageCount());
+                botonAtras.setEnabled(pagina > 0);
+                listaAlquileres.setModel(cargarDatos());
+                configurarTablaManualidades();
+                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+            }
+        });
+
+        recibidoCheckBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                pagina = 0;
+                botonAdelante.setEnabled((pagina + 1) < getTotalPageCount());
+                botonAtras.setEnabled(pagina > 0);
+                listaAlquileres.setModel(cargarDatos());
+                configurarTablaManualidades();
+                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+            }
+        });
     }
 
     private void configurarTablaManualidades() {
@@ -335,11 +357,11 @@ public class ListaAlquileres extends JFrame {
                      "SELECT e.*, CONCAT(c.nombre, ' ', c.apellido) AS nombre_completo " +
                              "FROM alquileres e " +
                              "JOIN clientes c ON e.cliente_id = c.id " +
-                             "WHERE (e.tipo LIKE CONCAT('%', ?, '%') " +
+                             "WHERE ((e.tipo LIKE CONCAT('%', ?, '%') " +
                              "OR CONCAT(c.nombre, ' ', c.apellido) LIKE CONCAT('%', ?, '%') " +
                              "OR e.descripcion LIKE CONCAT('%', ?, '%') " +
                              "OR DATE_FORMAT(e.fecha, '%d de %M %Y') LIKE CONCAT('%', ?, '%')) " +
-                             "AND (e.fecha BETWEEN ? AND ?) " +
+                             "AND (e.fecha BETWEEN ? AND ?)) and (e.activo = ? or e.activo = ?) " +
                              "LIMIT ?, 20"
              )
         ){
@@ -352,7 +374,9 @@ public class ListaAlquileres extends JFrame {
             String fechaHasta = formato.format(fecha_hasta.getDate());
             preparedStatement.setString(5, fechaDesde);
             preparedStatement.setString(6, fechaHasta);
-            preparedStatement.setInt(7, pagina * 20);
+            preparedStatement.setString(7, pendienteCheckBox.isSelected()?"A":"");
+            preparedStatement.setString(8, recibidoCheckBox.isSelected()?"I":"");
+            preparedStatement.setInt(9, pagina * 20);
 
             ResultSet resultSet = preparedStatement.executeQuery();
             listaalAlquilers = new ArrayList<>();
@@ -391,11 +415,11 @@ public class ListaAlquileres extends JFrame {
                      "SELECT COUNT(*) AS total " +
                              "FROM alquileres e " +
                              "JOIN clientes c ON e.cliente_id = c.id " +
-                             "WHERE  (e.tipo LIKE CONCAT('%', ?, '%') " +
+                             "WHERE  ((e.tipo LIKE CONCAT('%', ?, '%') " +
                              "OR CONCAT(c.nombre, ' ', c.apellido) LIKE CONCAT('%', ?, '%') " +
                              "OR e.descripcion LIKE CONCAT('%', ?, '%') " +
                              "OR DATE_FORMAT(e.fecha, '%d de %M %Y') LIKE CONCAT('%', ?, '%')) " +
-                             "AND (e.fecha BETWEEN ? AND ?)"
+                             "AND (e.fecha BETWEEN ? AND ?)) and (e.activo = ? or e.activo = ?)"
              )) {
 
             preparedStatement.setString(1, busqueda);
@@ -407,6 +431,8 @@ public class ListaAlquileres extends JFrame {
             String fechaHasta = formato.format(fecha_hasta.getDate());
             preparedStatement.setString(5, fechaDesde);
             preparedStatement.setString(6, fechaHasta);
+            preparedStatement.setString(7, pendienteCheckBox.isSelected()?"A":"");
+            preparedStatement.setString(8, recibidoCheckBox.isSelected()?"I":"");
 
             ResultSet resultSet = preparedStatement.executeQuery();
 

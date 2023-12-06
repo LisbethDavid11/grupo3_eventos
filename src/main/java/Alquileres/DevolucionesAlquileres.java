@@ -320,7 +320,7 @@ public class DevolucionesAlquileres extends JFrame {
 
                 double total_multa = 0;
                 for (int i = 0; i < model.getRowCount(); i++){
-                    String  cantida = JOptionPane.showInputDialog(null, "Comporbar la cantida devuelta de "+model.getValueAt(i,1),"Comprobar cantidades",JOptionPane.INFORMATION_MESSAGE);
+                    String  cantida = JOptionPane.showInputDialog(null, "Comprobar la cantidad devuelta de "+model.getValueAt(i,1),"Comprobar cantidades",JOptionPane.INFORMATION_MESSAGE);
 
 
                     try {
@@ -347,7 +347,7 @@ public class DevolucionesAlquileres extends JFrame {
 
                         total_multa+=multa;
                     }catch (NumberFormatException exception) {
-                        JOptionPane.showMessageDialog(null, "La cantidad debe ser un numero", "Validacion", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "La cantidad debe ser un número", "Validacion", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
 

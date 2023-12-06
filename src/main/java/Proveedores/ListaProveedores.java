@@ -152,6 +152,7 @@ public class ListaProveedores extends JFrame {
         panelTitulo.setBackground(primaryColor);
         panelA.setBackground(primaryColor);
         panelTitulo.setBackground(primaryColor);
+        panelB.setBackground(primaryColor);
         header.setBackground(darkColor);
         botonCrear.setBackground(darkColor);
         botonEditar.setBackground(darkColor);

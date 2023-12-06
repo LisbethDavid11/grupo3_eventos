@@ -148,6 +148,7 @@ public class SubMenuDashboard extends JFrame {
 		panel_1.add(separator);
 		
 		JLabel lblNewLabel_1 = new JLabel("Clientes");
+		lblNewLabel_1.setEnabled(SesionUsuario.user.getRol().getPermisos().isCliente());
 		lblNewLabel_1.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent e) {
@@ -156,7 +157,7 @@ public class SubMenuDashboard extends JFrame {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				listaCliente.setVisible(true);
+				listaCliente.setVisible(SesionUsuario.user.getRol().getPermisos().isCliente());
 			}
 
 			@Override
@@ -183,6 +184,7 @@ public class SubMenuDashboard extends JFrame {
 		lblNewLabel_1_2.setFont(new Font("Times New Roman", Font.BOLD, 18));
 		lblNewLabel_1_2.setForeground(new Color(51, 204, 204));
 		lblNewLabel_1_2.setBounds(26, 258, 188, 26);
+		lblNewLabel_1_2.setEnabled(SesionUsuario.user.getRol().getPermisos().isEmpleado());
 		lblNewLabel_1_2.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent e) {
@@ -191,7 +193,7 @@ public class SubMenuDashboard extends JFrame {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				listaEmpleados.setVisible(true);
+				listaEmpleados.setVisible(SesionUsuario.user.getRol().getPermisos().isEmpleado());
 			}
 
 			@Override
@@ -206,6 +208,7 @@ public class SubMenuDashboard extends JFrame {
 		lblNewLabel_1_3.setFont(new Font("Times New Roman", Font.BOLD, 18));
 		lblNewLabel_1_3.setForeground(new Color(51, 204, 204));
 		lblNewLabel_1_3.setBounds(29, 289, 165, 37);
+		lblNewLabel_1_3.setEnabled(SesionUsuario.user.getRol().getPermisos().isProveedor());
 		lblNewLabel_1_3.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent e) {
@@ -214,7 +217,7 @@ public class SubMenuDashboard extends JFrame {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				listaProveedores.setVisible(true);
+				listaProveedores.setVisible(SesionUsuario.user.getRol().getPermisos().isProveedor());
 			}
 
 			@Override
@@ -229,6 +232,7 @@ public class SubMenuDashboard extends JFrame {
 		lblNewLabel_1_5.setForeground(new Color(51, 204, 204));
 		lblNewLabel_1_5.setFont(new Font("Times New Roman", Font.BOLD, 18));
 		lblNewLabel_1_5.setBounds(26, 496, 210, 35);
+		lblNewLabel_1_5.setEnabled(SesionUsuario.user.getRol().getPermisos().isUsuario());
 		lblNewLabel_1_5.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent e) {
@@ -237,7 +241,7 @@ public class SubMenuDashboard extends JFrame {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				listaUsuarios.setVisible(true);
+				listaUsuarios.setVisible(SesionUsuario.user.getRol().getPermisos().isUsuario());
 			}
 
 			@Override
@@ -252,6 +256,7 @@ public class SubMenuDashboard extends JFrame {
 		lblNewLabel_1_2_1.setForeground(new Color(51, 204, 204));
 		lblNewLabel_1_2_1.setFont(new Font("Times New Roman", Font.BOLD, 18));
 		lblNewLabel_1_2_1.setBounds(26, 542, 210, 35);
+		lblNewLabel_1_2_1.setEnabled(SesionUsuario.user.getRol().getPermisos().isRol());
 		lblNewLabel_1_2_1.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent e) {
@@ -260,7 +265,7 @@ public class SubMenuDashboard extends JFrame {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				listaRoles.setVisible(true);
+				listaRoles.setVisible(SesionUsuario.user.getRol().getPermisos().isRol());
 			}
 
 			@Override
@@ -275,6 +280,7 @@ public class SubMenuDashboard extends JFrame {
 		lblNewLabel_1_3_1.setForeground(new Color(51, 204, 204));
 		lblNewLabel_1_3_1.setFont(new Font("Times New Roman", Font.BOLD, 18));
 		lblNewLabel_1_3_1.setBounds(26, 588, 210, 37);
+		lblNewLabel_1_3_1.setEnabled(SesionUsuario.user.getRol().getPermisos().isRol());
 		lblNewLabel_1_3_1.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent e) {
@@ -283,7 +289,7 @@ public class SubMenuDashboard extends JFrame {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				listaPermisos.setVisible(true);
+				listaPermisos.setVisible(SesionUsuario.user.getRol().getPermisos().isRol());
 			}
 
 			@Override
@@ -305,6 +311,9 @@ public class SubMenuDashboard extends JFrame {
 		lblNewLabel_1_2_2.setForeground(new Color(51, 204, 204));
 		lblNewLabel_1_2_2.setFont(new Font("Times New Roman", Font.BOLD, 18));
 		lblNewLabel_1_2_2.setBounds(57, 434, 81, 14);
+		lblNewLabel_1_2_2.setEnabled(SesionUsuario.user.getRol().getPermisos().isVenta() ||
+									SesionUsuario.user.getRol().getPermisos().isPedido() ||
+									SesionUsuario.user.getRol().getPermisos().isCompra());
 		panel_1.add(lblNewLabel_1_2_2);
 		
        
@@ -345,19 +354,22 @@ public class SubMenuDashboard extends JFrame {
                 menuItem1.setForeground(Color.white);
                 menuItem1.setFont(new Font("Times New Roman", Font.BOLD, 18));
                 menuItem1.setIcon(new ImageIcon("img\\subMenu\\icons8-comprar-27.png"));
+				menuItem1.setEnabled(SesionUsuario.user.getRol().getPermisos().isCompra());
                 
                 menuItem2.setOpaque(true);
                 menuItem2.setBackground(new Color(0, 51, 153));
                 menuItem2.setForeground(Color.white);
                 menuItem2.setFont(new Font("Times New Roman", Font.BOLD, 18));
                 menuItem2.setIcon(new ImageIcon("img\\subMenu\\icons8-historial-de-pedidos-27.png"));
-                
+				menuItem2.setEnabled(SesionUsuario.user.getRol().getPermisos().isPedido());
+
                 menuItem3.setOpaque(true);
                 menuItem3.setBackground(new Color(0, 51, 153));
                 menuItem3.setForeground(Color.white);
                 menuItem3.setFont(new Font("Times New Roman", Font.BOLD, 18));
                 menuItem3.setIcon(new ImageIcon("img\\subMenu\\icons8-la-venta-de-tierras-27.png"));
-                
+				menuItem3.setEnabled(SesionUsuario.user.getRol().getPermisos().isVenta());
+
                 menu.add(menuItem1);
                 menu.add(menuItem2);
                 menu.add(menuItem3);
@@ -384,7 +396,18 @@ public class SubMenuDashboard extends JFrame {
 		lblNewLabel_1_6.setFont(new Font("Times New Roman", Font.BOLD, 18));
 		lblNewLabel_1_6.setBounds(57, 358, 81, 14);
 		panel_1.add(lblNewLabel_1_6);
-		
+		lblNewLabel_1_1_1_2.setEnabled(SesionUsuario.user.getRol().getPermisos().isFloristeria() ||
+				SesionUsuario.user.getRol().getPermisos().isMaterial() ||
+				SesionUsuario.user.getRol().getPermisos().isGlobo() ||
+				SesionUsuario.user.getRol().getPermisos().isMobiliario() ||
+				SesionUsuario.user.getRol().getPermisos().isTarjeta() ||
+				SesionUsuario.user.getRol().getPermisos().isArreglo());
+		lblNewLabel_1_6.setEnabled(SesionUsuario.user.getRol().getPermisos().isFloristeria() ||
+				SesionUsuario.user.getRol().getPermisos().isMaterial() ||
+				SesionUsuario.user.getRol().getPermisos().isGlobo() ||
+				SesionUsuario.user.getRol().getPermisos().isMobiliario() ||
+				SesionUsuario.user.getRol().getPermisos().isTarjeta() ||
+				SesionUsuario.user.getRol().getPermisos().isArreglo());
 		lblNewLabel_1_6.addMouseListener(new MouseAdapter() {
             JPopupMenu menu = new JPopupMenu();
             JMenuItem menuItem1 = new JMenuItem("Floristeria");
@@ -446,36 +469,42 @@ public class SubMenuDashboard extends JFrame {
                 menuItem1.setForeground(Color.white);
                 menuItem1.setFont(new Font("Times New Roman", Font.BOLD, 18));
                 menuItem1.setIcon(new ImageIcon("img\\subMenu\\icons8-flor-27.png"));
+				menuItem1.setEnabled(SesionUsuario.user.getRol().getPermisos().isFloristeria());
                 
                 menuItem2.setOpaque(true);
                 menuItem2.setBackground(new Color(0, 51, 153));
                 menuItem2.setForeground(Color.white);
                 menuItem2.setFont(new Font("Times New Roman", Font.BOLD, 18));
                 menuItem2.setIcon(new ImageIcon("img\\subMenu\\icons8-análisis-de-stock-27.png"));
-                
+				menuItem2.setEnabled(SesionUsuario.user.getRol().getPermisos().isMaterial());
+
                 menuItem3.setOpaque(true);
                 menuItem3.setBackground(new Color(0, 51, 153));
                 menuItem3.setForeground(Color.white);
                 menuItem3.setFont(new Font("Times New Roman", Font.BOLD, 18));
                 menuItem3.setIcon(new ImageIcon("img\\subMenu\\icons8-globos-27.png"));
-                
+				menuItem3.setEnabled(SesionUsuario.user.getRol().getPermisos().isGlobo());
+
                 menuItem4.setOpaque(true);
                 menuItem4.setBackground(new Color(0, 51, 153));
                 menuItem4.setForeground(Color.white);
                 menuItem4.setFont(new Font("Times New Roman", Font.BOLD, 18));
                 menuItem4.setIcon(new ImageIcon("img\\subMenu\\icons8-armario-con-puerta-corredera-27.png"));
+				menuItem4.setEnabled(SesionUsuario.user.getRol().getPermisos().isMobiliario());
                 
                 menuItem5.setOpaque(true);
                 menuItem5.setBackground(new Color(0, 51, 153));
                 menuItem5.setForeground(Color.white);
                 menuItem5.setFont(new Font("Times New Roman", Font.BOLD, 18));
                 menuItem5.setIcon(new ImageIcon("img\\subMenu\\icons8-cartas-de-tarot-27.png"));
+				menuItem5.setEnabled(SesionUsuario.user.getRol().getPermisos().isTarjeta());
                 
                 menuItem6.setOpaque(true);
                 menuItem6.setBackground(new Color(0, 51, 153));
                 menuItem6.setForeground(Color.white);
                 menuItem6.setFont(new Font("Times New Roman", Font.BOLD, 18));
                 menuItem6.setIcon(new ImageIcon("img\\subMenu\\icons8-estadio--27.png"));
+				menuItem6.setEnabled(SesionUsuario.user.getRol().getPermisos().isArreglo());
                 
                 menu.add(menuItem1);
                 menu.add(menuItem2);
@@ -508,7 +537,18 @@ public class SubMenuDashboard extends JFrame {
 		lblNewLabel_1_6_1.setFont(new Font("Times New Roman", Font.BOLD, 18));
 		lblNewLabel_1_6_1.setBounds(57, 396, 66, 14);
 		panel_1.add(lblNewLabel_1_6_1);
-		
+		lblNewLabel_1_1_5.setEnabled(SesionUsuario.user.getRol().getPermisos().isManualidad() ||
+				SesionUsuario.user.getRol().getPermisos().isDesayuno() ||
+				SesionUsuario.user.getRol().getPermisos().isPromocion() ||
+				SesionUsuario.user.getRol().getPermisos().isEvento() ||
+				SesionUsuario.user.getRol().getPermisos().isActividad() ||
+				SesionUsuario.user.getRol().getPermisos().isAlquiler());
+		lblNewLabel_1_6_1.setEnabled(SesionUsuario.user.getRol().getPermisos().isManualidad() ||
+				SesionUsuario.user.getRol().getPermisos().isDesayuno() ||
+				SesionUsuario.user.getRol().getPermisos().isPromocion() ||
+				SesionUsuario.user.getRol().getPermisos().isEvento() ||
+				SesionUsuario.user.getRol().getPermisos().isActividad() ||
+				SesionUsuario.user.getRol().getPermisos().isAlquiler());
 		
 		lblNewLabel_1_6_1.addMouseListener(new MouseAdapter() {
             JPopupMenu menu = new JPopupMenu();
@@ -571,36 +611,42 @@ public class SubMenuDashboard extends JFrame {
                 menuItem1.setForeground(Color.white);
                 menuItem1.setFont(new Font("Times New Roman", Font.BOLD, 18));
                 menuItem1.setIcon(new ImageIcon("img\\subMenu\\icons8-rueda-de-alfarero-27.png"));
+				menuItem1.setEnabled(SesionUsuario.user.getRol().getPermisos().isManualidad());
                 
                 menuItem2.setOpaque(true);
                 menuItem2.setBackground(new Color(0, 51, 153));
                 menuItem2.setForeground(Color.white);
                 menuItem2.setFont(new Font("Times New Roman", Font.BOLD, 18));
                 menuItem2.setIcon(new ImageIcon("img\\subMenu\\icons8-desayuno-buffet-27.png"));
-                
+				menuItem2.setEnabled(SesionUsuario.user.getRol().getPermisos().isDesayuno());
+
                 menuItem3.setOpaque(true);
                 menuItem3.setBackground(new Color(0, 51, 153));
                 menuItem3.setForeground(Color.white);
                 menuItem3.setFont(new Font("Times New Roman", Font.BOLD, 18));
                 menuItem3.setIcon(new ImageIcon("img\\subMenu\\icons8-promoción-de-carrito-de-compras-27.png"));
-                
+				menuItem3.setEnabled(SesionUsuario.user.getRol().getPermisos().isPromocion());
+
                 menuItem4.setOpaque(true);
                 menuItem4.setBackground(new Color(0, 51, 153));
                 menuItem4.setForeground(Color.white);
                 menuItem4.setFont(new Font("Times New Roman", Font.BOLD, 18));
                 menuItem4.setIcon(new ImageIcon("img\\subMenu\\icons8-arena-27.png"));
+				menuItem4.setEnabled(SesionUsuario.user.getRol().getPermisos().isEvento());
                 
                 menuItem5.setOpaque(true);
                 menuItem5.setBackground(new Color(0, 51, 153));
                 menuItem5.setForeground(Color.white);
                 menuItem5.setFont(new Font("Times New Roman", Font.BOLD, 18));
                 menuItem5.setIcon(new ImageIcon("img\\subMenu\\icons8-franquicia-27.png"));
+				menuItem5.setEnabled(SesionUsuario.user.getRol().getPermisos().isActividad());
                 
                 menuItem6.setOpaque(true);
                 menuItem6.setBackground(new Color(0, 51, 153));
                 menuItem6.setForeground(Color.white);
                 menuItem6.setFont(new Font("Times New Roman", Font.BOLD, 18));
                 menuItem6.setIcon(new ImageIcon("img\\subMenu\\icons8-alquiler-de-coches-27.png"));
+				menuItem6.setEnabled(SesionUsuario.user.getRol().getPermisos().isAlquiler());
                 
                 menu.add(menuItem1);
                 menu.add(menuItem2);
