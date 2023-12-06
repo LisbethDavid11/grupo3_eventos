@@ -126,11 +126,25 @@ public class ListaPermisos extends JFrame {
                     mostrarDialogoPersonalizadoAtencion("Seleccione una fila para continuar.", Color.decode("#F57F17"));
                     return;
                 }
-                VerPermiso rol = new VerPermiso(listaRol.get(tablaPermisos.getSelectedRow()).getId());
+
+                // Obtener el permiso seleccionado
+                Permisos permisoSeleccionado = listaRol.get(tablaPermisos.getSelectedRow());
+
+                // Verificar si todos los permisos son false
+                if (todosFalse(permisoSeleccionado)) {
+                    mostrarDialogoPersonalizadoError("No hay permisos asignados.", Color.decode("#C62828"));
+
+                    return; // No se muestra la ventana de permisos
+                }
+
+                // Mostrar la ventana de permisos
+                VerPermiso rol = new VerPermiso(permisoSeleccionado.getId());
                 rol.setVisible(true);
                 actual.dispose();
             }
         });
+
+
 
         botonEditar.addActionListener(new ActionListener() {
             @Override
@@ -237,6 +251,17 @@ public class ListaPermisos extends JFrame {
         }
     }
 
+    // Función para verificar si todos los permisos son false
+    private boolean todosFalse(Permisos permiso) {
+        return !permiso.isCliente() && !permiso.isEmpleado() && !permiso.isFloristeria() &&
+                !permiso.isArreglo() && !permiso.isUsuario() && !permiso.isMaterial() &&
+                !permiso.isProveedor() && !permiso.isCompra() && !permiso.isTarjeta() &&
+                !permiso.isManualidad() && !permiso.isGlobo() && !permiso.isDesayuno() &&
+                !permiso.isVenta() && !permiso.isMobiliario() && !permiso.isPedido() &&
+                !permiso.isPromocion() && !permiso.isEvento() && !permiso.isActividad() &&
+                !permiso.isAlquiler() && !permiso.isRol();
+    }
+
     private ModeloPermisos cargarDatos() {
         sql = new Conexion();
         mysql = sql.conectamysql();
@@ -274,9 +299,6 @@ public class ListaPermisos extends JFrame {
                 rol.setActividad(resultSet.getBoolean("actividad"));
                 rol.setAlquiler(resultSet.getBoolean("alquiler"));
                 rol.setRol(resultSet.getBoolean("rol"));
-
-
-                // ... Continúa con el resto de los campos booleanos ...
                 listaRol.add(rol);
             }
             mysql.close();
@@ -287,6 +309,7 @@ public class ListaPermisos extends JFrame {
         }
         return new ModeloPermisos(listaRol);
     }
+
 
 
     private int getTotalPageCount() {

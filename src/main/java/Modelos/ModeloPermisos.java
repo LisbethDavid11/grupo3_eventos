@@ -139,7 +139,7 @@ public class ModeloPermisos extends AbstractTableModel {
         }
         // Si no se ha encontrado ningún permiso
         if (!algunPermiso) {
-            return "No hay permisos asignados";
+            return null;
         }
 
         // Elimina la última coma y espacio extra
