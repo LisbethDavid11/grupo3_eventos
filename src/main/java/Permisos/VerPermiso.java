@@ -218,7 +218,7 @@ public class VerPermiso extends JFrame{
                 StringBuilder permisos = new StringBuilder();
                 if (rs.getBoolean("cliente")) permisos.append("Cliente, ");
                 if (rs.getBoolean("empleado")) permisos.append("Empleado, ");
-                if (rs.getBoolean("floristeria")) permisos.append("Floristeria, ");
+                if (rs.getBoolean("floristeria")) permisos.append("Floristería, ");
                 if (rs.getBoolean("arreglo")) permisos.append("Arreglo, ");
                 if (rs.getBoolean("usuario")) permisos.append("Usuario, ");
                 if (rs.getBoolean("material")) permisos.append("Material, ");
@@ -231,20 +231,24 @@ public class VerPermiso extends JFrame{
                 if (rs.getBoolean("venta")) permisos.append("Venta, ");
                 if (rs.getBoolean("mobiliario")) permisos.append("Mobiliario, ");
                 if (rs.getBoolean("pedido")) permisos.append("Pedido, ");
-                if (rs.getBoolean("promocion")) permisos.append("Promocion, ");
+                if (rs.getBoolean("promocion")) permisos.append("Promoción, ");
                 if (rs.getBoolean("evento")) permisos.append("Evento, ");
                 if (rs.getBoolean("actividad")) permisos.append("Actividad, ");
                 if (rs.getBoolean("alquiler")) permisos.append("Alquiler, ");
                 if (rs.getBoolean("rol")) permisos.append("Rol, ");
 
-                // Elimina la coma y el espacio extra al final, si existen
+                // Verifica si hay permisos o muestra un mensaje
+                String permisosString;
                 if (permisos.length() > 0) {
                     permisos.delete(permisos.length() - 2, permisos.length());
+                    permisosString = permisos.toString();
+                } else {
+                    permisosString = "No hay permisos asignados";
                 }
 
                 campoNombre.setText(nombreRol);
                 campoDomicilio.setText(descripcionRol);
-                campoPermisos.setText(permisos.toString());
+                campoPermisos.setText(permisosString);
             } else {
                 JOptionPane.showMessageDialog(this, "El rol con este ID no tiene permisos asignados.", "Error", JOptionPane.ERROR_MESSAGE);
             }
@@ -254,8 +258,9 @@ public class VerPermiso extends JFrame{
         }
     }
 
+
     public static void main(String[] args) {
-        VerPermiso verPermiso = new VerPermiso(1);
+        VerPermiso verPermiso = new VerPermiso(7);
         verPermiso.setVisible(true);
     }
 }

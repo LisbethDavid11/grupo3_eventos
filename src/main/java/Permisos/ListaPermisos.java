@@ -132,8 +132,6 @@ public class ListaPermisos extends JFrame {
             }
         });
 
-
-
         botonEditar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

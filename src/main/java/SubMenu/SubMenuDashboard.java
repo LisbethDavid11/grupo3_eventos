@@ -117,8 +117,10 @@ public class SubMenuDashboard extends JFrame {
 		listaEventos = new ListaEventos();
 		listaActividades = new CalendarioDeActividades();
 		listaAlquileres = new ListaAlquileres();
-		listaUsuarios = new ListaUsuarios(id);
-		listaRoles = new ListaRoles(id);
+
+		int idUsuarioActual = SesionUsuario.getInstance().getIdUsuario();
+		listaUsuarios = new ListaUsuarios(idUsuarioActual);
+		listaRoles = new ListaRoles(idUsuarioActual);
 		listaPermisos = new ListaPermisos();
 		
 		JPanel panel_1 = new JPanel();
