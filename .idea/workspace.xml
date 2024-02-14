@@ -5,13 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="18fd5814-fc96-4447-888d-4dd9792a3bfd" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Login/EditarPerfil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Login/EditarPerfil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Login/Login.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Login/Login.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Login/Reset.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Login/Reset.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Login/ResetPassword.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Login/ResetPassword.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Login/SignUp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Login/SignUp.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Objetos/Conexion.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Objetos/Conexion.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -139,6 +134,9 @@
     <option name="version" value="3" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/grupo3_eventos$SubMenu.ic" NAME="SubMenu Coverage Results" MODIFIED="1692420570760" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>SubMenu.*</FILTER>
+    </SUITE>
     <SUITE FILE_PATH="coverage/grupo3_eventos$ListaCliente.ic" NAME="ListaCliente Coverage Results" MODIFIED="1689060759016" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
       <FILTER>Clientes.*</FILTER>
     </SUITE>
