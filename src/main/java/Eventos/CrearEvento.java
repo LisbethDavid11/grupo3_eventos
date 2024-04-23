@@ -573,14 +573,14 @@ public class CrearEvento extends JFrame {
                 String amPmInicial = comboBox1.getSelectedItem().toString();
                 String amPmFinal = comboBox2.getSelectedItem().toString();
 
-                if (horaInicial == 0 && minutoInicial == 0) {
+                if (horaInicial == 1 && minutoInicial == 0) {
                     validacion++;
-                    mensaje += "La hora inicial\n";
+                    mensaje += "Hora inicial\n";
                 }
 
-                if (horaFinal == 0 && minutoFinal == 0) {
+                if (horaFinal == 1 && minutoFinal == 0) {
                     validacion++;
-                    mensaje += "La hora final\n";
+                    mensaje += "Hora final\n";
                 }
 
                 if (validacion > 0) {
