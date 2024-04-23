@@ -112,7 +112,7 @@ public class CrearRol extends JFrame{
                     int trimmedLength = trimmedText.length();
 
                     // Verificar si se está ingresando una letra
-                    if (Character.isLetterOrDigit(e.getKeyChar())) {
+                    if (Character.isLetter(e.getKeyChar())) {
                         // Verificar si se excede el límite de caracteres
                         if (trimmedLength >= 100) {
                             e.consume(); // Ignorar la letra
