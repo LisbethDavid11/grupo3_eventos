@@ -326,7 +326,7 @@ public class SubMenuDashboard extends JFrame {
 					
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						listaCliente.setVisible(true);
+						listaCompras.setVisible(true);
 					}
 				});
 
