@@ -658,17 +658,29 @@ public class CrearGlobo extends JFrame {
                 btnYes.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
+                        // Limpiar campos de texto
                         campoCodigo.setText("");
                         campoPrecio.setText("");
                         campoForma.setText("");
                         campoTamanio.setText("");
                         campoColor.setText("");
                         campoCantidadPorPaquete.setText("");
+
+                        // Limpiar selección de los grupos de botones
                         buttonGroup.clearSelection();
                         buttonGroup2.clearSelection();
+
+                        // Resetear índices de los combobox
                         comboBoxTipoEvento.setSelectedIndex(0);
                         comboBoxMaterial.setSelectedIndex(0);
+
+                        // Limpiar la imagen y gestionar la referencia al archivo
+                        if (imagenLabel != null) {
+                            imagenLabel.setIcon(null); // Elimina la imagen mostrada en el JLabel
+                        }
+                        imagePath = ""; // Restablece la ruta del archivo de la imagen
                         dialog.dispose();
+
                     }
                 });
 
