@@ -239,9 +239,18 @@ public class ListaEmpleados extends JFrame {
     private ModeloEmpleado cargarDatos() {
         sql = new Conexion();
         try (Connection mysql = sql.conectamysql();
-             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT * FROM Empleados WHERE Nombres LIKE CONCAT('%', ?, '%') LIMIT ?, 20")) {
-            preparedStatement.setString(1, campoBusqueda.getText());
-            preparedStatement.setInt(2, pagina * 20);
+
+            PreparedStatement preparedStatement = mysql.prepareStatement(
+                    "SELECT * FROM Empleados " +
+                            "WHERE Nombres LIKE CONCAT('%', ?, '%') " +
+                            "OR apellidos LIKE CONCAT('%', ?, '%') " +
+                            "OR identidad LIKE CONCAT('%', ?, '%') " +
+                            "LIMIT ?, 20")){
+            // Configuración de los parámetros para la consulta
+            preparedStatement.setString(1, campoBusqueda.getText()); // Buscar en 'Nombres'
+            preparedStatement.setString(2, campoBusqueda.getText()); // Buscar en 'apellidos'
+            preparedStatement.setString(3, campoBusqueda.getText()); // Buscar en 'identidad'
+            preparedStatement.setInt(4, pagina * 20); // Calcular el offset para la paginación
 
             ResultSet resultSet = preparedStatement.executeQuery();
             listaEmpleado.clear();
