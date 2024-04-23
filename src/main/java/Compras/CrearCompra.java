@@ -309,6 +309,12 @@ public class CrearCompra extends JFrame {
                     mensaje += "El proveedor\n";
                 }
 
+                // Verificar si ya existe un empleado con la misma identidad
+                if (validarCodigoExistente(campoCodigo.getText().trim())) {
+                    mostrarDialogoPersonalizadoError("El código ingresado ya está asociada a otra compra.", Color.decode("#C62828"));
+                    return; // Detener la ejecución del método
+                }
+
                 String empleadoText = boxEmpleado.getSelectedItem().toString();
                 if (empleadoText.equals("Seleccione un empleado")) {
                     validacion++;
@@ -916,6 +922,68 @@ public class CrearCompra extends JFrame {
             }
         }
 
+    }
+
+    private boolean validarCodigoExistente(String codigo_compra) {
+        try {
+            mysql = sql.conectamysql();
+            String query = "SELECT COUNT(*) FROM compras WHERE codigo_compra = ?";
+            PreparedStatement statement = mysql.prepareStatement(query);
+            statement.setString(1, codigo_compra);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                int count = resultSet.getInt(1);
+                return count > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (mysql != null) {
+                try {
+                    mysql.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return false;
+    }
+
+    public void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado
+        JButton btnAceptar = new JButton("ACEPTAR");
+        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE);
+        btnAceptar.setFocusPainted(false);
+
+        // Crea un JOptionPane
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                           // Mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
+                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
+                null,                              // Icono (puede ser null)
+                new Object[]{},                    // No se usan opciones estándar
+                null                               // Valor inicial (no necesario aquí)
+        );
+
+        // Añade el botón al JOptionPane
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Error");
+
+        // Añade un ActionListener al botón
+        btnAceptar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+            }
+        });
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
     }
 
     public static void main(String[] args) {
