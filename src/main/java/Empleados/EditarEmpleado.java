@@ -89,6 +89,7 @@ public class EditarEmpleado extends JFrame {
         campoNombres.setName("Nombre");
         campoApellidos.setName("Apellido");
         campoIdentidad.setName("Identidad");
+        campoCorreo.setName("Correo");
         campoTelefono.setName("Teléfono");
 
         campoNombres.addKeyListener(new KeyAdapter() {
@@ -383,6 +384,12 @@ public class EditarEmpleado extends JFrame {
                 Integer empleadoId = id;
                 int validacion = 0;
                 String mensaje = "Faltó ingresar: \n";
+
+                // Verificar si ya existe un empleado con el mismo correo
+                if (validarCorreoExistente(campoCorreo.getText().trim(), empleadoId)) {
+                    mostrarDialogoPersonalizadoError("El correo electrónico ya está asociado a otro empleado.", Color.decode("#C62828"));
+                    return; // Detener la ejecución del método
+                }
 
                 // Verificar si ya existe un empleado con la misma identidad
                 if (validarIdentidadExistente(campoIdentidad.getText().trim(), empleadoId)) {
@@ -755,6 +762,35 @@ public class EditarEmpleado extends JFrame {
             String query = "SELECT COUNT(*) FROM empleados WHERE Identidad = ? AND id != ?";
             PreparedStatement statement = mysql.prepareStatement(query);
             statement.setString(1, identidad);
+            statement.setInt(2, empleadoId);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                int count = resultSet.getInt(1);
+                return count > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (mysql != null) {
+                try {
+                    mysql.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean validarCorreoExistente(String correo, Integer empleadoId) {
+        try {
+            mysql = sql.conectamysql();
+
+            String query = "SELECT COUNT(*) FROM empleados WHERE Correo = ? AND id != ?";
+            PreparedStatement statement = mysql.prepareStatement(query);
+            statement.setString(1, correo);
             statement.setInt(2, empleadoId);
 
             ResultSet resultSet = statement.executeQuery();

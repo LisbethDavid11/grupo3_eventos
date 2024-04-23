@@ -376,6 +376,12 @@ public class CrearEmpleado extends JFrame {
                     return; // Detener la ejecución del método
                 }
 
+                // Verificar si ya existe un empleado con el mismo correo
+                if (validarCorreoExistente(campoCorreo.getText().trim())) {
+                    mostrarDialogoPersonalizadoError("El correo ingresado ya está asociado a otro empleado.", Color.decode("#C62828"));
+                    return; // Detener la ejecución del método
+                }
+
                 // Verificar si ya existe un empleado con el mismo teléfono
                 if (validarTelefonoExistente(campoTelefono.getText().trim())) {
                     mostrarDialogoPersonalizadoError("El teléfono ingresado ya está asociado a otro empleado.", Color.decode("#C62828"));
@@ -707,33 +713,6 @@ public class CrearEmpleado extends JFrame {
         });
     }
 
-    public void GuardarDatos() {
-        sql = new Conexion();
-        mysql = sql.conectamysql();
-
-        try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO " + Empleado.nombreTabla + " (Identidad, Nombres, Apellidos, Genero, Edad, Correo, Telefono, NombreContactoDeEmergencia, ContactoDeEmergencia, Direccion, TipoDeEmpleado) VALUES (?,?,?,?,?,?,?,?,?,?,?)")) {
-
-            preparedStatement.setString(1, campoIdentidad.getText());
-            preparedStatement.setString(2, campoNombres.getText());
-            preparedStatement.setString(3, campoApellidos.getText());
-            preparedStatement.setString(4, femeninoRadioButton.isSelected() ? "Femenino" : "Masculino");
-            preparedStatement.setString(5, campoEdad.getText());
-            preparedStatement.setString(6, campoCorreo.getText());
-            preparedStatement.setString(7, campoTelefono.getText());
-            preparedStatement.setString(8, campoNombreContacto.getText());
-            preparedStatement.setString(9, campoContactoEmergencia.getText());
-            preparedStatement.setString(10, campoDireccion.getText());
-            preparedStatement.setString(11, temporalRadioButton.isSelected() ? "Temporal" : "Permanente");
-            preparedStatement.executeUpdate();
-
-            String nombreCompleto = campoNombres.getText() + " " + campoApellidos.getText();
-            mostrarDialogoPersonalizadoExito("Empleado " + nombreCompleto + " ha sido registrado exitosamente.", Color.decode("#263238"));
-        } catch (SQLException e) {
-            mostrarDialogoPersonalizadoError("No se pudo realizar el registro del empleado", Color.decode("#C62828"));
-        }
-    }
-
     private boolean validarTelefonoExistente(String telefono) {
         try {
 
@@ -768,6 +747,33 @@ public class CrearEmpleado extends JFrame {
             String query = "SELECT COUNT(*) FROM empleados WHERE Identidad = ?";
             PreparedStatement statement = mysql.prepareStatement(query);
             statement.setString(1, identidad);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                int count = resultSet.getInt(1);
+                return count > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (mysql != null) {
+                try {
+                    mysql.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean validarCorreoExistente(String correo) {
+        try {
+            mysql = sql.conectamysql();
+            String query = "SELECT COUNT(*) FROM empleados WHERE Correo = ?";
+            PreparedStatement statement = mysql.prepareStatement(query);
+            statement.setString(1, correo);
 
             ResultSet resultSet = statement.executeQuery();
 
@@ -857,6 +863,33 @@ public class CrearEmpleado extends JFrame {
 
         // Muestra el diálogo
         dialog.setVisible(true);
+    }
+
+    public void GuardarDatos() {
+        sql = new Conexion();
+        mysql = sql.conectamysql();
+
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO " + Empleado.nombreTabla + " (Identidad, Nombres, Apellidos, Genero, Edad, Correo, Telefono, NombreContactoDeEmergencia, ContactoDeEmergencia, Direccion, TipoDeEmpleado) VALUES (?,?,?,?,?,?,?,?,?,?,?)")) {
+
+            preparedStatement.setString(1, campoIdentidad.getText());
+            preparedStatement.setString(2, campoNombres.getText());
+            preparedStatement.setString(3, campoApellidos.getText());
+            preparedStatement.setString(4, femeninoRadioButton.isSelected() ? "Femenino" : "Masculino");
+            preparedStatement.setString(5, campoEdad.getText());
+            preparedStatement.setString(6, campoCorreo.getText());
+            preparedStatement.setString(7, campoTelefono.getText());
+            preparedStatement.setString(8, campoNombreContacto.getText());
+            preparedStatement.setString(9, campoContactoEmergencia.getText());
+            preparedStatement.setString(10, campoDireccion.getText());
+            preparedStatement.setString(11, temporalRadioButton.isSelected() ? "Temporal" : "Permanente");
+            preparedStatement.executeUpdate();
+
+            String nombreCompleto = campoNombres.getText() + " " + campoApellidos.getText();
+            mostrarDialogoPersonalizadoExito("Empleado " + nombreCompleto + " ha sido registrado exitosamente.", Color.decode("#263238"));
+        } catch (SQLException e) {
+            mostrarDialogoPersonalizadoError("No se pudo realizar el registro del empleado", Color.decode("#C62828"));
+        }
     }
 
     public static void main(String[] args) {
