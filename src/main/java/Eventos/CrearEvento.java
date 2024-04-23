@@ -536,14 +536,14 @@ public class CrearEvento extends JFrame {
                 int validacion = 0;
                 String mensaje = "Faltó ingresar: \n";
 
-                if (campoDireccion.getText().trim().isEmpty()) {
-                    validacion++;
-                    mensaje += "Descripción\n";
-                }
-
                 if (jbcClientes.getSelectedIndex() == 0) {
                     validacion++;
                     mensaje += "Seleccionar el cliente\n";
+                }
+
+                if (campoDireccion.getText().trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "Dirección del cliente\n";
                 }
 
                 if (jbcTipoEvento.getSelectedIndex() == 0) {
