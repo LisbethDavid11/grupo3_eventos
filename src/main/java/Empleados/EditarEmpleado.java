@@ -420,6 +420,12 @@ public class EditarEmpleado extends JFrame {
                     mensaje += "Género\n";
                 }
 
+                // Verificar si se seleccionó un tipo de empleado
+                if (!permanenteRadioButton.isSelected() && !temporalRadioButton.isSelected()) {
+                    validacion++;
+                    mensaje += "Tipo de empleado\n";
+                }
+
                 if (campoEdad.getText().trim().isEmpty()) {
                     validacion++;
                     mensaje += "Edad\n";

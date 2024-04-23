@@ -406,6 +406,12 @@ public class CrearEmpleado extends JFrame {
                     mensaje += "Género\n";
                 }
 
+                // Verificar si se seleccionó un tipo
+                if (!temporalRadioButton.isSelected() && !permanenteRadioButton.isSelected()) {
+                    validacion++;
+                    mensaje += "Tipo de Empleado\n";
+                }
+
                 if (campoEdad.getText().trim().isEmpty()) {
                     validacion++;
                     mensaje += "Edad\n";
