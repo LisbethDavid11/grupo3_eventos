@@ -199,12 +199,22 @@ public class CrearRol extends JFrame{
                     }
 
                     if (!nombre.matches("[a-zA-ZñÑ0-9]{2,}(\\s[a-zA-ZñÑ0-9]+\\s*)*")) {
-                        mostrarDialogoPersonalizadoAtencion("El nombre debe tener mínimo 2 letras/números y máximo 1 espacio entre palabras.", Color.decode("#F57F17"));
+                        mostrarDialogoPersonalizadoAtencion("El nombre debe tener mínimo 2 letras y máximo 1 espacio entre palabras.", Color.decode("#F57F17"));
                         return;
                     }
                 } else {
                     mostrarDialogoPersonalizadoAtencion("El campo de nombre no puede estar vacío.", Color.decode("#F57F17"));
                     return;
+                }
+
+                if (!campoDomicilio.getText().trim().isEmpty()) {
+                    String texto = campoDomicilio.getText().trim();
+                    int longitud = texto.length();
+
+                    if (longitud < 2 || longitud > 200) {
+                        mostrarDialogoPersonalizadoAtencion("La descripción debe tener entre 2 y 200 caracteres.", Color.decode("#F57F17"));
+                        return;
+                    }
                 }
 
                 JButton btnSave = new JButton("Sí");
