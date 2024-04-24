@@ -84,16 +84,11 @@ public class ListaManualidades extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 if ((pagina + 1) < getTotalPageCount()) {
                     pagina++;
-                    botonAtras.setEnabled(true);
-                    if ((pagina + 1) == getTotalPageCount()) {
-                        botonAdelante.setEnabled(false);
-                    }
+                    actualizarInterfaz();
                 }
-                listaManualidades.setModel(cargarDatos());
-                configurarTablaManualidades();
-                lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
+
 
         campoBusqueda.addKeyListener(new KeyAdapter() {
             @Override
@@ -287,8 +282,9 @@ public class ListaManualidades extends JFrame {
     private int getTotalPageCount() {
         int count = 0;
         try (Connection mysql = sql.conectamysql();
-             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT COUNT(*) AS total FROM manualidades WHERE nombre LIKE CONCAT('%', ?, '%')")) {
+             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT COUNT(*) AS total FROM manualidades WHERE nombre LIKE CONCAT('%', ?, '%') OR tipo LIKE CONCAT('%', ?, '%')")) {
             preparedStatement.setString(1, busqueda);
+            preparedStatement.setString(2, busqueda);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 count = resultSet.getInt("total");
@@ -298,13 +294,20 @@ public class ListaManualidades extends JFrame {
             JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
         }
 
-        int totalPageCount = count / 20;
-
-        if (count % 20 > 0) {
-            totalPageCount++;
+        if (count == 0) {
+            return 1; // Asegura que siempre haya al menos una página.
+        } else {
+            return (count + 19) / 20;  // Calcula el número total de páginas necesario y redondea hacia arriba.
         }
+    }
 
-        return totalPageCount;
+    private void actualizarInterfaz() {
+        listaManualidades.setModel(cargarDatos());
+        configurarTablaManualidades();
+        int totalPaginas = getTotalPageCount();
+        lblPagina.setText("Página " + (pagina + 1) + " de " + totalPaginas);
+        botonAtras.setEnabled(pagina > 0);
+        botonAdelante.setEnabled((pagina + 1) < totalPaginas);
     }
 
     public static void main(String[] args) {
