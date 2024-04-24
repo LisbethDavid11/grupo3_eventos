@@ -273,18 +273,6 @@ public class CrearCliente extends JFrame{
                 int validacion = 0;
                 String mensaje = "Faltó ingresar: \n";
 
-                // Verificar si ya existe un cliente con el mismo teléfono
-                if (validarTelefonoExistente(campoTelefono.getText().trim())) {
-                    JOptionPane.showMessageDialog(null, "El teléfono ingresado ya está asociado a otro cliente", "Validación", JOptionPane.ERROR_MESSAGE);
-                    return; // Detener la ejecución del método
-                }
-
-                // Verificar si ya existe un cliente con la misma identidad
-                if (validarIdentidadExistente(campoIdentidad.getText().trim())) {
-                    JOptionPane.showMessageDialog(null, "La identidad ingresada ya está asociada a otro cliente", "Validación", JOptionPane.ERROR_MESSAGE);
-                    return; // Detener la ejecución del método
-                }
-
                 if (campoNombre.getText().trim().isEmpty()) {
                     validacion++;
                     mensaje += "Nombres\n";
@@ -319,6 +307,18 @@ public class CrearCliente extends JFrame{
                 if (validacion > 0) {
                     JOptionPane.showMessageDialog(null, mensaje, "Validación", JOptionPane.ERROR_MESSAGE);
                     return;
+                }
+
+                // Verificar si ya existe un cliente con el mismo teléfono
+                if (validarTelefonoExistente(campoTelefono.getText().trim())) {
+                    JOptionPane.showMessageDialog(null, "El teléfono ingresado ya está asociado a otro cliente", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return; // Detener la ejecución del método
+                }
+
+                // Verificar si ya existe un cliente con la misma identidad
+                if (validarIdentidadExistente(campoIdentidad.getText().trim())) {
+                    JOptionPane.showMessageDialog(null, "La identidad ingresada ya está asociada a otro cliente", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return; // Detener la ejecución del método
                 }
 
                 String nombre = campoNombre.getText().trim();
@@ -574,5 +574,10 @@ public class CrearCliente extends JFrame{
             }
         }
         return false;
+    }
+
+    public static void main(String[] args) {
+        CrearCliente crearCliente = new CrearCliente(null);
+        crearCliente.setVisible(true);
     }
 }
