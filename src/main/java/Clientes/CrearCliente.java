@@ -575,9 +575,4 @@ public class CrearCliente extends JFrame{
         }
         return false;
     }
-
-    public static void main(String[] args) {
-        CrearCliente crearCliente = new CrearCliente(null);
-        crearCliente.setVisible(true);
-    }
 }

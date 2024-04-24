@@ -385,6 +385,8 @@ public class EditarManualidad extends JFrame {
                     mensaje += "Imagen\n";
                 }
 
+              
+
                 if (campoDescripcion.getText().trim().isEmpty()) {
                     validacion++;
                     mensaje += "Descripción\n";
@@ -410,18 +412,19 @@ public class EditarManualidad extends JFrame {
                     mensaje += "Los materiales\n";
                 }
 
-                if (validacion > 0) {
-                    JOptionPane.showMessageDialog(null, mensaje, "Validación", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
                 if (!campoDescripcion.getText().trim().isEmpty()) {
                     String texto = campoDescripcion.getText().trim();
                     int longitud = texto.length();
 
                     if (longitud < 2 || longitud > 200) {
                         JOptionPane.showMessageDialog(null, "La descripción debe tener entre 2 y 200 caracteres.", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
                     }
+                }
+
+                if (validacion > 0) {
+                    JOptionPane.showMessageDialog(null, mensaje, "Validación", JOptionPane.ERROR_MESSAGE);
+                    return;
                 }
 
                 String precioText = campoPrecio.getText().trim();
@@ -456,7 +459,6 @@ public class EditarManualidad extends JFrame {
                         }
                     }
                 }
-
 
                 String manoObraText = campoManoObra.getText().trim();
                 if (manoObraText.isEmpty()) {
