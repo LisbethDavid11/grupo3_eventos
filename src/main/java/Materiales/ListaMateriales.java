@@ -96,12 +96,11 @@ public class ListaMateriales extends JFrame {
         campoBusqueda.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
-                busqueda = campoBusqueda.getText();
-                pagina = 0;
-                botonAdelante.setEnabled((pagina + 1) < getTotalPageCount());
-                botonAtras.setEnabled(pagina > 0);
+                busqueda = campoBusqueda.getText().trim();
+                pagina = 0;  // Asegura que siempre regrese a la primera página.
                 listaMateriales.setModel(cargarDatos());
                 configurarTablaMateriales();
+                actualizarBotonesPaginacion();
                 lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
             }
         });
@@ -110,9 +109,9 @@ public class ListaMateriales extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (!siCheckBox.isSelected() && !noCheckBox.isSelected()) {
-
                     siCheckBox.setSelected(true);
                 }
+                pagina = 0; // Restablece a la primera página.
                 actualizarTabla();
             }
         });
@@ -121,12 +120,13 @@ public class ListaMateriales extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (!siCheckBox.isSelected() && !noCheckBox.isSelected()) {
-
                     noCheckBox.setSelected(true);
                 }
+                pagina = 0; // Restablece a la primera página.
                 actualizarTabla();
             }
         });
+
 
         botonCrear.addActionListener(new ActionListener() {
             @Override
@@ -206,7 +206,6 @@ public class ListaMateriales extends JFrame {
         lblPagina.setFont(font);
 
         botonAdelante.setFocusable(false);
-        botonAtras.setFocusable(false);
         botonAtras.setFocusable(false);
         botonEditar.setFocusable(false);
         botonVer.setFocusable(false);
@@ -321,30 +320,61 @@ public class ListaMateriales extends JFrame {
 
     private int getTotalPageCount() {
         int count = 0;
+        boolean aplicarFiltroEstado = true;
+        String estado = "";
+        if (siCheckBox.isSelected() && noCheckBox.isSelected()) {
+            aplicarFiltroEstado = false; // Ambos seleccionados, busca todos los registros
+        } else if (siCheckBox.isSelected()) {
+            estado = "Si";
+        } else if (noCheckBox.isSelected()) {
+            estado = "No";
+        }
+
+        String sqlQuery = "SELECT COUNT(*) AS total " +
+                "FROM Materiales m " +
+                "JOIN Proveedores p ON m.proveedor_id = p.id " +
+                "WHERE (m.nombre LIKE CONCAT('%', ?, '%') OR p.empresaProveedora LIKE CONCAT('%', ?, '%'))";
+
+        if (aplicarFiltroEstado) {
+            sqlQuery += " AND m.disponible = ?";
+        }
+
         try (Connection mysql = sql.conectamysql();
-             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT COUNT(*) AS total FROM Materiales f WHERE f.nombre LIKE CONCAT('%', ?, '%')")) {
+             PreparedStatement preparedStatement = mysql.prepareStatement(sqlQuery)) {
             preparedStatement.setString(1, busqueda);
+            preparedStatement.setString(2, busqueda);
+            if (aplicarFiltroEstado) {
+                preparedStatement.setString(3, estado);
+            }
+
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 count = resultSet.getInt("total");
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos", Color.decode("#C62828"));
+            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
         }
 
-            int totalPageCount = count / 20;
-
-        if (count % 20 > 0) {
-            totalPageCount++;
+        int registrosPorPagina = 20;
+        int totalPageCount = (count + registrosPorPagina - 1) / registrosPorPagina;
+        if (totalPageCount == 0) {
+            totalPageCount = 1;  // Asegura que siempre haya al menos una página.
         }
 
         return totalPageCount;
+    }
+    
+    private void actualizarBotonesPaginacion() {
+        int totalPaginas = getTotalPageCount();
+        botonAtras.setEnabled(pagina > 0);
+        botonAdelante.setEnabled((pagina + 1) < totalPaginas);
     }
 
     private void actualizarTabla() {
         listaMateriales.setModel(cargarDatos());
         configurarTablaMateriales();
+        actualizarBotonesPaginacion();
         lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
     }
 
