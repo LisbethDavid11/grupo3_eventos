@@ -385,7 +385,10 @@ public class EditarManualidad extends JFrame {
                     mensaje += "Imagen\n";
                 }
 
-              
+                if (campoNombre.getText().trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "Nombre\n";
+                }
 
                 if (campoDescripcion.getText().trim().isEmpty()) {
                     validacion++;
