@@ -301,7 +301,13 @@ public class ListaUsuarios extends JFrame {
             System.out.println(e.getMessage());
             mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
         }
-        return (int) Math.ceil((double) count / 20);
+
+        int registrosPorPagina = 20;
+        int totalPageCount = (int) Math.ceil((double) count / registrosPorPagina);
+        if (totalPageCount == 0) {
+            totalPageCount = 1;  // Asegura que siempre haya al menos una página, incluso si no hay resultados.
+        }
+        return totalPageCount;
     }
 
     class ButtonRenderer extends JButton implements TableCellRenderer {

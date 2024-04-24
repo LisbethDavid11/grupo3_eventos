@@ -364,7 +364,7 @@ public class ListaMateriales extends JFrame {
 
         return totalPageCount;
     }
-    
+
     private void actualizarBotonesPaginacion() {
         int totalPaginas = getTotalPageCount();
         botonAtras.setEnabled(pagina > 0);
