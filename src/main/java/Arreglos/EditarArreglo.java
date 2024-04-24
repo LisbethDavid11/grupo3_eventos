@@ -42,6 +42,9 @@ public class EditarArreglo extends JFrame {
     private int panelImgWidth = 220;
     private int panelImgHeight = 220;
     private int id;
+
+    private boolean imageChanged = false;
+
     Color darkColorRed = new Color(244, 67, 54);
     Color darkColorBlue = new Color(33, 150, 243);
 
@@ -361,7 +364,6 @@ public class EditarArreglo extends JFrame {
             }
         });
 
-
         botonCargarImagen.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -389,43 +391,9 @@ public class EditarArreglo extends JFrame {
 
                 int seleccion = fileChooser.showOpenDialog(actual);
                 if (seleccion == JFileChooser.APPROVE_OPTION) {
+                    imageChanged = true;
                     File file = fileChooser.getSelectedFile();
                     imagePath = file.getAbsolutePath();
-
-                    String directorio = "img/arreglos/";
-
-                    Date fecha = new Date();
-                    SimpleDateFormat formatoFechaHora = new SimpleDateFormat("ddMMyyyy_HHmmss");
-                    String fechaHora = formatoFechaHora.format(fecha);
-
-                    // Generar un número aleatorio entre 0001 y 9999
-                    int numeroAleatorio = (int) (Math.random() * 9999) + 1;
-                    String numeroFormateado = String.format("%04d", numeroAleatorio); // Asegura el formato de 4 dígitos
-
-                    nombreFile = "Arreglo_" + fechaHora + " " + numeroFormateado + ".jpg";
-                    urlDestino = directorio + nombreFile;
-
-                    File directorioDestino = new File(directorio);
-                    if (!directorioDestino.exists()) {
-                        directorioDestino.mkdirs(); // Crea la carpeta si no existe
-                    }
-
-                    File finalDirectorio = new File(urlDestino);
-
-                    try {
-                        BufferedImage imagen = ImageIO.read(new File(imagePath));
-                        boolean resultado = ImageIO.write(imagen, "jpg", finalDirectorio);
-
-                        if (!resultado) {
-                            mostrarDialogoPersonalizadoError("Error al guardar la imagen", Color.decode("#C62828"));
-                            return; // Detiene la ejecución adicional si falla el guardado
-                        }
-                    } catch (IOException ex) {
-                        mostrarDialogoPersonalizadoError("Error al procesar la imagen: " + ex.getMessage(), Color.decode("#C62828"));
-                        ex.printStackTrace();
-                        return;
-                    }
-
                     ImageIcon originalIcon = new ImageIcon(imagePath);
 
                     // Obtener las dimensiones originales de la imagen
@@ -591,7 +559,7 @@ public class EditarArreglo extends JFrame {
         try {
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH-mm-ss");
             String fechaActual = dateFormat.format(new Date());
-            String nombreImagen = "imagen " + fechaActual + " " + generarNumeroAleatorio(0, 9999);
+            String nombreImagen = "Arreglo " + fechaActual + " " + generarNumeroAleatorio(0, 9999);
 
             String rutaImagen = nombreImagen + obtenerExtensionImagen(imagePath);
             File destino = new File("img/arreglos/" + rutaImagen);
@@ -616,7 +584,7 @@ public class EditarArreglo extends JFrame {
 
                 preparedStatement.setString(1, nombre);
                 preparedStatement.setDouble(2, precio);
-                preparedStatement.setString(3, nombreFile);
+                preparedStatement.setString(3, rutaImagen);
                 preparedStatement.setString(4, disponible);
                 preparedStatement.setInt(5, id);
                 preparedStatement.executeUpdate();

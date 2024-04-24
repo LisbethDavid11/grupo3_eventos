@@ -746,7 +746,6 @@ public class EditarGlobo extends JFrame {
         }
     }
 
-
     private void actualizarGlobos(int id) {
         String codigo = campoCodigo.getText().trim();
         double precio = Double.parseDouble(campoPrecio.getText().trim());
@@ -765,7 +764,7 @@ public class EditarGlobo extends JFrame {
             // Generar el nombre de la imagen
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH-mm-ss");
             String fechaActual = dateFormat.format(new Date());
-            String nombreImagen = "imagen " + fechaActual + " " + generarNumeroAleatorio(0, 9999);
+            String nombreImagen = "Globo " + fechaActual + " " + generarNumeroAleatorio(0, 9999);
 
             // Guardar la imagen en la carpeta
             String rutaImagen = nombreImagen + obtenerExtensionImagen(imagePath);
@@ -801,7 +800,6 @@ public class EditarGlobo extends JFrame {
             JOptionPane.showMessageDialog(null, "Error al actualizar los datos", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
 
     private String obtenerExtensionImagen(String imagePath) {
         int extensionIndex = imagePath.lastIndexOf(".");
