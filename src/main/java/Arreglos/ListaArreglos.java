@@ -91,7 +91,7 @@ public class ListaArreglos extends JFrame {
             @Override
             public void keyReleased(KeyEvent e) {
                 busqueda = campoBusqueda.getText();
-                pagina = 0;
+                pagina = 0; // Reiniciar la paginación
                 botonAdelante.setEnabled((pagina + 1) < getTotalPageCount());
                 botonAtras.setEnabled(pagina > 0);
                 listaArreglos.setModel(cargarDatos());
@@ -103,9 +103,10 @@ public class ListaArreglos extends JFrame {
         siCheckBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (!siCheckBox.isSelected() && !noCheckBox.isSelected()) {
+                if (!noCheckBox.isSelected()) {
                     siCheckBox.setSelected(true);
                 }
+                pagina = 0; // Reiniciar la paginación
                 actualizarTabla();
             }
         });
@@ -113,9 +114,10 @@ public class ListaArreglos extends JFrame {
         noCheckBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (!siCheckBox.isSelected() && !noCheckBox.isSelected()) {
+                if (!siCheckBox.isSelected()) {
                     noCheckBox.setSelected(true);
                 }
+                pagina = 0; // Reiniciar la paginación
                 actualizarTabla();
             }
         });
@@ -266,16 +268,35 @@ public class ListaArreglos extends JFrame {
 
     private ModeloArreglo cargarDatos() {
         sql = new Conexion();
+        List<Arreglo> listaArreglo = new ArrayList<>();
+        String estado = "";
+        boolean aplicarFiltroEstado = true;
+
+        if (siCheckBox.isSelected() && noCheckBox.isSelected()) {
+            aplicarFiltroEstado = false; // Ambos seleccionados, busca todos los arreglos
+        } else if (siCheckBox.isSelected()) {
+            estado = "Si"; // Solo el checkbox "Sí" está seleccionado
+        } else if (noCheckBox.isSelected()) {
+            estado = "No"; // Solo el checkbox "No" está seleccionado
+        }
+
+        String sqlQuery = "SELECT * FROM arreglos WHERE nombre LIKE CONCAT('%', ?, '%')";
+        if (aplicarFiltroEstado) {
+            sqlQuery += " AND disponible = ?";
+        }
+        sqlQuery += " LIMIT ?, 20";
+
         try (Connection mysql = sql.conectamysql();
-             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT * FROM arreglos WHERE nombre LIKE CONCAT('%', ?, '%') AND (? = 'Si' AND disponible = 'Si' OR ? = 'No' AND disponible = 'No') LIMIT ?, 20")){
+             PreparedStatement preparedStatement = mysql.prepareStatement(sqlQuery)){
             preparedStatement.setString(1, busqueda);
-            preparedStatement.setString(2, siCheckBox.isSelected() ? "Si" : "");
-            preparedStatement.setString(3, noCheckBox.isSelected() ? "No" : "");
-            preparedStatement.setInt(4, pagina * 20);
+            if (aplicarFiltroEstado) {
+                preparedStatement.setString(2, estado);
+                preparedStatement.setInt(3, pagina * 20);
+            } else {
+                preparedStatement.setInt(2, pagina * 20);
+            }
 
             ResultSet resultSet = preparedStatement.executeQuery();
-            listaArreglo = new ArrayList<>();
-
             while (resultSet.next()) {
                 Arreglo arreglo = new Arreglo();
                 arreglo.setId(resultSet.getInt("id"));
@@ -284,16 +305,9 @@ public class ListaArreglos extends JFrame {
                 arreglo.setDisponible(resultSet.getString("disponible"));
                 listaArreglo.add(arreglo);
             }
-
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
-            listaArreglo = new ArrayList<>();
-        }
-
-        if (listaArreglos.getColumnCount() > 0) {
-            TableColumn columnId = listaArreglos.getColumnModel().getColumn(0);
-            columnId.setPreferredWidth(50);
         }
 
         return new ModeloArreglo(listaArreglo, sql);
@@ -301,9 +315,28 @@ public class ListaArreglos extends JFrame {
 
     private int getTotalPageCount() {
         int count = 0;
+        boolean aplicarFiltroEstado = true;
+        String estado = "";
+        if (siCheckBox.isSelected() && noCheckBox.isSelected()) {
+            aplicarFiltroEstado = false; // Ambos seleccionados, busca todos los registros
+        } else if (siCheckBox.isSelected()) {
+            estado = "Si";
+        } else if (noCheckBox.isSelected()) {
+            estado = "No";
+        }
+
+        String sqlQuery = "SELECT COUNT(*) AS total FROM arreglos WHERE nombre LIKE CONCAT('%', ?, '%')";
+        if (aplicarFiltroEstado) {
+            sqlQuery += " AND disponible = ?";
+        }
+
         try (Connection mysql = sql.conectamysql();
-             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT COUNT(*) AS total FROM arreglos f WHERE f.nombre LIKE CONCAT('%', ?, '%')")) {
+             PreparedStatement preparedStatement = mysql.prepareStatement(sqlQuery)) {
             preparedStatement.setString(1, busqueda);
+            if (aplicarFiltroEstado) {
+                preparedStatement.setString(2, estado);
+            }
+
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 count = resultSet.getInt("total");
@@ -313,18 +346,22 @@ public class ListaArreglos extends JFrame {
             JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
         }
 
-            int totalPageCount = count / 20;
-            if (count % 20 > 0) {
-                totalPageCount++;
-            }
+        int registrosPorPagina = 20;
+        int totalPageCount = count / registrosPorPagina;
+        if (count % registrosPorPagina != 0) {
+            totalPageCount++;
+        }
 
-            return totalPageCount;
+        return totalPageCount;
     }
 
     private void actualizarTabla() {
         listaArreglos.setModel(cargarDatos());
         configurarTablaArreglos();
-        lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
+        int totalPaginas = getTotalPageCount();
+        lblPagina.setText("Página " + (pagina + 1) + " de " + totalPaginas);
+        botonAdelante.setEnabled((pagina + 1) < totalPaginas);
+        botonAtras.setEnabled(pagina > 0);
     }
 
     private void mostrarTodos() {
