@@ -368,7 +368,7 @@ public class CrearActividad extends JFrame {
 
                     if (longitud < 2 || longitud > 200) {
                         mostrarDialogoPersonalizadoError("La dirección debe tener entre 2 y 200 caracteres.", Color.decode("#C62828"));
-
+                        return;
                     }
                 }
 
