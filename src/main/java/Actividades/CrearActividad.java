@@ -1,6 +1,5 @@
 package Actividades;
 
-import Desayunos.ListaDesayunos;
 import Objetos.Conexion;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
@@ -20,6 +19,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Properties;
+import java.util.regex.Pattern;
 
 public class CrearActividad extends JFrame {
     private JTextField campoNombre;
@@ -362,25 +362,19 @@ public class CrearActividad extends JFrame {
                     return;
                 }
 
-                if (!campoDireccion.getText().trim().isEmpty()) {
-                    String texto = campoDireccion.getText().trim();
-                    int longitud = texto.length();
-
-                    if (longitud < 2 || longitud > 200) {
-                        mostrarDialogoPersonalizadoError("La dirección debe tener entre 2 y 200 caracteres.", Color.decode("#C62828"));
-                        return;
-                    }
-                }
-
+                // Validación de la descripción
                 if (!campoDescripcion.getText().trim().isEmpty()) {
                     String texto = campoDescripcion.getText().trim();
                     int longitud = texto.length();
 
-                    if (longitud < 2 || longitud > 200) {
-                        mostrarDialogoPersonalizadoError("La descripción debe tener entre 2 y 200 caracteres.", Color.decode("#C62828"));
+                    if (longitud < 2 || longitud > 200 || contieneSoloNumeros(texto)) {
+                        mostrarDialogoPersonalizadoError("La descripción debe tener entre 2 y 200 caracteres y no puede contener solo números.", Color.decode("#C62828"));
                         return;
                     }
                 }
+
+            
+
 
                 JButton btnSave = new JButton("Sí");
                 JButton btnCancel = new JButton("No");
@@ -439,6 +433,11 @@ public class CrearActividad extends JFrame {
                 dialog.setVisible(true);
             }
         });
+    }
+
+    // Método para verificar si una cadena contiene solo números
+    private boolean contieneSoloNumeros(String texto) {
+        return Pattern.matches("[0-9]+", texto);
     }
 
     public Calendar getTomorrow() {
