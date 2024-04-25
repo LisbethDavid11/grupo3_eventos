@@ -484,6 +484,13 @@ public class CrearMobiliario extends JFrame {
                         comboColor.setSelectedIndex(0);
                         txtaDescripcion.setText("");
                         campoCantidad.setText("");
+
+                        // Limpiar la imagen y gestionar la referencia al archivo
+                        if (imagenLabel != null) {
+                            imagenLabel.setIcon(null); // Elimina la imagen mostrada en el JLabel
+                        }
+                        imagePath = ""; // Restablece la ruta del archivo de la imagen
+
                         dialog.dispose();
                     }
                 });
