@@ -446,7 +446,7 @@ public class CrearActividad extends JFrame {
     private static boolean contieneSoloNumeros(String texto) {
         return !Pattern.matches(".*[a-zA-Z].*[0-9@#$].*|.*[a-zA-Z].*", texto);
     }
-    
+
     public Calendar getTomorrow() {
         Calendar tomorrow = Calendar.getInstance();
         tomorrow.add(Calendar.DAY_OF_MONTH, 1);
