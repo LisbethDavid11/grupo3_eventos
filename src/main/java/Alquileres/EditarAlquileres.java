@@ -23,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.*;
+import java.util.regex.Pattern;
 
 public class EditarAlquileres extends JFrame {
     private JTextField  campoTelefono;
@@ -439,6 +440,11 @@ public class EditarAlquileres extends JFrame {
                 int validacion = 0;
                 String mensaje = "Faltó ingresar: \n";
 
+                if (campoDescripcion.getText().trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "Descripción\n";
+                }
+
                 if (tablaProductos.getRowCount() == 0) {
                     validacion++;
                     mensaje += "Lista de productos\n";
@@ -470,6 +476,17 @@ public class EditarAlquileres extends JFrame {
                 if (validacion > 0) {
                     JOptionPane.showMessageDialog(null, mensaje, "Validación", JOptionPane.ERROR_MESSAGE);
                     return;
+                }
+
+                // Validación de la descripción
+                if (!campoDescripcion.getText().trim().isEmpty()) {
+                    String texto = campoDescripcion.getText().trim();
+                    int longitud = texto.length();
+
+                    if (longitud < 2 || longitud > 200 || contieneSoloNumeros(texto)) {
+                        JOptionPane.showMessageDialog(null, "La descripción debe tener entre 2 y 200 caracteres y no puede contener solo números.", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
                 }
 
                 String amPmInicial = comboBox1.getSelectedItem().toString();
@@ -1483,7 +1500,9 @@ public class EditarAlquileres extends JFrame {
         }
     }
 
-
+    private static boolean contieneSoloNumeros(String texto) {
+        return Pattern.matches("[0-9]+", texto) || Pattern.matches("[^0-9]+", texto);
+    }
 
     public static void main(String[] args) {
        EditarAlquileres crearAlquileres = new EditarAlquileres(1);
