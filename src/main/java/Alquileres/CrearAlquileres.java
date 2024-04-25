@@ -1,5 +1,4 @@
 package Alquileres;
-import Clientes.CrearCliente;
 import Materiales.TextPrompt;
 import Modelos.*;
 import Objetos.*;
@@ -21,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.*;
+import java.util.regex.Pattern;
 
 public class CrearAlquileres extends JFrame {
     private JTextField  campoTelefono;
@@ -503,14 +503,17 @@ public class CrearAlquileres extends JFrame {
                     return;
                 }
 
+                // Validación de la descripción
                 if (!campoDescripcion.getText().trim().isEmpty()) {
                     String texto = campoDescripcion.getText().trim();
                     int longitud = texto.length();
 
-                    if (longitud < 2 || longitud > 200) {
-                        JOptionPane.showMessageDialog(null, "La descripcion debe tener entre 2 y 200 caracteres.", "Validación", JOptionPane.ERROR_MESSAGE);
+                    if (longitud < 2 || longitud > 200 || contieneSoloNumeros(texto)) {
+                        JOptionPane.showMessageDialog(null, "La descripción debe tener entre 2 y 200 caracteres y no puede contener solo números.", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
                     }
                 }
+
                 String amPmInicial = comboBox1.getSelectedItem().toString();
                 String amPmFinal = comboBox2.getSelectedItem().toString();
 
@@ -1398,6 +1401,9 @@ public class CrearAlquileres extends JFrame {
         return 0;
     }
 
+    private static boolean contieneSoloNumeros(String texto) {
+        return Pattern.matches("[0-9]+", texto) || Pattern.matches("[^0-9]+", texto);
+    }
 
     public static void main(String[] args) {
        CrearAlquileres crearAlquileres = new CrearAlquileres();
