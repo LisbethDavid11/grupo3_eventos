@@ -1259,11 +1259,12 @@ public class EditarAlquileres extends JFrame {
 
 
     private void guardarAlquiler() {
+        String descripcion = campoDescripcion.getText().trim();
 
         Date fechaInicial = (Date) datePicker.getModel().getValue(); // Explicitly cast the value to Date
         String fecha = new SimpleDateFormat("yyyy-MM-dd").format(fechaInicial);
 
-// Obtener los valores de los JComboBox de AM/PM
+        // Obtener los valores de los JComboBox de AM/PM
         String amPmInicial = comboBox1.getSelectedItem().toString();
         String amPmFinal = comboBox2.getSelectedItem().toString();
 
@@ -1294,11 +1295,12 @@ public class EditarAlquileres extends JFrame {
         Time fin = Time.valueOf(String.format("%02d:%02d:00", horaFinal, minutoFinal));
 
         try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("UPDATE alquileres SET fecha = ?, hora_inicial = ?, hora_final = ? WHERE id = ?")) {
+             PreparedStatement preparedStatement = connection.prepareStatement("UPDATE alquileres SET fecha = ?, descripcion = ?,hora_inicial = ?, hora_final = ? WHERE id = ?")) {
             preparedStatement.setString(1, fecha);
-            preparedStatement.setTime(2,inicio);
-            preparedStatement.setTime(3, fin);
-            preparedStatement.setInt(4, this.id);
+            preparedStatement.setString(2,descripcion);
+            preparedStatement.setTime(3,inicio);
+            preparedStatement.setTime(4, fin);
+            preparedStatement.setInt(5, this.id);
             preparedStatement.executeUpdate();
 
 
@@ -1501,7 +1503,7 @@ public class EditarAlquileres extends JFrame {
     }
 
     private static boolean contieneSoloNumeros(String texto) {
-        return Pattern.matches("[0-9]+", texto) || Pattern.matches("[^0-9]+", texto);
+        return !Pattern.matches(".*[a-zA-Z].*[0-9@#$].*|.*[a-zA-Z].*", texto);
     }
 
     public static void main(String[] args) {

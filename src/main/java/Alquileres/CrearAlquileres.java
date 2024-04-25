@@ -1402,7 +1402,7 @@ public class CrearAlquileres extends JFrame {
     }
 
     private static boolean contieneSoloNumeros(String texto) {
-        return Pattern.matches("[0-9]+", texto) || Pattern.matches("[^0-9]+", texto);
+        return !Pattern.matches(".*[a-zA-Z].*[0-9@#$].*|.*[a-zA-Z].*", texto);
     }
 
     public static void main(String[] args) {
