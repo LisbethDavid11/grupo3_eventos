@@ -337,18 +337,6 @@ public class CrearProveedor extends JFrame {
                 int validacion = 0;
                 String mensaje = "Faltó ingresar: \n";
 
-                // Verificar si ya existe un empleado con la misma identidad
-                if (validarRTNExistente(campoRTN.getText().trim())) {
-                    JOptionPane.showMessageDialog(null, "El RTN ingresado ya está asociada a otro proveedor", "Validación", JOptionPane.ERROR_MESSAGE);
-                    return; // Detener la ejecución del método
-                }
-
-                // Verificar si ya existe un empleado con el mismo teléfono
-                if (validarTelefonoExistente(campoTelefono.getText().trim())) {
-                    JOptionPane.showMessageDialog(null, "El teléfono ingresado ya está asociado a otro empleado", "Validación", JOptionPane.ERROR_MESSAGE);
-                    return; // Detener la ejecución del método
-                }
-
                 // Verificar el nombre
                 if (campoEmpresaProveedora.getText().trim().isEmpty()) {
                     validacion++;
@@ -395,6 +383,18 @@ public class CrearProveedor extends JFrame {
                 if (validacion > 0) {
                     JOptionPane.showMessageDialog(null, mensaje.toString(), "Validación", JOptionPane.ERROR_MESSAGE);
                     return;
+                }
+
+                // Verificar si ya existe un empleado con la misma identidad
+                if (validarRTNExistente(campoRTN.getText().trim())) {
+                    JOptionPane.showMessageDialog(null, "El RTN ingresado ya está asociada a otro proveedor", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return; // Detener la ejecución del método
+                }
+
+                // Verificar si ya existe un empleado con el mismo teléfono
+                if (validarTelefonoExistente(campoTelefono.getText().trim())) {
+                    JOptionPane.showMessageDialog(null, "El teléfono ingresado ya está asociado a otro empleado", "Validación", JOptionPane.ERROR_MESSAGE);
+                    return; // Detener la ejecución del método
                 }
 
                 String nombre = campoEmpresaProveedora.getText().trim();
