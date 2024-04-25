@@ -467,11 +467,12 @@ public class EditarTarjeta extends JFrame {
 
                     if (longitud < 2 || longitud > 200) {
                         JOptionPane.showMessageDialog(null, "La descripción debe tener entre 2 y 200 caracteres.", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
                     }
                 }
 
                 String precioText = campoPrecioTarjeta.getText().trim();
-// Replace commas with periods to handle decimal separator
+                // Replace commas with periods to handle decimal separator
                 precioText = precioText.replaceAll(",", ".");
 
                 if (precioText.isEmpty()) {
