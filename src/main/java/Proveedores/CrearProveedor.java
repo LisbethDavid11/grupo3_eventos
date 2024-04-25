@@ -15,6 +15,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.regex.Pattern;
+import java.util.regex.Pattern;
 
 public class CrearProveedor extends JFrame {
     public JButton botonGuardar, botonCancelar, botonLimpiar;
@@ -464,36 +466,25 @@ public class CrearProveedor extends JFrame {
                 }
 
                 String direccion = campoDireccion.getText().trim();
-                if (!direccion.isEmpty()) {
-                    if (direccion.length() < 2 || direccion.length() > 200) {
-                        JOptionPane.showMessageDialog(null, "El domicilio debe tener entre 2 y 200 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
+                if (!campoDireccion.getText().trim().isEmpty()) {
+                    String texto = campoDireccion.getText().trim();
+                    int longitud = texto.length();
+
+                    if (longitud < 2 || longitud > 200 || contieneSoloNumeros(texto)) {
+                        JOptionPane.showMessageDialog(null, "El campo dirección debe tener entre 2 y 200 caracteres y no puede contener solo números.", "Validación", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
-                } else {
-                    JOptionPane.showMessageDialog(null, "El campo de dirección no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
-                    return;
                 }
 
-                direccion = campoDireccion.getText().trim();
-                if (!direccion.isEmpty()) {
-                    if (direccion.length() < 2 || direccion.length() > 200) {
-                        JOptionPane.showMessageDialog(null, "La dirección de la empresa debe tener entre 2 y 200 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(null, "El campo de dirección no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
+                // Validación de la descripción
+                if (!campoDescripcion.getText().trim().isEmpty()) {
+                    String texto = campoDescripcion.getText().trim();
+                    int longitud = texto.length();
 
-                String descripcion = campoDescripcion.getText().trim();
-                if (!descripcion.isEmpty()) {
-                    if (descripcion.length() < 2 || descripcion.length() > 200) {
-                        JOptionPane.showMessageDialog(null, "La descripción de la empresa debe tener entre 2 y 200 caracteres", "Validación", JOptionPane.ERROR_MESSAGE);
+                    if (longitud < 2 || longitud > 200 || contieneSoloNumeros(texto)) {
+                        JOptionPane.showMessageDialog(null, "El campo descripción debe tener entre 2 y 200 caracteres y no puede contener solo números.", "Validación", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
-                } else {
-                    JOptionPane.showMessageDialog(null, "El campo de descripción no puede estar vacío", "Validación", JOptionPane.ERROR_MESSAGE);
-                    return;
                 }
 
                 String vendedor = campoNombreVendedor.getText().trim();
@@ -701,6 +692,11 @@ public class CrearProveedor extends JFrame {
             }
         }
         return false; // En caso de error, se asume que no existe un proveedor con ese RTN
+    }
+
+    // Método para verificar si una cadena contiene solo números
+    private boolean contieneSoloNumeros(String texto) {
+        return Pattern.matches("[0-9]+", texto);
     }
 
     public static void main(String[] args) {
