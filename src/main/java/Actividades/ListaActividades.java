@@ -356,6 +356,22 @@ public class ListaActividades extends JFrame {
                 listaActividad.add(actividad);
             }
 
+            // Verificar si no se encontraron resultados
+            if (listaActividad.isEmpty()) {
+                // Ocultar la tabla
+                listaActividades.setVisible(false);
+                // Mostrar el mensaje
+                JOptionPane.showMessageDialog(null, "No hay resultados para esta búsqueda");
+            } else {
+                // Mostrar la tabla si se encontraron resultados
+                listaActividades.setVisible(true);
+                // Ajustar el ancho de la columna de ID si la tabla tiene columnas
+                if (listaActividades.getColumnCount() > 0) {
+                    TableColumn columnId = listaActividades.getColumnModel().getColumn(0);
+                    columnId.setPreferredWidth(50);
+                }
+            }
+
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
@@ -400,10 +416,10 @@ public class ListaActividades extends JFrame {
             JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
         }
 
-        int totalPageCount = count / 20;
-
-        if (count % 20 > 0) {
-            totalPageCount++;
+        int registrosPorPagina = 20;
+        int totalPageCount = (count + registrosPorPagina - 1) / registrosPorPagina;
+        if (totalPageCount == 0) {
+            totalPageCount = 1;  // Asegura que siempre haya al menos una página.
         }
 
         return totalPageCount;

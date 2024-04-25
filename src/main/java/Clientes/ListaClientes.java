@@ -281,9 +281,13 @@ public class ListaClientes extends JFrame {
             JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos","Error", JOptionPane.ERROR_MESSAGE);
         }
 
-        int totalPageCount = (int) Math.ceil((double) count / 20); // Divide el total de elementos por 20 para obtener la cantidad de páginas completas
+        int registrosPorPagina = 20;
+        int totalPageCount = (count + registrosPorPagina - 1) / registrosPorPagina;
+        if (totalPageCount == 0) {
+            totalPageCount = 1;  // Asegura que siempre haya al menos una página.
+        }
 
-        return totalPageCount; // Retorna el total de páginas necesarias
+        return totalPageCount;
     }
 
     public static void main(String[] args) {

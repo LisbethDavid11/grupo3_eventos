@@ -564,7 +564,13 @@ public class ListaCompras extends JFrame {
             System.out.println(e.getMessage());
             mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
         }
-        int totalPageCount = (int) Math.ceil((double) count / 20);
+
+        int registrosPorPagina = 20;
+        int totalPageCount = (count + registrosPorPagina - 1) / registrosPorPagina;
+        if (totalPageCount == 0) {
+            totalPageCount = 1;  // Asegura que siempre haya al menos una página.
+        }
+
         return totalPageCount;
     }
 

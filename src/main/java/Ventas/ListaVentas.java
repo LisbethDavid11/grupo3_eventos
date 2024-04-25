@@ -338,7 +338,7 @@ public class ListaVentas extends JFrame {
     private void actualizarModeloTablaConMesSeleccionado(String mesSeleccionado) {
         sql = new Conexion();
         try (Connection mysql = sql.conectamysql()) {
-            String query = "SELECT c.*, p.nombre" +
+            String query = "SELECT c.*, p.nombre " +
                     "FROM ventas c " +
                     "JOIN clientes p ON c.cliente_id = p.id " +
                     "JOIN usuarios e ON c.usuario_id = e.id ";

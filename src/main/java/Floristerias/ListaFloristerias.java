@@ -1,5 +1,5 @@
 package Floristerias;
-import Login.SesionUsuario;
+
 import Modelos.ModeloFloristeria;
 import Objetos.Conexion;
 import Objetos.Floristeria;
@@ -286,10 +286,10 @@ public class ListaFloristerias extends JFrame {
             JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
         }
 
-        int totalPageCount = count / 20;
-
-        if (count % 20 > 0) {
-            totalPageCount++;
+        int registrosPorPagina = 20;
+        int totalPageCount = (count + registrosPorPagina - 1) / registrosPorPagina;
+        if (totalPageCount == 0) {
+            totalPageCount = 1;  // Asegura que siempre haya al menos una página.
         }
 
         return totalPageCount;

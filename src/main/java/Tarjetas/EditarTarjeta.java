@@ -417,7 +417,17 @@ public class EditarTarjeta extends JFrame {
         botonCancelar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                int validacion = 0;
+                String mensaje = "Faltó ingresar: \n";
+                if (jtableMateriales.getRowCount() == 0) {
+                    validacion++;
+                    mensaje += "Los materiales\n";
+                }
 
+                if (validacion > 0) {
+                    JOptionPane.showMessageDialog(null, mensaje, "Validación", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
                     ListaTarjetas listaTarjeta = new ListaTarjetas();
                     listaTarjeta.setVisible(true);
                     actual.dispose();

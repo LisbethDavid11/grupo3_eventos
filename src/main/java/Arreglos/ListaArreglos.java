@@ -334,9 +334,9 @@ public class ListaArreglos extends JFrame {
         }
 
         int registrosPorPagina = 20;
-        int totalPageCount = count / registrosPorPagina;
-        if (count % registrosPorPagina != 0) {
-            totalPageCount++;
+        int totalPageCount = (count + registrosPorPagina - 1) / registrosPorPagina;
+        if (totalPageCount == 0) {
+            totalPageCount = 1;  // Asegura que siempre haya al menos una página.
         }
 
         return totalPageCount;
