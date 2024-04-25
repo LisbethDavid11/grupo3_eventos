@@ -299,12 +299,11 @@ public class ListaMobiliario extends JFrame {
             mostrarDialogoPersonalizadoError("No hay conexión con la base de datos", Color.decode("#C62828"));
         }
 
-            int totalPageCount = count / 20;
-
-        if (count % 20 > 0) {
-            totalPageCount++;
+        int registrosPorPagina = 20;
+        int totalPageCount = (int) Math.ceil((double) count / registrosPorPagina);
+        if (totalPageCount == 0) {
+            totalPageCount = 1;  // Asegura que siempre haya al menos una página, incluso si no hay resultados.
         }
-
         return totalPageCount;
     }
 
