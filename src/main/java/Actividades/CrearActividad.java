@@ -373,9 +373,17 @@ public class CrearActividad extends JFrame {
                     }
                 }
 
-            
+                // Validación de la dirección
+                if (!campoDireccion.getText().trim().isEmpty()) {
+                    String texto = campoDireccion.getText().trim();
+                    int longitud = texto.length();
 
-
+                    if (longitud < 2 || longitud > 200 || contieneSoloNumeros(texto)) {
+                        mostrarDialogoPersonalizadoError("La dirección debe tener entre 2 y 200 caracteres y no puede contener solo números.", Color.decode("#C62828"));
+                        return;
+                    }
+                }
+                
                 JButton btnSave = new JButton("Sí");
                 JButton btnCancel = new JButton("No");
 
