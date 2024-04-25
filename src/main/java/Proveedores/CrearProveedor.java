@@ -385,7 +385,7 @@ public class CrearProveedor extends JFrame {
                     mensaje += "Nombre del vendedor\n";
                 }
 
-                if (campoTelefono.getText().trim().isEmpty()) {
+                if (campoTelefonoVendedor.getText().trim().isEmpty()) {
                     validacion++;
                     mensaje += "Teléfono del vendedor\n";
                 }
@@ -701,6 +701,11 @@ public class CrearProveedor extends JFrame {
             }
         }
         return false; // En caso de error, se asume que no existe un proveedor con ese RTN
+    }
+
+    public static void main(String[] args) {
+        CrearProveedor crearProveedor = new CrearProveedor();
+        crearProveedor.setVisible(true);
     }
 
 }
