@@ -346,6 +346,22 @@ public class CrearActividad extends JFrame {
                     return;
                 }
 
+                String nombre = campoNombre.getText().trim();
+                if (!nombre.isEmpty()) {
+                    if (nombre.length() > 100) {
+                        mostrarDialogoPersonalizadoError("El nombre debe tener como máximo 100 caracteres.", Color.decode("#C62828"));
+                        return;
+                    }
+
+                    if (!nombre.matches("[a-zA-ZñÑ]{2,}(\\s[a-zA-ZñÑ]+\\s*)*")) {
+                        mostrarDialogoPersonalizadoError("El nombre debe tener mínimo 2 letras y máximo 1 espacio entre palabras.", Color.decode("#C62828"));
+                        return;
+                    }
+                } else {
+                    mostrarDialogoPersonalizadoError("El campo de nombre no puede estar vacío.", Color.decode("#C62828"));
+                    return;
+                }
+
                 if (!campoDireccion.getText().trim().isEmpty()) {
                     String texto = campoDireccion.getText().trim();
                     int longitud = texto.length();
