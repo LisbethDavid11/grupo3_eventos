@@ -293,15 +293,15 @@ public class CrearCliente extends JFrame{
                     mensaje += "Tipo de cliente\n";
                 }
 
-                String dni = campoIdentidad.getText().trim();
-                if (dni.length() != 15) {
-                    validacion++;
-                    mensaje += "Identidad\n";
-                }
-
                 if (campoDomicilio.getText().trim().isEmpty()) {
                     validacion++;
                     mensaje += "Domicilio\n";
+                }
+
+                String dni = campoIdentidad.getText().trim();
+                if (dni.length() != 15) {
+                    validacion++;
+                    mensaje += "Identidad, debe tener 13 caracteres de tipo númerico\n";
                 }
 
                 if (validacion > 0) {

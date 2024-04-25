@@ -383,7 +383,7 @@ public class CrearActividad extends JFrame {
                         return;
                     }
                 }
-                
+
                 JButton btnSave = new JButton("Sí");
                 JButton btnCancel = new JButton("No");
 
