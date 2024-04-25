@@ -13,6 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.math.BigDecimal;
 import java.sql.*;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -22,7 +23,6 @@ import java.util.Date;
 import java.util.List;
 
 public class DevolucionesAlquileres extends JFrame {
-
     private List<Integer> ids;
     private List<Integer> ids_detalles;
     private JPanel panel1, panel3, panel4, panel5, panel6;
@@ -366,26 +366,33 @@ public class DevolucionesAlquileres extends JFrame {
             SimpleDateFormat formatoOriginal = new SimpleDateFormat("yyyy-MM-dd");
 
             preparedStatement.setString(1, formatoOriginal.format(new Date()));
-            preparedStatement.setString(2,campoCondiciones.getText());
+            preparedStatement.setString(2, campoCondiciones.getText());
             preparedStatement.setInt(3, this.id);
             preparedStatement.executeUpdate();
 
             DefaultTableModel model = (DefaultTableModel) productos.getModel();
             for (int i = 0; i < model.getRowCount(); i++){
 
+                // Obtener el valor de cantidad devuelta
+                String valorCantidad = model.getValueAt(i, 2).toString(); // "2 unidades"
+                String cantidad = valorCantidad.replaceAll("\\D", ""); // Eliminar caracteres no numéricos
+                int cantidadDevuelta = Integer.parseInt(cantidad); // Convertir a entero
+
+                // Obtener el valor de indemnización
+                String valorIndemnizacion = model.getValueAt(i, 3).toString(); // "3 unidades"
+                String indemnizacion = valorIndemnizacion.replaceAll("\\D", ""); // Eliminar caracteres no numéricos
+                int indemnizacionInt = Integer.parseInt(indemnizacion); // Convertir a entero
+
                 PreparedStatement preparedStatement2 = connection.prepareStatement("UPDATE detalles_alquileres SET cantidad_devuelta = ?, indennizacion = ? WHERE id = ?");
-                preparedStatement2.setString(1,model.getValueAt(i,5).toString());
-                preparedStatement2.setString(2,model.getValueAt(i,6).toString());
+                preparedStatement2.setInt(1, cantidadDevuelta);
+                preparedStatement2.setInt(2, indemnizacionInt);
                 preparedStatement2.setInt(3, this.ids.get(i));
                 preparedStatement2.executeUpdate();
 
                 PreparedStatement preparedStatement3 = connection.prepareStatement("UPDATE mobiliario SET cantidad = cantidad+? WHERE id = ?");
-                preparedStatement3.setString(1,model.getValueAt(i,5).toString());
+                preparedStatement3.setInt(1, cantidadDevuelta);
                 preparedStatement3.setInt(2, this.ids_detalles.get(i));
                 preparedStatement3.executeUpdate();
-
-
-
             }
 
             JOptionPane.showMessageDialog(null, "Alquiler Actualizado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
@@ -394,7 +401,7 @@ public class DevolucionesAlquileres extends JFrame {
             JOptionPane.showMessageDialog(null, "Error al actualizar el alquiler", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
+    
     private void mostrar() {
         sql = new Conexion();
         mysql = sql.conectamysql();
