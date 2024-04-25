@@ -256,7 +256,7 @@ public class EditarTarjeta extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 int respuesta = JOptionPane.showOptionDialog(
                         null,
-                        "¿Estás seguro de que deseas restaurar todos los datos del materiale?",
+                        "¿Estás seguro de que deseas limpiar todos los datos del materiale?",
                         "Confirmar limpieza",
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.QUESTION_MESSAGE,
@@ -268,13 +268,22 @@ public class EditarTarjeta extends JFrame {
                     // Eliminar los detalles temporales
                     materialListTemporal.clear();
 
-                    // Actualizar el total de dinero en el campo de texto
-                    lbl8.setText("0.00");
-                    lbl10.setText("0.00");
-
+                    // Eliminar los detalles de materiales de la base de datos
                     eliminarDetallesMaterial();
 
-                    cargarDatosEditar();
+                    // Limpiar la tabla
+                    limpiarTablaMateriales();
+
+                    // Actualizar el total de dinero en el campo de texto
+                    lbl8.setText("0.00");
+
+                    lbl10.setText("0.00");
+
+                    // Crear un nuevo modelo de la tabla con la lista de materiales vacía
+                    ModeloProducto nuevoModelo = new ModeloProducto(new ArrayList<>(), sql);
+
+                    // Establecer el nuevo modelo en la tabla
+                    jtableMateriales.setModel(nuevoModelo);
 
                     // Actualizar los totales después de limpiar la tabla
                     calcularTotalTabla();
@@ -918,8 +927,6 @@ public class EditarTarjeta extends JFrame {
         return precio;
     }
 
-
-
     private void limpiarTablaMateriales() {
         materialList.clear();
         DefaultTableModel emptyModel = new DefaultTableModel();
@@ -927,28 +934,13 @@ public class EditarTarjeta extends JFrame {
     }
 
     private void eliminarDetallesMaterial() {
-        int materialesViejos = this.originalTarjeta.getDetalles().size();
-        System.out.println(materialesViejos+" detalles");
-        System.out.println(materialList.size()+" detalles");
-        for (Material m :materialList){
-
-            if (materialesViejos == 0){
-                try (Connection connection = sql.conectamysql();
-                     PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM tarjetas_detalles WHERE id = ? ")) {
-                    preparedStatement.setInt(1,m.getId());
-                    preparedStatement.executeUpdate();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }else{
-                materialesViejos--;
-            }
-
-
-
+        try (Connection connection = sql.conectamysql();
+             PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM tarjetas_detalles WHERE id_tarjeta = ?")) {
+            preparedStatement.setInt(1, originalTarjeta.getId()); // Suponiendo que originalTarjeta contiene la tarjeta actual
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-
-
     }
 
     private ModeloMaterial cargarDatosMateriales() {

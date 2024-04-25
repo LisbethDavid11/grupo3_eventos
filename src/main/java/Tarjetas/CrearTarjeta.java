@@ -880,9 +880,6 @@ public class CrearTarjeta extends JFrame {
         return precio;
     }
 
-
-
-
     private void limpiarTablaMateriales() {
         materialList.clear();
         DefaultTableModel emptyModel = new DefaultTableModel();

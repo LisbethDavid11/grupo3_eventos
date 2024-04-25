@@ -21,6 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class DevolucionesAlquileres extends JFrame {
     private List<Integer> ids;
@@ -213,6 +214,30 @@ public class DevolucionesAlquileres extends JFrame {
         actualizarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                int validacion = 0;
+                String mensaje = "Faltó ingresar: \n";
+
+                if (campoCondiciones.getText().trim().isEmpty()) {
+                    validacion++;
+                    mensaje += "Condiciones\n";
+                }
+
+                if (validacion > 0) {
+                    JOptionPane.showMessageDialog(null, mensaje, "Validación", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                // Validación de la descripción
+                if (!campoCondiciones.getText().trim().isEmpty()) {
+                    String texto = campoCondiciones.getText().trim();
+                    int longitud = texto.length();
+
+                    if (longitud < 2 || longitud > 200 || contieneSoloNumeros(texto)) {
+                        JOptionPane.showMessageDialog(null, "La condición debe tener entre 2 y 200 caracteres y no puede contener solo números.", "Validación", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                }
+
                 JButton btnSave = new JButton("Sí");
                 JButton btnCancel = new JButton("No");
 
@@ -550,6 +575,10 @@ public class DevolucionesAlquileres extends JFrame {
             Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
             return cell;
         }
+    }
+
+    private static boolean contieneSoloNumeros(String texto) {
+        return !Pattern.matches(".*[a-zA-Z].*[0-9@#$].*|.*[a-zA-Z].*", texto);
     }
 
     public static void main(String[] args) {
