@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ArtifactsWorkspaceSettings">
     <artifacts-to-build>
-      <artifact name="grupo3_eventos:jar" />
+      <artifact name="grupo3_eventos:jar3" />
     </artifacts-to-build>
   </component>
   <component name="AutoImportSettings">
@@ -10,38 +10,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="18fd5814-fc96-4447-888d-4dd9792a3bfd" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/artifacts/grupo3_eventos_jar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/artifacts/grupo3_eventos_jar2.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/img/subMenu/fondo-1252x1252.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/img/subMenu/icons8-alquiler-de-coches-27.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/img/subMenu/icons8-análisis-de-stock-27.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/img/subMenu/icons8-arena-27.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/img/subMenu/icons8-armario-con-puerta-corredera-27.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/img/subMenu/icons8-cartas-de-tarot-27.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/img/subMenu/icons8-circulacion-de-dinero-27.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/img/subMenu/icons8-cliente-27.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/img/subMenu/icons8-comprar-27.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/img/subMenu/icons8-desayuno-buffet-27.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/img/subMenu/icons8-empleado-27.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/img/subMenu/icons8-end-user-27.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/img/subMenu/icons8-estadio--27.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/img/subMenu/icons8-eventos-27.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/img/subMenu/icons8-flor-27.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/img/subMenu/icons8-franquicia-27.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/img/subMenu/icons8-globos-27.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/img/subMenu/icons8-historial-de-pedidos-27.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/img/subMenu/icons8-la-venta-de-tierras-27.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/img/subMenu/icons8-productos-27.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/img/subMenu/icons8-promoción-de-carrito-de-compras-27.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/img/subMenu/icons8-proveedor-27.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/img/subMenu/icons8-roles-27.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/img/subMenu/icons8-rueda-de-alfarero-27.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/img/subMenu/icons8-usuarios-27.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/img/subMenu/logo.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Login/Login.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Login/Login.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Objetos/Conexion.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Objetos/Conexion.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/SubMenu/SubMenuDashboard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/SubMenu/SubMenuDashboard.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/db/eventos.sql" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/db/eventos.sql" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -97,7 +69,7 @@
     "git-widget-placeholder": "main",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/Admin/Documents/GitHub/grupo3_eventos/src/main/resources",
+    "last_opened_file_path": "C:/Users/Admin/Documents/GitHub/grupo3_eventos/src/main/resources/db",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -105,7 +77,7 @@
     "nodejs_package_manager_path": "npm",
     "project.structure.last.edited": "Artifacts",
     "project.structure.proportion": "0.15136719",
-    "project.structure.side.proportion": "0.2",
+    "project.structure.side.proportion": "0.17921147",
     "run.code.analysis.last.selected.profile": "pProject Default",
     "settings.editor.selected.configurable": "editor.preferences.tabs",
     "vue.rearranger.settings.migration": "true"
@@ -118,10 +90,10 @@
     </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\Admin\Documents\GitHub\grupo3_eventos\src\main\resources\db" />
+      <recent name="C:\Users\Admin\Documents\GitHub\grupo3_eventos\src\main\resources" />
       <recent name="C:\Laragon\www\grupo3_eventos\src\main\java\Login" />
       <recent name="C:\Laragon\www\grupo3_eventos\src\main\lib" />
       <recent name="C:\Laragon\www\grupo3_eventos\src\main\java\Arreglos" />
-      <recent name="C:\Laragon\www\grupo3_eventos\src\main\java\Floristerias" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Laragon\www\grupo3_eventos\src\main\java\SubMenu" />

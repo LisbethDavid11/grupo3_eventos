@@ -133,7 +133,7 @@ CREATE TABLE materiales (
 DROP TABLE IF EXISTS compras;
 CREATE TABLE compras (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    codigo_compra CHAR(50) NOT NULL,
+    codigo_compra CHAR(50) UNIQUE NOT NULL,
     fecha DATE NOT NULL,
     proveedor_id INT,
     empleado_id INT,
