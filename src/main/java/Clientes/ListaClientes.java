@@ -1,6 +1,16 @@
+/**
+ * ListaClientes.java
+ *
+ * Lista de Clientes
+ *
+ * @author Dania Lagos
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Clientes;
+
 import Arreglos.TextPrompt;
-import Login.SesionUsuario;
 import Modelos.ModeloCliente;
 import Objetos.Cliente;
 import Objetos.Conexion;
@@ -21,25 +31,55 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ListaClientes extends JFrame {
-    private JPanel panelPrincipal, panelTitulo;
-    private JButton botonCrear, botonVer, botonEditar, botonAtras, botonAdelante;
-    private JTable listaClientes;
-    private JTextField campoBusqueda;
-    private TextPrompt placeholder = new TextPrompt(" Buscar por identidad, nombres ó apellidos del cliente",campoBusqueda);
-    private JLabel lblPagina, lbl0;
+    // Paneles
+    private JPanel panelPrincipal;
+    private JPanel panelTitulo;
     private JPanel panelA;
     private JPanel panelB;
+
+    // Botones
+    private JButton botonCrear;
+    private JButton botonVer;
+    private JButton botonEditar;
+    private JButton botonAtras;
+    private JButton botonAdelante;
+
+    // Tabla
+    private JTable listaClientes;
+
+    // Campo de búsqueda
+    private JTextField campoBusqueda;
+
+    // TextPrompt para el campo de búsqueda
+    private TextPrompt placeholder = new TextPrompt(" Buscar por nombre, descripción ó fecha", campoBusqueda);
+
+    // Etiquetas
+    private JLabel lblPagina;
+    private JLabel lbl0;
+
+    // Lista de clientes
     private List<Cliente> listaCliente;
+
+    // Página actual
     private int pagina = 0;
+
+    // Conexión a la base de datos
     private Connection mysql;
     private Conexion sql;
+
+    // Referencia a la lista de clientes actual
     private ListaClientes actual = this;
+
+    // Búsqueda actual
     private String busqueda = "";
+
+    // Fuentes y colores
     Font fontTitulo = new Font("Century Gothic", Font.BOLD, 17);
     Font font = new Font("Century Gothic", Font.BOLD, 11);
     Color primaryColor = Color.decode("#37474f"); // Gris azul oscuro
     Color lightColor = Color.decode("#cfd8dc"); // Gris azul claro
     Color darkColor = Color.decode("#263238"); // Gris azul más oscuro
+
     public ListaClientes() {
         super("");
         setSize(850, 505);
@@ -180,15 +220,18 @@ public class ListaClientes extends JFrame {
 
     }
 
+    // Método para configurar las columnas y sus renderizadores en la tabla de clientes
     private void configurarTablaClientes() {
         TableColumnModel columnModel = listaClientes.getColumnModel();
 
+        // Establece el ancho preferido de las columnas
         columnModel.getColumn(0).setPreferredWidth(20);
         columnModel.getColumn(1).setPreferredWidth(110);
         columnModel.getColumn(2).setPreferredWidth(200);
         columnModel.getColumn(3).setPreferredWidth(110);
         columnModel.getColumn(4).setPreferredWidth(110);
 
+        // Asigna renderizadores para alinear el contenido de las celdas
         columnModel.getColumn(0).setCellRenderer(new ListaClientes.CenterAlignedRenderer());
         columnModel.getColumn(1).setCellRenderer(new ListaClientes.CenterAlignedRenderer());
         columnModel.getColumn(2).setCellRenderer(new ListaClientes.LeftAlignedRenderer());
@@ -196,45 +239,34 @@ public class ListaClientes extends JFrame {
         columnModel.getColumn(4).setCellRenderer(new ListaClientes.CenterAlignedRenderer());
     }
 
+    // Renderer para alinear texto a la izquierda en celdas de una tabla
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
         public LeftAlignedRenderer() {
-            setHorizontalAlignment(LEFT);
+            setHorizontalAlignment(LEFT); // Alineación a la izquierda
         }
 
         @Override
         public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            return cell;
+            return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         }
     }
 
-    class RightAlignedRenderer extends DefaultTableCellRenderer {
-        public RightAlignedRenderer() {
-            setHorizontalAlignment(RIGHT);
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            return cell;
-        }
-    }
-
+    // Renderer para alinear texto al centro en celdas de una tabla
     class CenterAlignedRenderer extends DefaultTableCellRenderer {
         public CenterAlignedRenderer() {
-            setHorizontalAlignment(CENTER);
+            setHorizontalAlignment(CENTER); // Alineación al centro
         }
 
         @Override
         public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            return cell;
+            return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         }
     }
 
+    // Método para cargar los datos de clientes desde la base de datos
     private ModeloCliente cargarDatos() {
-        sql = new Conexion();
-        mysql = sql.conectamysql();
+        sql = new Conexion(); // Establece conexión con la base de datos
+        Connection mysql = sql.conectamysql();
         try {
             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT * FROM " + Cliente.nombreTabla + " WHERE nombre LIKE CONCAT('%',?,'%') OR apellido LIKE CONCAT('%',?,'%') OR identidad LIKE CONCAT('%',?,'%') LIMIT ?,20");
             preparedStatement.setString(1, campoBusqueda.getText());
@@ -258,12 +290,13 @@ public class ListaClientes extends JFrame {
             mysql.close();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos","Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
             listaCliente = new ArrayList<>();
         }
         return new ModeloCliente(listaCliente);
     }
 
+    // Método para calcular el número total de páginas necesarias para mostrar todos los clientes
     private int getTotalPageCount() {
         int count = 0;
         try (Connection mysql = sql.conectamysql();
@@ -274,22 +307,23 @@ public class ListaClientes extends JFrame {
 
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                count = resultSet.getInt("total"); // Obtiene el total de elementos
+                count = resultSet.getInt("total");
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos","Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
         }
 
         int registrosPorPagina = 20;
         int totalPageCount = (count + registrosPorPagina - 1) / registrosPorPagina;
         if (totalPageCount == 0) {
-            totalPageCount = 1;  // Asegura que siempre haya al menos una página.
+            totalPageCount = 1;  // Asegura que siempre haya al menos una página
         }
 
         return totalPageCount;
     }
 
+    // Método Principal
     public static void main(String[] args) {
         ListaClientes listaCliente = new ListaClientes();
         listaCliente.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
