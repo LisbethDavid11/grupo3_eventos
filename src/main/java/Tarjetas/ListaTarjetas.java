@@ -1,10 +1,19 @@
+/**
+ * ListaTarjetas.java
+ *
+ * Lista de Tarjetas
+ *
+ * @author Skarleth Ferrera
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Tarjetas;
-import Login.SesionUsuario;
+
 import Modelos.ModeloTarjeta;
 import Objetos.Conexion;
 import Objetos.Tarjeta;
 import Objetos.TarjetaDetalle;
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
@@ -23,35 +32,65 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ListaTarjetas extends JFrame {
+    // Panel principal
     private JPanel panelPrincipal;
+
+    // Botones
     private JButton botonVer;
-    private JTable listaTarjetas;
     private JButton botonAtras;
     private JButton botonAdelante;
-    private JTextField campoBusqueda;
-    private TextPrompt placeholder = new TextPrompt(" Buscar por ocasión ó precio", campoBusqueda);
     private JButton botonEditar;
     private JButton botonCrear;
+
+    // Tabla
+    private JTable listaTarjetas;
+
+    // Campo de búsqueda
+    private JTextField campoBusqueda;
+
+    // TextPrompt para el campo de búsqueda
+    private TextPrompt placeholder = new TextPrompt(" Buscar por ocasión ó precio", campoBusqueda);
+
+    // Etiquetas
     private JLabel lblPagina;
     private JLabel lbl0;
+    private JLabel lblD;
+
+    // Casillas de verificación
     private JCheckBox noCheckBox;
     private JCheckBox siCheckBox;
-    private JLabel lblD;
+
+    // Paneles
     private JPanel panelTitulo;
     private JPanel panelB;
     private JPanel panelA;
+
+    // Imagen
     private ImageIcon imagen;
+
+    // Lista de tarjetas
     private List<Tarjeta> tarjetaList;
+
+    // Página actual
     private int pagina = 0;
+
+    // Conexión a la base de datos
     private Connection mysql;
     private Conexion sql;
+
+    // Referencia a la lista de tarjetas actual
     private ListaTarjetas actual = this;
+
+    // Búsqueda actual
     private String busqueda = "";
+
+    // Fuentes y colores
     Font fontTitulo = new Font("Century Gothic", Font.BOLD, 17);
     Font font = new Font("Century Gothic", Font.BOLD, 11);
     Color primaryColor = Color.decode("#37474f"); // Gris azul oscuro
     Color lightColor = Color.decode("#cfd8dc"); // Gris azul claro
     Color darkColor = Color.decode("#263238"); // Gris azul más oscuro
+
     public ListaTarjetas() {
         super("Listado Tarjetas");
         setSize(850, 505);
@@ -226,6 +265,7 @@ public class ListaTarjetas extends JFrame {
 
     }
 
+    // Método para configurar la tabla
     private void configurarTablaTarjetas() {
         TableColumnModel columnModel = listaTarjetas.getColumnModel();
 
@@ -242,6 +282,7 @@ public class ListaTarjetas extends JFrame {
 
     }
 
+    // Clase para alinear los datos a la izquierda
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
         public LeftAlignedRenderer() {
             setHorizontalAlignment(LEFT);
@@ -254,18 +295,7 @@ public class ListaTarjetas extends JFrame {
         }
     }
 
-    class RightAlignedRenderer extends DefaultTableCellRenderer {
-        public RightAlignedRenderer() {
-            setHorizontalAlignment(RIGHT);
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            return cell;
-        }
-    }
-
+    // Clase para alinear los datos al centro
     class CenterAlignedRenderer extends DefaultTableCellRenderer {
         public CenterAlignedRenderer() {
             setHorizontalAlignment(CENTER);
@@ -278,6 +308,7 @@ public class ListaTarjetas extends JFrame {
         }
     }
 
+    // Método para cargar los datos de la tarjeta
     private ModeloTarjeta cargarDatos() {
         sql = new Conexion();
         try (Connection mysql = sql.conectamysql();
@@ -364,6 +395,7 @@ public class ListaTarjetas extends JFrame {
         return new ModeloTarjeta(tarjetaList, sql);
     }
 
+    // Método para la paginación
     private int getTotalPageCount() {
         int count = 0;
         try (Connection mysql = sql.conectamysql();
@@ -387,18 +419,21 @@ public class ListaTarjetas extends JFrame {
         return totalPageCount;
     }
 
+    // Método para actualizar los datos de la tabla
     private void actualizarTabla() {
         listaTarjetas.setModel(cargarDatos());
         configurarTablaTarjetas();
         lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
     }
 
+    // Método para mostrar todos los datos
     private void mostrarTodos() {
         siCheckBox.setSelected(true);
         noCheckBox.setSelected(true);
         actualizarTabla();
     }
 
+    // Método Principal
     public static void main(String[] args) {
         ListaTarjetas listaMateriales = new ListaTarjetas();
         listaMateriales.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
