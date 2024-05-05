@@ -1,3 +1,13 @@
+/**
+ * CalendarioDeActividades.java
+ *
+ * Calendario de Actividades
+ *
+ * @author Dania Lagos
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Actividades;
 
 import Objetos.Actividad;
@@ -25,28 +35,45 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 public class CalendarioDeActividades extends JFrame {
+    // Etiquetas
     private JLabel yearLabel, monthLabel, tituloLabel, tituloPrincipalLabel;
+
+    // Botones
     private JButton prevButton, nextButton, crearButton;
+
+    // Tabla
     private JTable calendarTable;
-    private List<Actividad> listaActividades;
-    private Conexion sql;
-    private JComboBox<String> yearBox;
     private DefaultTableModel calendarModel;
+
+    // Panel con Scroll
     private JScrollPane calendarScroll;
     private JScrollPane actividadesScroll;
+
+    // Lista de actividades y conexión a base de datos
+    private List<Actividad> listaActividades;
+    private Conexion sql;
+
+    // Selector de año
+    private JComboBox<String> yearBox;
+
+    // Panel de título y campo de búsqueda
     private JPanel panelTitulo;
     private JTextField busquedaTextField;
+
+    // Variables de fecha
     private int realYear, realMonth, realDay, currentYear, currentMonth;
+
+    // Otros componentes y variables
     private int selectedRow = -1; // Para mantener un seguimiento del día seleccionado
-    Font fontTitulo = new Font("Century Gothic", Font.BOLD, 20);
-    Font font = new Font("Century Gothic", Font.BOLD, 16);
-    Font font2 = new Font("Century Gothic", Font.PLAIN, 10);
-    Font fontHeader = new Font("Century Gothic", Font.BOLD, 10);
-    Color darkColor = new Color(38, 50, 56);
-    Color primaryColor = new Color(55, 71, 79);    // Color primario
-    Color secondaryColor = new Color(69, 90, 100); // Color secundario
-    Color darkBlue = new Color(0, 123, 255);
-    Color textColor = Color.WHITE;
+    private Font fontTitulo = new Font("Century Gothic", Font.BOLD, 20);
+    private Font font = new Font("Century Gothic", Font.BOLD, 16);
+    private Font font2 = new Font("Century Gothic", Font.PLAIN, 10);
+    private Font fontHeader = new Font("Century Gothic", Font.BOLD, 10);
+    private Color darkColor = new Color(38, 50, 56);
+    private Color primaryColor = new Color(55, 71, 79);    // Color primario
+    private Color secondaryColor = new Color(69, 90, 100); // Color secundario
+    private Color darkBlue = new Color(0, 123, 255);
+    private Color textColor = Color.WHITE;
 
     public CalendarioDeActividades() {
         this.setTitle("Calendario de Actividades");
@@ -259,12 +286,9 @@ public class CalendarioDeActividades extends JFrame {
                 // Este método se usa generalmente con DocumentListeners de componentes como JTextPane, no es necesario para JTextField.
             }
         });
-
-
-
-
     }
 
+    // Método para filtrar actividades
     private void filterActivities() {
         String searchText = busquedaTextField.getText().toLowerCase();
         int selectedDay = selectedRow; // Obtén el día seleccionado, -1 si no hay ninguno seleccionado
@@ -296,6 +320,7 @@ public class CalendarioDeActividades extends JFrame {
         mostrarActividades(filteredActivities);
     }
 
+    // Método para mostrar actividades
     private void mostrarActividades(List<Actividad> actividades) {
         // Elimina el panel actual de actividades
         if (actividadesScroll != null) {
@@ -395,6 +420,7 @@ public class CalendarioDeActividades extends JFrame {
         this.repaint();
     }
 
+    // Método para refrescar actividades en el calendario
     public void refreshCalendar(int month, int year) {
         String[] months = {"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"};
         int numberOfDays, startOfMonth;
@@ -443,6 +469,7 @@ public class CalendarioDeActividades extends JFrame {
         }
     }
 
+    // Método para filtrar actividades por día
     public void mostrarActividadesDelDia(int day, int month, int year) {
 
         // Filtra las actividades que coinciden con la fecha seleccionada
@@ -564,6 +591,7 @@ public class CalendarioDeActividades extends JFrame {
         actividadesScroll.getVerticalScrollBar().setValue(actividadesScroll.getVerticalScrollBar().getValue() + 1);
     }
 
+    // Método para cargar datos de actividades
     public List<Actividad> cargarDatos() {
         List<Actividad> listaActividades = new ArrayList<>();
 
@@ -602,6 +630,7 @@ public class CalendarioDeActividades extends JFrame {
         return listaActividades;
     }
 
+    // Método para mostrar actividades según el día actual
     public boolean hasActivitiesOnDay(int day, int month, int year) {
         SimpleDateFormat dia = new SimpleDateFormat("d");
         SimpleDateFormat mes = new SimpleDateFormat("M");
@@ -619,7 +648,7 @@ public class CalendarioDeActividades extends JFrame {
         return false;
     }
 
-
+    // Método Principal
     public static void main(String[] args) {
         CalendarioDeActividades calendarioDeActividades = new CalendarioDeActividades();
         calendarioDeActividades.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
