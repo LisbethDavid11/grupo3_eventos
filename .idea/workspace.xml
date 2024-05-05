@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ArtifactsWorkspaceSettings">
     <artifacts-to-build>
-      <artifact name="grupo3_eventos:jar3" />
+      <artifact name="grupo3_eventos:jar" />
     </artifacts-to-build>
   </component>
   <component name="AutoImportSettings">
@@ -10,7 +10,49 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="18fd5814-fc96-4447-888d-4dd9792a3bfd" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/artifacts/grupo3_eventos_jar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/artifacts/grupo3_eventos_jar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/artifacts/grupo3_eventos_jar2.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/artifacts/grupo3_eventos_jar3.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/arreglos/Arreglo 25-04-2024 16-19-32 9596.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/arreglos/Arreglo 25-04-2024 16-19-49 9453.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/arreglos/Arreglo 25-04-2024 16-21-02 1099.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/arreglos/Arreglo_25042024_161757 9087.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/arreglos/Arreglo_25042024_162011 8410.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/flor.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/fondo-1252x1252.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/fondo-principal.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/icons8-alquiler-de-coches-27.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/icons8-analisis-de-stock-27.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/icons8-arena-27.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/icons8-armario-con-puerta-corredera-27.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/icons8-cartas-de-tarot-27.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/icons8-circulacion-de-dinero-27.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/icons8-cliente-27.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/icons8-comprar-27.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/icons8-desayuno-buffet-27.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/icons8-empleado-27.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/icons8-end-user-27.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/icons8-estadio--27.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/icons8-eventos-27.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/icons8-flor-27.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/icons8-franquicia-27.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/icons8-globos-27.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/icons8-historial-de-pedidos-27.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/icons8-la-venta-de-tierras-27.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/icons8-productos-27.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/icons8-promocion-de-carrito-de-compras-27.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/icons8-proveedor-27.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/icons8-roles-27.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/icons8-rueda-de-alfarero-27.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/icons8-usuarios-27.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/logo ia.jpeg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/logo unah.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/logo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/img/verCarta.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Objetos/Conexion.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Objetos/Conexion.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/SubMenu/SubMenuDashboard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/SubMenu/SubMenuDashboard.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -66,7 +108,7 @@
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/Admin/Documents/GitHub/grupo3_eventos/src/main/resources/db&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Laragon/www/grupo3_eventos&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -76,7 +118,7 @@
     &quot;project.structure.proportion&quot;: &quot;0.15136719&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.17921147&quot;,
     &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;editor.preferences.tabs&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
@@ -114,7 +156,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="jdk-22-openjdk-22-3183f394aec4-bad0321e" />
+        <option value="bundled-jdk-9f38398b9061-39b83d9b5494-intellij.indexing.shared.core-IU-241.15989.150" />
+        <option value="bundled-js-predefined-1d06a55b98c1-91d5c284f522-JavaScript-IU-241.15989.150" />
       </set>
     </attachedChunks>
   </component>
@@ -156,6 +199,10 @@
       <workItem from="1699061388725" duration="1047000" />
       <workItem from="1714059912471" duration="3980000" />
       <workItem from="1714064164621" duration="5771000" />
+      <workItem from="1714766722018" duration="629000" />
+      <workItem from="1714769282866" duration="286000" />
+      <workItem from="1714769618221" duration="1002000" />
+      <workItem from="1714787674758" duration="7345000" />
     </task>
     <servers />
   </component>
