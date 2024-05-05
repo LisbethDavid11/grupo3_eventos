@@ -1,3 +1,13 @@
+/**
+ * VerActividad.java
+ *
+ * Ver Actividades
+ *
+ * @author Dania Lagos
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Actividades;
 
 import Objetos.Conexion;
@@ -11,63 +21,70 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class VerActividad extends JFrame {
+    // Paneles
     private JPanel panel1;
+
+    // Campos de entrada
     private JTextField campoNombre;
     private JTextField campoFecha;
     private JTextField campoFin;
     private JTextField campoInicio;
     private JTextArea campoDireccion;
+    private JTextArea campoDescripcion;
+
+    // Botones
     private JButton volverButton;
+
+    // Etiquetas
     private JLabel lbl0;
     private JLabel lbl1;
     private JLabel lbl2;
     private JLabel lbl3;
     private JLabel lbl4;
     private JLabel lbl5;
-    private JTextArea campoDescripcion;
     private JLabel lbl6;
+
+    // Otros componentes y variables
     private final VerActividad actual = this;
     private Conexion sql;
     private Connection mysql;
     private int id;
+
+    // Fuentes
     Font fontTitulo = new Font("Century Gothic", Font.BOLD, 20);
     Font font = new Font("Century Gothic", Font.BOLD, 15);
     Font font2 = new Font("Century Gothic", Font.BOLD, 11);
 
-    // Colores para el botón "Cyan"
+    // Colores
     Color primaryColorCyan = new Color(0, 188, 212); // Cyan primario
     Color lightColorCyan = new Color(77, 208, 225); // Cyan claro
     Color darkColorCyan = new Color(0, 151, 167); // Cyan oscuro
 
-    // Colores para el botón "Aqua"
     Color primaryColorAqua = new Color(0, 150, 136); // Aqua primario
     Color lightColorAqua = new Color(77, 182, 172); // Aqua claro
     Color darkColorAqua = new Color(0, 121, 107); // Aqua oscuro
 
-    // Colores para el botón "Rosado"
     Color primaryColorRosado = new Color(233, 30, 99); // Rosado primario
     Color lightColorRosado = new Color(240, 98, 146); // Rosado claro
     Color darkColorRosado = new Color(194, 24, 91); // Rosado oscuro
 
-    // Colores para el botón "Amber"
     Color primaryColorAmber = new Color(255, 193, 7); // Amber primario
     Color lightColorAmber = new Color(255, 213, 79); // Amber claro
     Color darkColorAmber = new Color(255, 160, 0); // Amber oscuro
 
-    // Colores para el botón "Verde lima"
     Color primaryColorVerdeLima = new Color(205, 220, 57); // Verde lima primario
     Color lightColorVerdeLima = new Color(220, 237, 200); // Verde lima claro
     Color darkColorVerdeLima = new Color(139, 195, 74); // Verde lima oscuro
 
-    Color darkColorPink = new Color(233, 30, 99);
-    Color darkColorRed = new Color(244, 67, 54);
-    Color darkColorBlue = new Color(33, 150, 243);
+    Color darkColorPink = new Color(233, 30, 99); // Rosado
+    Color darkColorRed = new Color(244, 67, 54); // Rojo
+    Color darkColorBlue = new Color(33, 150, 243); // Azul
+
     EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
+
     public VerActividad(int id) {
         super("");
         setSize(580, 470);
@@ -95,7 +112,6 @@ public class VerActividad extends JFrame {
         campoDireccion.setFocusable(false);
         campoDescripcion.setEditable(false);
         campoDescripcion.setFocusable(false);
-
 
         panel1.setBackground(Color.decode("#F5F5F5"));
 
@@ -171,6 +187,7 @@ public class VerActividad extends JFrame {
         });
     }
 
+    // Método para mostrar los datos de la actividad
     private void mostrar() {
         sql = new Conexion();
         mysql = sql.conectamysql();
@@ -204,6 +221,7 @@ public class VerActividad extends JFrame {
         }
     }
 
+    // Método Principal
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
