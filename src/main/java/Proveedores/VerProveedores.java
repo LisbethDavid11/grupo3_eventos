@@ -53,7 +53,7 @@ public class VerProveedores extends JFrame {
 
     // ID
     private int id;
-    
+
     public VerProveedores(int id){
         super("Ver proveedor");
         setSize(600,400);
