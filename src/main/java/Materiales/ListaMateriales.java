@@ -1,3 +1,13 @@
+/**
+ * ListaMateriales.java
+ *
+ * Lista de Materiales
+ *
+ * @author Dania Lagos
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Materiales;
 
 import Modelos.ModeloMaterial;
@@ -21,32 +31,60 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ListaMateriales extends JFrame {
+    // Paneles
     private JPanel panelPrincipal;
-    private JButton botonVer;
-    private JTable listaMateriales;
-    private JButton botonAtras;
-    private JButton botonAdelante;
-    private JTextField campoBusqueda;
-    private TextPrompt placeholder = new TextPrompt(" Buscar por nombre de material o de empresa proveedora", campoBusqueda);
-    private JButton botonEditar;
-    private JButton botonCrear;
-    private JLabel lblPagina, lbl0, lblD;
-    private JCheckBox noCheckBox;
-    private JCheckBox siCheckBox;
     private JPanel panelA;
     private JPanel panelB;
     private JPanel panelTitulo;
+
+    // Botones
+    private JButton botonVer;
+    private JButton botonAtras;
+    private JButton botonAdelante;
+    private JButton botonEditar;
+    private JButton botonCrear;
+
+    // Tabla de materiales
+    private JTable listaMateriales;
+
+    // Campo de búsqueda
+    private JTextField campoBusqueda;
+
+    // Placeholder para el campo de búsqueda
+    private TextPrompt placeholder = new TextPrompt(" Buscar por nombre de material o de empresa proveedora", campoBusqueda);
+
+    // Etiquetas
+    private JLabel lblPagina;
+    private JLabel lbl0;
+    private JLabel lblD;
+
+    // Checkboxes
+    private JCheckBox noCheckBox;
+    private JCheckBox siCheckBox;
+
+    // Lista de materiales
     private List<Material> materialList;
+
+    // Índice de página
     private int pagina = 0;
+
+    // Conexiones a la base de datos
     private Connection mysql;
     private Conexion sql;
+
+    // Instancia de la clase
     private ListaMateriales actual = this;
+
+    // Cadena de búsqueda
     private String busqueda = "";
+
+    // Fuentes y Colores
     Font fontTitulo = new Font("Century Gothic", Font.BOLD, 17);
     Font font = new Font("Century Gothic", Font.BOLD, 11);
     Color primaryColor = Color.decode("#37474f"); // Gris azul oscuro
     Color lightColor = Color.decode("#cfd8dc"); // Gris azul claro
     Color darkColor = Color.decode("#263238"); // Gris azul más oscuro
+
     public ListaMateriales() {
         super("");
         setSize(850, 505);
@@ -212,9 +250,11 @@ public class ListaMateriales extends JFrame {
 
     }
 
+    // Método para configurar las columnas y renderizadores de la tabla de materiales
     private void configurarTablaMateriales() {
         TableColumnModel columnModel = listaMateriales.getColumnModel();
 
+        // Establece el ancho preferido de las columnas
         columnModel.getColumn(0).setPreferredWidth(20);
         columnModel.getColumn(1).setPreferredWidth(200);
         columnModel.getColumn(2).setPreferredWidth(130);
@@ -223,6 +263,7 @@ public class ListaMateriales extends JFrame {
         columnModel.getColumn(5).setPreferredWidth(60);
         columnModel.getColumn(6).setPreferredWidth(60);
 
+        // Configura renderizadores para la alineación del contenido en las celdas
         columnModel.getColumn(0).setCellRenderer(new ListaMateriales.CenterAlignedRenderer());
         columnModel.getColumn(1).setCellRenderer(new ListaMateriales.LeftAlignedRenderer());
         columnModel.getColumn(2).setCellRenderer(new ListaMateriales.LeftAlignedRenderer());
@@ -232,6 +273,7 @@ public class ListaMateriales extends JFrame {
         columnModel.getColumn(6).setCellRenderer(new ListaMateriales.LeftAlignedRenderer());
     }
 
+    // Renderizador para alinear el texto a la izquierda
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
         public LeftAlignedRenderer() {
             setHorizontalAlignment(LEFT);
@@ -239,23 +281,11 @@ public class ListaMateriales extends JFrame {
 
         @Override
         public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            return cell;
+            return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         }
     }
 
-    class RightAlignedRenderer extends DefaultTableCellRenderer {
-        public RightAlignedRenderer() {
-            setHorizontalAlignment(RIGHT);
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            return cell;
-        }
-    }
-
+    // Renderizador para alinear el texto al centro
     class CenterAlignedRenderer extends DefaultTableCellRenderer {
         public CenterAlignedRenderer() {
             setHorizontalAlignment(CENTER);
@@ -263,11 +293,11 @@ public class ListaMateriales extends JFrame {
 
         @Override
         public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            return cell;
+            return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         }
     }
 
+    // Método para cargar datos de materiales desde la base de datos
     private ModeloMaterial cargarDatos() {
         sql = new Conexion();
         try (Connection mysql = sql.conectamysql();
@@ -280,13 +310,10 @@ public class ListaMateriales extends JFrame {
                              "LIMIT ?, 20"
              )
         ) {
-
-            String disponibilidadSi = siCheckBox.isSelected() ? "Si" : "";
-            String disponibilidadNo = noCheckBox.isSelected() ? "No" : "";
             preparedStatement.setString(1, busqueda);
             preparedStatement.setString(2, busqueda);
-            preparedStatement.setString(3, disponibilidadSi);
-            preparedStatement.setString(4, disponibilidadNo);
+            preparedStatement.setString(3, siCheckBox.isSelected() ? "Si" : "");
+            preparedStatement.setString(4, noCheckBox.isSelected() ? "No" : "");
             preparedStatement.setInt(5, pagina * 20);
 
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -318,23 +345,20 @@ public class ListaMateriales extends JFrame {
         return new ModeloMaterial(materialList, sql);
     }
 
+    // Método para calcular el total de páginas de materiales disponibles
     private int getTotalPageCount() {
         int count = 0;
         boolean aplicarFiltroEstado = true;
         String estado = "";
         if (siCheckBox.isSelected() && noCheckBox.isSelected()) {
-            aplicarFiltroEstado = false; // Ambos seleccionados, busca todos los registros
+            aplicarFiltroEstado = false;
         } else if (siCheckBox.isSelected()) {
             estado = "Si";
         } else if (noCheckBox.isSelected()) {
             estado = "No";
         }
 
-        String sqlQuery = "SELECT COUNT(*) AS total " +
-                "FROM Materiales m " +
-                "JOIN Proveedores p ON m.proveedor_id = p.id " +
-                "WHERE (m.nombre LIKE CONCAT('%', ?, '%') OR p.empresaProveedora LIKE CONCAT('%', ?, '%'))";
-
+        String sqlQuery = "SELECT COUNT(*) AS total FROM Materiales m JOIN Proveedores p ON m.proveedor_id = p.id WHERE (m.nombre LIKE CONCAT('%', ?, '%') OR p.empresaProveedora LIKE CONCAT('%', ?, '%'))";
         if (aplicarFiltroEstado) {
             sqlQuery += " AND m.disponible = ?";
         }
@@ -365,12 +389,14 @@ public class ListaMateriales extends JFrame {
         return totalPageCount;
     }
 
+    // Método para actualizar los botones de paginación
     private void actualizarBotonesPaginacion() {
         int totalPaginas = getTotalPageCount();
         botonAtras.setEnabled(pagina > 0);
         botonAdelante.setEnabled((pagina + 1) < totalPaginas);
     }
 
+    // Método para actualizar los datos de la tabla
     private void actualizarTabla() {
         listaMateriales.setModel(cargarDatos());
         configurarTablaMateriales();
@@ -378,117 +404,107 @@ public class ListaMateriales extends JFrame {
         lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
     }
 
+    // Método para mostrar todos los datos
     private void mostrarTodos() {
         siCheckBox.setSelected(true);
         noCheckBox.setSelected(true);
         actualizarTabla();
     }
 
+    // Método para mostrar un diálogo personalizado de éxito
     public void mostrarDialogoPersonalizadoExito(String mensaje, Color colorFondoBoton) {
-        // Crea un botón personalizado
+        // Crea un botón personalizado "OK"
         JButton btnAceptar = new JButton("OK");
-        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
-        btnAceptar.setForeground(Color.WHITE);
-        btnAceptar.setFocusPainted(false);
+        btnAceptar.setBackground(colorFondoBoton); // Establece el color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE); // Establece el color del texto del botón
+        btnAceptar.setFocusPainted(false); // Elimina el borde del foco alrededor del botón
 
-        // Crea un JOptionPane
+        // Crea un JOptionPane para mostrar el mensaje
         JOptionPane optionPane = new JOptionPane(
-                mensaje,                           // Mensaje a mostrar
-                JOptionPane.INFORMATION_MESSAGE,   // Tipo de mensaje
-                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
-                null,                              // Icono (puede ser null)
-                new Object[]{},                    // No se usan opciones estándar
-                null                               // Valor inicial (no necesario aquí)
+                mensaje,                             // Texto del mensaje a mostrar
+                JOptionPane.INFORMATION_MESSAGE,     // Tipo de mensaje (información)
+                JOptionPane.DEFAULT_OPTION,          // Opción por defecto
+                null,                                // Sin icono
+                new Object[]{},                      // Sin opciones estándar
+                null                                 // Sin valor inicial
         );
 
-        // Añade el botón al JOptionPane
+        // Configura el JOptionPane para usar el botón personalizado
         optionPane.setOptions(new Object[]{btnAceptar});
 
         // Crea un JDialog para mostrar el JOptionPane
         JDialog dialog = optionPane.createDialog("Validación");
 
-        // Añade un ActionListener al botón
-        btnAceptar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
-            }
-        });
+        // Añade un ActionListener al botón para cerrar el diálogo cuando se presione
+        btnAceptar.addActionListener(e -> dialog.dispose());
 
         // Muestra el diálogo
         dialog.setVisible(true);
     }
 
+    // Método para mostrar un diálogo personalizado de error
     public void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
-        // Crea un botón personalizado
+        // Crea un botón personalizado "OK"
         JButton btnAceptar = new JButton("OK");
-        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
-        btnAceptar.setForeground(Color.WHITE);
-        btnAceptar.setFocusPainted(false);
+        btnAceptar.setBackground(colorFondoBoton); // Establece el color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE); // Establece el color del texto del botón
+        btnAceptar.setFocusPainted(false); // Elimina el borde del foco alrededor del botón
 
-        // Crea un JOptionPane
+        // Crea un JOptionPane para mostrar el mensaje
         JOptionPane optionPane = new JOptionPane(
-                mensaje,                           // Mensaje a mostrar
-                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
-                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
-                null,                              // Icono (puede ser null)
-                new Object[]{},                    // No se usan opciones estándar
-                null                               // Valor inicial (no necesario aquí)
+                mensaje,                             // Texto del mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,         // Tipo de mensaje (advertencia)
+                JOptionPane.DEFAULT_OPTION,          // Opción por defecto
+                null,                                // Sin icono
+                new Object[]{},                      // Sin opciones estándar
+                null                                 // Sin valor inicial
         );
 
-        // Añade el botón al JOptionPane
+        // Configura el JOptionPane para usar el botón personalizado
         optionPane.setOptions(new Object[]{btnAceptar});
 
         // Crea un JDialog para mostrar el JOptionPane
         JDialog dialog = optionPane.createDialog("Validación");
 
-        // Añade un ActionListener al botón
-        btnAceptar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
-            }
-        });
+        // Añade un ActionListener al botón para cerrar el diálogo cuando se presione
+        btnAceptar.addActionListener(e -> dialog.dispose());
 
         // Muestra el diálogo
         dialog.setVisible(true);
     }
 
+    // Método para mostrar un diálogo personalizado de atención
     public void mostrarDialogoPersonalizadoAtencion(String mensaje, Color colorFondoBoton) {
-        // Crea un botón personalizado
+        // Crea un botón personalizado "OK"
         JButton btnAceptar = new JButton("OK");
-        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
-        btnAceptar.setForeground(Color.WHITE);
-        btnAceptar.setFocusPainted(false);
+        btnAceptar.setBackground(colorFondoBoton); // Establece el color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE); // Establece el color del texto del botón
+        btnAceptar.setFocusPainted(false); // Elimina el borde del foco alrededor del botón
 
-        // Crea un JOptionPane
+        // Crea un JOptionPane para mostrar el mensaje
         JOptionPane optionPane = new JOptionPane(
-                mensaje,                           // Mensaje a mostrar
-                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
-                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
-                null,                              // Icono (puede ser null)
-                new Object[]{},                    // No se usan opciones estándar
-                null                               // Valor inicial (no necesario aquí)
+                mensaje,                             // Texto del mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,         // Tipo de mensaje (advertencia)
+                JOptionPane.DEFAULT_OPTION,          // Opción por defecto
+                null,                                // Sin icono
+                new Object[]{},                      // Sin opciones estándar
+                null                                 // Sin valor inicial
         );
 
-        // Añade el botón al JOptionPane
+        // Configura el JOptionPane para usar el botón personalizado
         optionPane.setOptions(new Object[]{btnAceptar});
 
         // Crea un JDialog para mostrar el JOptionPane
         JDialog dialog = optionPane.createDialog("Validación");
 
-        // Añade un ActionListener al botón
-        btnAceptar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
-            }
-        });
+        // Añade un ActionListener al botón para cerrar el diálogo cuando se presione
+        btnAceptar.addActionListener(e -> dialog.dispose());
 
         // Muestra el diálogo
         dialog.setVisible(true);
     }
 
+    // Método Principal
     public static void main(String[] args) {
         ListaMateriales listaMateriales = new ListaMateriales();
         listaMateriales.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
