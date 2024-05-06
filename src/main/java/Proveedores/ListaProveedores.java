@@ -48,7 +48,7 @@ public class ListaProveedores extends JFrame {
     private JTextField campoBusqueda;
 
     // TextPrompt para el campo de búsqueda
-    private TextPrompt placeholder;
+    private TextPrompt placeholder = new TextPrompt(" Buscar por nombre ó RTN", campoBusqueda);
 
     // Etiquetas
     private JLabel lblPagina;
