@@ -1,9 +1,17 @@
+/**
+ * VerProveedores.java
+ *
+ * Ver Proveedores
+ *
+ * @author Skarleth Ferrera
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Proveedores;
 
-import Clientes.VerCliente;
 import Objetos.Conexion;
 import Objetos.Proveedor;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -15,24 +23,37 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class VerProveedores extends JFrame {
+    // Paneles
     private JPanel panel1;
+
+    // Campos de texto
     private JTextField etiquetaNombre;
     private JTextField etiquetaCorreo;
     private JTextField etiquetaTelefono;
     private JTextField etiquetaRTN;
     private JTextField etiquetaNombreVendedor;
     private JTextField etiquetaTelefonoVendedor;
+
+    // Áreas de texto
     private JTextArea etiquetaDireccion;
     private JTextArea etiquetaDescripcion;
+
+    // Botones
     private JButton volverButton;
+
+    // Etiqueta
     private JLabel lbl0;
 
+    // Instancia de la clase
     private final VerProveedores actual = this;
 
+    // Conexión a la base de datos
     private Conexion sql;
     private Connection mysql;
-    private int id;
 
+    // ID
+    private int id;
+    
     public VerProveedores(int id){
         super("Ver proveedor");
         setSize(600,400);
@@ -145,6 +166,7 @@ public class VerProveedores extends JFrame {
         });
     }
 
+    // Método para cargar los datos del proveedor
     private void mostrar(){
         sql = new Conexion();
         mysql = sql.conectamysql();
@@ -169,6 +191,8 @@ public class VerProveedores extends JFrame {
             System.out.println(error.getMessage());
         }
     }
+
+    // Método Principal
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
