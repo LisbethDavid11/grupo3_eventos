@@ -1,3 +1,13 @@
+/**
+ * CrearAlquileres.java
+ *
+ * Crear Alquileres
+ *
+ * @author Skarleth Ferrera
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Alquileres;
 import Materiales.TextPrompt;
 import Modelos.*;
@@ -23,35 +33,74 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 public class CrearAlquileres extends JFrame {
-    private JTextField  campoTelefono;
-    private JLabel lbl0, lbl1, lbl2, lbl3, lbl4, lbl5, lbl6, lbl7, lbl8, lbl9, lbl10, lbl11;
-    private JButton botonGuardar;
-    private JButton botonCancelar;
-    private JTable tablaProductos;
-    private JPanel panel1, panel2, panel3, panel5, panel6, panel7;
-    private JButton agregarMobiliarioButton;
-    private JScrollPane panel4;
-    private JButton agregarButton;
+    // Campos de entrada
+    private JTextField campoTelefono;
+    private JTextField campoNombre;
     private JTextField campoBusquedaMateriales;
-    int categoriaSeleccionada = 0;
-    private TextPrompt placeholder = new TextPrompt(" Buscar por nombre de producto", campoBusquedaMateriales);
-    private JButton cancelarButton;
-    private JComboBox<ClienteAlquiler> jbcClientes;
-    private JPanel jpanelDireccion;
-    private JLabel jtextCatidadTotalMateriales;
-    private JButton botonLimpiar;
-    private JComboBox jbcTipoAlquiler;
-    private JPanel panelFecha, panelInicio, panelFin;
+
+    // Campos de fecha y hora
     private JSpinner spinnerHora1;
     private JSpinner spinnerMin1;
     private JSpinner spinnerHora2;
     private JSpinner spinnerMin2;
+
+    // Áreas de texto
+    private JTextArea campoDomicilio;
+    private JTextArea campoDescripcion;
+
+    // Botones
+    private JButton botonGuardar;
+    private JButton botonCancelar;
+    private JButton botonLimpiar;
+    private JButton agregarMobiliarioButton;
+    private JButton agregarButton;
+    private JButton cancelarButton;
+    private JButton botonNuevoCliente;
+
+    // Combobox
+    private JComboBox<ClienteAlquiler> jbcClientes;
+    private JComboBox jbcTipoAlquiler;
     private JComboBox comboBox1;
     private JComboBox comboBox2;
-    private JTextField campoNombre;
-    private JTextArea campoDescripcion;
-    private JButton botonNuevoCliente;
-    private int selectTabla = 1;
+
+    // Paneles
+    private JPanel panel1;
+    private JPanel panel2;
+    private JPanel panel3;
+    private JPanel panel5;
+    private JPanel panel6;
+    private JPanel panel7;
+    private JPanel panelFecha;
+    private JPanel panelInicio;
+    private JPanel panelFin;
+    private JPanel jpanelDireccion;
+
+    // Etiquetas
+    private JLabel lbl0;
+    private JLabel lbl1;
+    private JLabel lbl2;
+    private JLabel lbl3;
+    private JLabel lbl4;
+    private JLabel lbl5;
+    private JLabel lbl6;
+    private JLabel lbl7;
+    private JLabel lbl8;
+    private JLabel lbl9;
+    private JLabel lbl10;
+    private JLabel lbl11;
+    private JLabel lbl13;
+    private JLabel jtextCatidadTotalMateriales;
+    private JLabel lbl20;
+    private JLabel lblImagen;
+
+    // Otros componentes
+    private JTable tablaProductos;
+    private JScrollPane panel4;
+    private JFormattedTextField campoIdentidad;
+    private TextPrompt placeholder;
+    private JDatePickerImpl datePicker;
+
+    // Listas y variables de control
     private List<PoliProducto> productosListTemporal = new ArrayList<>();
     private List<PoliMobiliario> mobiliarioList = new ArrayList<>();
     private List<PoliMobiliario> mobiliarioListTemporal = new ArrayList<>();
@@ -72,31 +121,30 @@ public class CrearAlquileres extends JFrame {
     private String nombreFile;
     private String urlDestino = "";
     private DefaultTableModel modeloProductos;
+    private int categoriaSeleccionada = 0;
+    private int selectTabla = 1;
+
+    // Colores y fuentes
     Font fontTitulo = new Font("Century Gothic", Font.BOLD, 17);
     Font font = new Font("Century Gothic", Font.BOLD, 17);
     Font font2 = new Font("Century Gothic", Font.BOLD, 11);
 
-    // Colores para el botón "Cyan"
     Color primaryColorCyan = new Color(0, 188, 212); // Cyan primario
     Color lightColorCyan = new Color(77, 208, 225); // Cyan claro
     Color darkColorCyan = new Color(0, 151, 167); // Cyan oscuro
 
-    // Colores para el botón "Aqua"
     Color primaryColorAqua = new Color(0, 150, 136); // Aqua primario
     Color lightColorAqua = new Color(77, 182, 172); // Aqua claro
     Color darkColorAqua = new Color(0, 121, 107); // Aqua oscuro
 
-    // Colores para el botón "Rosado"
     Color primaryColorRosado = new Color(233, 30, 99); // Rosado primario
     Color lightColorRosado = new Color(240, 98, 146); // Rosado claro
     Color darkColorRosado = new Color(194, 24, 91); // Rosado oscuro
 
-    // Colores para el botón "Amber"
     Color primaryColorAmber = new Color(255, 193, 7); // Amber primario
     Color lightColorAmber = new Color(255, 213, 79); // Amber claro
     Color darkColorAmber = new Color(255, 160, 0); // Amber oscuro
 
-    // Colores para el botón "Verde lima"
     Color primaryColorVerdeLima = new Color(205, 220, 57); // Verde lima primario
     Color lightColorVerdeLima = new Color(220, 237, 200); // Verde lima claro
     Color darkColorVerdeLima = new Color(139, 195, 74); // Verde lima oscuro
@@ -104,8 +152,8 @@ public class CrearAlquileres extends JFrame {
     Color darkColorPink = new Color(233, 30, 99);
     Color darkColorRed = new Color(244, 67, 54);
     Color darkColorBlue = new Color(33, 150, 243);
+
     EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
-    private JDatePickerImpl datePicker; // Declare the datePicker variable at the class level
 
     public CrearAlquileres() {
         super("");
@@ -794,6 +842,7 @@ public class CrearAlquileres extends JFrame {
         });
     }
 
+    // Método para configurar la tabla de materiales
     private void configurarTablaMateriales() {
         int columnCount = tablaProductos.getColumnCount();
         if (columnCount > 0) {
@@ -811,6 +860,7 @@ public class CrearAlquileres extends JFrame {
         }
     }
 
+    // Clase para alinear los elementos al centro
     class CenterAlignedRenderer extends DefaultTableCellRenderer {
         public CenterAlignedRenderer() {
             setHorizontalAlignment(CENTER);
@@ -823,6 +873,7 @@ public class CrearAlquileres extends JFrame {
         }
     }
 
+    // Clase para alinear los elementos a la izquierda
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
         public LeftAlignedRenderer() {
             setHorizontalAlignment(LEFT);
@@ -835,6 +886,7 @@ public class CrearAlquileres extends JFrame {
         }
     }
 
+    // Método para obtener el precio desde la base de datos
     private double obtenerPrecioMaterialDesdeBD(int id_material, String tipo) {
         double precio = 0.0;
 
@@ -880,12 +932,14 @@ public class CrearAlquileres extends JFrame {
         return precio;
     }
 
+    // Método para limpiar la tabla de materiales
     private void limpiarTablaMateriales() {
         mobiliarioList.clear();
         DefaultTableModel emptyModel = new DefaultTableModel();
         tablaProductos.setModel(emptyModel);
     }
 
+    // Método para eliminar los detalles del material en la tabla
     private void eliminarDetallesMaterial() {
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM detalles_desayunos WHERE desayuno_id IS NULL")) {
@@ -895,7 +949,7 @@ public class CrearAlquileres extends JFrame {
         }
     }
 
-
+    // Método par calcular el valor total de la tabla
     private double calcularTotalTabla() {
         double sumaTotal = 0.0;
         TableModel modelo = tablaProductos.getModel();
@@ -931,6 +985,7 @@ public class CrearAlquileres extends JFrame {
         return sumaTotal;
     }
 
+    // Método para extraer el valor númerico y omitir las letras
     private double extraerValorNumerico(String valor) {
         String valorNumerico = valor.replace(',', '.');
         try {
@@ -941,7 +996,7 @@ public class CrearAlquileres extends JFrame {
         }
     }
 
-
+    // Método para cargar los detalles de los materiales
     private PoliModeloProducto cargarDetallesMateriales() {
         selectTabla = 0;
 
@@ -969,6 +1024,7 @@ public class CrearAlquileres extends JFrame {
         return new PoliModeloProducto(productosListTemporal);
     }
 
+    // Método para cargar los datos del mobiliario
     private PoliModeloMobiliario cargarDatosMobiliario() {
         sql = new Conexion();
         mobiliarioList.clear();
@@ -1006,6 +1062,7 @@ public class CrearAlquileres extends JFrame {
         return modeloMobiliario;
     }
 
+    // Método para obtener la cantidad ingresada por el usuario
     private int obtenerCantidadMaterial() {
         final int[] cantidadMaterial = new int[] {-1};
 
@@ -1068,6 +1125,7 @@ public class CrearAlquileres extends JFrame {
         return cantidadMaterial[0];
     }
 
+    // Método para mostrar un dialogo en caso de que haya algún error
     private void showErrorDialog(String message) {
         JButton btnOK = new JButton("Aceptar");
         btnOK.setBackground(darkColorAqua);
@@ -1097,6 +1155,7 @@ public class CrearAlquileres extends JFrame {
         dialog.setVisible(true);
     }
 
+    // Clase para renderizar el botón en la celda
     class ButtonRenderer extends JButton implements TableCellRenderer {
         public ButtonRenderer() {
             setOpaque(true);
@@ -1111,6 +1170,7 @@ public class CrearAlquileres extends JFrame {
         }
     }
 
+    // Clase para el botón en la celda
     class ButtonEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
         private JButton button;
         private int row, col;
@@ -1188,6 +1248,7 @@ public class CrearAlquileres extends JFrame {
         }
     }
 
+    // Método para cargar los clientes
     public void cargarClientes() {
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement("SELECT id, nombre, apellido FROM clientes");
@@ -1203,6 +1264,7 @@ public class CrearAlquileres extends JFrame {
         }
     }
 
+    // Método para el día de mañana
     public Calendar getTomorrow() {
         Calendar tomorrow = Calendar.getInstance();
         tomorrow.add(Calendar.DAY_OF_MONTH, 1);
@@ -1213,6 +1275,7 @@ public class CrearAlquileres extends JFrame {
         return tomorrow;
     }
 
+    // Método para cambiar la fecha
     public void handleDateChange(UtilDateModel dateModel, Calendar tomorrow) {
         java.util.Date selectedDate = dateModel.getValue();
         if (selectedDate != null && isDateOutOfRange(selectedDate, tomorrow)) {
@@ -1223,7 +1286,7 @@ public class CrearAlquileres extends JFrame {
         setFormattedDate(selectedDate);
     }
 
-
+    // Método booleano para saber si la fecha está fuera del rango
     public boolean isDateOutOfRange(Date selectedDate, Calendar tomorrow) {
         Calendar selectedCal = Calendar.getInstance();
         selectedCal.setTime(selectedDate);
@@ -1235,13 +1298,14 @@ public class CrearAlquileres extends JFrame {
         return selectedCal.before(tomorrow) || selectedCal.after(maxDate);
     }
 
-
+    // Método para establecer un formato a la fecha
     public void setFormattedDate(java.util.Date selectedDate) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd 'de' MMMM yyyy"); // Desired date format
         String formattedDate = (selectedDate != null) ? dateFormat.format(selectedDate) : "";
         datePicker.getJFormattedTextField().setText(formattedDate);
     }
 
+    // Clase para dar un formato simple a la fecha
     public class SimpleDateFormatter extends JFormattedTextField.AbstractFormatter {
         private final String datePattern = "yyyy-MM-dd";
         private final SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);
@@ -1264,7 +1328,7 @@ public class CrearAlquileres extends JFrame {
         }
     }
 
-
+    // Método para guardar el alquiler
     private void guardarAlquiler() {
         String descripcion = campoDescripcion.getText().trim();
 
@@ -1339,6 +1403,7 @@ public class CrearAlquileres extends JFrame {
         }
     }
 
+    // Método para obtener la cantidad desde la base de datos
     private int obtenerCantidadMaterialDesdeBD(int id_material, String tipo) {
         int availableQuantity = 0;
 
@@ -1360,6 +1425,7 @@ public class CrearAlquileres extends JFrame {
         return availableQuantity;
     }
 
+    // Método para guardar detalles del alquiler
     private int guardarDetalleAlquiler(int id_material, int cantidad, String tipo) {
         double availableQuantity = obtenerCantidadMaterialDesdeBD(id_material, tipo);
 
@@ -1397,14 +1463,15 @@ public class CrearAlquileres extends JFrame {
             JOptionPane.showMessageDialog(null, "Error al agregar el detalle del alquiler", "Error", JOptionPane.ERROR_MESSAGE);
         }
 
-
         return 0;
     }
 
+    // Método booleano para saber si contiene números o letras
     private static boolean contieneSoloNumeros(String texto) {
         return !Pattern.matches(".*[a-zA-Z].*[0-9@#$].*|.*[a-zA-Z].*", texto);
     }
 
+    // Método Principal
     public static void main(String[] args) {
        CrearAlquileres crearAlquileres = new CrearAlquileres();
        crearAlquileres.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
