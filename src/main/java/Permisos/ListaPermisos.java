@@ -49,7 +49,7 @@ public class ListaPermisos extends JFrame {
     private JTextField campoBusqueda;
 
     // TextPrompt para el campo de búsqueda
-    private TextPrompt placeholder;
+    private TextPrompt placeholder = new TextPrompt(" Buscar por nombre", campoBusqueda);
 
     // Etiquetas
     private JLabel lblPagina;
