@@ -1,3 +1,13 @@
+/**
+ * CrearPedido.java
+ *
+ * Crear Pedido
+ *
+ * @author Lisbeth David
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Pedidos;
 
 import Login.SesionUsuario;
@@ -24,29 +34,76 @@ import java.util.List;
 import java.util.*;
 
 public class CrearPedido extends JFrame {
-    private JTextField campoCodigo, campoFechaPedido, CampoTelefono;
-    private JTextArea campoDescripcion, campoDireccion;
-    private JRadioButton radioButtonDomicilio, radioButtonTienda;
-    private JComboBox<String> comboBoxCliente;
-    private JButton botonGuardar, botonCancelar, botonLimpiar, agregarArregloButton, agregarFlorButton, agregarManualidadButton, agregarTarjetaButton, agregarDesayunoButton, agregarMaterialButton;
-    private JPanel panel;
-    private JLabel lbl0, lbl1, lbl2, lbl3,lbl4,lbl5, lbl6,lbl7,lbl8,lbl9, lbl10, lbl11, lbl12, lbl13, lbl14;
-    private JPanel panel1, panel2, panel3, panel4,panel5, panel6, campoFechaEntrega;
+    // Campos de texto
+    private JTextField campoCodigo;
+    private JTextField campoFechaPedido;
     private JTextField campoTelefono;
+    private JTextField campoPrecioEnvio;
+    private JTextField campoBusquedaMateriales;
+
+    // Áreas de texto
+    private JTextArea campoDescripcion;
+    private JTextArea campoDireccion;
+
+    // Botones
+    private JButton botonGuardar;
+    private JButton botonCancelar;
+    private JButton botonLimpiar;
+    private JButton agregarArregloButton;
+    private JButton agregarFlorButton;
+    private JButton agregarManualidadButton;
+    private JButton agregarTarjetaButton;
+    private JButton agregarDesayunoButton;
+    private JButton agregarMaterialButton;
     private JButton cancelarButton;
     private JButton agregarButton;
-    private JTextField campoBusquedaMateriales;
-    private int categoriaSeleccionada = 0;
-    private JTable jtableMateriales;
+
+    // Paneles
+    private JPanel panel;
+    private JPanel panel1;
+    private JPanel panel2;
+    private JPanel panel3;
+    private JPanel panel4;
+    private JPanel panel5;
+    private JPanel panel6;
     private JPanel panelPrincipal;
     private JPanel panelSecundario;
     private JPanel panelOpcional;
-    private JTextField campoPrecioEnvio;
+    private JPanel campoFechaEntrega;
     private JPanel panelEntrega;
+
+    // ComboBox
+    private JComboBox<String> comboBoxCliente;
+
+    // RadioButtons
+    private JRadioButton radioButtonDomicilio;
+    private JRadioButton radioButtonTienda;
+
+    // Labels
+    private JLabel lbl0;
+    private JLabel lbl1;
+    private JLabel lbl2;
+    private JLabel lbl3;
+    private JLabel lbl4;
+    private JLabel lbl5;
+    private JLabel lbl6;
+    private JLabel lbl7;
+    private JLabel lbl8;
+    private JLabel lbl9;
+    private JLabel lbl10;
+    private JLabel lbl11;
+    private JLabel lbl12;
+    private JLabel lbl13;
+    private JLabel lbl14;
     private JLabel lbl15;
-    private CrearPedido actual = this;
-    private Conexion sql;
+
+    // DatePicker
     private JDatePickerImpl datePicker;
+
+    // Tabla
+    private JTable jtableMateriales;
+
+    // Listas
     private List<PoliProducto> productosListTemporal = new ArrayList<>();
     private List<PoliMaterial> materialList = new ArrayList<>();
     private List<PoliMaterial> materialListTemporal = new ArrayList<>();
@@ -60,10 +117,19 @@ public class CrearPedido extends JFrame {
     private List<PoliManualidad> manualidadListTemporal = new ArrayList<>();
     private List<PoliDesayuno> desayunoList = new ArrayList<>();
     private List<PoliDesayuno> desayunoListTemporal = new ArrayList<>();
-    private Map<String,String> tiposDescripcion = new HashMap<>();
-    private Map<String,String> tiposTablas = new HashMap<>();
+
+    // Mapas
+    private Map<String, String> tiposDescripcion = new HashMap<>();
+    private Map<String, String> tiposTablas = new HashMap<>();
+
+    // Otras variables
+    private int categoriaSeleccionada = 0;
     private int selectTabla = 1;
-    private Materiales.TextPrompt placeholder = new TextPrompt(" Buscar por nombre de producto", campoBusquedaMateriales);
+
+    // Otros
+    private Materiales.TextPrompt placeholder;
+    private CrearPedido actual = this;
+    private Conexion sql;
 
     Color darkColorRed = new Color(244, 67, 54);
     Color darkColorBlue = new Color(33, 150, 243);
@@ -1009,6 +1075,7 @@ public class CrearPedido extends JFrame {
         });
     }
 
+    // Método para cargar los datos de los clientes
     private void cargarClientes() {
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement("SELECT id, nombre, apellido FROM clientes");
@@ -1026,6 +1093,7 @@ public class CrearPedido extends JFrame {
         }
     }
 
+    // Método para cargar la información del cliente seleccionado
     private void cargarInformacionClienteSeleccionado() {
         // Obtiene el cliente seleccionado del JComboBox
         Object selectedItem = comboBoxCliente.getSelectedItem();
@@ -1057,6 +1125,7 @@ public class CrearPedido extends JFrame {
         }
     }
 
+    // Método para generar los campos automaticamente
     public void generarCamposAutomaticamente() {
         // Generar campoCodigo
         String codigo = generarCodigo();
@@ -1067,6 +1136,7 @@ public class CrearPedido extends JFrame {
         campoFechaPedido.setText(fecha);
     }
 
+    // Método para configurar la tabla
     private void configurarTablaMateriales() {
         int columnCount = jtableMateriales.getColumnCount();
         if (columnCount > 0) {
@@ -1084,6 +1154,7 @@ public class CrearPedido extends JFrame {
         }
     }
 
+    // Clase para alinear los elementos al centro
     class CenterAlignedRenderer extends DefaultTableCellRenderer {
         public CenterAlignedRenderer() {
             setHorizontalAlignment(CENTER);
@@ -1096,6 +1167,7 @@ public class CrearPedido extends JFrame {
         }
     }
 
+    // Clase para alinear los elementos a la izquierda
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
         public LeftAlignedRenderer() {
             setHorizontalAlignment(LEFT);
@@ -1108,6 +1180,7 @@ public class CrearPedido extends JFrame {
         }
     }
 
+    // Método para generar código de pedido
     private String generarCodigo() {
         // Obtener fecha actual
         java.util.Date fechaActual = new java.util.Date();
@@ -1127,6 +1200,7 @@ public class CrearPedido extends JFrame {
         return codigo;
     }
 
+    // Método para obtener la fecha actual
     private String obtenerFechaActual() {
         // Obtener fecha actual
         java.util.Date fechaActual = new java.util.Date();
@@ -1139,6 +1213,7 @@ public class CrearPedido extends JFrame {
         return fecha;
     }
 
+    // Método para convertir la fecha
     private String convertirFecha(String fechaCampo) {
         try {
             // Parsear la fecha en formato "Domingo, 30 de julio de 2023" a un objeto Date
@@ -1154,6 +1229,7 @@ public class CrearPedido extends JFrame {
         }
     }
 
+    // Método para guardar los datos del pedido
     private void guardarPedido() {
         String fechaCampo = campoFechaPedido.getText();
         String fechaPedido = convertirFecha(fechaCampo);
@@ -1222,6 +1298,7 @@ public class CrearPedido extends JFrame {
         }
     }
 
+    // Método para obtener la cantidad del material desde la base de datos
     private int obtenerCantidadMaterialDesdeBD(int id_material, String tipo) {
         int availableQuantity = 0;
 
@@ -1243,6 +1320,7 @@ public class CrearPedido extends JFrame {
         return availableQuantity;
     }
 
+    // Método para guardar los detalles del pedido
     private void guardarDetallePedido(int id_material, int cantidad, String tipo) {
 
         double availableQuantity = obtenerCantidadMaterialDesdeBD(id_material, tipo);
@@ -1270,6 +1348,7 @@ public class CrearPedido extends JFrame {
         }
     }
 
+    // Método para obtener el precio desde la base de datos
     private double obtenerPrecioMaterialDesdeBD(int id_material, String tipo) {
         double precio = 0.0;
 
@@ -1312,6 +1391,7 @@ public class CrearPedido extends JFrame {
         return precio;
     }
 
+    // Método para cargar los detalles de los materiales
     private PoliModeloProducto cargarDetallesMateriales() {
         sql = new Conexion();
         productosListTemporal.clear(); // Limpiar la lista antes de agregar los materiales
@@ -1390,6 +1470,7 @@ public class CrearPedido extends JFrame {
         return new PoliModeloProducto(productosListTemporal);
     }
 
+    // Método para cargar los detalles de los arreglos
     private PoliModeloArreglo cargarDatosArreglo() {
         sql = new Conexion();
         arregloList.clear();
@@ -1425,6 +1506,7 @@ public class CrearPedido extends JFrame {
         return modeloArreglo;
     }
 
+    // Método para cargar los detalles de las flores
     private PoliModeloFlor cargarDatosFloristeria() {
         sql = new Conexion();
         floristeriaList.clear();
@@ -1464,6 +1546,7 @@ public class CrearPedido extends JFrame {
         return modeloFlor;
     }
 
+    // Método para cargar los detalles de las manualidades
     private PoliModeloManualidad cargarDatosManualidad() {
         sql = new Conexion();
         manualidadList.clear();
@@ -1499,6 +1582,7 @@ public class CrearPedido extends JFrame {
         return modeloManualidad;
     }
 
+    // Método para cargar los detalles de las tarjetas
     private PoliModeloTarjeta cargarDatosTarjeta() {
         sql = new Conexion();
         tarjetaList.clear();
@@ -1535,6 +1619,7 @@ public class CrearPedido extends JFrame {
         return modeloTarjeta;
     }
 
+    // Método para cargar los detalles de los desayunos
     private PoliModeloDesayuno cargarDatosDesayuno() {
         sql = new Conexion();
         desayunoList.clear();
@@ -1570,6 +1655,7 @@ public class CrearPedido extends JFrame {
         return modeloDesayuno;
     }
 
+    // Método para cargar los detalles de los materiales
     private PoliModeloMaterial cargarDatosMaterial() {
         sql = new Conexion();
         materialList.clear();
@@ -1605,6 +1691,7 @@ public class CrearPedido extends JFrame {
         return modeloMaterial;
     }
 
+    // Método para obtener cantidad ingresada por el usuario
     private int obtenerCantidadMaterial() {
         final int[] cantidadMaterial = new int[] {-1};
 
@@ -1667,6 +1754,7 @@ public class CrearPedido extends JFrame {
         return cantidadMaterial[0];
     }
 
+    // Método para extraer el valor númerico
     private double extraerValorNumerico(String valor) {
         String valorNumerico = valor.replace(',', '.');
         try {
@@ -1677,6 +1765,7 @@ public class CrearPedido extends JFrame {
         }
     }
 
+    // Método para calcular el total de la tabla
     private double calcularTotalTabla() {
         double sumaTotal = 0.0;
         TableModel modelo = jtableMateriales.getModel();
@@ -1706,6 +1795,7 @@ public class CrearPedido extends JFrame {
         return sumaTotal;
     }
 
+    // Método para actualizar los calculos
     private void actualizarLbl8y10() {
         // Calcular el subtotal de la tabla (antes de aplicar el descuento)
         double totalTabla = calcularTotalTabla();
@@ -1736,6 +1826,7 @@ public class CrearPedido extends JFrame {
         lbl11.setText(String.format("L. %.2f", totalConAumento));
     }
 
+    // Método para eliminar los detalles del material
     private void eliminarDetallesMaterial() {
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement(
@@ -1747,6 +1838,7 @@ public class CrearPedido extends JFrame {
         }
     }
 
+    // Clase para renderizar el botón
     class ButtonRenderer extends JButton implements TableCellRenderer {
         public ButtonRenderer() {
             setOpaque(true);
@@ -1761,6 +1853,7 @@ public class CrearPedido extends JFrame {
         }
     }
 
+    // Clase para agregar el botón a la celda
     class ButtonEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
         private JButton button;
         private int row, col;
@@ -1822,6 +1915,7 @@ public class CrearPedido extends JFrame {
 
     }
 
+    // Método para obtener el día siguiente al actual
     public Calendar getTomorrow() {
         Calendar tomorrow = Calendar.getInstance();
         tomorrow.add(Calendar.DAY_OF_MONTH, 1);
@@ -1832,6 +1926,7 @@ public class CrearPedido extends JFrame {
         return tomorrow;
     }
 
+    // Método para cambiar la fecha
     public void handleDateChange(UtilDateModel dateModel, Calendar tomorrow) {
         java.util.Date selectedDate = dateModel.getValue();
         if (selectedDate != null && isDateOutOfRange(selectedDate, tomorrow)) {
@@ -1841,6 +1936,7 @@ public class CrearPedido extends JFrame {
         setFormattedDate(selectedDate);
     }
 
+    // Método para saber si la fecha está fuera de rango
     public boolean isDateOutOfRange(Date selectedDate, Calendar tomorrow) {
         Calendar selectedCal = Calendar.getInstance();
         selectedCal.setTime(selectedDate);
@@ -1852,6 +1948,7 @@ public class CrearPedido extends JFrame {
         return selectedCal.before(tomorrow) || selectedCal.after(maxDate);
     }
 
+    // Método para establecer la fecha
     public void setFormattedDate(java.util.Date selectedDate) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, d 'de' MMMM yyyy", new Locale("es", "ES")); // Formato en español
         String formattedDate = (selectedDate != null) ? dateFormat.format(selectedDate) : "";
@@ -1864,6 +1961,7 @@ public class CrearPedido extends JFrame {
         datePicker.getJFormattedTextField().setText(formattedDate);
     }
 
+    // Clase para simplificar el formato de la fecha
     public class SimpleDateFormatter extends JFormattedTextField.AbstractFormatter {
 
         private final String datePattern = "EEEE, d 'de' MMMM yyyy";
@@ -1887,111 +1985,100 @@ public class CrearPedido extends JFrame {
         }
     }
 
+    // Método para mostrar un diálogo personalizado de éxito
     public void mostrarDialogoPersonalizadoExito(String mensaje, Color colorFondoBoton) {
-        // Crea un botón personalizado
+        // Crea un botón personalizado "OK"
         JButton btnAceptar = new JButton("OK");
-        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
-        btnAceptar.setForeground(Color.WHITE);
-        btnAceptar.setFocusPainted(false);
+        btnAceptar.setBackground(colorFondoBoton); // Establece el color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE); // Establece el color del texto del botón
+        btnAceptar.setFocusPainted(false); // Elimina el borde del foco alrededor del botón
 
-        // Crea un JOptionPane
+        // Crea un JOptionPane para mostrar el mensaje
         JOptionPane optionPane = new JOptionPane(
-                mensaje,                           // Mensaje a mostrar
-                JOptionPane.INFORMATION_MESSAGE,   // Tipo de mensaje
-                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
-                null,                              // Icono (puede ser null)
-                new Object[]{},                    // No se usan opciones estándar
-                null                               // Valor inicial (no necesario aquí)
+                mensaje,                             // Texto del mensaje a mostrar
+                JOptionPane.INFORMATION_MESSAGE,     // Tipo de mensaje (información)
+                JOptionPane.DEFAULT_OPTION,          // Opción por defecto
+                null,                                // Sin icono
+                new Object[]{},                      // Sin opciones estándar
+                null                                 // Sin valor inicial
         );
 
-        // Añade el botón al JOptionPane
+        // Configura el JOptionPane para usar el botón personalizado
         optionPane.setOptions(new Object[]{btnAceptar});
 
         // Crea un JDialog para mostrar el JOptionPane
         JDialog dialog = optionPane.createDialog("Validación");
 
-        // Añade un ActionListener al botón
-        btnAceptar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
-            }
-        });
+        // Añade un ActionListener al botón para cerrar el diálogo cuando se presione
+        btnAceptar.addActionListener(e -> dialog.dispose());
 
         // Muestra el diálogo
         dialog.setVisible(true);
     }
 
+    // Método para mostrar un diálogo personalizado de error
     public void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
-        // Crea un botón personalizado
+        // Crea un botón personalizado "OK"
         JButton btnAceptar = new JButton("OK");
-        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
-        btnAceptar.setForeground(Color.WHITE);
-        btnAceptar.setFocusPainted(false);
+        btnAceptar.setBackground(colorFondoBoton); // Establece el color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE); // Establece el color del texto del botón
+        btnAceptar.setFocusPainted(false); // Elimina el borde del foco alrededor del botón
 
-        // Crea un JOptionPane
+        // Crea un JOptionPane para mostrar el mensaje
         JOptionPane optionPane = new JOptionPane(
-                mensaje,                           // Mensaje a mostrar
-                JOptionPane.ERROR_MESSAGE,   // Tipo de mensaje
-                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
-                null,                              // Icono (puede ser null)
-                new Object[]{},                    // No se usan opciones estándar
-                null                               // Valor inicial (no necesario aquí)
+                mensaje,                             // Texto del mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,         // Tipo de mensaje (advertencia)
+                JOptionPane.DEFAULT_OPTION,          // Opción por defecto
+                null,                                // Sin icono
+                new Object[]{},                      // Sin opciones estándar
+                null                                 // Sin valor inicial
         );
 
-        // Añade el botón al JOptionPane
+        // Configura el JOptionPane para usar el botón personalizado
         optionPane.setOptions(new Object[]{btnAceptar});
 
         // Crea un JDialog para mostrar el JOptionPane
         JDialog dialog = optionPane.createDialog("Validación");
 
-        // Añade un ActionListener al botón
-        btnAceptar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
-            }
-        });
+        // Añade un ActionListener al botón para cerrar el diálogo cuando se presione
+        btnAceptar.addActionListener(e -> dialog.dispose());
 
         // Muestra el diálogo
         dialog.setVisible(true);
     }
 
+    // Método para mostrar un diálogo personalizado de atención
     public void mostrarDialogoPersonalizadoAtencion(String mensaje, Color colorFondoBoton) {
-        // Crea un botón personalizado
+        // Crea un botón personalizado "OK"
         JButton btnAceptar = new JButton("OK");
-        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
-        btnAceptar.setForeground(Color.WHITE);
-        btnAceptar.setFocusPainted(false);
+        btnAceptar.setBackground(colorFondoBoton); // Establece el color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE); // Establece el color del texto del botón
+        btnAceptar.setFocusPainted(false); // Elimina el borde del foco alrededor del botón
 
-        // Crea un JOptionPane
+        // Crea un JOptionPane para mostrar el mensaje
         JOptionPane optionPane = new JOptionPane(
-                mensaje,                           // Mensaje a mostrar
-                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
-                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
-                null,                              // Icono (puede ser null)
-                new Object[]{},                    // No se usan opciones estándar
-                null                               // Valor inicial (no necesario aquí)
+                mensaje,                             // Texto del mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,         // Tipo de mensaje (advertencia)
+                JOptionPane.DEFAULT_OPTION,          // Opción por defecto
+                null,                                // Sin icono
+                new Object[]{},                      // Sin opciones estándar
+                null                                 // Sin valor inicial
         );
 
-        // Añade el botón al JOptionPane
+        // Configura el JOptionPane para usar el botón personalizado
         optionPane.setOptions(new Object[]{btnAceptar});
 
         // Crea un JDialog para mostrar el JOptionPane
         JDialog dialog = optionPane.createDialog("Validación");
 
-        // Añade un ActionListener al botón
-        btnAceptar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
-            }
-        });
+        // Añade un ActionListener al botón para cerrar el diálogo cuando se presione
+        btnAceptar.addActionListener(e -> dialog.dispose());
 
         // Muestra el diálogo
         dialog.setVisible(true);
     }
 
+    // Método Principal
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
