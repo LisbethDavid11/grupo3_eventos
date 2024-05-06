@@ -1,4 +1,15 @@
+/**
+ * CrearProveedor.java
+ *
+ * CrearProveedor
+ *
+ * @author Skarleth Ferrera
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Proveedores;
+
 import Objetos.Conexion;
 import Objetos.Proveedor;
 import javax.swing.*;
@@ -16,18 +27,51 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.regex.Pattern;
-import java.util.regex.Pattern;
 
 public class CrearProveedor extends JFrame {
-    public JButton botonGuardar, botonCancelar, botonLimpiar;
-    public JTextField campoEmpresaProveedora, campoNombreVendedor,campoTelefonoVendedor, campoCorreo, campoTelefono;
+    // Botones
+    public JButton botonGuardar;
+    public JButton botonCancelar;
+    public JButton botonLimpiar;
+
+    // Campos de texto
+    public JTextField campoEmpresaProveedora;
+    public JTextField campoNombreVendedor;
+    public JTextField campoTelefonoVendedor;
+    public JTextField campoCorreo;
+    public JTextField campoTelefono;
     public JFormattedTextField campoRTN;
-    public JTextArea campoDireccion, campoDescripcion;
-    private JPanel panel1, panel2, panel3;
-    private JLabel lbl0,lbl1,lbl2,lbl3,lbl4,lbl5,lbl6,lbl7,lbl8,lbl9, lbl11;
+
+    // Áreas de texto
+    public JTextArea campoDireccion;
+    public JTextArea campoDescripcion;
+
+    // Paneles
+    private JPanel panel1;
+    private JPanel panel2;
+    private JPanel panel3;
+
+    // Etiquetas
+    private JLabel lbl0;
+    private JLabel lbl1;
+    private JLabel lbl2;
+    private JLabel lbl3;
+    private JLabel lbl4;
+    private JLabel lbl5;
+    private JLabel lbl6;
+    private JLabel lbl7;
+    private JLabel lbl8;
+    private JLabel lbl9;
+    private JLabel lbl11;
+
+    // Conexión a la base de datos
     private Conexion sql;
     private Connection mysql;
+
+    // Instancia de la clase
     public CrearProveedor crearProveedor = this;
+
+    // Fuente y colores
     Color darkColorRed = new Color(244, 67, 54);
     Color darkColorBlue = new Color(33, 150, 243);
 
@@ -605,6 +649,7 @@ public class CrearProveedor extends JFrame {
         });
     }
 
+    // Método para guardar los datos del proveedor
     public void GuardarDatos() {
         sql = new Conexion();
         mysql = sql.conectamysql();
@@ -628,6 +673,7 @@ public class CrearProveedor extends JFrame {
         }
     }
 
+    // Método para validar telefóno existente
     private boolean validarTelefonoExistente(String telefono) {
         try {
             // Crear la conexión a la base de datos (usando el objeto 'mysql' y 'sql' definidos en la clase)
@@ -661,6 +707,7 @@ public class CrearProveedor extends JFrame {
         return false; // En caso de error, se asume que no existe un empleado con ese teléfono
     }
 
+    // Método para validar RTN existente
     private boolean validarRTNExistente(String rtn) {
         try {
             // Crear la conexión a la base de datos (usando el objeto 'mysql' y 'sql' definidos en la clase)
@@ -699,9 +746,9 @@ public class CrearProveedor extends JFrame {
         return Pattern.matches("[0-9]+", texto);
     }
 
+    // Método Principal
     public static void main(String[] args) {
         CrearProveedor crearProveedor = new CrearProveedor();
         crearProveedor.setVisible(true);
     }
-
 }
