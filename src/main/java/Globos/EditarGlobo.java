@@ -1,4 +1,15 @@
+/**
+ * EditarGlobo.java
+ *
+ * Editar Globo
+ *
+ * @author Lisbeth David
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Globos;
+
 import Objetos.Conexion;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -22,18 +33,53 @@ import java.util.Date;
 import java.util.Random;
 
 public class EditarGlobo extends JFrame {
-    private JTextField campoCodigo, campoPrecio, campoForma, campoTamanio, campoColor, campoCantidadPorPaquete;
-    private JRadioButton radioButtonAire, radioButtonHelio, radioButtonAmbos, radioButtonSiNecesita, radioButtonNoNecesita;
-    private JButton botonGuardar, botonCancelar, botonLimpiar;
-    private JPanel panel1, panel2, panel3, panel4, panel5, panel6;
-    private JLabel lbl0, lbl1, lbl2, lbl3;
-    private JComboBox comboBoxTipoEvento, comboBoxMaterial;
-    private String imagePath = "";
-    private JPanel panelImg;
-    private JLabel imagenLabel;
+    // Campos de texto
+    private JTextField campoCodigo;
+    private JTextField campoPrecio;
+    private JTextField campoForma;
+    private JTextField campoTamanio;
+    private JTextField campoColor;
+    private JTextField campoCantidadPorPaquete;
+
+    // RadioButtons
+    private JRadioButton radioButtonAire;
+    private JRadioButton radioButtonHelio;
+    private JRadioButton radioButtonAmbos;
+    private JRadioButton radioButtonSiNecesita;
+    private JRadioButton radioButtonNoNecesita;
+
+    // Botones
+    private JButton botonGuardar;
+    private JButton botonCancelar;
+    private JButton botonLimpiar;
     private JButton botonCargarImagen;
+
+    // Paneles
+    private JPanel panel1;
+    private JPanel panel2;
+    private JPanel panel3;
+    private JPanel panel4;
+    private JPanel panel5;
+    private JPanel panel6;
+    private JPanel panelImg;
+
+    // Etiquetas
+    private JLabel lbl0;
+    private JLabel lbl1;
+    private JLabel lbl2;
+    private JLabel lbl3;
+    private JLabel imagenLabel;
+
+    // ComboBox
+    private JComboBox comboBoxTipoEvento;
+    private JComboBox comboBoxMaterial;
+
+    // Otras variables
+    private String imagePath = "";
     private EditarGlobo actual = this;
     private Conexion sql;
+
+    // Fuente y colores
     Color darkColorRed = new Color(244, 67, 54);
     Color darkColorBlue = new Color(33, 150, 243);
 
@@ -689,6 +735,7 @@ public class EditarGlobo extends JFrame {
         cargarDatosGlobo(idGlobo);
     }
 
+    // Método para cargar los datos del globo
     private void cargarDatosGlobo(int idGlobo) {
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM globos WHERE id = ?")) {
@@ -746,6 +793,7 @@ public class EditarGlobo extends JFrame {
         }
     }
 
+    // Método para actualizar los datos del globo
     private void actualizarGlobos(int id) {
         String codigo = campoCodigo.getText().trim();
         double precio = Double.parseDouble(campoPrecio.getText().trim());
@@ -801,6 +849,7 @@ public class EditarGlobo extends JFrame {
         }
     }
 
+    // Método para obtener la extensión de la imagen
     private String obtenerExtensionImagen(String imagePath) {
         int extensionIndex = imagePath.lastIndexOf(".");
         if (extensionIndex != -1) {
@@ -809,17 +858,14 @@ public class EditarGlobo extends JFrame {
         return "";
     }
 
-    private void limpiarCampos(int idGlobo) {
-        this.idGlobo = idGlobo;
-        cargarDatosGlobo(idGlobo);
-    }
-
+    // Método para generar un número aleatorio para el nombre de la imagen
     private String generarNumeroAleatorio(int min, int max) {
         Random random = new Random();
         int numeroAleatorio = random.nextInt(max - min + 1) + min;
         return String.format("%04d", numeroAleatorio);
     }
 
+    // Método para cargar la imagen
     private void mostrarImagen(String imagen) {
         imagePath = "img/globos/" + imagen;
 
@@ -852,6 +898,7 @@ public class EditarGlobo extends JFrame {
         }
     }
 
+    // Método Principal
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
