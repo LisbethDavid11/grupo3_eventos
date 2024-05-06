@@ -1,3 +1,13 @@
+/**
+ * SubMenuDashboard.java
+ *
+ * Sub Menu Dashboard
+ *
+ * @author Elsa Ramos
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package SubMenu;
 
 import Actividades.CalendarioDeActividades;
@@ -24,9 +34,7 @@ import Proveedores.ListaProveedores;
 import Roles.ListaRoles;
 import Tarjetas.ListaTarjetas;
 import Ventas.ListaVentas;
-
 import java.awt.*;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.imageio.ImageIO;
@@ -39,6 +47,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class SubMenuDashboard extends JFrame {
+	// Listas
 	private ListaClientes listaCliente;
 	private ListaEmpleados listaEmpleados;
 	private ListaFloristerias listaFloristeria;
@@ -61,16 +70,25 @@ public class SubMenuDashboard extends JFrame {
 	private ListaUsuarios listaUsuarios;
 	private ListaPermisos listaPermisos;
 	private static final long serialVersionUID = 1L;
+
+	// Paneles
 	private JPanel contentPane;
-	private int id;
 	private JPanel navbar;
+
+	// Etiquetas de texto
 	private JLabel userLabel, userNameLabel;
+
+	// Elemento Pop Up
 	private JPopupMenu userMenu;
+
+	// Otras variables
 	private String nombre;
 	private String imagen;
+	private int id;
 	/**
 	 * Launch the application.
 	 */
+
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -691,6 +709,7 @@ public class SubMenuDashboard extends JFrame {
 
 		setupNavbar(this);
 	}
+
 	private static void addPopup(Component component, final JPopupMenu popup) {
 		component.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
@@ -709,7 +728,7 @@ public class SubMenuDashboard extends JFrame {
 		});
 	}
 
-
+	// Elemento para configurar la barra de navegación
 	private void setupNavbar(SubMenuDashboard subMenuDashboard) {
 		navbar = new JPanel();
 		navbar.setBounds(255, 0, 771, 55);
@@ -837,18 +856,20 @@ public class SubMenuDashboard extends JFrame {
 		subMenuDashboard.getContentPane().add(navbar);
 	}
 
+	// Método para establecer el nombre de usuario
 	public void setNombreUsuario(String nombre) {
 		this.nombre = nombre;
 		userNameLabel.setText("Bienvenido, " + nombre + " ▼ ");
 	}
 
-
+	// Método para establecer la imagen de usuario
 	public void setImagenUsuario(String imagen) {
 		this.imagen = imagen;
 		String imagePath = "img/usuarios/" + imagen; // Ruta actualizada según la imagen
 		userLabel.setIcon(new ImageIcon(getRoundedImage(imagePath, 40, 40)));
 	}
 
+	// Método para redondear la imagen
 	private Image getRoundedImage(String imagePath, int width, int height) {
 		if (imagePath == null || imagePath.isEmpty()) {
 			System.out.println("Image path is null or empty");
@@ -889,9 +910,8 @@ public class SubMenuDashboard extends JFrame {
 
 	private int idUsuarioActual;
 
+	// Método para establecer el id de usuario actual
 	public void setIdUsuarioActual(int id) {
 		this.idUsuarioActual = id;
 	}
-
-
 }
