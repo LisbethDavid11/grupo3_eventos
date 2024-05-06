@@ -1,8 +1,17 @@
+/**
+ * EditarProveedor.java
+ *
+ * Editar Proveedor
+ *
+ * @author Skarleth Ferrera
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Proveedores;
 
 import Objetos.Conexion;
 import Objetos.Proveedor;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.DefaultFormatterFactory;
@@ -19,15 +28,49 @@ import java.sql.SQLException;
 import java.text.ParseException;
 
 public class EditarProveedores extends JFrame {
-    public JButton botonGuardar, botonCancelar, botonLimpiar;
-    public JTextField campoEmpresaProveedora, campoNombreVendedor,campoTelefonoVendedor, campoCorreo, campoTelefono;
+    // Botones
+    public JButton botonGuardar;
+    public JButton botonCancelar;
+    public JButton botonLimpiar;
+
+    // Campos de texto
+    public JTextField campoEmpresaProveedora;
+    public JTextField campoNombreVendedor;
+    public JTextField campoTelefonoVendedor;
+    public JTextField campoCorreo;
+    public JTextField campoTelefono;
     public JFormattedTextField campoRTN;
-    public JTextArea campoDireccion, campoDescripcion;
-    private JPanel panel1, panel2, panel3;
-    private JLabel lbl0,lbl1,lbl2,lbl3,lbl4,lbl5,lbl6,lbl7,lbl8,lbl9, lbl11;
+
+    // Áreas de texto
+    public JTextArea campoDireccion;
+    public JTextArea campoDescripcion;
+
+    // Paneles
+    private JPanel panel1;
+    private JPanel panel2;
+    private JPanel panel3;
+
+    // Etiquetas
+    private JLabel lbl0;
+    private JLabel lbl1;
+    private JLabel lbl2;
+    private JLabel lbl3;
+    private JLabel lbl4;
+    private JLabel lbl5;
+    private JLabel lbl6;
+    private JLabel lbl7;
+    private JLabel lbl8;
+    private JLabel lbl9;
+    private JLabel lbl11;
+
+    // Conexión a la base de datos
     private Conexion sql;
     private Connection mysql;
+
+    // Instancia de la clase
     public EditarProveedores actual = this;
+
+    // Fuente y colores
     Color darkColorRed = new Color(244, 67, 54);
     Color darkColorBlue = new Color(33, 150, 243);
 
@@ -612,7 +655,8 @@ public class EditarProveedores extends JFrame {
         });
         }
 
-        private void mostrar() {
+    // Método para cargar los datos del proveedor
+    private void mostrar() {
             sql = new Conexion();
             mysql = sql.conectamysql();
 
@@ -639,6 +683,7 @@ public class EditarProveedores extends JFrame {
             }
         }
 
+    // Método para guardar los datos del proveedor
     private void guardar() {
         sql = new Conexion();
         mysql = sql.conectamysql();
@@ -671,8 +716,6 @@ public class EditarProveedores extends JFrame {
         }
     }
 
-
-
     // Método para validar si el teléfono ya está asociado a un proveedor en la base de datos
     private boolean validarTelefonoExistente(String telefono, Integer proveedorId) {
         try {
@@ -700,6 +743,7 @@ public class EditarProveedores extends JFrame {
         return false;
     }
 
+    // Método para validar si el RTN ya está asociado a un proveedor en la base de datos
     private boolean validarRTNExistente(String rtn, Integer proveedorId) {
         try {
             mysql = sql.conectamysql();
@@ -728,6 +772,5 @@ public class EditarProveedores extends JFrame {
         }
         return false;
     }
-
 }
 
