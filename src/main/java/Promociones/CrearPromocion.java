@@ -1,13 +1,21 @@
+/**
+ * CrearPromocion.java
+ *
+ * Crear Promocion
+ *
+ * @author Elsa Ramos
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Promociones;
 
-import Eventos.CrearEvento;
 import Materiales.TextPrompt;
 import Modelos.*;
 import Objetos.*;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.*;
@@ -22,21 +30,64 @@ import java.util.List;
 import java.util.*;
 
 public class CrearPromocion extends JFrame {
-    private JLabel lbl0, lbl1, lbl2, lbl3, lbl4, lbl5, lbl6;
+    // Etiquetas
+    private JLabel lbl0;
+    private JLabel lbl1;
+    private JLabel lbl2;
+    private JLabel lbl3;
+    private JLabel lbl4;
+    private JLabel lbl5;
+    private JLabel lbl6;
+
+    // Área de texto
     private JTextArea campoDescripcion;
-    private JButton botonLimpiar, botonGuardar, botonCancelar, cancelarButton;
-    private JPanel panel1, panel2, panel3, panel5, panel6, panel7, jpanelDescripcion;
-    private JTable tablaProductos;
-    private JScrollPane panel4;
+
+    // Botones
+    private JButton botonLimpiar;
+    private JButton botonGuardar;
+    private JButton botonCancelar;
+    private JButton cancelarButton;
     private JButton agregarButton;
+
+    // Paneles
+    private JPanel panel1;
+    private JPanel panel2;
+    private JPanel panel3;
+    private JPanel panel5;
+    private JPanel panel6;
+    private JPanel panel7;
+    private JPanel jpanelDescripcion;
+    private JPanel panelFechaInicial;
+    private JPanel panelFechaFinal;
+
+    // Tabla
+    private JTable tablaProductos;
+
+    // ScrollPane para la tabla
+    private JScrollPane panel4;
+
+    // Campo de búsqueda de materiales
     private JTextField campoBusquedaMateriales;
+
+    // Categoría seleccionada
     private int categoriaSeleccionada = 0;
+
+    // Placeholder para el campo de búsqueda de materiales
     private TextPrompt placeholder = new TextPrompt(" Buscar por nombre de producto", campoBusquedaMateriales);
+
+    // Etiqueta para mostrar la cantidad total de materiales
     private JLabel jtextCatidadTotalMateriales;
-    private JPanel panelFechaInicial, panelFechaFinal;
+
+    // ComboBox para seleccionar la sección
     private JComboBox comboSeccion;
+
+    // Campo de precio
     private JTextField precio;
+
+    // Variable para seleccionar la tabla
     private int selectTabla = 1;
+
+    // Listas de productos y materiales temporales
     private List<PoliProductoPromocion> productosListTemporal = new ArrayList<>();
     private List<PoliMobiliario> mobiliarioList = new ArrayList<>();
     private List<PoliDesayuno> desayunoList = new ArrayList<>();
@@ -51,15 +102,31 @@ public class CrearPromocion extends JFrame {
     private List<PoliManualidad> manualidadList = new ArrayList<>();
     private List<PoliMaterial> materialList = new ArrayList<>();
     private List<PoliManualidad> manualidadListTemporal = new ArrayList<>();
+
+    // Mapas para tipos de descripción y tablas
     private Map<String,String> tiposDescripcion = new HashMap<>();
     private Map<String,String> tiposTablas = new HashMap<>();
+
+    // Ruta de la imagen
     private String imagePath = "";
+
+    // Instancia de la clase
     private CrearPromocion actual = this;
+
+    // Conexiones a la base de datos
     private Conexion sql;
     private Connection mysql;
+
+    // Nombre del archivo
     private String nombreFile;
+
+    // URL de destino
     private String urlDestino = "";
+
+    // Modelo de la tabla de productos
     private DefaultTableModel modeloProductos;
+
+    //Fuente y colores
     Font fontTitulo = new Font("Century Gothic", Font.BOLD, 17);
     Font font = new Font("Century Gothic", Font.BOLD, 17);
     Font font2 = new Font("Century Gothic", Font.BOLD, 11);
@@ -775,6 +842,7 @@ public class CrearPromocion extends JFrame {
         });
     }
 
+    // Método para configurar la tabla
     private void configurarTablaMateriales() {
         int columnCount = tablaProductos.getColumnCount();
         if (columnCount > 0) {
@@ -792,6 +860,7 @@ public class CrearPromocion extends JFrame {
         }
     }
 
+    // Método para alinear los datos al centro
     class CenterAlignedRenderer extends DefaultTableCellRenderer {
         public CenterAlignedRenderer() {
             setHorizontalAlignment(CENTER);
@@ -804,6 +873,7 @@ public class CrearPromocion extends JFrame {
         }
     }
 
+    // Método para alinear los datos a la izquierda
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
         public LeftAlignedRenderer() {
             setHorizontalAlignment(LEFT);
@@ -816,12 +886,14 @@ public class CrearPromocion extends JFrame {
         }
     }
 
+    // Método para limpiar los datos de la promoción
     private void limpiarTablaMateriales() {
         mobiliarioList.clear();
         DefaultTableModel emptyModel = new DefaultTableModel();
         tablaProductos.setModel(emptyModel);
     }
 
+    // Método para eliminar los datos de la tabla
     private void eliminarDetallesMaterial() {
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM detalles_promociones WHERE promocion_id IS NULL")) {
@@ -831,6 +903,7 @@ public class CrearPromocion extends JFrame {
         }
     }
 
+    // Método para cargar los datos de los detalles
     private PoliModeloProductoPromocion cargarDetallesMateriales() {
         selectTabla = 0;
 
@@ -867,6 +940,7 @@ public class CrearPromocion extends JFrame {
         return new PoliModeloProductoPromocion(productosListTemporal);
     }
 
+    // Método para cargar los datos de los desayunos
     private PoliModeloDesayuno cargarDatosDesayuno() {
         sql = new Conexion();
         desayunoList.clear();
@@ -902,6 +976,7 @@ public class CrearPromocion extends JFrame {
         return modeloDesayuno;
     }
 
+    // Método para cargar los datos de los mobiliarios
     private PoliModeloMobiliario cargarDatosMobiliario() {
         sql = new Conexion();
         mobiliarioList.clear();
@@ -939,6 +1014,7 @@ public class CrearPromocion extends JFrame {
         return modeloMobiliario;
     }
 
+    // Método para cargar los datos de las flores
     private PoliModeloFlor cargarDatosFloristeria() {
         sql = new Conexion();
         floristeriaList.clear();
@@ -978,6 +1054,7 @@ public class CrearPromocion extends JFrame {
         return modeloFlor;
     }
 
+    // Método para cargar los datos de los globos
     private PoliModeloGlobo cargarDatosGlobo() {
         sql = new Conexion();
         globoList.clear();
@@ -1013,6 +1090,7 @@ public class CrearPromocion extends JFrame {
         return modeloGlobo;
     }
 
+    // Método para cargar los datos de los arreglos
     private PoliModeloArreglo cargarDatosArreglo() {
         sql = new Conexion();
         arregloList.clear();
@@ -1048,6 +1126,7 @@ public class CrearPromocion extends JFrame {
         return modeloArreglo;
     }
 
+    // Método para cargar los datos de las tarjetas
     private PoliModeloTarjetas cargarDatosTarjetas() {
         sql = new Conexion();
         targetList.clear();
@@ -1083,6 +1162,7 @@ public class CrearPromocion extends JFrame {
         return modeloTarjetas;
     }
 
+    // Método para cargar los datos de los materiales
     private PoliModeloMaterial cargarDatosMaterial() {
         sql = new Conexion();
         materialList.clear();
@@ -1119,6 +1199,7 @@ public class CrearPromocion extends JFrame {
         return modeloMaterial;
     }
 
+    // Método para guardar la promoción
     private void guardarPromocion() {
         String descripcion = campoDescripcion.getText().trim();
 
@@ -1159,6 +1240,7 @@ public class CrearPromocion extends JFrame {
         }
     }
 
+    // Método para guardar los detalles de la promoción
     private void guardarDetallePromocion(int id_material, int cantidad, String tipo, double promocion) {
 
         double availableQuantity = obtenerCantidadMaterialDesdeBD(id_material, tipo);
@@ -1187,6 +1269,7 @@ public class CrearPromocion extends JFrame {
         }
     }
 
+    // Método para obtener la cantidad desde la base de datos
     private int obtenerCantidadMaterialDesdeBD(int id_material, String tipo) {
         int availableQuantity = 0;
 
@@ -1208,6 +1291,7 @@ public class CrearPromocion extends JFrame {
         return availableQuantity;
     }
 
+    // Método para obtener el precio desde la base de datos
     private double obtenerPrecioMaterialDesdeBD(int id_material, String tipo) {
         double precio = 0.0;
 
@@ -1253,6 +1337,7 @@ public class CrearPromocion extends JFrame {
         return precio;
     }
 
+    // Método para obtener el precio de promoción ingresado por el usuario
     private double obtenerPrecioPromocion() {
         final double[] precioPromocion = new double[] {-1.0};
 
@@ -1315,6 +1400,7 @@ public class CrearPromocion extends JFrame {
         return precioPromocion[0];
     }
 
+    // Método para obtener la cantidad ingresada por el usuario
     private int obtenerCantidadMaterial() {
         final int[] cantidadMaterial = new int[] {-1};
 
@@ -1379,6 +1465,7 @@ public class CrearPromocion extends JFrame {
         return cantidadMaterial[0];
     }
 
+    // Método para mostrar el mensaje en caso de error
     private void showErrorDialog(String message) {
         JButton btnOK = new JButton("Aceptar");
         btnOK.setBackground(darkColorAqua);
@@ -1408,6 +1495,7 @@ public class CrearPromocion extends JFrame {
         dialog.setVisible(true);
     }
 
+    // Clase para renderizar el botón
     class ButtonRenderer extends JButton implements TableCellRenderer {
         public ButtonRenderer() {
             setOpaque(true);
@@ -1422,6 +1510,7 @@ public class CrearPromocion extends JFrame {
         }
     }
 
+    // Clase para agregar el botón a la celda
     class ButtonEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
         private JButton button;
         private int row, col;
@@ -1482,6 +1571,7 @@ public class CrearPromocion extends JFrame {
         }
     }
 
+    // Método para obtener la fecha posterior a la actual
     public Calendar getTomorrow() {
         Calendar tomorrow = Calendar.getInstance();
         tomorrow.add(Calendar.DAY_OF_MONTH, 1);
@@ -1492,6 +1582,7 @@ public class CrearPromocion extends JFrame {
         return tomorrow;
     }
 
+    // Método para cambiar la fecha incial
     public void handleDateChange(UtilDateModel dateModel, Calendar tomorrow) {
         java.util.Date selectedDate = dateModel.getValue();
         if (selectedDate != null && isDateOutOfRange(selectedDate, tomorrow)) {
@@ -1502,6 +1593,7 @@ public class CrearPromocion extends JFrame {
         setFormattedDate(selectedDate);
     }
 
+    // Método para cambiar la fecha final
     public void handleDateChange2(UtilDateModel dateModel, Calendar tomorrow) {
         java.util.Date selectedDate2 = dateModel.getValue();
         if (selectedDate2 != null && isDateOutOfRange2(selectedDate2, tomorrow)) {
@@ -1512,6 +1604,7 @@ public class CrearPromocion extends JFrame {
         setFormattedDate2(selectedDate2);
     }
 
+    // Método para determinar si la fecha inicial está fuera del rango
     public boolean isDateOutOfRange(java.util.Date selectedDate, Calendar tomorrow) {
         Calendar selectedCal = Calendar.getInstance();
         selectedCal.setTime(selectedDate);
@@ -1520,6 +1613,7 @@ public class CrearPromocion extends JFrame {
         return selectedCal.before(tomorrow);
     }
 
+    // Método para determinar si la fecha final está fuera del rango
     public boolean isDateOutOfRange2(Date selectedDate, Calendar tomorrow) {
         Calendar selectedCal = Calendar.getInstance();
         selectedCal.setTime(selectedDate);
@@ -1531,12 +1625,14 @@ public class CrearPromocion extends JFrame {
         return selectedCal.before(tomorrow) || selectedCal.after(maxDate);
     }
 
+    // Método para establecer la fecha inicial
     public void setFormattedDate(java.util.Date selectedDate) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, d 'de' MMMM yyyy", new Locale("es", "ES")); // Formato en español
         String formattedDate = (selectedDate != null) ? dateFormat.format(selectedDate) : "";
         datePicker.getJFormattedTextField().setText(formattedDate);
     }
 
+    // Clase para simpleficar la fecha inicial
     public class SimpleDateFormatter extends JFormattedTextField.AbstractFormatter {
 
         private final String datePattern = "EEEE, d 'de' MMMM yyyy";
@@ -1560,12 +1656,14 @@ public class CrearPromocion extends JFrame {
         }
     }
 
+    // Método para establecer la fecha final
     public void setFormattedDate2(java.util.Date selectedDate) {
         SimpleDateFormat dateFormat2 = new SimpleDateFormat("EEEE, d 'de' MMMM yyyy", new Locale("es", "ES")); // Formato en español
         String formattedDate2 = (selectedDate != null) ? dateFormat2.format(selectedDate) : "";
         datePicker2.getJFormattedTextField().setText(formattedDate2);
     }
 
+    // Clase para simpleficar la fecha final
     public class SimpleDateFormatter2 extends JFormattedTextField.AbstractFormatter {
 
         private final String datePattern2 = "EEEE, d 'de' MMMM yyyy";
@@ -1589,6 +1687,7 @@ public class CrearPromocion extends JFrame {
         }
     }
 
+    // Método para calcular el total de la tabla
     private double calcularTotalTabla() {
         double sumaTotalPromocion = 0.0;
         double sumaTotal = 0.0;
@@ -1638,6 +1737,7 @@ public class CrearPromocion extends JFrame {
         return sumaTotal;
     }
 
+    // Método para extraer el valor númerico
     private double extraerValorNumerico(String valor) {
         String valorNumerico = valor.replace(',', '.');
         try {
@@ -1648,6 +1748,7 @@ public class CrearPromocion extends JFrame {
         }
     }
 
+    // Método principal
     public static void main(String[] args) {
         CrearPromocion crearPromocion = new CrearPromocion();
         crearPromocion.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
