@@ -883,7 +883,7 @@ public class CrearEmpleado extends JFrame {
             mostrarDialogoPersonalizadoError("No se pudo realizar el registro del empleado", Color.decode("#C62828"));
         }
     }
-    
+
     // Método para mostrar un diálogo personalizado de éxito
     public void mostrarDialogoPersonalizadoExito(String mensaje, Color colorFondoBoton) {
         // Crea un botón personalizado "OK"
