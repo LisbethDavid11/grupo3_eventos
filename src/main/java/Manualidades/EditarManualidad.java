@@ -1,4 +1,15 @@
+/**
+ * EditarManualidad.java
+ *
+ * Editar Manualidad
+ *
+ * @author Elsa Ramos
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Manualidades;
+
 import Modelos.ModeloMaterial;
 import Modelos.ModeloProducto;
 import Objetos.Conexion;
@@ -25,46 +36,79 @@ import java.util.Date;
 import java.util.List;
 
 public class EditarManualidad extends JFrame {
-
+    // Campos de texto
     private JTextField campoPrecio;
+    private JTextField campoManoObra;
+    private JTextField campoNombre;
+
+    // Área de texto
     private JTextArea campoDescripcion;
+
+    // Botones
     private JButton botonGuardar;
     private JButton botonCancelar;
-    private JPanel jpanelImagen, panel1, panel2, panel3, panel5, panel6;
+    private JButton botonCargarImagen;
+    private JButton agregarMaterialButton;
+    private JButton agregarButton;
+    private JButton cancelarButton;
+    private JButton botonLimpiar;
+
+    // Panel
+    private JPanel jpanelImagen;
+    private JPanel panel1;
+    private JPanel panel2;
+    private JPanel panel3;
+    private JScrollPane panel4;
+    private JScrollPane jscrollMateriales;
+    private JPanel panel5;
+    private JPanel panel6;
+    private JPanel panel7;
+    private JPanel panel8;
+    private JPanel jpanelDescripcion;
+
+    // Etiquetas
     private JLabel lbl0;
     private JLabel lbl2;
     private JLabel lbl4;
-    private JButton botonCargarImagen;
-    private JButton agregarMaterialButton;
-    private JTable jtableMateriales;
     private JLabel jlabelImagen;
-    private JScrollPane jscrollMateriales, panel4;
-    private JButton agregarButton;
-    private JTextField campoBusquedaMateriales;
-    private JButton cancelarButton;
-    private JComboBox<String> jcbOcasion;
-    private JPanel jpanelDescripcion;
     private JLabel jtextCatidadTotalMateriales;
     private JLabel lbl8;
-    private JButton botonLimpiar;
-    private JPanel panel7;
-    private JTextField campoManoObra;
     private JLabel lbl9;
     private JLabel lbl10;
-    private JTextField campoNombre;
-    private JPanel panel8;
-    private String imagePath = "";
-    private EditarManualidad actual = this;
-    private Conexion sql;
-    private Connection mysql;
-    private String nombreFile;
-    private String urlDestino = "";
-    private DefaultTableModel modeloProductos;
+
+    // ComboBox
+    private JComboBox<String> jcbOcasion;
+
+    // Tabla
+    private JTable jtableMateriales;
+
+    // Campos de búsqueda y prompt de texto
+    private JTextField campoBusquedaMateriales;
     private TextPrompt placeholder = new TextPrompt(" Buscar por nombre, proveedor o precio", campoBusquedaMateriales);
+
+    // Lista de materiales
     private List<Material> materialList = new ArrayList<>();
     private List<Material> materialListTemporal = new ArrayList<>();
     private List<Material> backupMaterialList; // Copia de seguridad de los datos originales
-    private Manualidad originalManualidad;
+
+    // Imagen
+    private String imagePath = "";
+
+    // Instancia de la clase
+    private EditarManualidad actual = this;
+
+    // Conexión a la base de datos
+    private Conexion sql;
+    private Connection mysql;
+
+    // Nombre de archivo y destino
+    private String nombreFile;
+    private String urlDestino = "";
+
+    // Modelo de tabla
+    private DefaultTableModel modeloProductos;
+
+    // Fuente y colores
     Color textColor = Color.decode("#212121");
     Color darkColorCyan = new Color(0, 150, 136);
     Color darkColorPink = new Color(233, 30, 99);
@@ -72,12 +116,16 @@ public class EditarManualidad extends JFrame {
     Color darkColorBlue = new Color(33, 150, 243);
     EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
     Font fontTitulo = new Font(lbl0.getFont().getName(), lbl0.getFont().getStyle(), 18);
+
     // Establecer ancho y alto deseados para el panelImg
     int panelImgWidth = 70;
     int panelImgHeight = 150;
+
+    // Otras variables
     private int id;
     private String nombreArchivoImagen;
     private boolean imagenCambiada = false; // Variable de control
+    private Manualidad originalManualidad;
 
     public EditarManualidad(Manualidad manualidad, int id) {
         super("");
@@ -695,6 +743,7 @@ public class EditarManualidad extends JFrame {
         mostrar();
     }
 
+    // Clase para alinear los elementos al centro
     class CenterAlignedRenderer extends DefaultTableCellRenderer {
         public CenterAlignedRenderer() {
             setHorizontalAlignment(CENTER);
@@ -707,6 +756,7 @@ public class EditarManualidad extends JFrame {
         }
     }
 
+    // Clase para alinear los elementos a la izquierda
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
         public LeftAlignedRenderer() {
             setHorizontalAlignment(LEFT);
@@ -719,6 +769,7 @@ public class EditarManualidad extends JFrame {
         }
     }
 
+    // Método para obtener la cantidad ingresada por el usuario
     private int obtenerCantidadMaterial() {
         String input = JOptionPane.showInputDialog(this, "Ingrese la cantidad del material:", "Cantidad", JOptionPane.PLAIN_MESSAGE);
         if (input == null || input.isEmpty()) {
@@ -734,6 +785,7 @@ public class EditarManualidad extends JFrame {
         }
     }
 
+    // Método para obtener la cantidad desde la base de datos
     private int obtenerCantidadExistenteEnBaseDeDatos(int material_id) {
         int cantidadExistente = 0;
 
@@ -753,6 +805,7 @@ public class EditarManualidad extends JFrame {
         return cantidadExistente;
     }
 
+    // Método para obtener el precio desde la base de datos
     private double obtenerPrecioMaterialDesdeBD(int material_id) {
         double precio = 0.0;
 
@@ -772,6 +825,7 @@ public class EditarManualidad extends JFrame {
         return precio;
     }
 
+    // Método para cargar los datos
     public void cargarDatosEditar() {
         campoDescripcion.setText(this.originalManualidad.getDescripcion());
         jcbOcasion.setSelectedItem(this.originalManualidad.getTipo());
@@ -788,6 +842,7 @@ public class EditarManualidad extends JFrame {
         jtableMateriales.getColumnModel().getColumn(5).setCellEditor(new EditarManualidad.ButtonEditor());
     }
 
+    // Método para cargar los datos de la manualidad
     private void mostrar() {
         sql = new Conexion();
         mysql = sql.conectamysql();
@@ -848,6 +903,7 @@ public class EditarManualidad extends JFrame {
         }
     }
 
+    // Método para guardar la manualidad
     private void guardarMateriales() {
         String precioManualidadText = campoPrecio.getText().replace("L ", "").replace(",", "").replace("_", "");
         double precio_manualidad = Double.parseDouble(precioManualidadText);
@@ -877,6 +933,7 @@ public class EditarManualidad extends JFrame {
         }
     }
 
+    // Método para guardar los detalles
     private void guardarDetalleMaterial(int material_id, int cantidad) {
         int cantidadExistente = obtenerCantidadExistenteEnBaseDeDatos(material_id);
 
@@ -900,6 +957,7 @@ public class EditarManualidad extends JFrame {
         }
     }
 
+    // Método para cargar los detalles por defecto
     private ModeloMaterial cargarDatosMateriales() {
         sql = new Conexion();
         materialList.clear();
@@ -944,6 +1002,7 @@ public class EditarManualidad extends JFrame {
         return new ModeloMaterial(materialList, sql);
     }
 
+    // Método para cargar los detalles
     private ModeloProducto cargarDetallesMateriales() {
         sql = new Conexion();
         materialList.clear(); // Limpiar la lista antes de agregar los materiales
@@ -995,6 +1054,7 @@ public class EditarManualidad extends JFrame {
         return new ModeloProducto(materialList, sql);
     }
 
+    // Método para eliminar los detalles de la tabla
     private void eliminarDetalleManualidad(int material_id) {
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement(
@@ -1006,6 +1066,7 @@ public class EditarManualidad extends JFrame {
         }
     }
 
+    // Método para calcular el valor total
     private double calcularTotalTabla() {
         double sumaTotal = 0.0;
 
@@ -1065,6 +1126,7 @@ public class EditarManualidad extends JFrame {
         return sumaTotal;
     }
 
+    // Método para extraer el valor númerico
     private double extraerValorNumerico(String valor) {
         String valorNumerico = valor.replace(',', '.');
         try {
@@ -1075,6 +1137,7 @@ public class EditarManualidad extends JFrame {
         }
     }
 
+    // Método para actualizar los calculos
     private void actualizarLbl8y10() {
         double totalTabla = calcularTotalTabla();
 
@@ -1096,6 +1159,7 @@ public class EditarManualidad extends JFrame {
         lbl10.setText(String.format("%.2f", total));
     }
 
+    // Método para configurar la tabla de materiales
     private void configurarTablaMateriales() {
         int columnCount = jtableMateriales.getColumnCount();
         if (columnCount > 0) {
@@ -1118,6 +1182,7 @@ public class EditarManualidad extends JFrame {
         }
     }
 
+    // Método para limpiar datos
     private void resetFieldsAndTables() {
         // Restaurar los datos originales en la base de datos a partir de la copia de seguridad
         restaurarDatosOriginalesEnBaseDeDatos();
@@ -1139,6 +1204,7 @@ public class EditarManualidad extends JFrame {
         actualizarLbl8y10();
     }
 
+    // Método para restaurar los valores por defecto de la tabla
     private void restaurarDatosOriginalesEnBaseDeDatos() {
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement(
@@ -1156,6 +1222,7 @@ public class EditarManualidad extends JFrame {
         }
     }
 
+    // Clase para renderizar el botón
     class ButtonRenderer extends JButton implements TableCellRenderer {
         public ButtonRenderer() {
             setOpaque(true);
@@ -1170,6 +1237,7 @@ public class EditarManualidad extends JFrame {
         }
     }
 
+    // Clase para agregar el botón a la celda
     class ButtonEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
         private JButton button;
         private int row;
