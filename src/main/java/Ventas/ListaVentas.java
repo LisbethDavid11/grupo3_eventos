@@ -1,6 +1,14 @@
+/**
+ * ListaVentas.java
+ *
+ * Lista Ventas
+ *
+ * @author Dania Lagos
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Ventas;
-import Login.SesionUsuario;
-import Modelos.ModeloCompra;
 import Modelos.ModeloVenta;
 import Modelos.ModeloVentaDetalle;
 import Objetos.*;
@@ -9,7 +17,6 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
@@ -29,19 +36,39 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.*;
+
 public class ListaVentas extends JFrame {
+    // Paneles
     private JPanel panelPrincipal;
-    private JTable listaVentas;
-    private JButton botonAtras,botonAdelante, botonCrear, botonImprimir;
-    private JTextField campoBusqueda;
-    private TextPrompt placeholder = new TextPrompt(" Buscar por código de venta, fecha ó nombre de cliente", campoBusqueda);
-    private JLabel lbl0, lblPagina;
-    private JComboBox fechaComboBox;
-    private JButton botonVer;
     private JPanel panelB;
     private JPanel panelA;
     private JPanel panelTitulo;
+
+    // Tabla
+    private JTable listaVentas;
+
+    // Botones
+    private JButton botonAtras;
+    private JButton botonAdelante;
+    private JButton botonCrear;
+    private JButton botonImprimir;
+    private JButton botonVer;
+
+    // Campo de búsqueda
+    private JTextField campoBusqueda;
+    private TextPrompt placeholder = new TextPrompt(" Buscar por código de venta, fecha ó nombre de cliente", campoBusqueda);
+
+    // Etiquetas
+    private JLabel lbl0;
+    private JLabel lblPagina;
+
+    // ComboBox
+    private JComboBox fechaComboBox;
+
+    // Lista de ventas
     private List<Venta> ventaList;
+
+    // Otras variables
     private int pagina = 0;
     private static Conexion sql;
     private String busqueda = "";
@@ -231,6 +258,7 @@ public class ListaVentas extends JFrame {
 
     }
 
+    // Método para configurar la tabla
     private void configurarTablaVentas() {
         TableColumnModel columnModel = listaVentas.getColumnModel();
 
@@ -253,6 +281,7 @@ public class ListaVentas extends JFrame {
         columnModel.getColumn(7).setCellRenderer(new LeftAlignedRenderer());
     }
 
+    // Clase para alinear los datos a la izquierda
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
         public LeftAlignedRenderer() {
             setHorizontalAlignment(LEFT);
@@ -265,18 +294,7 @@ public class ListaVentas extends JFrame {
         }
     }
 
-    class RightAlignedRenderer extends DefaultTableCellRenderer {
-        public RightAlignedRenderer() {
-            setHorizontalAlignment(RIGHT);
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            return cell;
-        }
-    }
-
+    // Clase para alinear los datos al centro
     class CenterAlignedRenderer extends DefaultTableCellRenderer {
         public CenterAlignedRenderer() {
             setHorizontalAlignment(CENTER);
@@ -289,6 +307,7 @@ public class ListaVentas extends JFrame {
         }
     }
 
+    // Método para obtener el número del mes
     private int obtenerNumeroMes(String mesSeleccionado) {
         int numeroMes = 0;
         switch (mesSeleccionado) {
@@ -335,6 +354,7 @@ public class ListaVentas extends JFrame {
         return numeroMes;
     }
 
+    // Método para actualizar la tabla según el mes seleccionado
     private void actualizarModeloTablaConMesSeleccionado(String mesSeleccionado) {
         sql = new Conexion();
         try (Connection mysql = sql.conectamysql()) {
@@ -403,6 +423,7 @@ public class ListaVentas extends JFrame {
         }
     }
 
+    // Método para la paginación
     private int getTotalPageCount(String mesSeleccionado) {
         int count = 0;
         try (Connection mysql = sql.conectamysql()) {
@@ -432,6 +453,7 @@ public class ListaVentas extends JFrame {
         return totalPageCount;
     }
 
+    // Método para calcular el subtotal
     public static double calcularSubtotal(List<VentaDetalle> detalles) {
         double subtotal = 0.0;
 
@@ -443,6 +465,7 @@ public class ListaVentas extends JFrame {
         return subtotal;
     }
 
+    // Método para calcular el impuesto sobre ventas
     public static double calcularISV(List<VentaDetalle> detalles) {
         double isv = 0.0;
 
@@ -453,12 +476,14 @@ public class ListaVentas extends JFrame {
         return isv;
     }
 
+    // Método para calcular el total
     private static double calcularTotal(List<VentaDetalle> detalles) {
         double subtotal = calcularSubtotal(detalles);
         double isv = calcularISV(detalles);
         return subtotal + isv;
     }
 
+    // Método para obtener el precio del producto
     public static double obtenerPrecioProducto(int detalleId, Conexion sql) {
         double precioProducto = 0.0;
 
@@ -588,6 +613,7 @@ public class ListaVentas extends JFrame {
             return precioProducto;
     }
 
+    // Método para obtener el nombre del producto
     public static String obtenerNombreProducto(int detalleId, Conexion sql) {
         String nombreProducto = "Producto no encontrado";
 
@@ -663,6 +689,7 @@ public class ListaVentas extends JFrame {
             return nombreProducto;
     }
 
+    // Método para cargar los datos de la venta
     private ModeloVenta cargarDatos() {
         sql = new Conexion();
         try (Connection mysql = sql.conectamysql();
@@ -712,6 +739,7 @@ public class ListaVentas extends JFrame {
         return new ModeloVenta(ventaList, sql);
     }
 
+    // Método para imprimir la factura
     public static void imprimirFactura(String codigo) {
         Venta venta = new Venta();
 
@@ -947,6 +975,7 @@ public class ListaVentas extends JFrame {
         }
     }
 
+    // Método para mostrar un diálogo personalizado de éxito
     public static void mostrarDialogoPersonalizadoExito(String mensaje, Color colorFondoBoton) {
         // Crea un botón personalizado
         JButton btnAceptar = new JButton("OK");
@@ -982,6 +1011,7 @@ public class ListaVentas extends JFrame {
         dialog.setVisible(true);
     }
 
+    // Método para mostrar un diálogo personalizado de error
     public static void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
         // Crea un botón personalizado
         JButton btnAceptar = new JButton("OK");
@@ -1017,6 +1047,7 @@ public class ListaVentas extends JFrame {
         dialog.setVisible(true);
     }
 
+    // Método para mostrar un diálogo personalizado de atención
     public void mostrarDialogoPersonalizadoAtencion(String mensaje, Color colorFondoBoton) {
         // Crea un botón personalizado
         JButton btnAceptar = new JButton("OK");
@@ -1052,6 +1083,7 @@ public class ListaVentas extends JFrame {
         dialog.setVisible(true);
     }
 
+    // Método Principal
     public static void main(String[] args) {
         ListaVentas listaVentas = new ListaVentas();
         listaVentas.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
