@@ -1,3 +1,13 @@
+/**
+ * PreviewImagen.java
+ *
+ * Preview Imagen
+ *
+ * @author Skarleth Ferrera
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Tarjetas;
 
 import javax.swing.*;
