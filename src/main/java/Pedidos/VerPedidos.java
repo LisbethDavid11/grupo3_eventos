@@ -1,7 +1,16 @@
+/**
+ * VerPedidos.java
+ *
+ * Ver Pedidos
+ *
+ * @author Lisbeth David
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Pedidos;
 
 import Objetos.Conexion;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -21,20 +30,62 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class VerPedidos extends JFrame {
-    private JPanel panel1, panel3, panel4, panel5, panel6;
-    private JTextField campoCodigo, campoFechaPedido, campoEntrega, campoFechaEntrega, campoCliente;
-    private JTable productos;
-    private JButton cancelarButton;
-    private JLabel lbl0, lbl1, lbl2, lbl3, lbl4, lbl5, lbl6, lbl7, lbl8, lbl9, lbl10, lbl11, lbl12, lblImagen;
-    private JScrollPane panel2;
-    private JTextArea campoDescripcion;
-    private JLabel lbl13;
+    // Paneles
+    private JPanel panel1;
+    private JPanel panel3;
+    private JPanel panel4;
+    private JPanel panel5;
+    private JPanel panel6;
+
+    // Campos de texto
+    private JTextField campoCodigo;
+    private JTextField campoFechaPedido;
+    private JTextField campoEntrega;
+    private JTextField campoFechaEntrega;
+    private JTextField campoCliente;
     private JTextField campoPrecio;
+
+    // Tabla
+    private JTable productos;
+
+    // Botón
+    private JButton cancelarButton;
+
+    // Etiquetas
+    private JLabel lbl0;
+    private JLabel lbl1;
+    private JLabel lbl2;
+    private JLabel lbl3;
+    private JLabel lbl4;
+    private JLabel lbl5;
+    private JLabel lbl6;
+    private JLabel lbl7;
+    private JLabel lbl8;
+    private JLabel lbl9;
+    private JLabel lbl10;
+    private JLabel lbl11;
+    private JLabel lbl12;
+    private JLabel lbl13;
     private JLabel lbl14;
+    private JLabel lblImagen;
+
+    // ScrollPane
+    private JScrollPane panel2;
+
+    // Área de texto
+    private JTextArea campoDescripcion;
+
+    // Conexión a la base de datos
     private Conexion sql;
     private Connection mysql;
+
+    // ID
     private int id;
+
+    // Referencia a la clase actual
     private VerPedidos actual = this;
+
+    // Fuentes
     Font fontTitulo = new Font("Century Gothic", Font.BOLD, 20);
     Font font = new Font("Century Gothic", Font.BOLD, 15);
     Font font2 = new Font("Century Gothic", Font.BOLD, 11);
