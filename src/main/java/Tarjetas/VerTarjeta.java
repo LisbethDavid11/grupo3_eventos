@@ -1,3 +1,13 @@
+/**
+ * VerTarjeta.java
+ *
+ * Ver Tarjeta
+ *
+ * @author Skarleth Ferrera
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Tarjetas;
 
 import Modelos.ModeloMaterial;
@@ -5,7 +15,6 @@ import Modelos.ModeloProducto;
 import Objetos.Conexion;
 import Objetos.Material;
 import Objetos.Tarjeta;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
@@ -19,30 +28,50 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class VerTarjeta extends JFrame {
-
+    // Campos de texto
     private JTextField campoPrecioTarjeta;
+    private JTextField campoManoObra;
+    private JTextField jtOcasion;
+
+    // Área de texto
     private JTextArea campoDescripcion;
+
+    // RadioButtons
     private JRadioButton radioButtonSi;
     private JRadioButton radioButtonNo;
+
+    // Botones
     private JButton botonCancelar;
-    private JPanel jpanelImagen, panel1, panel2, panel5, panel6;
+
+    // Paneles
+    private JPanel jpanelImagen;
+    private JPanel panel1;
+    private JPanel panel2;
+    private JScrollPane panel4;
+    private JPanel panel5;
+    private JPanel panel6;
+    private JPanel jpanelDescripcion;
+
+    // JLabels
     private JLabel lbl0;
     private JLabel lbl2;
     private JLabel lbl4;
-
-    private JTable jtableMateriales;
     private JLabel jlabelImagen;
-    private JScrollPane jscrollMateriales, panel4;
-
-    private JPanel jpanelDescripcion;
     private JLabel jtextCatidadTotalMateriales;
     private JLabel lbl8;
-    private JTextField campoManoObra;
     private JLabel lbl9;
     private JLabel lbl10;
-    private JTextField jtOcasion;
     private JLabel lbl13;
+
+    // JScrollPane
+    private JScrollPane jscrollMateriales;
+
+    // JTable
+    private JTable jtableMateriales;
+
+    // Otras variables
     private List<Material> materialList = new ArrayList<>();
+    private List<Material> materialListTemporal = new ArrayList<>();
     private String imagePath = "";
     private VerTarjeta actual = this;
     private Conexion sql;
@@ -50,10 +79,10 @@ public class VerTarjeta extends JFrame {
     private String urlDestino = "";
     private DefaultTableModel modeloProductos;
 
-    private List<Material> materialListTemporal = new ArrayList<>();
-
+    // Tarjeta original
     private Tarjeta originalTarjeta;
 
+    // Fuente y colores
     Color textColor = Color.decode("#212121");
     Color darkColorCyan = new Color(0, 150, 136);
     Color darkColorPink = new Color(233, 30, 99);
@@ -382,12 +411,10 @@ public class VerTarjeta extends JFrame {
             }
         });
 
-
-
         cargarDatosEditar();
-
     }
 
+    // Método para cargar los datos de la tarjeta
     public void  cargarDatosEditar(){
         campoDescripcion.setText(this.originalTarjeta.getDescripcion());
         jtOcasion.setText(this.originalTarjeta.getOcasion());
@@ -435,6 +462,7 @@ public class VerTarjeta extends JFrame {
         jlabelImagen.setIcon(scaledIcon);
     }
 
+    // Método para configurar la tabla
     private void configurarTablaMateriales() {
         int columnCount = jtableMateriales.getColumnCount();
         if (columnCount > 0) {
@@ -454,6 +482,7 @@ public class VerTarjeta extends JFrame {
         }
     }
 
+    // Clase para alinear los datos al centro
     class CenterAlignedRenderer extends DefaultTableCellRenderer {
         public CenterAlignedRenderer() {
             setHorizontalAlignment(CENTER);
@@ -466,6 +495,7 @@ public class VerTarjeta extends JFrame {
         }
     }
 
+    // Clase para alinear los datos a la izquierda
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
         public LeftAlignedRenderer() {
             setHorizontalAlignment(LEFT);
@@ -478,9 +508,7 @@ public class VerTarjeta extends JFrame {
         }
     }
 
-
-
-
+    // Método para cargar los detalles de la tarjeta
     private ModeloProducto cargarDetallesMateriales() {
         sql = new Conexion();
         materialList.clear(); // Limpiar la lista antes de agregar los materiales
@@ -530,9 +558,7 @@ public class VerTarjeta extends JFrame {
         return new ModeloProducto(materialList, sql);
     }
 
-
-
-
+    // Método para cargar los datos
     private ModeloMaterial cargarDatosMateriales() {
         sql = new Conexion();
         materialList.clear();
@@ -574,6 +600,7 @@ public class VerTarjeta extends JFrame {
         return new ModeloMaterial(materialList, sql);
     }
 
+    // Método para calcular el valor total de la tabla
     private double calcularTotalTabla() {
         double sumaTotal = 0.0;
 
@@ -633,6 +660,7 @@ public class VerTarjeta extends JFrame {
         return sumaTotal;
     }
 
+    // Método para extraer el valor númerico
     private double extraerValorNumerico(String valor) {
         String valorNumerico = valor.replace(',', '.');
         try {
@@ -643,6 +671,7 @@ public class VerTarjeta extends JFrame {
         }
     }
 
+    // Método para actualizar los calculos
     private void actualizarLbl8y10() {
         double totalTabla = calcularTotalTabla();
 
@@ -663,5 +692,4 @@ public class VerTarjeta extends JFrame {
         double total = totalTabla + manoObra;
         lbl10.setText(String.format("%.2f", total));
     }
-
 }
