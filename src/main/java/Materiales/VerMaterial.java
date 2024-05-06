@@ -1,4 +1,15 @@
+/**
+ * VerMaterial.java
+ *
+ * Ver Material
+ *
+ * @author Dania Lagos
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Materiales;
+
 import Objetos.Conexion;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -9,10 +20,28 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class VerMaterial extends JFrame {
-    private JPanel panel1, panel2, panel3, panel4, panel5;
+    // Paneles
+    private JPanel panel1;
+    private JPanel panel2;
+    private JPanel panel3;
+    private JPanel panel4;
+    private JPanel panel5;
+
+    // Área de texto
     private JTextArea etiquetaDescripcion;
-    private JTextField etiquetaNombre, etiquetaCantidad, etiquetaPrecio, etiquetaDisponible, etiquetaProveedor, etiquetaExento;
+
+    // Campos de texto
+    private JTextField etiquetaNombre;
+    private JTextField etiquetaCantidad;
+    private JTextField etiquetaPrecio;
+    private JTextField etiquetaDisponible;
+    private JTextField etiquetaProveedor;
+    private JTextField etiquetaExento;
+
+    // Botón
     private JButton volverButton;
+
+    // Etiquetas
     private JLabel lbl0;
     private JLabel lbl1;
     private JLabel lbl2;
@@ -21,10 +50,18 @@ public class VerMaterial extends JFrame {
     private JLabel lbl5;
     private JLabel lbl6;
     private JLabel lbl7;
+
+    // Instancia de la clase
     private final VerMaterial actual = this;
+
+    // Conexión a la base de datos
     private Conexion sql;
     private Connection mysql;
+
+    // Identificador
     private int id;
+
+    // Fuente y Colores
     Font fontTitulo = new Font("Century Gothic", Font.BOLD, 20);
     Font font = new Font("Century Gothic", Font.BOLD, 15);
     Font font2 = new Font("Century Gothic", Font.BOLD, 11);
@@ -58,6 +95,7 @@ public class VerMaterial extends JFrame {
     Color darkColorRed = new Color(244, 67, 54);
     Color darkColorBlue = new Color(33, 150, 243);
     EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
+
     public VerMaterial(int id) {
         super("");
         setSize(550, 460);
@@ -165,6 +203,7 @@ public class VerMaterial extends JFrame {
         mostrar();
     }
 
+    // Método cargar datos de materiales
     private void mostrar() {
         sql = new Conexion();
         mysql = sql.conectamysql();
@@ -189,6 +228,7 @@ public class VerMaterial extends JFrame {
         }
     }
 
+    // Método Principal
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             VerMaterial verMaterial = new VerMaterial(1);
