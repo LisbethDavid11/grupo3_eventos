@@ -1,12 +1,19 @@
+/**
+ * ListaPermisos.java
+ *
+ * Lista de Permisos
+ *
+ * @author Skarleth Ferrera
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Permisos;
 
 import Arreglos.TextPrompt;
 import Modelos.ModeloPermisos;
-import Modelos.ModeloRol;
 import Objetos.Conexion;
 import Objetos.Permisos;
-import Objetos.Rol;
-
 import javax.swing.*;
 import javax.swing.table.*;
 import java.awt.*;
@@ -22,20 +29,49 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ListaPermisos extends JFrame {
-    private JPanel panelPrincipal, panelTitulo;
-    private JButton botonCrear, botonVer, botonEditar, botonAtras, botonAdelante;
-    private JTable tablaPermisos;
-    private JTextField campoBusqueda;
-    private TextPrompt placeholder = new TextPrompt(" Buscar por nombre",campoBusqueda);
-    private JLabel lblPagina, lbl0;
+    // Paneles
+    private JPanel panelPrincipal;
+    private JPanel panelTitulo;
     private JPanel panelA;
     private JPanel panelB;
+
+    // Botones
+    private JButton botonCrear;
+    private JButton botonVer;
+    private JButton botonEditar;
+    private JButton botonAtras;
+    private JButton botonAdelante;
+
+    // Tabla
+    private JTable tablaPermisos;
+
+    // Campo de búsqueda
+    private JTextField campoBusqueda;
+
+    // TextPrompt para el campo de búsqueda
+    private TextPrompt placeholder;
+
+    // Etiquetas
+    private JLabel lblPagina;
+    private JLabel lbl0;
+
+    // Lista de permisos
     private List<Permisos> listaRol;
+
+    // Página actual
     private int pagina = 0;
+
+    // Conexión a la base de datos
     private Connection mysql;
     private Conexion sql;
+
+    // Referencia a la lista de permisos actual
     private ListaPermisos actual = this;
+
+    // Búsqueda actual
     private String busqueda = "";
+
+    // Fuentes y colores
     Font fontTitulo = new Font("Century Gothic", Font.BOLD, 17);
     Font font = new Font("Century Gothic", Font.BOLD, 11);
     Color primaryColor = Color.decode("#37474f"); // Gris azul oscuro
@@ -44,6 +80,7 @@ public class ListaPermisos extends JFrame {
     Color darkColorRed = new Color(244, 67, 54);
     Color darkColorBlue = new Color(33, 150, 243);
 
+    // ID
     public int id;
 
     public ListaPermisos() {
@@ -202,9 +239,9 @@ public class ListaPermisos extends JFrame {
         botonCrear.setFocusable(false);
         botonVer.setFocusable(false);
         botonEditar.setFocusable(false);
-
     }
 
+    //Método para configurar la tabla
     private void configurarTablaPermisos() {
         TableColumnModel columnModel = tablaPermisos.getColumnModel();
 
@@ -215,6 +252,7 @@ public class ListaPermisos extends JFrame {
         columnModel.getColumn(1).setCellRenderer(new ListaPermisos.LeftAlignedRenderer());
     }
 
+    // Clase para alinear a la izquierda la columna
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
         public LeftAlignedRenderer() {
             setHorizontalAlignment(LEFT);
@@ -227,18 +265,7 @@ public class ListaPermisos extends JFrame {
         }
     }
 
-    class RightAlignedRenderer extends DefaultTableCellRenderer {
-        public RightAlignedRenderer() {
-            setHorizontalAlignment(RIGHT);
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            return cell;
-        }
-    }
-
+    // Clase para alinear al centro la columna
     class CenterAlignedRenderer extends DefaultTableCellRenderer {
         public CenterAlignedRenderer() {
             setHorizontalAlignment(CENTER);
@@ -251,7 +278,7 @@ public class ListaPermisos extends JFrame {
         }
     }
 
-    // Función para verificar si todos los permisos son false
+    // Método para verificar si todos los permisos son false
     private boolean todosFalse(Permisos permiso) {
         return !permiso.isCliente() && !permiso.isEmpleado() && !permiso.isFloristeria() &&
                 !permiso.isArreglo() && !permiso.isUsuario() && !permiso.isMaterial() &&
@@ -262,6 +289,7 @@ public class ListaPermisos extends JFrame {
                 !permiso.isAlquiler() && !permiso.isRol();
     }
 
+    // Método para cargar los datos de
     private ModeloPermisos cargarDatos() {
         sql = new Conexion();
         mysql = sql.conectamysql();
@@ -310,8 +338,7 @@ public class ListaPermisos extends JFrame {
         return new ModeloPermisos(listaRol);
     }
 
-
-
+    // Método para la paginación
     private int getTotalPageCount() {
         int count = 0;
         try (Connection mysql = sql.conectamysql();
@@ -333,294 +360,100 @@ public class ListaPermisos extends JFrame {
         return totalPageCount; // Retorna el total de páginas necesarias
     }
 
-    class ButtonRenderer extends JButton implements TableCellRenderer {
-        public ButtonRenderer() {
-            setOpaque(true);
-            setForeground(Color.WHITE);
-            setBackground(darkColor);
-            setFocusPainted(false);
-        }
-
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            setText("X");
-            return this;
-        }
-    }
-
-    class ButtonEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
-        private JButton button;
-        private int row, col;
-        private JTable table;
-
-        public ButtonEditor() {
-            button = new JButton();
-            button.setOpaque(true);
-            button.addActionListener(this);
-            button.setForeground(Color.WHITE);
-            button.setBackground(darkColor);
-            button.setFocusPainted(false);
-            //button.setBorder(margin);
-        }
-
-        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-            button.setText("X");
-            this.table = table;
-            this.row = row;
-            this.col = column;
-            return button;
-        }
-
-        public Object getCellEditorValue() {
-            return "X";
-        }
-
-        public void actionPerformed(ActionEvent e) {
-
-            JButton btnSave = new JButton("Sí");
-            JButton btnCancel = new JButton("No");
-
-            // Personaliza los botones aquí
-            btnSave.setBackground(darkColorBlue);
-            btnCancel.setBackground(darkColorRed);
-
-            // Personaliza los fondos de los botones aquí
-            btnSave.setForeground(Color.WHITE);
-            btnCancel.setForeground(Color.WHITE);
-
-            // Elimina el foco
-            btnSave.setFocusPainted(false);
-            btnCancel.setFocusPainted(false);
-
-            // Crea un JOptionPane
-            JOptionPane optionPane = new JOptionPane(
-                    "¿Desea eliminar el rol de usuario?",
-                    JOptionPane.QUESTION_MESSAGE,
-                    JOptionPane.DEFAULT_OPTION,
-                    null,
-                    new Object[]{}, // no options
-                    null
-            );
-
-            // Crea un JDialog
-            JDialog dialog = optionPane.createDialog("Eliminar rol");
-
-            // Añade ActionListener a los botones
-            btnSave.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    // Verificar si el usuario es administrador
-                    if (esUsuarioAdministrador(id)) {
-                        if (table != null) {
-                            int modelRow = table.convertRowIndexToModel(row);
-                            TableModel model = table.getModel();
-
-                            if (model instanceof ModeloRol) {
-                                ModeloRol rolModel = (ModeloRol) model;
-                                Rol rol = rolModel.getRol(modelRow);
-                                int rolId = rol.getId();
-
-                                // Restricción para roles específicos
-                                if (rolId == 1) {
-                                    dialog.dispose();
-                                    mostrarDialogoPersonalizadoError("No se puede eliminar el rol de administrador.", Color.decode("#C62828"));
-                                    fireEditingCanceled();
-                                    return; // Salir del método si se intenta eliminar un rol restringido
-                                }
-
-                                if (rolId == 2) {
-                                    dialog.dispose();
-                                    mostrarDialogoPersonalizadoError("No se puede eliminar el rol de cajero principal.", Color.decode("#C62828"));
-                                    fireEditingCanceled();
-                                    return; // Salir del método si se intenta eliminar un rol restringido
-                                }
-
-                                try (Connection connection = sql.conectamysql()) {
-                                    // Verificar si hay usuarios asociados a este rol
-                                    boolean tieneUsuarios = false;
-                                    try (PreparedStatement checkUsuarios = connection.prepareStatement(
-                                            "SELECT COUNT(*) FROM usuarios WHERE rol_id = ?")) {
-                                        checkUsuarios.setInt(1, rolId);
-                                        ResultSet rs = checkUsuarios.executeQuery();
-                                        if (rs.next() && rs.getInt(1) > 0) {
-                                            tieneUsuarios = true;
-                                        }
-                                    }
-
-                                    if (!tieneUsuarios) {
-                                        // Eliminar el rol si no hay usuarios asociados
-                                        try (PreparedStatement deleteRol = connection.prepareStatement(
-                                                "DELETE FROM roles WHERE id = ?")) {
-                                            deleteRol.setInt(1, rolId);
-                                            deleteRol.executeUpdate();
-
-                                            // Elimina el rol de la lista y actualiza la tabla
-                                            rolModel.removeRow(modelRow);
-                                            table.repaint();
-                                            table.revalidate();
-                                            dialog.dispose();
-                                            mostrarDialogoPersonalizadoExito("El rol de usuario " + rol.getNombre() +" ha sido eliminado con éxito.", Color.decode("#263238"));
-                                            // Otros métodos de actualización si es necesario
-                                        }
-                                    } else {
-                                        // Manejar el caso donde hay usuarios asociados
-                                        dialog.dispose();
-                                        mostrarDialogoPersonalizadoError("No se puede eliminar el rol porque existen usuarios asociados.", Color.decode("#C62828"));
-                                        fireEditingCanceled();
-                                    }
-                                } catch (SQLException ex) {
-                                    ex.printStackTrace();
-                                    // Manejo de excepciones en caso de error en la eliminación en la base de datos
-                                }
-                            }
-                        }
-
-                        dialog.dispose();
-                        lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
-                        tablaPermisos.setModel(cargarDatos());
-                        configurarTablaPermisos();
-                        fireEditingStopped();
-                    } else {
-                        dialog.dispose();
-                        mostrarDialogoPersonalizadoError("No tienes permiso para eliminar este rol de usuario.", Color.decode("#C62828"));
-                        fireEditingCanceled();
-                    }
-                }
-            });
-
-            btnCancel.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    dialog.dispose();
-                    fireEditingCanceled();
-                }
-            });
-
-            optionPane.setOptions(new Object[]{btnSave, btnCancel});
-            dialog.setVisible(true);
-        }
-    }
-
-    public boolean esUsuarioAdministrador(int idUser) {
-        String query = "SELECT roles.nombre FROM usuarios INNER JOIN roles ON usuarios.rol_id = roles.id WHERE usuarios.id = ?";
-
-        try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setInt(1, idUser);
-            ResultSet rs = preparedStatement.executeQuery();
-
-            if (rs.next()) {
-                String rol = rs.getString("nombre");
-                return "Administrador".equals(rol);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
+    // Método para mostrar un diálogo personalizado de éxito
     public void mostrarDialogoPersonalizadoExito(String mensaje, Color colorFondoBoton) {
-        // Crea un botón personalizado
+        // Crea un botón personalizado "OK"
         JButton btnAceptar = new JButton("OK");
-        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
-        btnAceptar.setForeground(Color.WHITE);
-        btnAceptar.setFocusPainted(false);
+        btnAceptar.setBackground(colorFondoBoton); // Establece el color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE); // Establece el color del texto del botón
+        btnAceptar.setFocusPainted(false); // Elimina el borde del foco alrededor del botón
 
-        // Crea un JOptionPane
+        // Crea un JOptionPane para mostrar el mensaje
         JOptionPane optionPane = new JOptionPane(
-                mensaje,                           // Mensaje a mostrar
-                JOptionPane.INFORMATION_MESSAGE,   // Tipo de mensaje
-                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
-                null,                              // Icono (puede ser null)
-                new Object[]{},                    // No se usan opciones estándar
-                null                               // Valor inicial (no necesario aquí)
+                mensaje,                             // Texto del mensaje a mostrar
+                JOptionPane.INFORMATION_MESSAGE,     // Tipo de mensaje (información)
+                JOptionPane.DEFAULT_OPTION,          // Opción por defecto
+                null,                                // Sin icono
+                new Object[]{},                      // Sin opciones estándar
+                null                                 // Sin valor inicial
         );
 
-        // Añade el botón al JOptionPane
+        // Configura el JOptionPane para usar el botón personalizado
         optionPane.setOptions(new Object[]{btnAceptar});
 
         // Crea un JDialog para mostrar el JOptionPane
         JDialog dialog = optionPane.createDialog("Validación");
 
-        // Añade un ActionListener al botón
-        btnAceptar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
-            }
-        });
+        // Añade un ActionListener al botón para cerrar el diálogo cuando se presione
+        btnAceptar.addActionListener(e -> dialog.dispose());
 
         // Muestra el diálogo
         dialog.setVisible(true);
     }
+
+    // Método para mostrar un diálogo personalizado de error
     public void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
-        // Crea un botón personalizado
+        // Crea un botón personalizado "OK"
         JButton btnAceptar = new JButton("OK");
-        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
-        btnAceptar.setForeground(Color.WHITE);
-        btnAceptar.setFocusPainted(false);
+        btnAceptar.setBackground(colorFondoBoton); // Establece el color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE); // Establece el color del texto del botón
+        btnAceptar.setFocusPainted(false); // Elimina el borde del foco alrededor del botón
 
-        // Crea un JOptionPane
+        // Crea un JOptionPane para mostrar el mensaje
         JOptionPane optionPane = new JOptionPane(
-                mensaje,                           // Mensaje a mostrar
-                JOptionPane.ERROR_MESSAGE,   // Tipo de mensaje
-                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
-                null,                              // Icono (puede ser null)
-                new Object[]{},                    // No se usan opciones estándar
-                null                               // Valor inicial (no necesario aquí)
+                mensaje,                             // Texto del mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,         // Tipo de mensaje (advertencia)
+                JOptionPane.DEFAULT_OPTION,          // Opción por defecto
+                null,                                // Sin icono
+                new Object[]{},                      // Sin opciones estándar
+                null                                 // Sin valor inicial
         );
 
-        // Añade el botón al JOptionPane
+        // Configura el JOptionPane para usar el botón personalizado
         optionPane.setOptions(new Object[]{btnAceptar});
 
         // Crea un JDialog para mostrar el JOptionPane
         JDialog dialog = optionPane.createDialog("Validación");
 
-        // Añade un ActionListener al botón
-        btnAceptar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
-            }
-        });
+        // Añade un ActionListener al botón para cerrar el diálogo cuando se presione
+        btnAceptar.addActionListener(e -> dialog.dispose());
 
         // Muestra el diálogo
         dialog.setVisible(true);
     }
 
+    // Método para mostrar un diálogo personalizado de atención
     public void mostrarDialogoPersonalizadoAtencion(String mensaje, Color colorFondoBoton) {
-        // Crea un botón personalizado
+        // Crea un botón personalizado "OK"
         JButton btnAceptar = new JButton("OK");
-        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
-        btnAceptar.setForeground(Color.WHITE);
-        btnAceptar.setFocusPainted(false);
+        btnAceptar.setBackground(colorFondoBoton); // Establece el color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE); // Establece el color del texto del botón
+        btnAceptar.setFocusPainted(false); // Elimina el borde del foco alrededor del botón
 
-        // Crea un JOptionPane
+        // Crea un JOptionPane para mostrar el mensaje
         JOptionPane optionPane = new JOptionPane(
-                mensaje,                           // Mensaje a mostrar
-                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
-                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
-                null,                              // Icono (puede ser null)
-                new Object[]{},                    // No se usan opciones estándar
-                null                               // Valor inicial (no necesario aquí)
+                mensaje,                             // Texto del mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,         // Tipo de mensaje (advertencia)
+                JOptionPane.DEFAULT_OPTION,          // Opción por defecto
+                null,                                // Sin icono
+                new Object[]{},                      // Sin opciones estándar
+                null                                 // Sin valor inicial
         );
 
-        // Añade el botón al JOptionPane
+        // Configura el JOptionPane para usar el botón personalizado
         optionPane.setOptions(new Object[]{btnAceptar});
 
         // Crea un JDialog para mostrar el JOptionPane
         JDialog dialog = optionPane.createDialog("Validación");
 
-        // Añade un ActionListener al botón
-        btnAceptar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
-            }
-        });
+        // Añade un ActionListener al botón para cerrar el diálogo cuando se presione
+        btnAceptar.addActionListener(e -> dialog.dispose());
 
         // Muestra el diálogo
         dialog.setVisible(true);
     }
 
+    // Método Principal
     public static void main(String[] args) {
         ListaPermisos listaRoles = new ListaPermisos();
         listaRoles.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
