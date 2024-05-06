@@ -1,3 +1,13 @@
+/**
+ * ListaFloristerias.java
+ *
+ * Lista Floristerias
+ *
+ * @author Alejandra Aroca
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Floristerias;
 
 import Modelos.ModeloFloristeria;
@@ -21,23 +31,57 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ListaFloristerias extends JFrame {
-    private JPanel panelPrincipal, panelTitulo, panelA, panelB;
-    private JButton botonVer, botonCrear, botonEditar, botonAdelante, botonAtras;
+    // Paneles
+    private JPanel panelPrincipal;
+    private JPanel panelTitulo;
+    private JPanel panelA;
+    private JPanel panelB;
+
+    // Botones
+    private JButton botonVer;
+    private JButton botonCrear;
+    private JButton botonEditar;
+    private JButton botonAdelante;
+    private JButton botonAtras;
+
+    // Tabla de floristerías
     private JTable listaFloristerias;
+
+    // Campo de búsqueda
     private JTextField campoBusqueda;
+
+    // Placeholder para el campo de búsqueda
     private TextPrompt placeholder = new TextPrompt(" Buscar por nombre de la flor ó de la empresa proveedora", campoBusqueda);
-    private JLabel lblPagina, lbl0;
+
+    // Etiquetas
+    private JLabel lblPagina;
+    private JLabel lbl0;
+
+    // Lista de floristerías
     private List<Floristeria> listaFloristeria;
+
+    // Página actual
     private int pagina = 0;
+
+    // Conexión a la base de datos
     private Connection mysql;
     private Conexion sql;
+
+    // Referencia a la ventana de lista de floristerías actual
     private ListaFloristerias actual = this;
+
+    // Término de búsqueda
     private String busqueda = "";
+
+
+    // Colores y fuentes
     Font fontTitulo = new Font("Century Gothic", Font.BOLD, 17);
     Font font = new Font("Century Gothic", Font.BOLD, 11);
+
     Color primaryColor = Color.decode("#37474f"); // Gris azul oscuro
     Color lightColor = Color.decode("#cfd8dc"); // Gris azul claro
     Color darkColor = Color.decode("#263238"); // Gris azul más oscuro
+
     public ListaFloristerias() {
         super("");
         setSize(850, 505);
@@ -176,9 +220,11 @@ public class ListaFloristerias extends JFrame {
 
     }
 
+    // Método para configurar las columnas y sus renderizadores en la tabla de floristerías
     private void configurarTablaFloristerias() {
         TableColumnModel columnModel = listaFloristerias.getColumnModel();
 
+        // Establece el ancho preferido de cada columna
         columnModel.getColumn(0).setPreferredWidth(20);
         columnModel.getColumn(1).setPreferredWidth(250);
         columnModel.getColumn(2).setPreferredWidth(110);
@@ -186,6 +232,7 @@ public class ListaFloristerias extends JFrame {
         columnModel.getColumn(4).setPreferredWidth(130);
         columnModel.getColumn(5).setPreferredWidth(130);
 
+        // Asigna renderizadores para alinear el contenido de las celdas
         columnModel.getColumn(0).setCellRenderer(new ListaFloristerias.CenterAlignedRenderer());
         columnModel.getColumn(1).setCellRenderer(new ListaFloristerias.LeftAlignedRenderer());
         columnModel.getColumn(2).setCellRenderer(new ListaFloristerias.LeftAlignedRenderer());
@@ -194,44 +241,33 @@ public class ListaFloristerias extends JFrame {
         columnModel.getColumn(5).setCellRenderer(new ListaFloristerias.LeftAlignedRenderer());
     }
 
+    // Clase para alinear texto a la izquierda en celdas de una tabla
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
         public LeftAlignedRenderer() {
-            setHorizontalAlignment(LEFT);
+            setHorizontalAlignment(LEFT); // Alineación a la izquierda
         }
 
         @Override
-        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            return cell;
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         }
     }
 
-    class RightAlignedRenderer extends DefaultTableCellRenderer {
-        public RightAlignedRenderer() {
-            setHorizontalAlignment(RIGHT);
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            return cell;
-        }
-    }
-
+    // Clase para alinear texto al centro en celdas de una tabla
     class CenterAlignedRenderer extends DefaultTableCellRenderer {
         public CenterAlignedRenderer() {
-            setHorizontalAlignment(CENTER);
+            setHorizontalAlignment(CENTER); // Alineación al centro
         }
 
         @Override
-        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            return cell;
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         }
     }
 
+    // Método para cargar datos de floristerías desde la base de datos y devolver un modelo de datos
     private ModeloFloristeria cargarDatos() {
-        sql = new Conexion();
+        sql = new Conexion(); // Establece conexión con la base de datos
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement(
                      "SELECT f.*, p.empresaProveedora " +
@@ -272,6 +308,7 @@ public class ListaFloristerias extends JFrame {
         return new ModeloFloristeria(listaFloristeria, sql);
     }
 
+    // Método para calcular el número total de páginas basado en la cantidad de registros
     private int getTotalPageCount() {
         int count = 0;
         try (Connection mysql = sql.conectamysql();
@@ -295,6 +332,7 @@ public class ListaFloristerias extends JFrame {
         return totalPageCount;
     }
 
+    // Método Principal
     public static void main(String[] args) {
         ListaFloristerias listaFloristeria = new ListaFloristerias();
         listaFloristeria.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
