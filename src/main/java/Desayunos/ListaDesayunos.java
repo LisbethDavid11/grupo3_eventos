@@ -49,7 +49,7 @@ public class ListaDesayunos extends JFrame {
     private JTextField campoBusqueda;
 
     // Placeholder para el campo de búsqueda
-    private TextPrompt placeholder;
+    private TextPrompt placeholder = new TextPrompt(" Buscar por nombre del cliente, fecha ó tipo", campoBusqueda);
 
     // Etiqueta de página
     private JLabel lblPagina;

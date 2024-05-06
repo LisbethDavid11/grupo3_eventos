@@ -59,7 +59,7 @@ public class EditarDesayuno extends JFrame {
     private JPanel panel1;
     private JPanel panel2;
     private JPanel panel3;
-    private JPanel panel4;
+    private JScrollPane panel4;
     private JPanel panel5;
     private JPanel panel6;
     private JPanel panel7;

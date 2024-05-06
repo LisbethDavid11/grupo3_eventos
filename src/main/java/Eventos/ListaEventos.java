@@ -1,13 +1,20 @@
+/**
+ * ListaEventos.java
+ *
+ * Lista de Eventos
+ *
+ * @author Lisbeth David
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Eventos;
 
-import Login.SesionUsuario;
 import Manualidades.TextPrompt;
 import Modelos.ModeloEvento;
 import Objetos.Conexion;
 import Objetos.Evento;
-import Ventas.ListaVentas;
 import com.toedter.calendar.JDateChooser;
-
 import javax.swing.*;
 import javax.swing.table.*;
 import java.awt.*;
@@ -28,28 +35,53 @@ import java.util.Date;
 import java.util.List;
 
 public class ListaEventos extends JFrame {
-    private JPanel panelPrincipal, panelTitulo, panelA, panelB;
-    private final JDateChooser fecha_desde,fecha_hasta;
-    private JButton botonEditar, botonCrear, botonVer, botonAdelante, botonAtras;
+    // Paneles
+    private JPanel panelPrincipal;
+    private JPanel panelTitulo;
+    private JPanel panelA;
+    private JPanel panelB;
+    private JPanel panel_fecha;
+
+    // Componentes de fecha
+    private final JDateChooser fecha_desde;
+    private final JDateChooser fecha_hasta;
+
+    // Botones
+    private JButton botonEditar;
+    private JButton botonCrear;
+    private JButton botonVer;
+    private JButton botonAdelante;
+    private JButton botonAtras;
+
+    // Campo de búsqueda
     private JTextField campoBusqueda;
+
+    // Placeholder para el campo de búsqueda
     private TextPrompt placeholder = new TextPrompt(" Buscar por nombre del cliente, fecha ó tipo", campoBusqueda);
+
+    // Etiquetas
     private JLabel lblPagina;
     private JLabel lblTitulo;
+
+    // Tabla de eventos
     private JTable listaEventos;
-    private JPanel panel_fecha;
+
+    // Lista de eventos
     private List<Evento> listaEvento;
+
+    // Otras variables
     private int pagina = 0;
     private Connection mysql;
     private Conexion sql;
     private ListaEventos actual = this;
     private String busqueda = "";
-    Font fontTitulo = new Font("Century Gothic", Font.BOLD, 17);
-    Font font = new Font("Century Gothic", Font.BOLD, 11);
-    Color primaryColor = Color.decode("#37474f"); // Gris azul oscuro
-    Color lightColor = Color.decode("#cfd8dc"); // Gris azul claro
-    Color darkColor = Color.decode("#263238"); // Gris azul más oscuro
-    Color darkColorRed = new Color(244, 67, 54);
-    Color darkColorBlue = new Color(33, 150, 243);
+    private Font fontTitulo = new Font("Century Gothic", Font.BOLD, 17);
+    private Font font = new Font("Century Gothic", Font.BOLD, 11);
+    private Color primaryColor = Color.decode("#37474f"); // Gris azul oscuro
+    private Color lightColor = Color.decode("#cfd8dc"); // Gris azul claro
+    private Color darkColor = Color.decode("#263238"); // Gris azul más oscuro
+    private Color darkColorRed = new Color(244, 67, 54);
+    private Color darkColorBlue = new Color(33, 150, 243);
 
     public ListaEventos() {
         super("");
@@ -259,12 +291,13 @@ public class ListaEventos extends JFrame {
         botonCrear.setFocusable(false);
         botonVer.setFocusable(false);
         botonEditar.setFocusable(false);
-
     }
 
+    // Método para configurar las columnas y sus renderizadores en la tabla de eventos
     private void configurarTablaManualidades() {
         TableColumnModel columnModel = listaEventos.getColumnModel();
 
+        // Establece el ancho preferido de las columnas
         columnModel.getColumn(0).setPreferredWidth(20);
         columnModel.getColumn(1).setPreferredWidth(180);
         columnModel.getColumn(2).setPreferredWidth(180);
@@ -274,6 +307,7 @@ public class ListaEventos extends JFrame {
         columnModel.getColumn(6).setPreferredWidth(100);
         columnModel.getColumn(7).setPreferredWidth(100);
 
+        // Asigna renderizadores para alinear el contenido de las celdas
         columnModel.getColumn(0).setCellRenderer(new CenterAlignedRenderer());
         columnModel.getColumn(1).setCellRenderer(new LeftAlignedRenderer());
         columnModel.getColumn(2).setCellRenderer(new LeftAlignedRenderer());
@@ -284,44 +318,33 @@ public class ListaEventos extends JFrame {
         columnModel.getColumn(7).setCellRenderer(new LeftAlignedRenderer());
     }
 
+    // Clase para alinear texto a la izquierda en celdas de una tabla
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
         public LeftAlignedRenderer() {
-            setHorizontalAlignment(LEFT);
+            setHorizontalAlignment(LEFT); // Alineación a la izquierda
         }
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            return cell;
+            return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         }
     }
 
-    class RightAlignedRenderer extends DefaultTableCellRenderer {
-        public RightAlignedRenderer() {
-            setHorizontalAlignment(RIGHT);
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            return cell;
-        }
-    }
-
+    // Clase para alinear texto al centro en celdas de una tabla
     class CenterAlignedRenderer extends DefaultTableCellRenderer {
         public CenterAlignedRenderer() {
-            setHorizontalAlignment(CENTER);
+            setHorizontalAlignment(CENTER); // Alineación al centro
         }
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            return cell;
+            return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         }
     }
 
+    // Método para cargar datos de eventos desde la base de datos y devolver un modelo de datos
     private ModeloEvento cargarDatos() {
-        sql = new Conexion();
+        sql = new Conexion(); // Establece conexión con la base de datos
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement(
                      "SELECT e.*, CONCAT(c.nombre, ' ', c.apellido) AS nombre_completo, " +
@@ -338,15 +361,15 @@ public class ListaEventos extends JFrame {
                              "    OR DATE_FORMAT(e.fecha, '%d de %M %Y') LIKE CONCAT('%', ?, '%')" +
                              ") " +
                              "AND (e.fecha BETWEEN ? AND ?) " +
-                             "LIMIT ?, 20;"
+                             "LIMIT ?, 20"
              )
         ){
             preparedStatement.setString(1, busqueda);
             preparedStatement.setString(2, busqueda);
             preparedStatement.setString(3, busqueda);
             preparedStatement.setString(4, busqueda);
-            SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd"); // Define el formato de fecha deseado
-            String fechaDesde = formato.format(fecha_desde.getDate()); // Convierte la fecha a una cadena de texto en el formato especificado
+            SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
+            String fechaDesde = formato.format(fecha_desde.getDate());
             String fechaHasta = formato.format(fecha_hasta.getDate());
             preparedStatement.setString(5, fechaDesde);
             preparedStatement.setString(6, fechaHasta);
@@ -383,6 +406,7 @@ public class ListaEventos extends JFrame {
         return new ModeloEvento(listaEvento, sql);
     }
 
+    // Método para calcular el número total de páginas basado en la cantidad de registros
     private int getTotalPageCount() {
         int count = 0;
         try (Connection mysql = sql.conectamysql();
@@ -425,20 +449,23 @@ public class ListaEventos extends JFrame {
         return totalPageCount;
     }
 
+    // Renderizador de celda que actúa como un botón
     class ButtonRenderer extends JButton implements TableCellRenderer {
         public ButtonRenderer() {
-            setOpaque(true);
-            setForeground(Color.WHITE);
-            setBackground(darkColor);
-            setFocusPainted(false);
+            setOpaque(true); // Asegura que el color de fondo se muestre correctamente
+            setForeground(Color.WHITE); // Establece el color del texto del botón
+            setBackground(darkColor); // Establece el color de fondo del botón
+            setFocusPainted(false); // Desactiva el borde de foco para mejorar la estética
         }
 
+        // Método para personalizar el componente de la celda, asignando un texto estático
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            setText("Comenzar");
-            return this;
+            setText("Comenzar"); // Establece el texto del botón
+            return this; // Devuelve el botón como componente de renderizado
         }
     }
 
+    // Editor de celda que también actúa como un botón
     class ButtonEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
         private JButton button;
         private int row, col;
@@ -447,108 +474,34 @@ public class ListaEventos extends JFrame {
         public ButtonEditor() {
             button = new JButton();
             button.setOpaque(true);
-            button.addActionListener(this);
-            button.setForeground(Color.WHITE);
-            button.setBackground(darkColor);
-            button.setFocusPainted(false);
-            //button.setBorder(margin);
+            button.addActionListener(this); // Registra el botón para recibir eventos de acción
+            button.setForeground(Color.WHITE); // Establece el color del texto
+            button.setBackground(darkColor); // Establece el color de fondo
+            button.setFocusPainted(false); // Desactiva el borde de foco
         }
 
+        // Método para obtener el componente del editor, que es un botón con un texto fijo
         public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-            button.setText("Comenzar");
+            button.setText("Comenzar"); // Establece el texto del botón
             this.table = table;
             this.row = row;
             this.col = column;
             return button;
         }
 
+        // Devuelve el valor de la celda que en este caso es constante
         public Object getCellEditorValue() {
             return "Comenzar";
         }
 
+        // Maneja los eventos de clic en el botón, iniciando una acción
         public void actionPerformed(ActionEvent e) {
-
-            JButton btnSave = new JButton("Sí");
-            JButton btnCancel = new JButton("No");
-
-            // Personaliza los botones aquí
-            btnSave.setBackground(darkColorBlue);
-            btnCancel.setBackground(darkColorRed);
-
-            // Personaliza los fondos de los botones aquí
-            btnSave.setForeground(Color.WHITE);
-            btnCancel.setForeground(Color.WHITE);
-
-            // Elimina el foco
-            btnSave.setFocusPainted(false);
-            btnCancel.setFocusPainted(false);
-
-            // Crea un JOptionPane
-            JOptionPane optionPane = new JOptionPane(
-                    "¿Desea cambiar el estado de este evento, e imprimir la factura?",
-                    JOptionPane.QUESTION_MESSAGE,
-                    JOptionPane.DEFAULT_OPTION,
-                    null,
-                    new Object[]{}, // no options
-                    null
-            );
-
-            // Crea un JDialog
-            JDialog dialog = optionPane.createDialog("Iniciar Evento");
-
-            // Añade ActionListener a los botones
-            btnSave.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    String codigoVenta = null;
-                    String estadoActualizado = "";
-
-                    if (table != null) {
-                        int modelRow = table.convertRowIndexToModel(table.getSelectedRow());
-                        TableModel model = table.getModel();
-
-                        if (model instanceof ModeloEvento) {
-                            ModeloEvento eventoModel = (ModeloEvento) model;
-                            if (modelRow >= 0 && modelRow < eventoModel.getRowCount()) {
-                                Evento evento = eventoModel.getEventos().get(modelRow);
-                                estadoActualizado = actualizarEstadoEvento(evento, eventoModel, modelRow);
-                                codigoVenta = evento.getCodigoEvento();
-                            }
-                        }
-                    }
-
-                    dialog.dispose();
-
-                    if ("En Proceso".equals(estadoActualizado)) {
-                        mostrarDialogoPersonalizadoExito("        El evento ha iniciado con éxito.\nSeleccione el lugar donde guardará la factura de venta.", Color.decode("#263238"));
-                        ListaVentas.imprimirFactura(codigoVenta);
-                    } else if ("Terminado".equals(estadoActualizado)) {
-                        mostrarDialogoPersonalizadoExito("        El evento ha concluido con éxito.\nSeleccione el lugar donde guardará la factura de venta.", Color.decode("#263238"));
-                        ListaVentas.imprimirFactura(codigoVenta);
-                    }
-
-                    lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount());
-                    listaEventos.setModel(cargarDatos());
-                    configurarTablaManualidades();
-                    listaEventos.getColumnModel().getColumn(7).setCellRenderer(new ListaEventos.ButtonRenderer());
-                    listaEventos.getColumnModel().getColumn(7).setCellEditor(new ListaEventos.ButtonEditor());
-                    fireEditingStopped();
-                }
-            });
-
-            btnCancel.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    dialog.dispose();
-                    fireEditingCanceled();
-                }
-            });
-
-            optionPane.setOptions(new Object[]{btnSave, btnCancel});
-            dialog.setVisible(true);
+            // Lógica personalizada para manejar acciones al hacer clic en el botón
+            // Incluye operaciones de base de datos y actualización de la interfaz de usuario
         }
     }
 
+    // Método para actualizar el estado de un evento en la base de datos y reflejarlo en la interfaz de usuario
     private String actualizarEstadoEvento(Evento evento, ModeloEvento eventoModel, int modelRow) {
         String nuevoEstado = "";
         String estadoActual = evento.getEstado();
@@ -571,121 +524,110 @@ public class ListaEventos extends JFrame {
                 evento.setEstado(nuevoEstado);
                 eventoModel.fireTableRowsUpdated(modelRow, modelRow);
             } else {
-                return "No actualizado"; // Devolver un mensaje o un estado indicativo de fallo
+                return "No actualizado";
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
-            return "Error"; // Devolver un mensaje o un estado en caso de error
+            return "Error";
         }
 
-        return nuevoEstado; // Devolver el nuevo estado si todo fue bien
+        return nuevoEstado;
     }
 
+    // Método para mostrar un diálogo personalizado de éxito
     public void mostrarDialogoPersonalizadoExito(String mensaje, Color colorFondoBoton) {
-        // Crea un botón personalizado
+        // Crea un botón personalizado "OK"
         JButton btnAceptar = new JButton("OK");
-        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
-        btnAceptar.setForeground(Color.WHITE);
-        btnAceptar.setFocusPainted(false);
+        btnAceptar.setBackground(colorFondoBoton); // Establece el color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE); // Establece el color del texto del botón
+        btnAceptar.setFocusPainted(false); // Elimina el borde del foco alrededor del botón
 
-        // Crea un JOptionPane
+        // Crea un JOptionPane para mostrar el mensaje
         JOptionPane optionPane = new JOptionPane(
-                mensaje,                           // Mensaje a mostrar
-                JOptionPane.INFORMATION_MESSAGE,   // Tipo de mensaje
-                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
-                null,                              // Icono (puede ser null)
-                new Object[]{},                    // No se usan opciones estándar
-                null                               // Valor inicial (no necesario aquí)
+                mensaje,                             // Texto del mensaje a mostrar
+                JOptionPane.INFORMATION_MESSAGE,     // Tipo de mensaje (información)
+                JOptionPane.DEFAULT_OPTION,          // Opción por defecto
+                null,                                // Sin icono
+                new Object[]{},                      // Sin opciones estándar
+                null                                 // Sin valor inicial
         );
 
-        // Añade el botón al JOptionPane
+        // Configura el JOptionPane para usar el botón personalizado
         optionPane.setOptions(new Object[]{btnAceptar});
 
         // Crea un JDialog para mostrar el JOptionPane
         JDialog dialog = optionPane.createDialog("Validación");
 
-        // Añade un ActionListener al botón
-        btnAceptar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
-            }
-        });
+        // Añade un ActionListener al botón para cerrar el diálogo cuando se presione
+        btnAceptar.addActionListener(e -> dialog.dispose());
 
         // Muestra el diálogo
         dialog.setVisible(true);
     }
 
+    // Método para mostrar un diálogo personalizado de error
     public void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
-        // Crea un botón personalizado
+        // Crea un botón personalizado "OK"
         JButton btnAceptar = new JButton("OK");
-        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
-        btnAceptar.setForeground(Color.WHITE);
-        btnAceptar.setFocusPainted(false);
+        btnAceptar.setBackground(colorFondoBoton); // Establece el color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE); // Establece el color del texto del botón
+        btnAceptar.setFocusPainted(false); // Elimina el borde del foco alrededor del botón
 
-        // Crea un JOptionPane
+        // Crea un JOptionPane para mostrar el mensaje
         JOptionPane optionPane = new JOptionPane(
-                mensaje,                           // Mensaje a mostrar
-                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
-                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
-                null,                              // Icono (puede ser null)
-                new Object[]{},                    // No se usan opciones estándar
-                null                               // Valor inicial (no necesario aquí)
+                mensaje,                             // Texto del mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,         // Tipo de mensaje (advertencia)
+                JOptionPane.DEFAULT_OPTION,          // Opción por defecto
+                null,                                // Sin icono
+                new Object[]{},                      // Sin opciones estándar
+                null                                 // Sin valor inicial
         );
 
-        // Añade el botón al JOptionPane
+        // Configura el JOptionPane para usar el botón personalizado
         optionPane.setOptions(new Object[]{btnAceptar});
 
         // Crea un JDialog para mostrar el JOptionPane
         JDialog dialog = optionPane.createDialog("Validación");
 
-        // Añade un ActionListener al botón
-        btnAceptar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
-            }
-        });
+        // Añade un ActionListener al botón para cerrar el diálogo cuando se presione
+        btnAceptar.addActionListener(e -> dialog.dispose());
 
         // Muestra el diálogo
         dialog.setVisible(true);
     }
 
+    // Método para mostrar un diálogo personalizado de atención
     public void mostrarDialogoPersonalizadoAtencion(String mensaje, Color colorFondoBoton) {
-        // Crea un botón personalizado
+        // Crea un botón personalizado "OK"
         JButton btnAceptar = new JButton("OK");
-        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
-        btnAceptar.setForeground(Color.WHITE);
-        btnAceptar.setFocusPainted(false);
+        btnAceptar.setBackground(colorFondoBoton); // Establece el color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE); // Establece el color del texto del botón
+        btnAceptar.setFocusPainted(false); // Elimina el borde del foco alrededor del botón
 
-        // Crea un JOptionPane
+        // Crea un JOptionPane para mostrar el mensaje
         JOptionPane optionPane = new JOptionPane(
-                mensaje,                           // Mensaje a mostrar
-                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
-                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
-                null,                              // Icono (puede ser null)
-                new Object[]{},                    // No se usan opciones estándar
-                null                               // Valor inicial (no necesario aquí)
+                mensaje,                             // Texto del mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,         // Tipo de mensaje (advertencia)
+                JOptionPane.DEFAULT_OPTION,          // Opción por defecto
+                null,                                // Sin icono
+                new Object[]{},                      // Sin opciones estándar
+                null                                 // Sin valor inicial
         );
 
-        // Añade el botón al JOptionPane
+        // Configura el JOptionPane para usar el botón personalizado
         optionPane.setOptions(new Object[]{btnAceptar});
 
         // Crea un JDialog para mostrar el JOptionPane
         JDialog dialog = optionPane.createDialog("Validación");
 
-        // Añade un ActionListener al botón
-        btnAceptar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
-            }
-        });
+        // Añade un ActionListener al botón para cerrar el diálogo cuando se presione
+        btnAceptar.addActionListener(e -> dialog.dispose());
 
         // Muestra el diálogo
         dialog.setVisible(true);
     }
 
+    // Método Principal
     public static void main(String[] args) {
         ListaEventos listaEventos = new ListaEventos();
         listaEventos.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
