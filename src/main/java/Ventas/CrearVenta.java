@@ -1,3 +1,13 @@
+/**
+ * CrearVenta.java
+ *
+ * Crear Venta
+ *
+ * @author Dania Lagos
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Ventas;
 
 import Clientes.CrearCliente;
@@ -6,7 +16,6 @@ import Login.SesionUsuario;
 import Materiales.TextPrompt;
 import Modelos.*;
 import Objetos.*;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.*;
@@ -21,22 +30,61 @@ import java.util.List;
 import java.util.*;
 
 public class CrearVenta extends JFrame {
-    private JPanel panel1, panel2, panel3, panel4, panel5, panel6;
+    // Paneles
+    private JPanel panel1;
+    private JPanel panel2;
+    private JPanel panel3;
+    private JPanel panel4;
+    private JPanel panel5;
+    private JPanel panel6;
+
+    // Tabla de productos
     private JTable tablaProductos;
-    public JButton guardarButton, cancelarButton, limpiarButton;
-    public JTextField campoCodigo, campoFecha, campoCantidad, campoPrecio;
-    public JComboBox<String> boxCliente;
-    private JLabel lbl0, lbl1, lbl2, lbl3, lbl4, lbl8, lbl9, lbl10;
-    private JButton botonCrear, imprimirButton, agregarMaterialButton, agregarArregloButton, agregarTarjetasButton, agregarFloresButton, agregarManualidadButton, agregarDesayunoButton, agregarProductoButton, cancelarProductoButton;
-    private JTextField filtroBusqueda;
-    private int categoriaSeleccionada = 0;
+
+    // Botones
+    public JButton guardarButton;
+    public JButton cancelarButton;
+    public JButton limpiarButton;
+    private JButton botonCrear;
+    private JButton imprimirButton;
+    private JButton agregarMaterialButton;
+    private JButton agregarArregloButton;
+    private JButton agregarTarjetasButton;
+    private JButton agregarFloresButton;
+    private JButton agregarManualidadButton;
+    private JButton agregarDesayunoButton;
+    private JButton agregarProductoButton;
+    private JButton cancelarProductoButton;
     private JButton botonLimpiar;
-    private JTextField buscarCliente;
     private JButton agregarPromocionButton;
+
+    // Campos de texto
+    public JTextField campoCodigo;
+    public JTextField campoFecha;
+    public JTextField campoCantidad;
+    public JTextField campoPrecio;
+    public JTextField buscarCliente;
+    private JTextField filtroBusqueda;
+
+    // ComboBox
+    public JComboBox<String> boxCliente;
+
+    // Etiquetas
+    private JLabel lbl0;
+    private JLabel lbl1;
+    private JLabel lbl2;
+    private JLabel lbl3;
+    private JLabel lbl4;
+    private JLabel lbl8;
+    private JLabel lbl9;
+    private JLabel lbl10;
+
+    // Otros componentes y variables
+    private int categoriaSeleccionada = 0;
     private Conexion sql;
     public CrearVenta crearVenta = this;
-    private Materiales.TextPrompt placeholder = new TextPrompt(" Buscar por nombre de producto", filtroBusqueda);
-    private Materiales.TextPrompt placeholderCliente = new TextPrompt(" Buscar cliente por nombre o apellido", buscarCliente);
+    private Materiales.TextPrompt placeholder;
+    private Materiales.TextPrompt placeholderCliente;
     private List<PoliProducto> productosListTemporal = new ArrayList<>();
     private List<PoliMaterial> materialList = new ArrayList<>();
     private List<PoliMaterial> materialListTemporal = new ArrayList<>();
@@ -46,10 +94,11 @@ public class CrearVenta extends JFrame {
     private List<PoliDesayuno> desayunoList = new ArrayList<>();
     private List<PoliManualidad> manualidadList = new ArrayList<>();
     private List<PoliResumenPromocion> promocionList = new ArrayList<>();
-    private Map<String,String> tiposDescripcion = new HashMap<>();
-    private Map<String,String> tiposTablas = new HashMap<>();
+    private Map<String, String> tiposDescripcion = new HashMap<>();
+    private Map<String, String> tiposTablas = new HashMap<>();
     private List<VentaListener> ventaListeners = new ArrayList<>();
     private int selectTabla = 1;
+
     Color textColor = Color.decode("#212121");
     Font fontTitulo = new Font("Century Gothic", Font.BOLD, 17);
     Font font = new Font("Century Gothic", Font.BOLD, 17);
@@ -906,6 +955,7 @@ public class CrearVenta extends JFrame {
         });
     }
 
+    // Método para mantener la selección del cliente
     public void selectLastAddedClient(String nuevoCliente) {
         int index = boxCliente.getItemCount() - 1; // Índice del último elemento agregado
         if (index > 0) {
@@ -913,6 +963,7 @@ public class CrearVenta extends JFrame {
         }
     }
 
+    // Método para cargar los clientes
     public void cargarClientes() {
         // Borra los elementos anteriores del JComboBox
         boxCliente.removeAllItems();
@@ -936,6 +987,7 @@ public class CrearVenta extends JFrame {
         }
     }
 
+    // Método para cancelar la venta
     private void cancelar() {
         Object[] options = {"Sí", "No"};
         int dialogResult = JOptionPane.showOptionDialog(null, "¿Está seguro de que desea cancelar?", "Confirmar cancelación", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
@@ -958,10 +1010,12 @@ public class CrearVenta extends JFrame {
         }
     }
 
+    // Método para limpiar los datos de la venta
     private void limpiar() {
         boxCliente.setSelectedIndex(0);
     }
 
+    // Método para convertir la fecha
     private String convertirFecha(String fechaCampo) {
         try {
             // Parsear la fecha en formato "Domingo, 30 de julio de 2023" a un objeto Date
@@ -977,6 +1031,7 @@ public class CrearVenta extends JFrame {
         }
     }
 
+    // Método para calcular el total de la tabla
     private double calcularTotalTabla() {
         double sumaTotal = 0.0;
         TableModel modelo = tablaProductos.getModel();
@@ -1006,6 +1061,7 @@ public class CrearVenta extends JFrame {
         return sumaTotal;
     }
 
+    // Método para actualizar los calculos
     private void actualizarLbl8y10() {
         // Calcular el subtotal de la tabla (antes de aplicar el descuento)
         double totalTabla = calcularTotalTabla();
@@ -1025,6 +1081,7 @@ public class CrearVenta extends JFrame {
         lbl10.setText(String.format("L. %.2f", totalConAumento));
     }
 
+    // Método para rellenar los campos automaticamente
     public void generarCamposAutomaticamente() {
         // Generar campoCodigo
         String codigo = generarCodigo();
@@ -1035,6 +1092,7 @@ public class CrearVenta extends JFrame {
         campoFecha.setText(fecha);
     }
 
+    // Método para generar el código de venta
     private String generarCodigo() {
         // Obtener fecha actual
         Date fechaActual = new Date();
@@ -1054,6 +1112,7 @@ public class CrearVenta extends JFrame {
         return codigo;
     }
 
+    // Método para obtener la fecha actual
     private String obtenerFechaActual() {
         // Obtener fecha actual
         Date fechaActual = new Date();
@@ -1066,12 +1125,14 @@ public class CrearVenta extends JFrame {
         return fecha;
     }
 
+    // Método para limpiar la tabla de materiales
     private void limpiarTablaMateriales() {
         materialList.clear();
         DefaultTableModel emptyModel = new DefaultTableModel();
         tablaProductos.setModel(emptyModel);
     }
 
+    // Método para eliminar los detalles de la tabla
     private void eliminarDetallesMaterial() {
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM detalles_ventas WHERE venta_id IS NULL")) {
@@ -1081,6 +1142,7 @@ public class CrearVenta extends JFrame {
         }
     }
 
+    // Método para extraer el valor númerico del total
     private double extraerValorNumerico(String valor) {
         String valorNumerico = valor.replace(',', '.');
         try {
@@ -1091,6 +1153,7 @@ public class CrearVenta extends JFrame {
         }
     }
 
+    // Clase para alinear los elementos al centro
     class CenterAlignedRenderer extends DefaultTableCellRenderer {
         public CenterAlignedRenderer() {
             setHorizontalAlignment(CENTER);
@@ -1103,6 +1166,7 @@ public class CrearVenta extends JFrame {
         }
     }
 
+    // Clase para alinear los elementos a la izquierda
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
         public LeftAlignedRenderer() {
             setHorizontalAlignment(LEFT);
@@ -1115,6 +1179,7 @@ public class CrearVenta extends JFrame {
         }
     }
 
+    // Método para renderizar el botón
     class ButtonRenderer extends JButton implements TableCellRenderer {
         public ButtonRenderer() {
             setOpaque(true);
@@ -1129,6 +1194,7 @@ public class CrearVenta extends JFrame {
         }
     }
 
+    // Método para agregar el botón a la celda
     class ButtonEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
         private JButton button;
         private int row, col;
@@ -1189,6 +1255,7 @@ public class CrearVenta extends JFrame {
         }
     }
 
+    // Método para configurar la tabla
     private void configurarTablaMateriales() {
         int columnCount = tablaProductos.getColumnCount();
         if (columnCount > 0) {
@@ -1208,10 +1275,12 @@ public class CrearVenta extends JFrame {
         }
     }
 
+    // Método para agregar la venta
     public void addVentaListener(VentaListener listener) {
         ventaListeners.add(listener);
     }
 
+    // Método para guardar los datos de la venta
     private void guardarDatos() {
 
         String codigoVenta = campoCodigo.getText();
@@ -1286,6 +1355,7 @@ public class CrearVenta extends JFrame {
         }
     }
 
+    // Método para guardar los detalles de la venta
     private void guardarDetalleVenta(int id_material, int cantidad, String tipo) {
 
         double availableQuantity = obtenerCantidadMaterialDesdeBD(id_material, tipo);
@@ -1313,6 +1383,7 @@ public class CrearVenta extends JFrame {
         }
     }
 
+    // Método para obtener la cantidad desde la base de datos
     private int obtenerCantidadMaterialDesdeBD(int id_material, String tipo) {
         int availableQuantity = 0;
 
@@ -1333,7 +1404,8 @@ public class CrearVenta extends JFrame {
 
         return availableQuantity;
     }
-    
+
+    // Método para obtener el precio desde la base de datos
     private double obtenerPrecioMaterialDesdeBD(int id_material, String tipo) {
         double precio = 0.0;
 
@@ -1365,6 +1437,7 @@ public class CrearVenta extends JFrame {
         return precio;
     }
 
+    // Método para cargar los datos de los materiales
     private PoliModeloProducto cargarDetallesMateriales() {
         sql = new Conexion();
         productosListTemporal.clear(); // Limpiar la lista antes de agregar los materiales
@@ -1452,6 +1525,7 @@ public class CrearVenta extends JFrame {
         return new PoliModeloProducto(productosListTemporal);
     }
 
+    // Método para cargar los datos de las flores
     private PoliModeloFlor cargarDatosFloristeria() {
         sql = new Conexion();
         floristeriaList.clear();
@@ -1491,6 +1565,7 @@ public class CrearVenta extends JFrame {
         return modeloFlor;
     }
 
+    // Método para cargar los datos de los materiales
     private PoliModeloMaterial cargarDatosMaterial() {
         sql = new Conexion();
         materialList.clear();
@@ -1526,6 +1601,7 @@ public class CrearVenta extends JFrame {
         return modeloMaterial;
     }
 
+    // Método para cargar los datos de las manualidades
     private PoliModeloManualidad cargarDatosManualidad() {
         sql = new Conexion();
         manualidadList.clear();
@@ -1559,6 +1635,7 @@ public class CrearVenta extends JFrame {
         return modeloManualidad;
     }
 
+    // Método para cargar los datos de las tarjetas
     private PoliModeloTarjeta cargarDatosTarjeta() {
         sql = new Conexion();
         tarjetaList.clear();
@@ -1595,6 +1672,7 @@ public class CrearVenta extends JFrame {
         return modeloTarjeta;
     }
 
+    // Método para cargar los datos de los arreglos
     private PoliModeloArreglo cargarDatosArreglo() {
         sql = new Conexion();
         arregloList.clear();
@@ -1630,6 +1708,7 @@ public class CrearVenta extends JFrame {
         return modeloArreglo;
     }
 
+    // Método para cargar los datos del desayuno
     private PoliModeloDesayuno cargarDatosDesayuno() {
         sql = new Conexion();
         desayunoList.clear();
@@ -1665,6 +1744,7 @@ public class CrearVenta extends JFrame {
         return modeloDesayuno;
     }
 
+    // Método para cargar los datos del resumen de promoción
     private PoliModeloResumenPromocion cargarDatosPromocion() {
         sql = new Conexion();
         materialList.clear();
@@ -1700,6 +1780,7 @@ public class CrearVenta extends JFrame {
         return modeloResumenPromocion;
     }
 
+    // Método para obtener la cantidad
     private int obtenerCantidadMaterial() {
         final int[] cantidadMaterial = new int[] {-1};
 
@@ -1762,6 +1843,7 @@ public class CrearVenta extends JFrame {
         return cantidadMaterial[0];
     }
 
+    // Método para mostrar un dialogo de error
     private void showErrorDialog(String message) {
         JButton btnOK = new JButton("Aceptar");
         btnOK.setBackground(darkColorAqua);
@@ -1791,6 +1873,7 @@ public class CrearVenta extends JFrame {
         dialog.setVisible(true);
     }
 
+    // Método para obtener los productos de la tabla
     private List<Producto> obtenerProductosDeTabla() {
         List<Producto> productos = new ArrayList<>();
 
@@ -1809,6 +1892,7 @@ public class CrearVenta extends JFrame {
         return productos;
     }
 
+    // Método mostrar dialogo personalizado de éxito
     public void mostrarDialogoPersonalizadoExito(String mensaje, Color colorFondoBoton) {
         // Crea un botón personalizado
         JButton btnAceptar = new JButton("ACEPTAR");
@@ -1844,6 +1928,7 @@ public class CrearVenta extends JFrame {
         dialog.setVisible(true);
     }
 
+    // Método mostrar dialogo personalizado de error
     public void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
         // Crea un botón personalizado
         JButton btnAceptar = new JButton("ACEPTAR");
@@ -1879,6 +1964,7 @@ public class CrearVenta extends JFrame {
         dialog.setVisible(true);
     }
 
+    // Método Principal
     public static void main(String[] args) {
         CrearVenta crearVenta = new CrearVenta();
         crearVenta.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
