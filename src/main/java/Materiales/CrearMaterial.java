@@ -1,7 +1,7 @@
 /**
- * CrearMateria.java
+ * CrearMaterial.java
  *
- * CrearMaterial
+ * Crear Material
  *
  * @author Dania Lagos
  * @version 1.0
