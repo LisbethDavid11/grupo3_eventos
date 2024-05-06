@@ -1,9 +1,17 @@
+/**
+ * SignUp.java
+ *
+ * Registro
+ *
+ * @author Alejandra Aroca
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Login;
 
 import Objetos.Conexion;
-import SubMenu.SubMenu;
 import org.mindrot.jbcrypt.BCrypt;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -54,20 +62,33 @@ public class SignUp extends JFrame {
     EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
     EmptyBorder marginBotonMostrar = new EmptyBorder(8, 5, 9, 5);
 
+    // Paneles
     private JPanel panel1;
     private JPanel panel2;
     private JPanel panel3;
     private JPanel panel4;
     private JPanel panel5;
+
+    // Etiquetas de texto
     private JLabel label1;
     private JLabel label2;
     private JLabel label3;
+
+    // Botones
     private JButton botonRegistrar;
     private JButton botonMostrar;
+
+    // Campos de texto
     private JTextField campoNombre;
     private JTextField campoCorreo;
+
+    // Campo de texto para contraseña
     private JPasswordField campoContrasena;
+
+    // Caja de selección
     private JComboBox campoRol;
+
+    // Otras variables
     private Conexion sql;
     private Connection mysql;
     private char defaultEchoChar;
@@ -427,7 +448,7 @@ public class SignUp extends JFrame {
         }
     }
 
-
+    // Método para guardar los datos del usuario
     private DatosUsuario guardarUsuario() {
         Conexion sql = new Conexion();
 
@@ -472,6 +493,7 @@ public class SignUp extends JFrame {
         return null;
     }
 
+    // Método para validar si el usuario ya existe mediante el coreo
     private boolean usuarioExistente(String correo) {
         Conexion sql = new Conexion();
         Connection connection = sql.conectamysql();
@@ -498,6 +520,7 @@ public class SignUp extends JFrame {
         }
     }
 
+    // Método para mostrar la contraseña
     private void mostrarContrasena() {
         // Cambiar el estado de visibilidad de la contraseña
         esVisible = !esVisible;
@@ -508,6 +531,7 @@ public class SignUp extends JFrame {
         campoContrasena.setEchoChar(modoEco);
     }
 
+    // Método para dialogo personalizar de éxito
     public void mostrarDialogoPersonalizadoExito(String mensaje, Color colorFondoBoton) {
         // Crea un botón personalizado
         JButton btnAceptar = new JButton("ACEPTAR");
@@ -543,6 +567,7 @@ public class SignUp extends JFrame {
         dialog.setVisible(true);
     }
 
+    // Método para dialogo personalizar de error
     public void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
         // Crea un botón personalizado
         JButton btnAceptar = new JButton("ACEPTAR");
@@ -578,6 +603,7 @@ public class SignUp extends JFrame {
         dialog.setVisible(true);
     }
 
+    // Método para cerrar la ventana
     public void cerrarVentanas() {
         for (Frame frame : Frame.getFrames()) {
             if (frame instanceof JFrame) {
@@ -589,6 +615,7 @@ public class SignUp extends JFrame {
         loginFrame.setVisible(true);
     }
 
+    // Método Principal
     public static void main(String[] args) {
         SignUp register = new SignUp();
         register.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
