@@ -1,8 +1,17 @@
+/**
+ * VerCliente.java
+ *
+ * Ver Cliente
+ *
+ * @author Dania Lagos
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Clientes;
 
 import Objetos.Cliente;
 import Objetos.Conexion;
-
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -14,14 +23,21 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class VerCliente extends JFrame {
+    // Panel
     private JPanel panel1;
+
+    // Campos de texto
     private JTextField etiquetaNombre;
     private JTextField etiquetaApellido;
     private JTextField etiquetaTelefono;
     private JTextField etiquetaIdentidad;
     private JTextArea etiquetaDomicilio;
     private JTextField etiquetaTipoCliente;
+
+    // Botón
     private JButton volverButton;
+
+    // Etiquetas
     private JLabel lbl0;
     private JLabel lbl1;
     private JLabel lbl2;
@@ -29,43 +45,52 @@ public class VerCliente extends JFrame {
     private JLabel lbl4;
     private JLabel lbl5;
     private JLabel lbl6;
+
+    // Referencia a la ventana de cliente actual
     private final VerCliente actual = this;
+
+    // Conexión a la base de datos
     private Conexion sql;
+
+    // Conexión al objeto de la base de datos MySQL
     private Connection mysql;
+
+    // Identificador
     private int id;
+
+    // Fuentes
     Font fontTitulo = new Font("Century Gothic", Font.BOLD, 20);
     Font font = new Font("Century Gothic", Font.BOLD, 15);
     Font font2 = new Font("Century Gothic", Font.BOLD, 11);
 
-    // Colores para el botón "Cyan"
-    Color primaryColorCyan = new Color(0, 188, 212); // Cyan primario
-    Color lightColorCyan = new Color(77, 208, 225); // Cyan claro
-    Color darkColorCyan = new Color(0, 151, 167); // Cyan oscuro
+    // Colores para los botones
+    Color primaryColorCyan = new Color(0, 188, 212); // Cyan
+    Color lightColorCyan = new Color(77, 208, 225);
+    Color darkColorCyan = new Color(0, 151, 167);
 
-    // Colores para el botón "Aqua"
-    Color primaryColorAqua = new Color(0, 150, 136); // Aqua primario
-    Color lightColorAqua = new Color(77, 182, 172); // Aqua claro
-    Color darkColorAqua = new Color(0, 121, 107); // Aqua oscuro
+    Color primaryColorAqua = new Color(0, 150, 136); // Aqua
+    Color lightColorAqua = new Color(77, 182, 172);
+    Color darkColorAqua = new Color(0, 121, 107);
 
-    // Colores para el botón "Rosado"
-    Color primaryColorRosado = new Color(233, 30, 99); // Rosado primario
-    Color lightColorRosado = new Color(240, 98, 146); // Rosado claro
-    Color darkColorRosado = new Color(194, 24, 91); // Rosado oscuro
+    Color primaryColorRosado = new Color(233, 30, 99); // Rosado
+    Color lightColorRosado = new Color(240, 98, 146);
+    Color darkColorRosado = new Color(194, 24, 91);
 
-    // Colores para el botón "Amber"
-    Color primaryColorAmber = new Color(255, 193, 7); // Amber primario
-    Color lightColorAmber = new Color(255, 213, 79); // Amber claro
-    Color darkColorAmber = new Color(255, 160, 0); // Amber oscuro
+    Color primaryColorAmber = new Color(255, 193, 7); // Amber
+    Color lightColorAmber = new Color(255, 213, 79);
+    Color darkColorAmber = new Color(255, 160, 0);
 
-    // Colores para el botón "Verde lima"
-    Color primaryColorVerdeLima = new Color(205, 220, 57); // Verde lima primario
-    Color lightColorVerdeLima = new Color(220, 237, 200); // Verde lima claro
-    Color darkColorVerdeLima = new Color(139, 195, 74); // Verde lima oscuro
+    Color primaryColorVerdeLima = new Color(205, 220, 57); // Verde lima
+    Color lightColorVerdeLima = new Color(220, 237, 200);
+    Color darkColorVerdeLima = new Color(139, 195, 74);
 
     Color darkColorPink = new Color(233, 30, 99);
     Color darkColorRed = new Color(244, 67, 54);
     Color darkColorBlue = new Color(33, 150, 243);
+
+    // Margen para los componentes
     EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
+
     public VerCliente(int id) {
         super("");
         setSize(550, 370);
@@ -165,6 +190,7 @@ public class VerCliente extends JFrame {
         });
     }
 
+    // Método para cargar los datos
     private void mostrar() {
         sql = new Conexion();
         mysql = sql.conectamysql();
@@ -189,6 +215,7 @@ public class VerCliente extends JFrame {
         }
     }
 
+    // Método Principal
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
