@@ -1,3 +1,13 @@
+/**
+ * VerMobiliario.java
+ *
+ * Ver Mobiliario
+ *
+ * @author Skarleth Ferrera
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Mobiliario;
 
 import Objetos.Conexion;
@@ -10,29 +20,48 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Random;
 
 public class VerMobiliario extends JFrame {
-    private JTextField campoNombreMobiliario, campoCantidad, campoPrecioU,comboColor;
-    private JRadioButton radioButtonSiNecesita, radioButtonNoNecesita;
+    // Campos de texto
+    private JTextField campoNombreMobiliario;
+    private JTextField campoCantidad;
+    private JTextField campoPrecioU;
+    private JTextField comboColor;
+
+    // RadioButtons
+    private JRadioButton radioButtonSiNecesita;
+    private JRadioButton radioButtonNoNecesita;
+
+    // Botones
     private JButton botonVolver;
-    private JPanel panel1, panel2, panel3, panel4, panel5, panelImg;
-    private JLabel lbl0, lbl1,lbl3, lbl4, lbl5,imagenLabel;
-    private String imagePath = "";
-    private JTextArea txtaDescripcion;
+
+    // Paneles
+    private JPanel panel1;
+    private JPanel panel2;
+    private JPanel panel3;
+    private JPanel panel4;
+    private JPanel panel5;
+    private JPanel panelImg;
+
+    // JLabels
+    private JLabel lbl0;
+    private JLabel lbl1;
     private JLabel lbl2;
+    private JLabel lbl3;
+    private JLabel lbl4;
+    private JLabel lbl5;
+    private JLabel imagenLabel;
+
+    // Área de texto
+    private JTextArea txtaDescripcion;
+
+    // Otras variables
+    private String imagePath = "";
     private VerMobiliario actual = this;
     private Conexion sql;
+
+    // Fuente y colores
     Color darkColorRed = new Color(244, 67, 54);
     Color darkColorBlue = new Color(33, 150, 243);
 
@@ -59,6 +88,7 @@ public class VerMobiliario extends JFrame {
 
     // Crea un margen de 10 píxeles desde el borde inferior
     EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
+
     public VerMobiliario(Mobiliario mobiliario) {
         super("Ver datos de mobiliario");
         setSize(700, 650);
@@ -307,7 +337,7 @@ public class VerMobiliario extends JFrame {
         imagenLabel.setIcon(scaledIcon);
     }
 
-
+    // Método para obtener extensión de imagen
     private String obtenerExtensionImagen(String imagePath) {
         int extensionIndex = imagePath.lastIndexOf(".");
         if (extensionIndex != -1) {
@@ -316,12 +346,14 @@ public class VerMobiliario extends JFrame {
         return "";
     }
 
+    // Método para generar un número aleatorio
     private String generarNumeroAleatorio(int min, int max) {
         Random random = new Random();
         int numeroAleatorio = random.nextInt(max - min + 1) + min;
         return String.format("%04d", numeroAleatorio);
     }
 
+    // Método para TODO
     private void createUIComponents() {
         // TODO: place custom component creation code here
     }
