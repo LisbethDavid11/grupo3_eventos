@@ -1,12 +1,20 @@
+/**
+ * ListaPromociones.java
+ *
+ * Lista de Promociones
+ *
+ * @author Elsa Ramos
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Promociones;
 
-import Login.SesionUsuario;
 import Manualidades.TextPrompt;
 import Modelos.ModeloPromocion;
 import Objetos.Conexion;
 import Objetos.Promocion;
 import com.toedter.calendar.JDateChooser;
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
@@ -29,21 +37,56 @@ import java.util.Date;
 import java.util.List;
 
 public class ListaPromociones extends JFrame {
-    private final JDateChooser fecha_desde,fecha_hasta;
-    private JPanel panelPrincipal, panelTitulo, panelA, panelB;
-    private JButton botonCrear, botonVer, botonAdelante, botonAtras;
+    // Componentes de fecha
+    private final JDateChooser fecha_desde;
+    private final JDateChooser fecha_hasta;
+
+    // Paneles
+    private JPanel panelPrincipal;
+    private JPanel panelTitulo;
+    private JPanel panelA;
+    private JPanel panelB;
+
+    // Botones
+    private JButton botonCrear;
+    private JButton botonVer;
+    private JButton botonAdelante;
+    private JButton botonAtras;
+
+    // Campo de búsqueda
     private JTextField campoBusqueda;
+
+    // Placeholder para el campo de búsqueda
     private TextPrompt placeholder = new TextPrompt(" Buscar por descripción y precio", campoBusqueda);
+
+    // Etiquetas
     private JLabel lblPagina;
     private JLabel lblTitulo;
+
+    // Tabla
     private JTable listaPromociones;
+
+    // Panel de fecha
     private JPanel panel_fecha;
+
+    // Lista de promociones
     private List<Promocion> listaPromocion;
+
+    // Variables de paginación
     private int pagina = 0;
+
+    // Conexiones a la base de datos
     private Connection mysql;
     private Conexion sql;
+
+    // Instancia de la clase
     private ListaPromociones actual = this;
+
+    // Búsqueda actual
     private String busqueda = "";
+
+
+    //Fuente y colores
     Font fontTitulo = new Font("Century Gothic", Font.BOLD, 17);
     Font font = new Font("Century Gothic", Font.BOLD, 11);
     Color primaryColor = Color.decode("#37474f"); // Gris azul oscuro
@@ -227,9 +270,9 @@ public class ListaPromociones extends JFrame {
         botonAtras.setFocusable(false);
         botonCrear.setFocusable(false);
         botonVer.setFocusable(false);
-
     }
 
+    // Método para configurar la tabla
     private void configurarTablaManualidades() {
         TableColumnModel columnModel = listaPromociones.getColumnModel();
 
@@ -248,6 +291,7 @@ public class ListaPromociones extends JFrame {
         columnModel.getColumn(5).setCellRenderer(new LeftAlignedRenderer());
     }
 
+    // Clase para alinear los datos a la izquierda
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
         public LeftAlignedRenderer() {
             setHorizontalAlignment(LEFT);
@@ -260,18 +304,7 @@ public class ListaPromociones extends JFrame {
         }
     }
 
-    class RightAlignedRenderer extends DefaultTableCellRenderer {
-        public RightAlignedRenderer() {
-            setHorizontalAlignment(RIGHT);
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            return cell;
-        }
-    }
-
+    // Clase para alinear los datos al centro
     class CenterAlignedRenderer extends DefaultTableCellRenderer {
         public CenterAlignedRenderer() {
             setHorizontalAlignment(CENTER);
@@ -284,6 +317,7 @@ public class ListaPromociones extends JFrame {
         }
     }
 
+    // Método para cargar los datos de la promoción
     private ModeloPromocion cargarDatos() {
         sql = new Conexion();
         try (Connection mysql = sql.conectamysql();
@@ -343,7 +377,7 @@ public class ListaPromociones extends JFrame {
         return new ModeloPromocion(listaPromocion, sql);
     }
 
-
+    // Método para la paginación
     private int getTotalPageCount() {
         int count = 0;
         try (Connection mysql = sql.conectamysql();
@@ -391,111 +425,100 @@ public class ListaPromociones extends JFrame {
         return totalPageCount;
     }
 
+    // Método para mostrar un diálogo personalizado de éxito
     public void mostrarDialogoPersonalizadoExito(String mensaje, Color colorFondoBoton) {
-        // Crea un botón personalizado
+        // Crea un botón personalizado "OK"
         JButton btnAceptar = new JButton("OK");
-        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
-        btnAceptar.setForeground(Color.WHITE);
-        btnAceptar.setFocusPainted(false);
+        btnAceptar.setBackground(colorFondoBoton); // Establece el color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE); // Establece el color del texto del botón
+        btnAceptar.setFocusPainted(false); // Elimina el borde del foco alrededor del botón
 
-        // Crea un JOptionPane
+        // Crea un JOptionPane para mostrar el mensaje
         JOptionPane optionPane = new JOptionPane(
-                mensaje,                           // Mensaje a mostrar
-                JOptionPane.INFORMATION_MESSAGE,   // Tipo de mensaje
-                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
-                null,                              // Icono (puede ser null)
-                new Object[]{},                    // No se usan opciones estándar
-                null                               // Valor inicial (no necesario aquí)
+                mensaje,                             // Texto del mensaje a mostrar
+                JOptionPane.INFORMATION_MESSAGE,     // Tipo de mensaje (información)
+                JOptionPane.DEFAULT_OPTION,          // Opción por defecto
+                null,                                // Sin icono
+                new Object[]{},                      // Sin opciones estándar
+                null                                 // Sin valor inicial
         );
 
-        // Añade el botón al JOptionPane
+        // Configura el JOptionPane para usar el botón personalizado
         optionPane.setOptions(new Object[]{btnAceptar});
 
         // Crea un JDialog para mostrar el JOptionPane
         JDialog dialog = optionPane.createDialog("Validación");
 
-        // Añade un ActionListener al botón
-        btnAceptar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
-            }
-        });
+        // Añade un ActionListener al botón para cerrar el diálogo cuando se presione
+        btnAceptar.addActionListener(e -> dialog.dispose());
 
         // Muestra el diálogo
         dialog.setVisible(true);
     }
 
+    // Método para mostrar un diálogo personalizado de error
     public void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
-        // Crea un botón personalizado
+        // Crea un botón personalizado "OK"
         JButton btnAceptar = new JButton("OK");
-        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
-        btnAceptar.setForeground(Color.WHITE);
-        btnAceptar.setFocusPainted(false);
+        btnAceptar.setBackground(colorFondoBoton); // Establece el color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE); // Establece el color del texto del botón
+        btnAceptar.setFocusPainted(false); // Elimina el borde del foco alrededor del botón
 
-        // Crea un JOptionPane
+        // Crea un JOptionPane para mostrar el mensaje
         JOptionPane optionPane = new JOptionPane(
-                mensaje,                           // Mensaje a mostrar
-                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
-                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
-                null,                              // Icono (puede ser null)
-                new Object[]{},                    // No se usan opciones estándar
-                null                               // Valor inicial (no necesario aquí)
+                mensaje,                             // Texto del mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,         // Tipo de mensaje (advertencia)
+                JOptionPane.DEFAULT_OPTION,          // Opción por defecto
+                null,                                // Sin icono
+                new Object[]{},                      // Sin opciones estándar
+                null                                 // Sin valor inicial
         );
 
-        // Añade el botón al JOptionPane
+        // Configura el JOptionPane para usar el botón personalizado
         optionPane.setOptions(new Object[]{btnAceptar});
 
         // Crea un JDialog para mostrar el JOptionPane
         JDialog dialog = optionPane.createDialog("Validación");
 
-        // Añade un ActionListener al botón
-        btnAceptar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
-            }
-        });
+        // Añade un ActionListener al botón para cerrar el diálogo cuando se presione
+        btnAceptar.addActionListener(e -> dialog.dispose());
 
         // Muestra el diálogo
         dialog.setVisible(true);
     }
 
+    // Método para mostrar un diálogo personalizado de atención
     public void mostrarDialogoPersonalizadoAtencion(String mensaje, Color colorFondoBoton) {
-        // Crea un botón personalizado
+        // Crea un botón personalizado "OK"
         JButton btnAceptar = new JButton("OK");
-        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
-        btnAceptar.setForeground(Color.WHITE);
-        btnAceptar.setFocusPainted(false);
+        btnAceptar.setBackground(colorFondoBoton); // Establece el color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE); // Establece el color del texto del botón
+        btnAceptar.setFocusPainted(false); // Elimina el borde del foco alrededor del botón
 
-        // Crea un JOptionPane
+        // Crea un JOptionPane para mostrar el mensaje
         JOptionPane optionPane = new JOptionPane(
-                mensaje,                           // Mensaje a mostrar
-                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
-                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
-                null,                              // Icono (puede ser null)
-                new Object[]{},                    // No se usan opciones estándar
-                null                               // Valor inicial (no necesario aquí)
+                mensaje,                             // Texto del mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,         // Tipo de mensaje (advertencia)
+                JOptionPane.DEFAULT_OPTION,          // Opción por defecto
+                null,                                // Sin icono
+                new Object[]{},                      // Sin opciones estándar
+                null                                 // Sin valor inicial
         );
 
-        // Añade el botón al JOptionPane
+        // Configura el JOptionPane para usar el botón personalizado
         optionPane.setOptions(new Object[]{btnAceptar});
 
         // Crea un JDialog para mostrar el JOptionPane
         JDialog dialog = optionPane.createDialog("Validación");
 
-        // Añade un ActionListener al botón
-        btnAceptar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
-            }
-        });
+        // Añade un ActionListener al botón para cerrar el diálogo cuando se presione
+        btnAceptar.addActionListener(e -> dialog.dispose());
 
         // Muestra el diálogo
         dialog.setVisible(true);
     }
 
+    // Método Principal
     public static void main(String[] args) {
         ListaPromociones listaPromociones = new ListaPromociones();
         listaPromociones.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
