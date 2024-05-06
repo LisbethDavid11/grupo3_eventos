@@ -1,8 +1,16 @@
+/**
+ * VerPermiso.java
+ *
+ * Ver Permiso
+ *
+ * @author Skarleth Ferrera
+ * @version 1.0
+ * @since 2024-05-06
+ */
+
 package Permisos;
 
-import Login.SesionUsuario;
 import Objetos.Conexion;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -16,15 +24,35 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class VerPermiso extends JFrame{
+    // Campos de texto
     private JTextField campoNombre;
-    private JTextArea campoDomicilio, campoPermisos;
+    private JTextArea campoDomicilio;
+    private JTextArea campoPermisos;
+
+    // Botón
     private JButton volverButton;
-    private JPanel panel, panel1;
-    private JLabel label0, label1, label2, label3;
+
+    // Paneles
+    private JPanel panel;
+    private JPanel panel1;
+
+    // Etiquetas
+    private JLabel label0;
+    private JLabel label1;
+    private JLabel label2;
+    private JLabel label3;
+
+    // Referencia a la clase actual
     private VerPermiso actual = this;
+
+    // Conexión a la base de datos
     private Connection mysql;
     private Conexion sql;
+
+    // Referencia a la clase VerPermiso
     public VerPermiso verPermiso = this;
+
+    // Fuente y colores
     Color darkColorRed = new Color(244, 67, 54);
     Color darkColorBlue = new Color(33, 150, 243);
 
@@ -200,6 +228,7 @@ public class VerPermiso extends JFrame{
 
     }
 
+    // Método cargar datos del permiso
     private void mostrarRol() {
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement(
@@ -258,7 +287,7 @@ public class VerPermiso extends JFrame{
         }
     }
 
-
+    // Método Principal
     public static void main(String[] args) {
         VerPermiso verPermiso = new VerPermiso(7);
         verPermiso.setVisible(true);
