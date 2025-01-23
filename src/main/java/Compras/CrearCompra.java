@@ -13,10 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
@@ -498,6 +495,9 @@ public class CrearCompra extends JFrame {
     }
 
     private void guardarDatos(JDatePickerImpl datePicker) {
+        sql = new Conexion();
+        mysql = sql.conectamysql();
+
         Object[] options = {"Sí", "No"};
         int confirmacionGuardar = JOptionPane.showOptionDialog(null, "¿Desea guardar la compra?", "Confirmar", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 
@@ -505,17 +505,24 @@ public class CrearCompra extends JFrame {
             return;
         }
 
-        String codigoCompra = campoCodigo.getText();
+        String codigo_compra = campoCodigo.getText();
         Date fechaActual = (Date) datePicker.getModel().getValue(); // Explicitly cast the value to Date
-        String fechaCompra = new SimpleDateFormat("yyyy-MM-dd").format(fechaActual);
-        int proveedorId = Integer.parseInt(boxProveedor.getSelectedItem().toString().split(" - ")[0]);
-        int empleadoId = Integer.parseInt(boxEmpleado.getSelectedItem().toString().split(" - ")[0]);
-        try (PreparedStatement preparedStatement = mysql.prepareStatement("INSERT INTO compras (codigo_compra, fecha, proveedor_id, empleado_id) VALUES (?, ?, ?, ?)")) {
-            preparedStatement.setString(1, codigoCompra);
-            preparedStatement.setString(2, fechaCompra);
-            preparedStatement.setInt(3, proveedorId);
-            preparedStatement.setInt(4, empleadoId);
+        String fecha = new SimpleDateFormat("yyyy-MM-dd").format(fechaActual);
+        int proveedor_id = Integer.parseInt(boxProveedor.getSelectedItem().toString().split(" - ")[0]);
+        int empleado_id = Integer.parseInt(boxEmpleado.getSelectedItem().toString().split(" - ")[0]);
+
+
+
+        try (Connection connection = sql.conectamysql();
+                PreparedStatement preparedStatement = mysql.prepareStatement("INSERT INTO compras (codigo_compra, fecha, proveedor_id, empleado_id) VALUES (?, ?, ?, ?)"))  {
+            preparedStatement.setString(1, codigo_compra);
+            preparedStatement.setString(2, fecha);
+            preparedStatement.setInt(3, proveedor_id);
+            preparedStatement.setInt(4, empleado_id);
             preparedStatement.executeUpdate();
+
+
+
         } catch (SQLException e) {
             e.printStackTrace();
         }

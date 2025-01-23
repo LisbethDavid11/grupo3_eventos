@@ -10,7 +10,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="18fd5814-fc96-4447-888d-4dd9792a3bfd" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/img/fondo_chelsea.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/img/original_fondo.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Compras/CrearCompra.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Compras/CrearCompra.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Login/Login.form" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Login/Login.form" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Objetos/Conexion.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Objetos/Conexion.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/SubMenu/SubMenu.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/SubMenu/SubMenu.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/SubMenu/SubMenuDashboard.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/SubMenu/SubMenuDashboard.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,7 +39,9 @@
   &quot;associatedIndex&quot;: 4
 }</component>
   <component name="ProjectId" id="2RD7lWR6qXrPcQWFXPN3bD8qyNh" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -66,7 +75,7 @@
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/Admin/Documents/GitHub/grupo3_eventos/src/main/resources/db&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Admin/Documents/GitHub/grupo3_eventos/src/main/resources&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -86,18 +95,18 @@
       <recent name="Clientes" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\Users\Admin\Documents\GitHub\grupo3_eventos\src\main\resources\db" />
       <recent name="C:\Users\Admin\Documents\GitHub\grupo3_eventos\src\main\resources" />
+      <recent name="C:\Users\Admin\Documents\GitHub\grupo3_eventos\src\main\resources\db" />
       <recent name="C:\Laragon\www\grupo3_eventos\src\main\java\Login" />
       <recent name="C:\Laragon\www\grupo3_eventos\src\main\lib" />
       <recent name="C:\Laragon\www\grupo3_eventos\src\main\java\Arreglos" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Admin\Documents\GitHub\grupo3_eventos\img" />
       <recent name="C:\Laragon\www\grupo3_eventos\src\main\java\SubMenu" />
       <recent name="C:\Laragon\www\grupo3_eventos\src\main\java\Floristeria\CrearFloristeria" />
       <recent name="C:\Users\Skarleth Alvarado\Desktop\Nueva carpeta\grupo3_eventos\src\main\java\Clientes" />
       <recent name="C:\grupo3_eventos\src\main\java\Iconos" />
-      <recent name="C:\grupo3_eventos\src\main\java\Empleados" />
     </key>
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
       <recent name="" />

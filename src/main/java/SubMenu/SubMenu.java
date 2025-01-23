@@ -498,7 +498,7 @@ public class SubMenu extends JFrame {
             }
         });
 
-        JMenuItem menuItemAcercaDe = new JMenuItem("Acerca De");
+        JMenuItem menuItemAcercaDe = new JMenuItem("Acerca de");
         menuItemAcercaDe.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -513,7 +513,7 @@ public class SubMenu extends JFrame {
         });
 
         // Suponiendo que estás en una clase que extiende JFrame
-        JMenuItem menuItemCerrarSesion = new JMenuItem("Cerrar Sesión");
+        JMenuItem menuItemCerrarSesion = new JMenuItem("Cerrar sesión");
         menuItemCerrarSesion.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

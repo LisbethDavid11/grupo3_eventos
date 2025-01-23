@@ -125,13 +125,13 @@ public class SubMenuDashboard extends JFrame {
 		listaPermisos = new ListaPermisos();
 		
 		JPanel panel_1 = new JPanel();
-		panel_1.setBackground(new Color(0, 51, 153));
+		panel_1.setBackground(new Color(136, 88, 120)); //color del nabvar izquierdo
 		panel_1.setBounds(0, 0, 266, 681);
 		contentPane.add(panel_1);
 		panel_1.setLayout(null);
 		
 		JLabel lblNewLabel = new JLabel();
-		ImageIcon icon = new ImageIcon( "img/logo.png");
+		ImageIcon icon = new ImageIcon( "img/logo unah.png");
 		Image img = icon.getImage();
 
 		Image newImg = img.getScaledInstance(210, 154, Image.SCALE_SMOOTH);
@@ -162,12 +162,12 @@ public class SubMenuDashboard extends JFrame {
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				lblNewLabel_1.setForeground(new Color(51, 204, 204));
+				lblNewLabel_1.setForeground(new Color(0, 0, 0));
 			}
 		});
 		lblNewLabel_1.setFont(new Font("Times New Roman", Font.BOLD, 16));
 		lblNewLabel_1.setIcon(new ImageIcon("img/icons8-cliente-27.png"));
-		lblNewLabel_1.setForeground(new Color(51, 204, 204));
+		lblNewLabel_1.setForeground(new Color(0, 0, 0)); //color texto clientes
 		lblNewLabel_1.setBounds(26, 221, 199, 26);
 		panel_1.add(lblNewLabel_1);
 
@@ -182,7 +182,7 @@ public class SubMenuDashboard extends JFrame {
 		JLabel lblNewLabel_1_2 = new JLabel("Empleados");
 		lblNewLabel_1_2.setIcon(new ImageIcon("img/icons8-empleado-27.png"));
 		lblNewLabel_1_2.setFont(new Font("Times New Roman", Font.BOLD, 16));
-		lblNewLabel_1_2.setForeground(new Color(51, 204, 204));
+		lblNewLabel_1_2.setForeground(new Color(0, 0, 0));
 		lblNewLabel_1_2.setBounds(26, 258, 188, 26);
 		lblNewLabel_1_2.setEnabled(SesionUsuario.user.getRol().getPermisos().isEmpleado());
 		lblNewLabel_1_2.addMouseListener(new MouseAdapter() {
@@ -198,7 +198,7 @@ public class SubMenuDashboard extends JFrame {
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				lblNewLabel_1_2.setForeground(new Color(51, 204, 204));
+				lblNewLabel_1_2.setForeground(new Color(0, 0, 0));
 			}
 		});
 		panel_1.add(lblNewLabel_1_2);
@@ -206,7 +206,7 @@ public class SubMenuDashboard extends JFrame {
 		JLabel lblNewLabel_1_3 = new JLabel("Proveedores");
 		lblNewLabel_1_3.setIcon(new ImageIcon("img/icons8-proveedor-27.png"));
 		lblNewLabel_1_3.setFont(new Font("Times New Roman", Font.BOLD, 16));
-		lblNewLabel_1_3.setForeground(new Color(51, 204, 204));
+		lblNewLabel_1_3.setForeground(new Color(0, 0, 0));
 		lblNewLabel_1_3.setBounds(29, 289, 165, 37);
 		lblNewLabel_1_3.setEnabled(SesionUsuario.user.getRol().getPermisos().isProveedor());
 		lblNewLabel_1_3.addMouseListener(new MouseAdapter() {
@@ -222,14 +222,14 @@ public class SubMenuDashboard extends JFrame {
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				lblNewLabel_1_3.setForeground(new Color(51, 204, 204));
+				lblNewLabel_1_3.setForeground(new Color(0, 0, 0));
 			}
 		});
 		panel_1.add(lblNewLabel_1_3);
 		
 		JLabel lblNewLabel_1_5 = new JLabel("Usuarios");
 		lblNewLabel_1_5.setIcon(new ImageIcon("img/icons8-usuarios-27.png"));
-		lblNewLabel_1_5.setForeground(new Color(51, 204, 204));
+		lblNewLabel_1_5.setForeground(new Color(0, 0, 0));
 		lblNewLabel_1_5.setFont(new Font("Times New Roman", Font.BOLD, 16));
 		lblNewLabel_1_5.setBounds(26, 496, 210, 35);
 		lblNewLabel_1_5.setEnabled(SesionUsuario.user.getRol().getPermisos().isUsuario());
@@ -246,14 +246,14 @@ public class SubMenuDashboard extends JFrame {
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				lblNewLabel_1_5.setForeground(new Color(51, 204, 204));
+				lblNewLabel_1_5.setForeground(new Color(0, 0, 0));
 			}
 		});
 		panel_1.add(lblNewLabel_1_5);
 		
 		JLabel lblNewLabel_1_2_1 = new JLabel("Roles");
 		lblNewLabel_1_2_1.setIcon(new ImageIcon("img/icons8-roles-27.png"));
-		lblNewLabel_1_2_1.setForeground(new Color(51, 204, 204));
+		lblNewLabel_1_2_1.setForeground(new Color(0, 0, 0));
 		lblNewLabel_1_2_1.setFont(new Font("Times New Roman", Font.BOLD, 16));
 		lblNewLabel_1_2_1.setBounds(26, 542, 210, 35);
 		lblNewLabel_1_2_1.setEnabled(SesionUsuario.user.getRol().getPermisos().isRol());
@@ -270,14 +270,14 @@ public class SubMenuDashboard extends JFrame {
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				lblNewLabel_1_2_1.setForeground(new Color(51, 204, 204));
+				lblNewLabel_1_2_1.setForeground(new Color(0, 0, 0));
 			}
 		});
 		panel_1.add(lblNewLabel_1_2_1);
 		
 		JLabel lblNewLabel_1_3_1 = new JLabel("Permisos");
 		lblNewLabel_1_3_1.setIcon(new ImageIcon("img/icons8-end-user-27.png"));
-		lblNewLabel_1_3_1.setForeground(new Color(51, 204, 204));
+		lblNewLabel_1_3_1.setForeground(new Color(0, 0, 0));
 		lblNewLabel_1_3_1.setFont(new Font("Times New Roman", Font.BOLD, 16));
 		lblNewLabel_1_3_1.setBounds(26, 588, 210, 37);
 		lblNewLabel_1_3_1.setEnabled(SesionUsuario.user.getRol().getPermisos().isRol());
@@ -294,7 +294,7 @@ public class SubMenuDashboard extends JFrame {
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				lblNewLabel_1_3_1.setForeground(new Color(51, 204, 204));
+				lblNewLabel_1_3_1.setForeground(new Color(0, 0, 0));
 			}
 		});
 		panel_1.add(lblNewLabel_1_3_1);
@@ -306,7 +306,7 @@ public class SubMenuDashboard extends JFrame {
 		panel_1.add(separator_1_1);
 		
 		JLabel lblNewLabel_1_2_2 = new JLabel("Comercio");
-		lblNewLabel_1_2_2.setForeground(new Color(51, 204, 204));
+		lblNewLabel_1_2_2.setForeground(new Color(0, 0, 0));
 		lblNewLabel_1_2_2.setFont(new Font("Times New Roman", Font.BOLD, 16));
 		lblNewLabel_1_2_2.setBounds(57, 434, 85, 13);
 		lblNewLabel_1_2_2.setEnabled(SesionUsuario.user.getRol().getPermisos().isVenta() ||
@@ -377,19 +377,19 @@ public class SubMenuDashboard extends JFrame {
             @Override
             public void mouseExited(MouseEvent e) {
 
-                lblNewLabel_1_2_2.setForeground(new Color(51, 204, 204)); 
+                lblNewLabel_1_2_2.setForeground(new Color(0, 0, 0));
             }
         });
 		
 		JLabel lblNewLabel_1_1_1_2 = new JLabel("icon");
 		lblNewLabel_1_1_1_2.setIcon(new ImageIcon("img/icons8-circulacion-de-dinero-27.png"));
-		lblNewLabel_1_1_1_2.setForeground(new Color(51, 204, 204));
+		lblNewLabel_1_1_1_2.setForeground(new Color(0, 0, 0));
 		lblNewLabel_1_1_1_2.setFont(new Font("Times New Roman", Font.BOLD, 11));
 		lblNewLabel_1_1_1_2.setBounds(26, 428, 27, 27);
 		panel_1.add(lblNewLabel_1_1_1_2);
 
 		JLabel lblNewLabel_1_6 = new JLabel("Productos");
-		lblNewLabel_1_6.setForeground(new Color(51, 204, 204));
+		lblNewLabel_1_6.setForeground(new Color(0, 0, 0));
 		lblNewLabel_1_6.setFont(new Font("Times New Roman", Font.BOLD, 16));
 		lblNewLabel_1_6.setBounds(57, 358, 85, 14);
 		panel_1.add(lblNewLabel_1_6);
@@ -515,21 +515,21 @@ public class SubMenuDashboard extends JFrame {
             @Override
             public void mouseExited(MouseEvent e) {
 
-            	lblNewLabel_1_6.setForeground(new Color(51, 204, 204)); 
+            	lblNewLabel_1_6.setForeground(new Color(0, 0, 0));
             }
         });
 		
 		
 		JLabel lblNewLabel_1_1_5 = new JLabel("icon");
 		lblNewLabel_1_1_5.setIcon(new ImageIcon("img/icons8-productos-27.png"));
-		lblNewLabel_1_1_5.setForeground(new Color(51, 204, 204));
+		lblNewLabel_1_1_5.setForeground(new Color(0, 0, 0));
 		lblNewLabel_1_1_5.setFont(new Font("Times New Roman", Font.BOLD, 12));
 		lblNewLabel_1_1_5.setBounds(26, 352, 27, 27);
 		panel_1.add(lblNewLabel_1_1_5);
 		
 
 		JLabel lblNewLabel_1_6_1 = new JLabel("Eventos");
-		lblNewLabel_1_6_1.setForeground(new Color(51, 204, 204));
+		lblNewLabel_1_6_1.setForeground(new Color(0, 0, 0));
 		lblNewLabel_1_6_1.setFont(new Font("Times New Roman", Font.BOLD, 16));
 		lblNewLabel_1_6_1.setBounds(57, 396, 66, 14);
 		panel_1.add(lblNewLabel_1_6_1);
@@ -657,13 +657,13 @@ public class SubMenuDashboard extends JFrame {
             @Override
             public void mouseExited(MouseEvent e) {
 
-            	lblNewLabel_1_6_1.setForeground(new Color(51, 204, 204)); 
+            	lblNewLabel_1_6_1.setForeground(new Color(0, 0, 0));
             }
         });
 		
 		JLabel lblNewLabel_1_1_5_1 = new JLabel("icon");
 		lblNewLabel_1_1_5_1.setIcon(new ImageIcon("img/icons8-eventos-27.png"));
-		lblNewLabel_1_1_5_1.setForeground(new Color(51, 204, 204));
+		lblNewLabel_1_1_5_1.setForeground(new Color(0, 0, 0));
 		lblNewLabel_1_1_5_1.setFont(new Font("Times New Roman", Font.BOLD, 11));
 		lblNewLabel_1_1_5_1.setBounds(26, 390, 27, 27);
 		panel_1.add(lblNewLabel_1_1_5_1);
@@ -675,7 +675,7 @@ public class SubMenuDashboard extends JFrame {
 		    protected void paintComponent(Graphics g) {
 		        super.paintComponent(g);
 		        try {
-		            backgroundImage = ImageIO.read(new File("img/fondo-1252x1252.jpg"));
+		            backgroundImage = ImageIO.read(new File("img/fondo_chelsea.png"));
 		        } catch (IOException e) {
 		            e.printStackTrace();
 		        }
@@ -716,14 +716,14 @@ public class SubMenuDashboard extends JFrame {
 		FlowLayout fl_navbar = new FlowLayout();
 		fl_navbar.setAlignment(FlowLayout.RIGHT);
 		navbar.setLayout(fl_navbar);
-		navbar.setBackground(Color.decode("#607D8B")); // Color del Navbar
+		navbar.setBackground(Color.decode("#885878")); // Color del Navbar arriba
 
 		userLabel = new JLabel();
 		userLabel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10)); // Margen para la etiqueta
 
 		// Configurar etiqueta con el nombre del usuario
 		userNameLabel = new JLabel("Nombre de Usuario");
-		userNameLabel.setForeground(Color.WHITE); // Color del texto
+		userNameLabel.setForeground(Color.BLACK); // Color del texto
 		userNameLabel.setFont(new Font("Arial", Font.BOLD, 14)); // Fuente y tamaño
 		userNameLabel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10)); // Margen para la etiqueta
 
@@ -744,12 +744,12 @@ public class SubMenuDashboard extends JFrame {
 			}
 		});
 
-		JMenuItem menuItemAcercaDe = new JMenuItem("Acerca De");
+		JMenuItem menuItemAcercaDe = new JMenuItem("Acerca de");
 		menuItemAcercaDe.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JDialog dialog = new JDialog(); // Crea un nuevo diálogo
-				dialog.setTitle("Acerca De"); // Establece el título
+				dialog.setTitle("Acerca de"); // Establece el título
 				dialog.setContentPane(new AcercaDe()); // añade el panel AcercaDe
 				dialog.setSize(950, 630); // Establece el tamaño del diálogo
 				dialog.setModal(true); // Hace que el diálogo bloquee las otras ventanas hasta que se cierre
@@ -759,7 +759,7 @@ public class SubMenuDashboard extends JFrame {
 		});
 
 		// Suponiendo que estás en una clase que extiende JFrame
-		JMenuItem menuItemCerrarSesion = new JMenuItem("Cerrar Sesión");
+		JMenuItem menuItemCerrarSesion = new JMenuItem("Cerrar sesión");
 		menuItemCerrarSesion.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -845,7 +845,7 @@ public class SubMenuDashboard extends JFrame {
 
 	public void setImagenUsuario(String imagen) {
 		this.imagen = imagen;
-		String imagePath = "img/usuarios/" + imagen; // Ruta actualizada según la imagen
+		String imagePath = "img/usuarios/" + imagen ; // Ruta actualizada según la imagen
 		userLabel.setIcon(new ImageIcon(getRoundedImage(imagePath, 40, 40)));
 	}
 

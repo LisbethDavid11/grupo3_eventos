@@ -13,7 +13,10 @@
         <constraints>
           <grid row="0" column="0" row-span="2" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
-        <properties/>
+        <properties>
+          <background color="-7841672"/>
+          <foreground color="-7841672"/>
+        </properties>
         <border type="none"/>
         <children>
           <component id="2316b" class="javax.swing.JLabel" binding="label1">
