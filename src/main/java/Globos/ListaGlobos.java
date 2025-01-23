@@ -1,13 +1,22 @@
+/**
+ * ListaGlobos.java
+ *
+ * Lista de Globos
+ *
+ * @author Lisbeth David
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Globos;
+
 import Arreglos.TextPrompt;
-import Login.SesionUsuario;
 import Modelos.ModeloGlobo;
 import Objetos.Conexion;
 import Objetos.Globo;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
-import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -22,26 +31,41 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ListaGlobos extends JFrame {
+    // Paneles
     private JPanel panelPrincipal;
-    private JButton botonVer;
-    private JButton botonAtras;
-    private JButton botonAdelante;
-    private JTextField campoBusqueda;
-    private TextPrompt placeholder = new TextPrompt(" Buscar por tamaño, color ó precio", campoBusqueda);
-    private JButton botonEditar;
-    private JButton botonCrear;
-    private JLabel lblPagina;
-    private JLabel lbl0;
-    private JTable listaGlobos;
     private JPanel panelTitulo;
     private JPanel panelA;
     private JPanel panelB;
+
+    // Botones
+    private JButton botonVer;
+    private JButton botonAtras;
+    private JButton botonAdelante;
+    private JButton botonEditar;
+    private JButton botonCrear;
+
+    // Campo de texto y placeholder
+    private JTextField campoBusqueda;
+    private TextPrompt placeholder = new TextPrompt(" Buscar por tamaño, color ó precio", campoBusqueda);
+
+    // Etiquetas
+    private JLabel lblPagina;
+    private JLabel lbl0;
+
+    // Tabla de globos
+    private JTable listaGlobos;
+
+    // Lista de globos
     private List<Globo> listaGlobo;
+
+    // Variables de paginación
     private int pagina = 0;
+    private String busqueda = "";
+
+    // Conexión a la base de datos
     private Connection mysql;
     private Conexion sql;
     private ListaGlobos actual = this;
-    private String busqueda = "";
 
     Font fontTitulo = new Font("Century Gothic", Font.BOLD, 17);
     Font font = new Font("Century Gothic", Font.BOLD, 11);
@@ -187,9 +211,11 @@ public class ListaGlobos extends JFrame {
 
     }
 
+    // Método para configurar las columnas y sus renderizadores en la tabla de globos
     private void configurarTablaArreglos() {
         TableColumnModel columnModel = listaGlobos.getColumnModel();
 
+        // Establece el ancho preferido de cada columna
         columnModel.getColumn(0).setPreferredWidth(20);
         columnModel.getColumn(1).setPreferredWidth(140);
         columnModel.getColumn(2).setPreferredWidth(100);
@@ -197,6 +223,7 @@ public class ListaGlobos extends JFrame {
         columnModel.getColumn(4).setPreferredWidth(100);
         columnModel.getColumn(5).setPreferredWidth(60);
 
+        // Asigna renderizadores para alinear el contenido de las celdas
         columnModel.getColumn(0).setCellRenderer(new CenterAlignedRenderer());
         columnModel.getColumn(1).setCellRenderer(new LeftAlignedRenderer());
         columnModel.getColumn(2).setCellRenderer(new LeftAlignedRenderer());
@@ -205,44 +232,33 @@ public class ListaGlobos extends JFrame {
         columnModel.getColumn(5).setCellRenderer(new LeftAlignedRenderer());
     }
 
+    // Clase para alinear texto a la izquierda en celdas de una tabla
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
         public LeftAlignedRenderer() {
-            setHorizontalAlignment(LEFT);
+            setHorizontalAlignment(LEFT); // Alineación a la izquierda
         }
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            return cell;
+            return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         }
     }
 
-    class RightAlignedRenderer extends DefaultTableCellRenderer {
-        public RightAlignedRenderer() {
-            setHorizontalAlignment(RIGHT);
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            return cell;
-        }
-    }
-
+    // Clase para alinear texto al centro en celdas de una tabla
     class CenterAlignedRenderer extends DefaultTableCellRenderer {
         public CenterAlignedRenderer() {
-            setHorizontalAlignment(CENTER);
+            setHorizontalAlignment(CENTER); // Alineación al centro
         }
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            return cell;
+            return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         }
     }
 
+    // Método para cargar datos de globos desde la base de datos y devolver un modelo de datos
     private ModeloGlobo cargarDatos() {
-        sql = new Conexion();
+        sql = new Conexion(); // Establece conexión con la base de datos
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement(
                      "SELECT * FROM globos WHERE " +
@@ -250,14 +266,14 @@ public class ListaGlobos extends JFrame {
                              "tamano LIKE CONCAT('%', ?, '%') OR " +
                              "precio LIKE CONCAT('%', ?, '%')) LIMIT ?, 20"
              )
-        ) {
+        ){
             preparedStatement.setString(1, busqueda); // Valor de búsqueda para color
             preparedStatement.setString(2, busqueda); // Valor de búsqueda para tamaño
-            preparedStatement.setString(3, busqueda); // Valor de búsqueda para forma
+            preparedStatement.setString(3, busqueda); // Valor de búsqueda para precio
             preparedStatement.setInt(4, pagina * 20);
 
             ResultSet resultSet = preparedStatement.executeQuery();
-            listaGlobo = new ArrayList<>(); // No es necesario volver a declarar, solo inicializamos aquí
+            listaGlobo = new ArrayList<>();
 
             while (resultSet.next()) {
                 Globo globo = new Globo();
@@ -274,24 +290,19 @@ public class ListaGlobos extends JFrame {
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos", Color.decode("#C62828"));
-        }
-
-        if (listaGlobos.getColumnCount() > 0) {
-            TableColumn columnId = listaGlobos.getColumnModel().getColumn(0);
-            columnId.setPreferredWidth(50);
+            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
+            listaGlobo = new ArrayList<>();
         }
 
         return new ModeloGlobo(listaGlobo, sql);
     }
 
+    // Método para calcular el número total de páginas basado en la cantidad de registros
     private int getTotalPageCount() {
         int count = 0;
         try (Connection mysql = sql.conectamysql();
-             PreparedStatement preparedStatement = mysql.prepareStatement(
-                     "SELECT COUNT(*) AS total FROM globos g WHERE g.color LIKE CONCAT('%', ?, '%')"
-             )
-        ) {
+             PreparedStatement preparedStatement = mysql.prepareStatement("SELECT COUNT(*) AS total FROM globos WHERE color LIKE CONCAT('%', ?, '%')")
+        ){
             preparedStatement.setString(1, busqueda);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
@@ -299,7 +310,7 @@ public class ListaGlobos extends JFrame {
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos", Color.decode("#C62828"));
+            JOptionPane.showMessageDialog(null, "No hay conexión con la base de datos");
         }
 
         int registrosPorPagina = 20;
@@ -311,112 +322,100 @@ public class ListaGlobos extends JFrame {
         return totalPageCount;
     }
 
+    // Método para mostrar un diálogo personalizado de éxito
     public void mostrarDialogoPersonalizadoExito(String mensaje, Color colorFondoBoton) {
-        // Crea un botón personalizado
+        // Crea un botón personalizado "OK"
         JButton btnAceptar = new JButton("OK");
-        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
-        btnAceptar.setForeground(Color.WHITE);
-        btnAceptar.setFocusPainted(false);
+        btnAceptar.setBackground(colorFondoBoton); // Establece el color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE); // Establece el color del texto del botón
+        btnAceptar.setFocusPainted(false); // Elimina el borde del foco alrededor del botón
 
-        // Crea un JOptionPane
+        // Crea un JOptionPane para mostrar el mensaje
         JOptionPane optionPane = new JOptionPane(
-                mensaje,                           // Mensaje a mostrar
-                JOptionPane.INFORMATION_MESSAGE,   // Tipo de mensaje
-                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
-                null,                              // Icono (puede ser null)
-                new Object[]{},                    // No se usan opciones estándar
-                null                               // Valor inicial (no necesario aquí)
+                mensaje,                             // Texto del mensaje a mostrar
+                JOptionPane.INFORMATION_MESSAGE,     // Tipo de mensaje (información)
+                JOptionPane.DEFAULT_OPTION,          // Opción por defecto
+                null,                                // Sin icono
+                new Object[]{},                      // Sin opciones estándar
+                null                                 // Sin valor inicial
         );
 
-        // Añade el botón al JOptionPane
+        // Configura el JOptionPane para usar el botón personalizado
         optionPane.setOptions(new Object[]{btnAceptar});
 
         // Crea un JDialog para mostrar el JOptionPane
         JDialog dialog = optionPane.createDialog("Validación");
 
-        // Añade un ActionListener al botón
-        btnAceptar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
-            }
-        });
+        // Añade un ActionListener al botón para cerrar el diálogo cuando se presione
+        btnAceptar.addActionListener(e -> dialog.dispose());
 
         // Muestra el diálogo
         dialog.setVisible(true);
     }
 
+    // Método para mostrar un diálogo personalizado de error
     public void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
-        // Crea un botón personalizado
+        // Crea un botón personalizado "OK"
         JButton btnAceptar = new JButton("OK");
-        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
-        btnAceptar.setForeground(Color.WHITE);
-        btnAceptar.setFocusPainted(false);
+        btnAceptar.setBackground(colorFondoBoton); // Establece el color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE); // Establece el color del texto del botón
+        btnAceptar.setFocusPainted(false); // Elimina el borde del foco alrededor del botón
 
-        // Crea un JOptionPane
+        // Crea un JOptionPane para mostrar el mensaje
         JOptionPane optionPane = new JOptionPane(
-                mensaje,                           // Mensaje a mostrar
-                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
-                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
-                null,                              // Icono (puede ser null)
-                new Object[]{},                    // No se usan opciones estándar
-                null                               // Valor inicial (no necesario aquí)
+                mensaje,                             // Texto del mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,         // Tipo de mensaje (advertencia)
+                JOptionPane.DEFAULT_OPTION,          // Opción por defecto
+                null,                                // Sin icono
+                new Object[]{},                      // Sin opciones estándar
+                null                                 // Sin valor inicial
         );
 
-        // Añade el botón al JOptionPane
+        // Configura el JOptionPane para usar el botón personalizado
         optionPane.setOptions(new Object[]{btnAceptar});
 
         // Crea un JDialog para mostrar el JOptionPane
         JDialog dialog = optionPane.createDialog("Validación");
 
-        // Añade un ActionListener al botón
-        btnAceptar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
-            }
-        });
+        // Añade un ActionListener al botón para cerrar el diálogo cuando se presione
+        btnAceptar.addActionListener(e -> dialog.dispose());
 
         // Muestra el diálogo
         dialog.setVisible(true);
     }
 
+    // Método para mostrar un diálogo personalizado de atención
     public void mostrarDialogoPersonalizadoAtencion(String mensaje, Color colorFondoBoton) {
-        // Crea un botón personalizado
+        // Crea un botón personalizado "OK"
         JButton btnAceptar = new JButton("OK");
-        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
-        btnAceptar.setForeground(Color.WHITE);
-        btnAceptar.setFocusPainted(false);
+        btnAceptar.setBackground(colorFondoBoton); // Establece el color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE); // Establece el color del texto del botón
+        btnAceptar.setFocusPainted(false); // Elimina el borde del foco alrededor del botón
 
-        // Crea un JOptionPane
+        // Crea un JOptionPane para mostrar el mensaje
         JOptionPane optionPane = new JOptionPane(
-                mensaje,                           // Mensaje a mostrar
-                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
-                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
-                null,                              // Icono (puede ser null)
-                new Object[]{},                    // No se usan opciones estándar
-                null                               // Valor inicial (no necesario aquí)
+                mensaje,                             // Texto del mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,         // Tipo de mensaje (advertencia)
+                JOptionPane.DEFAULT_OPTION,          // Opción por defecto
+                null,                                // Sin icono
+                new Object[]{},                      // Sin opciones estándar
+                null                                 // Sin valor inicial
         );
 
-        // Añade el botón al JOptionPane
+        // Configura el JOptionPane para usar el botón personalizado
         optionPane.setOptions(new Object[]{btnAceptar});
 
         // Crea un JDialog para mostrar el JOptionPane
         JDialog dialog = optionPane.createDialog("Validación");
 
-        // Añade un ActionListener al botón
-        btnAceptar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
-            }
-        });
+        // Añade un ActionListener al botón para cerrar el diálogo cuando se presione
+        btnAceptar.addActionListener(e -> dialog.dispose());
 
         // Muestra el diálogo
         dialog.setVisible(true);
     }
 
-
+    // Método Principal
     public static void main(String[] args) {
         ListaGlobos listaGlobos = new ListaGlobos();
         listaGlobos.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

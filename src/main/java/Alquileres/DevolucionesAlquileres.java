@@ -1,7 +1,16 @@
+/**
+ * DevolucionesAlquileres.java
+ *
+ * Devoluciones de Alquileres
+ *
+ * @author Skarleth Ferrera
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Alquileres;
 
 import Objetos.Conexion;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -13,7 +22,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.math.BigDecimal;
 import java.sql.*;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -24,52 +32,78 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class DevolucionesAlquileres extends JFrame {
+    // Listas de identificadores
     private List<Integer> ids;
     private List<Integer> ids_detalles;
-    private JPanel panel1, panel3, panel4, panel5, panel6;
-    private JTextField campoTipo, campoFecha, campoHoraInicio, campoCliente;
-    private JTable productos;
-    private JButton cancelarButton;
-    private JLabel lbl0, lbl1, lbl2, lbl3, lbl4, lbl7, lbl10, lbl11, lblImagen;
-    private JScrollPane panel2;
-    private JTextArea campoDireccion;
-    private JLabel lbl13;
+
+    // Campos de entrada
+    private JTextField campoTipo;
+    private JTextField campoFecha;
+    private JTextField campoHoraInicio;
+    private JTextField campoCliente;
     private JTextField campoTelefono;
-    private JLabel lbl5;
     private JTextField fechaEntrega;
-    private JButton actualizarButton;
+
+    // Área de texto
+    private JTextArea campoDireccion;
     private JTextArea campoCondiciones;
-    private JButton comprobarInventarioDevueltoButton;
+
+    // Tabla
+    private JTable productos;
+
+    // Paneles
+    private JPanel panel1;
+    private JScrollPane panel2;
+    private JPanel panel4;
+    private JPanel panel5;
+    private JPanel panel6;
+
+    // Etiquetas
+    private JLabel lbl0;
+    private JLabel lbl1;
+    private JLabel lbl2;
+    private JLabel lbl3;
+    private JLabel lbl4;
+    private JLabel lbl5;
+    private JLabel lbl7;
+    private JLabel lbl10;
+    private JLabel lbl11;
+    private JLabel lbl13;
     private JLabel lbl20;
-    private Conexion sql;
-    private Connection mysql;
+    private JLabel lblImagen;
+
+    // Botones
+    private JButton cancelarButton;
+    private JButton actualizarButton;
+    private JButton comprobarInventarioDevueltoButton;
+
+    // Otras variables y conexiones
     private int id;
     private DevolucionesAlquileres actual = this;
+    private Conexion sql;
+    private Connection mysql;
+
+    // Fuentes y colores
     Font fontTitulo = new Font("Century Gothic", Font.BOLD, 20);
     Font font = new Font("Century Gothic", Font.BOLD, 15);
     Font font2 = new Font("Century Gothic", Font.BOLD, 11);
 
-    // Colores para el botón "Cyan"
     Color primaryColorCyan = new Color(0, 188, 212); // Cyan primario
     Color lightColorCyan = new Color(77, 208, 225); // Cyan claro
     Color darkColorCyan = new Color(0, 151, 167); // Cyan oscuro
 
-    // Colores para el botón "Aqua"
     Color primaryColorAqua = new Color(0, 150, 136); // Aqua primario
     Color lightColorAqua = new Color(77, 182, 172); // Aqua claro
     Color darkColorAqua = new Color(0, 121, 107); // Aqua oscuro
 
-    // Colores para el botón "Rosado"
     Color primaryColorRosado = new Color(233, 30, 99); // Rosado primario
     Color lightColorRosado = new Color(240, 98, 146); // Rosado claro
     Color darkColorRosado = new Color(194, 24, 91); // Rosado oscuro
 
-    // Colores para el botón "Amber"
     Color primaryColorAmber = new Color(255, 193, 7); // Amber primario
     Color lightColorAmber = new Color(255, 213, 79); // Amber claro
     Color darkColorAmber = new Color(255, 160, 0); // Amber oscuro
 
-    // Colores para el botón "Verde lima"
     Color primaryColorVerdeLima = new Color(205, 220, 57); // Verde lima primario
     Color lightColorVerdeLima = new Color(220, 237, 200); // Verde lima claro
     Color darkColorVerdeLima = new Color(139, 195, 74); // Verde lima oscuro
@@ -79,6 +113,7 @@ public class DevolucionesAlquileres extends JFrame {
     Color darkColorBlue = new Color(33, 150, 243);
     EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
 
+    // Dimensiones de los paneles de imagen
     private int panelImgWidth = 200;
     private int panelImgHeight = 200;
     private int panelImgWidth2 = 200;
@@ -142,8 +177,6 @@ public class DevolucionesAlquileres extends JFrame {
         campoTelefono.setForeground(textColor);
         campoTelefono.setEditable(false);
         campoTelefono.setFocusable(false);
-
-
 
         cancelarButton.setForeground(Color.WHITE);
         cancelarButton.setBackground(Color.decode("#263238"));
@@ -383,6 +416,7 @@ public class DevolucionesAlquileres extends JFrame {
         });
     }
 
+    // Método para guardar el alquiler
     private void guardarAlquiler() {
         Connection connection = sql.conectamysql();
         try {
@@ -426,7 +460,8 @@ public class DevolucionesAlquileres extends JFrame {
             JOptionPane.showMessageDialog(null, "Error al actualizar el alquiler", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
+
+    // Método para cargar los datos
     private void mostrar() {
         sql = new Conexion();
         mysql = sql.conectamysql();
@@ -530,6 +565,7 @@ public class DevolucionesAlquileres extends JFrame {
         }
     }
 
+    // Método para configurar la tabla
     private void configurarTablaMateriales() {
         int columnCount = productos.getColumnCount();
         if (columnCount > 0) {
@@ -549,10 +585,7 @@ public class DevolucionesAlquileres extends JFrame {
         }
     }
 
-    private void createUIComponents() {
-        // TODO: place custom component creation code here
-    }
-
+    // Clase para alinear los elementos al centro
     class CenterAlignedRenderer extends DefaultTableCellRenderer {
         public CenterAlignedRenderer() {
             setHorizontalAlignment(CENTER);
@@ -565,6 +598,7 @@ public class DevolucionesAlquileres extends JFrame {
         }
     }
 
+    // Clase para alinear los elementos a la izquierda
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
         public LeftAlignedRenderer() {
             setHorizontalAlignment(LEFT);
@@ -577,10 +611,12 @@ public class DevolucionesAlquileres extends JFrame {
         }
     }
 
+    // Método booleano para determinar si tiene números o letras
     private static boolean contieneSoloNumeros(String texto) {
         return !Pattern.matches(".*[a-zA-Z].*[0-9@#$].*|.*[a-zA-Z].*", texto);
     }
 
+    // Método Principal
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             DevolucionesAlquileres verEventos = new DevolucionesAlquileres(1);

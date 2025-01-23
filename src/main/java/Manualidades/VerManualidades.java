@@ -1,7 +1,16 @@
-package Manualidades;
-import Desayunos.VerDesayunos;
-import Objetos.Conexion;
+/**
+ * VerManualidades.java
+ *
+ * Ver Manualidades
+ *
+ * @author Elsa Ramos
+ * @version 1.0
+ * @since 2024-05-05
+ */
 
+package Manualidades;
+
+import Objetos.Conexion;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -21,25 +30,56 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 
 public class VerManualidades extends JFrame {
+    // Panel
     private JPanel panel1;
+    private JPanel panel3;
+    private JPanel panel4;
+    private JPanel panel5;
+
+    // Campos de texto
     private JTextField nombre;
     private JTextField tipo;
     private JTextField precio_manualidad;
     private JTextField mano_obra;
+
+    // Tabla
     private JTable productos;
+
+    // Botón
     private JButton cancelarButton;
-    private JLabel lbl0, lbl1, lbl2, lbl3, lbl4, lbl5, lbl6, lbl7, lbl8, lbl9, lbl10;
-    private JScrollPane panel2;
-    private JLabel lblImagen;
-    private JPanel panel3;
-    private JPanel panel4;
-    private JPanel panel5;
-    private JTextArea descripcion;
+
+    // Etiquetas
+    private JLabel lbl0;
+    private JLabel lbl1;
+    private JLabel lbl2;
+    private JLabel lbl3;
+    private JLabel lbl4;
+    private JLabel lbl5;
+    private JLabel lbl6;
+    private JLabel lbl7;
+    private JLabel lbl8;
+    private JLabel lbl9;
+    private JLabel lbl10;
     private JLabel lbl13;
+    private JLabel lblImagen;
+
+    // Área de texto
+    private JTextArea descripcion;
+
+    // ScrollPane
+    private JScrollPane panel2;
+
+    // Conexión a la base de datos
     private Conexion sql;
     private Connection mysql;
+
+    // ID
     private int id;
+
+    // Instancia de la clase
     private VerManualidades actual = this;
+
+    // Fuente y colores
     Font fontTitulo = new Font("Century Gothic", Font.BOLD, 20);
     Font font = new Font("Century Gothic", Font.BOLD, 15);
     Font font2 = new Font("Century Gothic", Font.BOLD, 11);
@@ -72,12 +112,15 @@ public class VerManualidades extends JFrame {
     Color darkColorPink = new Color(233, 30, 99);
     Color darkColorRed = new Color(244, 67, 54);
     Color darkColorBlue = new Color(33, 150, 243);
+
     EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
+
     private int panelImgWidth = 200;
     private int panelImgHeight = 200;
 
     private int panelImgWidth2 = 300;
     private int panelImgHeight2 = 200;
+
     public VerManualidades(int id) {
         super("");
         setSize(850, 610);
@@ -210,6 +253,7 @@ public class VerManualidades extends JFrame {
         configurarTablaMateriales();
     }
 
+    // Método para cargar los datos de la manualidad
     private void mostrar() {
         sql = new Conexion();
         mysql = sql.conectamysql();
@@ -324,6 +368,7 @@ public class VerManualidades extends JFrame {
         }
     }
 
+    // Método para configurar la tabla
     private void configurarTablaMateriales() {
         int columnCount = productos.getColumnCount();
         if (columnCount > 0) {
@@ -343,6 +388,7 @@ public class VerManualidades extends JFrame {
         }
     }
 
+    // Clase para alinear los elementos al centro
     class CenterAlignedRenderer extends DefaultTableCellRenderer {
         public CenterAlignedRenderer() {
             setHorizontalAlignment(CENTER);
@@ -355,6 +401,7 @@ public class VerManualidades extends JFrame {
         }
     }
 
+    // Clase para alinear los elementos a la izquierda
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
         public LeftAlignedRenderer() {
             setHorizontalAlignment(LEFT);
@@ -367,7 +414,7 @@ public class VerManualidades extends JFrame {
         }
     }
 
-
+    // Método Principal
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             VerManualidades verManualidades = new VerManualidades(1);

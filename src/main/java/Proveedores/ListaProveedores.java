@@ -1,10 +1,19 @@
+/**
+ * ListaProveedores.java
+ *
+ * Lista de Proveedores
+ *
+ * @author Skarleth Ferrera
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Proveedores;
+
 import Empleados.TextPrompt;
-import Login.SesionUsuario;
 import Modelos.ModeloProveedor;
 import Objetos.Conexion;
 import Objetos.Proveedor;
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
@@ -22,27 +31,51 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ListaProveedores extends JFrame {
+    // Panel principal
     private JPanel panelPrincipal;
+
+    // Botones
     private JButton botonVer;
-    private JTable listaProveedores;
     private JButton botonAtras;
     private JButton botonAdelante;
-    private JTextField campoBusqueda;
-    TextPrompt placeholder = new TextPrompt("Buscar por empresa, vendedor y RTN", campoBusqueda);
     private JButton botonEditar;
     private JButton botonCrear;
+
+    // Tabla
+    private JTable listaProveedores;
+
+    // Campo de búsqueda
+    private JTextField campoBusqueda;
+
+    // TextPrompt para el campo de búsqueda
+    private TextPrompt placeholder = new TextPrompt(" Buscar por nombre ó RTN", campoBusqueda);
+
+    // Etiquetas
     private JLabel lblPagina;
     private JLabel lbl0;
+
+    // Paneles
     private JPanel panelA;
     private JPanel panelTitulo;
     private JPanel panelB;
+
+    // Lista de proveedores
     private List<Proveedor> listaProveedor;
+
+    // Página actual
     private int pagina = 0;
+
+    // Conexión a la base de datos
     private Connection mysql;
     private Conexion sql;
+
+    // Referencia a la lista de proveedores actual
     private ListaProveedores actual = this;
+
+    // Búsqueda actual
     private String busqueda = "";
 
+    // Fuentes y colores
     Font fontTitulo = new Font("Century Gothic", Font.BOLD, 17);
     Font font = new Font("Century Gothic", Font.BOLD, 11);
     Color primaryColor = Color.decode("#37474f"); // Gris azul oscuro
@@ -184,10 +217,9 @@ public class ListaProveedores extends JFrame {
         botonAtras.setFocusable(false);
         botonCrear.setFocusable(false);
         botonVer.setFocusable(false);
-
-
     }
 
+    // Método para configurar la tabla
     private void configurarTablaProveedores() {
         TableColumnModel columnModel = listaProveedores.getColumnModel();
 
@@ -206,6 +238,7 @@ public class ListaProveedores extends JFrame {
         columnModel.getColumn(5).setCellRenderer(new ListaProveedores.CenterAlignedRenderer());
     }
 
+    // Clase para alinear la columna a la izquierda
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
         public LeftAlignedRenderer() {
             setHorizontalAlignment(LEFT);
@@ -218,18 +251,7 @@ public class ListaProveedores extends JFrame {
         }
     }
 
-    class RightAlignedRenderer extends DefaultTableCellRenderer {
-        public RightAlignedRenderer() {
-            setHorizontalAlignment(RIGHT);
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            return cell;
-        }
-    }
-
+    // Clase para alinear la columna al centro
     class CenterAlignedRenderer extends DefaultTableCellRenderer {
         public CenterAlignedRenderer() {
             setHorizontalAlignment(CENTER);
@@ -242,6 +264,7 @@ public class ListaProveedores extends JFrame {
         }
     }
 
+    // Método para cargar los datos
     private ModeloProveedor cargarDatos() {
         sql = new Conexion();
         mysql = sql.conectamysql();
@@ -275,6 +298,7 @@ public class ListaProveedores extends JFrame {
         return new ModeloProveedor(listaProveedor);
     }
 
+    // Método para la paginación
     private int getTotalPageCount() {
         int count = 0;
         try (Connection mysql = sql.conectamysql();
@@ -297,6 +321,7 @@ public class ListaProveedores extends JFrame {
         return totalPageCount; // Retorna el total de páginas necesarias
     }
 
+    // Método Principal
     public static void main(String[] args) {
         ListaProveedores listaProveedores = new ListaProveedores();
         listaProveedores.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

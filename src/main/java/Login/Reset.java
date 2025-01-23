@@ -1,24 +1,29 @@
+/**
+ * Reset.java
+ *
+ * Reestablecer Contraseña
+ *
+ * @author Alejandra Aroca
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Login;
 
 import Objetos.Conexion;
 import org.jdesktop.swingx.prompt.PromptSupport;
 import org.mindrot.jbcrypt.BCrypt;
-import javax.mail.*;
-import javax.mail.internet.*;
 import java.awt.event.*;
 import java.sql.ResultSet;
-import java.util.Date;
-import java.util.Properties;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Random;
 
 public class Reset extends JFrame {
+    // Fuente y colores
     Font fontTituloPrimario = new Font("Century Gothic", Font.BOLD, 32);
     Font fontCopyrigth = new Font("Century Gothic", Font.PLAIN, 11);
     Font fontTituloSecundario = new Font("Century Gothic", Font.BOLD, 24);
@@ -56,7 +61,7 @@ public class Reset extends JFrame {
     Color darkColorBlue = new Color(13, 71, 161);
     Color lightColorBlue = new Color(66, 165, 245);
     Color darkColorGray = new Color(38, 50, 56);
-    Color lightColorPrincipal = new Color(245,245,245);
+    Color lightColorPrincipal = new Color(245, 245, 245);
     Color blancoColorPrincipal = new Color(255, 255, 255);
     Color textColor = Color.decode("#263238");
     EmptyBorder margin = new EmptyBorder(15, 0, 40, 0);
@@ -64,20 +69,31 @@ public class Reset extends JFrame {
     EmptyBorder marginTextArea = new EmptyBorder(0, 0, 15, 0);
     EmptyBorder marginBotonMostrar = new EmptyBorder(8, 5, 9, 5);
 
+    // Paneles
     private JPanel panel1;
     private JPanel panel2;
     private JPanel panel3;
     private JPanel panel4;
     private JPanel panel5;
+
+    // Etiquetas de texto
     private JLabel label1;
     private JLabel label2;
     private JLabel label3;
+
+    // Botones
     private JButton botonRecupera;
     private JButton botonMostrar;
+
+    // Campos de texto para contraseñas
     private JPasswordField campoContrasenaAnterior;
     private JPasswordField campoContrasenaActual;
     private JPasswordField campoContrasenaConfirmar;
+
+    // Campo de texto
     private JTextArea textArea1;
+
+    // Otras variables
     private Conexion sql;
     private Connection mysql;
     private String mensajeRecuperacion = "Por favor, ingresa la contraseña actual que se te envió a la dirección de correo electrónico, así mismo la nueva contraseña y la confirmación.";
@@ -228,6 +244,7 @@ public class Reset extends JFrame {
         });
     }
 
+    // Método para validar que la contraseña anterior sea la correcta
     private boolean verificarContrasenaAnterior(String correo, char[] contrasena) {
         // Aquí iría el código para conectar con la base de datos y verificar la contraseña
         Conexion sql = new Conexion();
@@ -248,6 +265,7 @@ public class Reset extends JFrame {
         return false;
     }
 
+    // Método para realizar cambio contraseña
     private void cambiarContrasena() {
         String contrasenaAnterior = new String(campoContrasenaAnterior.getPassword());
         String nuevaContrasena = new String(campoContrasenaActual.getPassword());
@@ -270,6 +288,7 @@ public class Reset extends JFrame {
         // Mostrar mensaje de éxito o manejar el caso de error
     }
 
+    // Método para actualizar contraseña
     private void actualizarContrasenaEnBaseDatos(String correoUsuario, String nuevaContrasena) {
         Conexion sql = new Conexion();
         try (Connection connection = sql.conectamysql()) {
@@ -297,6 +316,7 @@ public class Reset extends JFrame {
         }
     }
 
+    // Método para mostrar contraseñas
     private void mostrarContrasenas() {
         // Cambiar el estado de visibilidad de la contraseña
         esVisible = !esVisible;
@@ -309,6 +329,7 @@ public class Reset extends JFrame {
         campoContrasenaConfirmar.setEchoChar(modoEco);
     }
 
+    // Método para dialogo personalizar de éxito
     public void mostrarDialogoPersonalizadoExito(String mensaje, Color colorFondoBoton) {
         // Crea un botón personalizado
         JButton btnAceptar = new JButton("ACEPTAR");
@@ -344,6 +365,7 @@ public class Reset extends JFrame {
         dialog.setVisible(true);
     }
 
+    // Método para dialogo personalizar de error
     public void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
         // Crea un botón personalizado
         JButton btnAceptar = new JButton("ACEPTAR");
@@ -378,6 +400,8 @@ public class Reset extends JFrame {
         // Muestra el diálogo
         dialog.setVisible(true);
     }
+
+    // Método para personalizar botón
     private void personalizeButton(JButton button, Color primary, Color light, Color dark) {
         button.setForeground(Color.WHITE);
         button.setBackground(primary);
@@ -407,6 +431,7 @@ public class Reset extends JFrame {
         });
     }
 
+    // Método Principal
     public static void main(String[] args) {
         Reset reset = new Reset(null);
         reset.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

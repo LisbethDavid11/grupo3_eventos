@@ -1,5 +1,15 @@
+/**
+ * Lista de Empleados.java
+ *
+ * Lista de Empleados
+ *
+ * @author Alejandra Aroca
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Empleados;
-import Login.SesionUsuario;
+
 import Modelos.ModeloEmpleado;
 import Objetos.Conexion;
 import Objetos.Empleado;
@@ -20,32 +30,50 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ListaEmpleados extends JFrame {
+    // Paneles
     private JPanel panelPrincipal;
+    private JPanel panelTitulo;
+    private JPanel panelA;
+    private JPanel panelB;
+
+    // Botones
     private JButton botonVer;
-    private JTable listaEmpleados;
     private JButton botonAtras;
     private JButton botonAdelante;
-    private JTextField campoBusqueda;
-    private TextPrompt placeholder = new TextPrompt(" Buscar por identidad, nombres ó apellidos del empleado", campoBusqueda);
     private JButton botonEditar;
     private JButton botonCrear;
+
+    // Tabla de empleados
+    private JTable listaEmpleados;
+
+    // Campo de búsqueda
+    private JTextField campoBusqueda;
+
+    // Placeholder para el campo de búsqueda
+    private TextPrompt placeholder = new TextPrompt(" Buscar por identidad, nombres ó apellidos del empleado", campoBusqueda);
+
+    // Etiquetas
     private JLabel lblPagina;
     private JLabel lbl0;
-    private JPanel panelTitulo;
-    private JPanel panelB;
-    private JPanel panelA;
+
+    // Imagen
     private ImageIcon imagen;
+
+    // Lista de empleados
     private List<Empleado> listaEmpleado;
+
+    // Otras variables
     private int pagina = 0;
     private Connection mysql;
     private Conexion sql;
     private ListaEmpleados actual = this;
     private String busqueda = "";
-    Font fontTitulo = new Font("Century Gothic", Font.BOLD, 17);
-    Font font = new Font("Century Gothic", Font.BOLD, 11);
-    Color primaryColor = Color.decode("#37474f"); // Gris azul oscuro
-    Color lightColor = Color.decode("#cfd8dc"); // Gris azul claro
-    Color darkColor = Color.decode("#263238"); // Gris azul más oscuro
+    private Font fontTitulo = new Font("Century Gothic", Font.BOLD, 17);
+    private Font font = new Font("Century Gothic", Font.BOLD, 11);
+    private Color primaryColor = Color.decode("#37474f"); // Gris azul oscuro
+    private Color lightColor = Color.decode("#cfd8dc"); // Gris azul claro
+    private Color darkColor = Color.decode("#263238"); // Gris azul más oscuro
+
     public ListaEmpleados() {
         super("");
         setSize(850, 505);
@@ -186,70 +214,63 @@ public class ListaEmpleados extends JFrame {
 
     }
 
+    // Método para configurar las columnas y sus renderizadores en la tabla de empleados
     private void configurarTablaEmpleados() {
         TableColumnModel columnModel = listaEmpleados.getColumnModel();
 
+        // Establece el ancho preferido de las columnas
         columnModel.getColumn(0).setPreferredWidth(20);
         columnModel.getColumn(1).setPreferredWidth(110);
         columnModel.getColumn(2).setPreferredWidth(200);
         columnModel.getColumn(3).setPreferredWidth(110);
 
+        // Asigna renderizadores para alinear el contenido de las celdas
         columnModel.getColumn(0).setCellRenderer(new ListaEmpleados.CenterAlignedRenderer());
         columnModel.getColumn(1).setCellRenderer(new ListaEmpleados.CenterAlignedRenderer());
         columnModel.getColumn(2).setCellRenderer(new ListaEmpleados.LeftAlignedRenderer());
         columnModel.getColumn(3).setCellRenderer(new ListaEmpleados.CenterAlignedRenderer());
     }
 
+    // Clase para alinear texto a la izquierda en celdas de una tabla
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
         public LeftAlignedRenderer() {
-            setHorizontalAlignment(LEFT);
+            setHorizontalAlignment(LEFT); // Alineación a la izquierda
         }
 
         @Override
-        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            return cell;
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         }
     }
 
-    class RightAlignedRenderer extends DefaultTableCellRenderer {
-        public RightAlignedRenderer() {
-            setHorizontalAlignment(RIGHT);
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            return cell;
-        }
-    }
-
+    // Clase para alinear texto al centro en celdas de una tabla
     class CenterAlignedRenderer extends DefaultTableCellRenderer {
         public CenterAlignedRenderer() {
-            setHorizontalAlignment(CENTER);
+            setHorizontalAlignment(CENTER); // Alineación al centro
         }
 
         @Override
-        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            return cell;
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         }
     }
 
+    // Método para cargar datos de empleados desde la base de datos y devolver un modelo de datos
     private ModeloEmpleado cargarDatos() {
-        sql = new Conexion();
+        sql = new Conexion(); // Establece conexión con la base de datos
         try (Connection mysql = sql.conectamysql();
-
-            PreparedStatement preparedStatement = mysql.prepareStatement(
-                    "SELECT * FROM Empleados " +
-                            "WHERE Nombres LIKE CONCAT('%', ?, '%') " +
-                            "OR apellidos LIKE CONCAT('%', ?, '%') " +
-                            "OR identidad LIKE CONCAT('%', ?, '%') " +
-                            "LIMIT ?, 20")){
+             PreparedStatement preparedStatement = mysql.prepareStatement(
+                     "SELECT * FROM Empleados " +
+                             "WHERE Nombres LIKE CONCAT('%', ?, '%') " +
+                             "OR apellidos LIKE CONCAT('%', ?, '%') " +
+                             "OR identidad LIKE CONCAT('%', ?, '%') " +
+                             "LIMIT ?, 20"
+             )
+        ){
             // Configuración de los parámetros para la consulta
             preparedStatement.setString(1, campoBusqueda.getText()); // Buscar en 'Nombres'
-            preparedStatement.setString(2, campoBusqueda.getText()); // Buscar en 'apellidos'
-            preparedStatement.setString(3, campoBusqueda.getText()); // Buscar en 'identidad'
+            preparedStatement.setString(2, campoBusqueda.getText()); // Buscar en 'Apellidos'
+            preparedStatement.setString(3, campoBusqueda.getText()); // Buscar en 'Identidad'
             preparedStatement.setInt(4, pagina * 20); // Calcular el offset para la paginación
 
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -275,6 +296,7 @@ public class ListaEmpleados extends JFrame {
         }
     }
 
+    // Método para calcular el número total de páginas basado en la cantidad de registros
     private int getTotalPageCount() {
         int count = 0;
         try (Connection mysql = sql.conectamysql();
@@ -301,111 +323,100 @@ public class ListaEmpleados extends JFrame {
         return totalPageCount;
     }
 
+    // Método para mostrar un diálogo personalizado de éxito
     public void mostrarDialogoPersonalizadoExito(String mensaje, Color colorFondoBoton) {
-        // Crea un botón personalizado
+        // Crea un botón personalizado "OK"
         JButton btnAceptar = new JButton("OK");
-        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
-        btnAceptar.setForeground(Color.WHITE);
-        btnAceptar.setFocusPainted(false);
+        btnAceptar.setBackground(colorFondoBoton); // Establece el color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE); // Establece el color del texto del botón
+        btnAceptar.setFocusPainted(false); // Elimina el borde del foco alrededor del botón
 
-        // Crea un JOptionPane
+        // Crea un JOptionPane para mostrar el mensaje
         JOptionPane optionPane = new JOptionPane(
-                mensaje,                           // Mensaje a mostrar
-                JOptionPane.INFORMATION_MESSAGE,   // Tipo de mensaje
-                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
-                null,                              // Icono (puede ser null)
-                new Object[]{},                    // No se usan opciones estándar
-                null                               // Valor inicial (no necesario aquí)
+                mensaje,                             // Texto del mensaje a mostrar
+                JOptionPane.INFORMATION_MESSAGE,     // Tipo de mensaje (información)
+                JOptionPane.DEFAULT_OPTION,          // Opción por defecto
+                null,                                // Sin icono
+                new Object[]{},                      // Sin opciones estándar
+                null                                 // Sin valor inicial
         );
 
-        // Añade el botón al JOptionPane
+        // Configura el JOptionPane para usar el botón personalizado
         optionPane.setOptions(new Object[]{btnAceptar});
 
         // Crea un JDialog para mostrar el JOptionPane
         JDialog dialog = optionPane.createDialog("Validación");
 
-        // Añade un ActionListener al botón
-        btnAceptar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
-            }
-        });
+        // Añade un ActionListener al botón para cerrar el diálogo cuando se presione
+        btnAceptar.addActionListener(e -> dialog.dispose());
 
         // Muestra el diálogo
         dialog.setVisible(true);
     }
 
+    // Método para mostrar un diálogo personalizado de error
     public void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
-        // Crea un botón personalizado
+        // Crea un botón personalizado "OK"
         JButton btnAceptar = new JButton("OK");
-        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
-        btnAceptar.setForeground(Color.WHITE);
-        btnAceptar.setFocusPainted(false);
+        btnAceptar.setBackground(colorFondoBoton); // Establece el color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE); // Establece el color del texto del botón
+        btnAceptar.setFocusPainted(false); // Elimina el borde del foco alrededor del botón
 
-        // Crea un JOptionPane
+        // Crea un JOptionPane para mostrar el mensaje
         JOptionPane optionPane = new JOptionPane(
-                mensaje,                           // Mensaje a mostrar
-                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
-                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
-                null,                              // Icono (puede ser null)
-                new Object[]{},                    // No se usan opciones estándar
-                null                               // Valor inicial (no necesario aquí)
+                mensaje,                             // Texto del mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,         // Tipo de mensaje (advertencia)
+                JOptionPane.DEFAULT_OPTION,          // Opción por defecto
+                null,                                // Sin icono
+                new Object[]{},                      // Sin opciones estándar
+                null                                 // Sin valor inicial
         );
 
-        // Añade el botón al JOptionPane
+        // Configura el JOptionPane para usar el botón personalizado
         optionPane.setOptions(new Object[]{btnAceptar});
 
         // Crea un JDialog para mostrar el JOptionPane
         JDialog dialog = optionPane.createDialog("Validación");
 
-        // Añade un ActionListener al botón
-        btnAceptar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
-            }
-        });
+        // Añade un ActionListener al botón para cerrar el diálogo cuando se presione
+        btnAceptar.addActionListener(e -> dialog.dispose());
 
         // Muestra el diálogo
         dialog.setVisible(true);
     }
 
+    // Método para mostrar un diálogo personalizado de atención
     public void mostrarDialogoPersonalizadoAtencion(String mensaje, Color colorFondoBoton) {
-        // Crea un botón personalizado
+        // Crea un botón personalizado "OK"
         JButton btnAceptar = new JButton("OK");
-        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
-        btnAceptar.setForeground(Color.WHITE);
-        btnAceptar.setFocusPainted(false);
+        btnAceptar.setBackground(colorFondoBoton); // Establece el color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE); // Establece el color del texto del botón
+        btnAceptar.setFocusPainted(false); // Elimina el borde del foco alrededor del botón
 
-        // Crea un JOptionPane
+        // Crea un JOptionPane para mostrar el mensaje
         JOptionPane optionPane = new JOptionPane(
-                mensaje,                           // Mensaje a mostrar
-                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
-                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
-                null,                              // Icono (puede ser null)
-                new Object[]{},                    // No se usan opciones estándar
-                null                               // Valor inicial (no necesario aquí)
+                mensaje,                             // Texto del mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,         // Tipo de mensaje (advertencia)
+                JOptionPane.DEFAULT_OPTION,          // Opción por defecto
+                null,                                // Sin icono
+                new Object[]{},                      // Sin opciones estándar
+                null                                 // Sin valor inicial
         );
 
-        // Añade el botón al JOptionPane
+        // Configura el JOptionPane para usar el botón personalizado
         optionPane.setOptions(new Object[]{btnAceptar});
 
         // Crea un JDialog para mostrar el JOptionPane
         JDialog dialog = optionPane.createDialog("Validación");
 
-        // Añade un ActionListener al botón
-        btnAceptar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
-            }
-        });
+        // Añade un ActionListener al botón para cerrar el diálogo cuando se presione
+        btnAceptar.addActionListener(e -> dialog.dispose());
 
         // Muestra el diálogo
         dialog.setVisible(true);
     }
 
+    // Método Principal
     public static void main(String[] args) {
         ListaEmpleados listaEmpleados = new ListaEmpleados();
         listaEmpleados.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

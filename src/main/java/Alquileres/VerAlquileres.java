@@ -1,8 +1,16 @@
+/**
+ * VerAlquileres.java
+ *
+ * Ver Alquileres
+ *
+ * @author Skarleth Ferrera
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Alquileres;
 
-import Eventos.ListaEventos;
 import Objetos.Conexion;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -19,45 +27,55 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class VerAlquileres extends JFrame {
+    // Paneles
     private JPanel panel1, panel3, panel4, panel5, panel6;
+
+    // Campos de entrada
     private JTextField campoTipo, campoFecha, campoHoraFin, campoHoraInicio, campoCliente;
-    private JTable productos;
-    private JButton cancelarButton;
-    private JLabel lbl0, lbl1, lbl2, lbl3, lbl4, lbl7, lbl10, lbl11, lbl12, lblImagen;
-    private JScrollPane panel2;
-    private JTextArea campoDireccion;
-    private JLabel lbl13;
     private JTextField campoTelefono;
-    private JLabel lbl5;
+
+    // Tabla
+    private JTable productos;
+
+    // Botones
+    private JButton cancelarButton;
+
+    // Etiquetas
+    private JLabel lbl0, lbl1, lbl2, lbl3, lbl4, lbl7, lbl10, lbl11, lbl12, lbl13, lbl5, lblImagen;
+
+    // ScrollPane
+    private JScrollPane panel2;
+
+    // Área de texto
+    private JTextArea campoDireccion;
+
+    // Otras variables y conexiones
     private Conexion sql;
     private Connection mysql;
     private int id;
     private VerAlquileres actual = this;
+
+    // Fuentes y colores
     Font fontTitulo = new Font("Century Gothic", Font.BOLD, 20);
     Font font = new Font("Century Gothic", Font.BOLD, 15);
     Font font2 = new Font("Century Gothic", Font.BOLD, 11);
 
-    // Colores para el botón "Cyan"
     Color primaryColorCyan = new Color(0, 188, 212); // Cyan primario
     Color lightColorCyan = new Color(77, 208, 225); // Cyan claro
     Color darkColorCyan = new Color(0, 151, 167); // Cyan oscuro
 
-    // Colores para el botón "Aqua"
     Color primaryColorAqua = new Color(0, 150, 136); // Aqua primario
     Color lightColorAqua = new Color(77, 182, 172); // Aqua claro
     Color darkColorAqua = new Color(0, 121, 107); // Aqua oscuro
 
-    // Colores para el botón "Rosado"
     Color primaryColorRosado = new Color(233, 30, 99); // Rosado primario
     Color lightColorRosado = new Color(240, 98, 146); // Rosado claro
     Color darkColorRosado = new Color(194, 24, 91); // Rosado oscuro
 
-    // Colores para el botón "Amber"
     Color primaryColorAmber = new Color(255, 193, 7); // Amber primario
     Color lightColorAmber = new Color(255, 213, 79); // Amber claro
     Color darkColorAmber = new Color(255, 160, 0); // Amber oscuro
 
-    // Colores para el botón "Verde lima"
     Color primaryColorVerdeLima = new Color(205, 220, 57); // Verde lima primario
     Color lightColorVerdeLima = new Color(220, 237, 200); // Verde lima claro
     Color darkColorVerdeLima = new Color(139, 195, 74); // Verde lima oscuro
@@ -65,8 +83,10 @@ public class VerAlquileres extends JFrame {
     Color darkColorPink = new Color(233, 30, 99);
     Color darkColorRed = new Color(244, 67, 54);
     Color darkColorBlue = new Color(33, 150, 243);
+
     EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
 
+    // Variables para dimensiones de imagen
     private int panelImgWidth = 200;
     private int panelImgHeight = 200;
     private int panelImgWidth2 = 200;
@@ -172,7 +192,6 @@ public class VerAlquileres extends JFrame {
         campoHoraFin.setFont(font);
         campoTelefono.setFont(font);
 
-
         lbl10.setFont(font);
 
         cancelarButton.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -198,6 +217,7 @@ public class VerAlquileres extends JFrame {
         configurarTablaMateriales();
     }
 
+    // Método para cargar los valores del alquiler
     private void mostrar() {
         sql = new Conexion();
         mysql = sql.conectamysql();
@@ -227,7 +247,6 @@ public class VerAlquileres extends JFrame {
                 campoFecha.setText(fechaPedidoFormateada);
 
                 campoTipo.setText(resultSet.getString("tipo"));
-
 
                 // Obtén los valores de tiempo de inicio y fin desde el ResultSet
                 Time horaInicio = resultSet.getTime("hora_inicial");
@@ -297,6 +316,7 @@ public class VerAlquileres extends JFrame {
         }
     }
 
+    // Método para configurar la table de materiales
     private void configurarTablaMateriales() {
         int columnCount = productos.getColumnCount();
         if (columnCount > 0) {
@@ -316,10 +336,7 @@ public class VerAlquileres extends JFrame {
         }
     }
 
-    private void createUIComponents() {
-        // TODO: place custom component creation code here
-    }
-
+    // Clase para alinear al centro los campos
     class CenterAlignedRenderer extends DefaultTableCellRenderer {
         public CenterAlignedRenderer() {
             setHorizontalAlignment(CENTER);
@@ -332,6 +349,7 @@ public class VerAlquileres extends JFrame {
         }
     }
 
+    // Clase para alinear a la izquierda los campos
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
         public LeftAlignedRenderer() {
             setHorizontalAlignment(LEFT);
@@ -344,6 +362,7 @@ public class VerAlquileres extends JFrame {
         }
     }
 
+    // Método Principal
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             VerAlquileres verEventos = new VerAlquileres(1);

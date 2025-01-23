@@ -1,4 +1,15 @@
+/**
+ * CrearMaterial.java
+ *
+ * Crear Material
+ *
+ * @author Dania Lagos
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Materiales;
+
 import Objetos.Conexion;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -13,19 +24,52 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class CrearMaterial extends JFrame {
-    private JTextField campoNombre, campoPrecio;
+    // Campos de texto
+    private JTextField campoNombre;
+    private JTextField campoPrecio;
+
+    // Área de texto
     private JTextArea campoDescripcion;
-    private JRadioButton radioButtonSi, radioButtonNo;
-    private JComboBox<String> comboBoxProveedor;
-    private JButton botonGuardar, botonCancelar, botonLimpiar;
-    private JPanel panel;
-    private JLabel lbl0, lbl1, lbl2, lbl3, lbl4, lbl5, lbl6;
+
+    // RadioButtons
+    private JRadioButton radioButtonSi;
+    private JRadioButton radioButtonNo;
     private JRadioButton radioButtonSiExento;
     private JRadioButton radioButtonNoExento;
-    private JPanel panel1, panel2, panel3;
+
+    // ComboBox
+    private JComboBox<String> comboBoxProveedor;
+
+    // Botones
+    private JButton botonGuardar;
+    private JButton botonCancelar;
+    private JButton botonLimpiar;
+
+    // Paneles
+    private JPanel panel;
+    private JPanel panel1;
+    private JPanel panel2;
+    private JPanel panel3;
+
+    // Etiquetas
+    private JLabel lbl0;
+    private JLabel lbl1;
+    private JLabel lbl2;
+    private JLabel lbl3;
+    private JLabel lbl4;
+    private JLabel lbl5;
+    private JLabel lbl6;
+
+    // Ruta de la imagen
     private String imagePath = "";
+
+    // Instancia de la clase
     private CrearMaterial actual = this;
+
+    // Conexión a la base de datos
     private Conexion sql;
+
+    // Fuente y Colores
     Color darkColorRed = new Color(244, 67, 54);
     Color darkColorBlue = new Color(33, 150, 243);
 
@@ -52,6 +96,7 @@ public class CrearMaterial extends JFrame {
 
     // Crea un margen de 10 píxeles desde el borde inferior
     EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
+
     public CrearMaterial() {
         super("");
         setSize(500, 490);
@@ -409,6 +454,7 @@ public class CrearMaterial extends JFrame {
         });
     }
 
+    // Método cargar datos de los proveedores
     private void cargarProveedores() {
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement("SELECT id, empresaProveedora, nombreVendedor FROM Proveedores");
@@ -426,6 +472,7 @@ public class CrearMaterial extends JFrame {
         }
     }
 
+    // Método guardar datos de los materiales
     private void guardarMateriales() {
         String nombre = campoNombre.getText().trim();
         String precioText = campoPrecio.getText().replace("L ", "").replace(",", "").replace("_", "");
@@ -454,6 +501,4 @@ public class CrearMaterial extends JFrame {
             JOptionPane.showMessageDialog(null, "Error al guardar el material", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
-
 }

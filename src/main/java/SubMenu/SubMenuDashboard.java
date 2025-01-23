@@ -1,3 +1,13 @@
+/**
+ * SubMenuDashboard.java
+ *
+ * Sub Menu Dashboard
+ *
+ * @author Elsa Ramos
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package SubMenu;
 
 import Actividades.CalendarioDeActividades;
@@ -24,9 +34,7 @@ import Proveedores.ListaProveedores;
 import Roles.ListaRoles;
 import Tarjetas.ListaTarjetas;
 import Ventas.ListaVentas;
-
 import java.awt.*;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.imageio.ImageIO;
@@ -39,6 +47,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class SubMenuDashboard extends JFrame {
+	// Listas
 	private ListaClientes listaCliente;
 	private ListaEmpleados listaEmpleados;
 	private ListaFloristerias listaFloristeria;
@@ -61,17 +70,25 @@ public class SubMenuDashboard extends JFrame {
 	private ListaUsuarios listaUsuarios;
 	private ListaPermisos listaPermisos;
 	private static final long serialVersionUID = 1L;
+
+	// Paneles
 	private JPanel contentPane;
-	private int id;
 	private JPanel navbar;
+
+	// Etiquetas de texto
 	private JLabel userLabel, userNameLabel;
+
+	// Elemento Pop Up
 	private JPopupMenu userMenu;
+
+	// Otras variables
 	private String nombre;
 	private String imagen;
-
+	private int id;
 	/**
 	 * Launch the application.
 	 */
+
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -131,7 +148,11 @@ public class SubMenuDashboard extends JFrame {
 		panel_1.setLayout(null);
 		
 		JLabel lblNewLabel = new JLabel();
+<<<<<<< HEAD
 		ImageIcon icon = new ImageIcon( "img/logo unah.png");
+=======
+		ImageIcon icon = new ImageIcon( "img\\subMenu\\logo.png");
+>>>>>>> df3bde63218cec2ffc3a2006bcde6ad16a71a440
 		Image img = icon.getImage();
 
 		Image newImg = img.getScaledInstance(210, 154, Image.SCALE_SMOOTH);
@@ -166,8 +187,13 @@ public class SubMenuDashboard extends JFrame {
 			}
 		});
 		lblNewLabel_1.setFont(new Font("Times New Roman", Font.BOLD, 16));
+<<<<<<< HEAD
 		lblNewLabel_1.setIcon(new ImageIcon("img/icons8-cliente-27.png"));
 		lblNewLabel_1.setForeground(new Color(0, 0, 0)); //color texto clientes
+=======
+		lblNewLabel_1.setIcon(new ImageIcon("img\\subMenu\\icons8-cliente-27.png"));
+		lblNewLabel_1.setForeground(new Color(51, 204, 204));
+>>>>>>> df3bde63218cec2ffc3a2006bcde6ad16a71a440
 		lblNewLabel_1.setBounds(26, 221, 199, 26);
 		panel_1.add(lblNewLabel_1);
 
@@ -180,7 +206,7 @@ public class SubMenuDashboard extends JFrame {
 		
 		
 		JLabel lblNewLabel_1_2 = new JLabel("Empleados");
-		lblNewLabel_1_2.setIcon(new ImageIcon("img/icons8-empleado-27.png"));
+		lblNewLabel_1_2.setIcon(new ImageIcon("img\\subMenu\\icons8-empleado-27.png"));
 		lblNewLabel_1_2.setFont(new Font("Times New Roman", Font.BOLD, 16));
 		lblNewLabel_1_2.setForeground(new Color(0, 0, 0));
 		lblNewLabel_1_2.setBounds(26, 258, 188, 26);
@@ -204,7 +230,7 @@ public class SubMenuDashboard extends JFrame {
 		panel_1.add(lblNewLabel_1_2);
 		
 		JLabel lblNewLabel_1_3 = new JLabel("Proveedores");
-		lblNewLabel_1_3.setIcon(new ImageIcon("img/icons8-proveedor-27.png"));
+		lblNewLabel_1_3.setIcon(new ImageIcon("img\\subMenu\\icons8-proveedor-27.png"));
 		lblNewLabel_1_3.setFont(new Font("Times New Roman", Font.BOLD, 16));
 		lblNewLabel_1_3.setForeground(new Color(0, 0, 0));
 		lblNewLabel_1_3.setBounds(29, 289, 165, 37);
@@ -228,8 +254,13 @@ public class SubMenuDashboard extends JFrame {
 		panel_1.add(lblNewLabel_1_3);
 		
 		JLabel lblNewLabel_1_5 = new JLabel("Usuarios");
+<<<<<<< HEAD
 		lblNewLabel_1_5.setIcon(new ImageIcon("img/icons8-usuarios-27.png"));
 		lblNewLabel_1_5.setForeground(new Color(0, 0, 0));
+=======
+		lblNewLabel_1_5.setIcon(new ImageIcon("img\\subMenu\\icons8-usuarios-27.png"));
+		lblNewLabel_1_5.setForeground(new Color(51, 204, 204));
+>>>>>>> df3bde63218cec2ffc3a2006bcde6ad16a71a440
 		lblNewLabel_1_5.setFont(new Font("Times New Roman", Font.BOLD, 16));
 		lblNewLabel_1_5.setBounds(26, 496, 210, 35);
 		lblNewLabel_1_5.setEnabled(SesionUsuario.user.getRol().getPermisos().isUsuario());
@@ -252,8 +283,13 @@ public class SubMenuDashboard extends JFrame {
 		panel_1.add(lblNewLabel_1_5);
 		
 		JLabel lblNewLabel_1_2_1 = new JLabel("Roles");
+<<<<<<< HEAD
 		lblNewLabel_1_2_1.setIcon(new ImageIcon("img/icons8-roles-27.png"));
 		lblNewLabel_1_2_1.setForeground(new Color(0, 0, 0));
+=======
+		lblNewLabel_1_2_1.setIcon(new ImageIcon("img\\subMenu\\icons8-roles-27.png"));
+		lblNewLabel_1_2_1.setForeground(new Color(51, 204, 204));
+>>>>>>> df3bde63218cec2ffc3a2006bcde6ad16a71a440
 		lblNewLabel_1_2_1.setFont(new Font("Times New Roman", Font.BOLD, 16));
 		lblNewLabel_1_2_1.setBounds(26, 542, 210, 35);
 		lblNewLabel_1_2_1.setEnabled(SesionUsuario.user.getRol().getPermisos().isRol());
@@ -276,8 +312,13 @@ public class SubMenuDashboard extends JFrame {
 		panel_1.add(lblNewLabel_1_2_1);
 		
 		JLabel lblNewLabel_1_3_1 = new JLabel("Permisos");
+<<<<<<< HEAD
 		lblNewLabel_1_3_1.setIcon(new ImageIcon("img/icons8-end-user-27.png"));
 		lblNewLabel_1_3_1.setForeground(new Color(0, 0, 0));
+=======
+		lblNewLabel_1_3_1.setIcon(new ImageIcon("img\\subMenu\\icons8-end-user-27.png"));
+		lblNewLabel_1_3_1.setForeground(new Color(51, 204, 204));
+>>>>>>> df3bde63218cec2ffc3a2006bcde6ad16a71a440
 		lblNewLabel_1_3_1.setFont(new Font("Times New Roman", Font.BOLD, 16));
 		lblNewLabel_1_3_1.setBounds(26, 588, 210, 37);
 		lblNewLabel_1_3_1.setEnabled(SesionUsuario.user.getRol().getPermisos().isRol());
@@ -350,21 +391,21 @@ public class SubMenuDashboard extends JFrame {
                 menuItem1.setBackground(new Color(0, 51, 153));
                 menuItem1.setForeground(Color.white);
                 menuItem1.setFont(new Font("Times New Roman", Font.BOLD, 16));
-                menuItem1.setIcon(new ImageIcon("img/icons8-comprar-27.png"));
+                menuItem1.setIcon(new ImageIcon("img\\subMenu\\icons8-comprar-27.png"));
 				menuItem1.setEnabled(SesionUsuario.user.getRol().getPermisos().isCompra());
-
-				menuItem2.setOpaque(true);
+                
+                menuItem2.setOpaque(true);
                 menuItem2.setBackground(new Color(0, 51, 153));
                 menuItem2.setForeground(Color.white);
                 menuItem2.setFont(new Font("Times New Roman", Font.BOLD, 16));
-                menuItem2.setIcon(new ImageIcon("img/icons8-historial-de-pedidos-27.png"));
+                menuItem2.setIcon(new ImageIcon("img\\subMenu\\icons8-historial-de-pedidos-27.png"));
 				menuItem2.setEnabled(SesionUsuario.user.getRol().getPermisos().isPedido());
 
                 menuItem3.setOpaque(true);
                 menuItem3.setBackground(new Color(0, 51, 153));
                 menuItem3.setForeground(Color.white);
                 menuItem3.setFont(new Font("Times New Roman", Font.BOLD, 16));
-                menuItem3.setIcon(new ImageIcon("img/icons8-la-venta-de-tierras-27.png"));
+                menuItem3.setIcon(new ImageIcon("img\\subMenu\\icons8-la-venta-de-tierras-27.png"));
 				menuItem3.setEnabled(SesionUsuario.user.getRol().getPermisos().isVenta());
 
                 menu.add(menuItem1);
@@ -382,8 +423,13 @@ public class SubMenuDashboard extends JFrame {
         });
 		
 		JLabel lblNewLabel_1_1_1_2 = new JLabel("icon");
+<<<<<<< HEAD
 		lblNewLabel_1_1_1_2.setIcon(new ImageIcon("img/icons8-circulacion-de-dinero-27.png"));
 		lblNewLabel_1_1_1_2.setForeground(new Color(0, 0, 0));
+=======
+		lblNewLabel_1_1_1_2.setIcon(new ImageIcon("img\\subMenu\\icons8-circulacion-de-dinero-27.png"));
+		lblNewLabel_1_1_1_2.setForeground(new Color(51, 204, 204));
+>>>>>>> df3bde63218cec2ffc3a2006bcde6ad16a71a440
 		lblNewLabel_1_1_1_2.setFont(new Font("Times New Roman", Font.BOLD, 11));
 		lblNewLabel_1_1_1_2.setBounds(26, 428, 27, 27);
 		panel_1.add(lblNewLabel_1_1_1_2);
@@ -459,47 +505,48 @@ public class SubMenuDashboard extends JFrame {
 						listaArreglo.setVisible(true);
                     }
                 });
-
+                
+                
                 menuItem1.setOpaque(true);
                 menuItem1.setBackground(new Color(0, 51, 153));
                 menuItem1.setForeground(Color.white);
                 menuItem1.setFont(new Font("Times New Roman", Font.BOLD, 16));
-                menuItem1.setIcon(new ImageIcon("img/icons8-flor-27.png"));
+                menuItem1.setIcon(new ImageIcon("img\\subMenu\\icons8-flor-27.png"));
 				menuItem1.setEnabled(SesionUsuario.user.getRol().getPermisos().isFloristeria());
                 
                 menuItem2.setOpaque(true);
                 menuItem2.setBackground(new Color(0, 51, 153));
                 menuItem2.setForeground(Color.white);
                 menuItem2.setFont(new Font("Times New Roman", Font.BOLD, 16));
-                menuItem2.setIcon(new ImageIcon("img/icons8-analisis-de-stock-27.png"));
+                menuItem2.setIcon(new ImageIcon("img\\subMenu\\icons8-análisis-de-stock-27.png"));
 				menuItem2.setEnabled(SesionUsuario.user.getRol().getPermisos().isMaterial());
 
                 menuItem3.setOpaque(true);
                 menuItem3.setBackground(new Color(0, 51, 153));
                 menuItem3.setForeground(Color.white);
                 menuItem3.setFont(new Font("Times New Roman", Font.BOLD, 16));
-                menuItem3.setIcon(new ImageIcon("img/icons8-globos-27.png"));
+                menuItem3.setIcon(new ImageIcon("img\\subMenu\\icons8-globos-27.png"));
 				menuItem3.setEnabled(SesionUsuario.user.getRol().getPermisos().isGlobo());
 
                 menuItem4.setOpaque(true);
                 menuItem4.setBackground(new Color(0, 51, 153));
                 menuItem4.setForeground(Color.white);
                 menuItem4.setFont(new Font("Times New Roman", Font.BOLD, 16));
-                menuItem4.setIcon(new ImageIcon("img/icons8-armario-con-puerta-corredera-27.png"));
+                menuItem4.setIcon(new ImageIcon("img\\subMenu\\icons8-armario-con-puerta-corredera-27.png"));
 				menuItem4.setEnabled(SesionUsuario.user.getRol().getPermisos().isMobiliario());
                 
                 menuItem5.setOpaque(true);
                 menuItem5.setBackground(new Color(0, 51, 153));
                 menuItem5.setForeground(Color.white);
                 menuItem5.setFont(new Font("Times New Roman", Font.BOLD, 16));
-                menuItem5.setIcon(new ImageIcon("img/icons8-cartas-de-tarot-27.png"));
+                menuItem5.setIcon(new ImageIcon("img\\subMenu\\icons8-cartas-de-tarot-27.png"));
 				menuItem5.setEnabled(SesionUsuario.user.getRol().getPermisos().isTarjeta());
                 
                 menuItem6.setOpaque(true);
                 menuItem6.setBackground(new Color(0, 51, 153));
                 menuItem6.setForeground(Color.white);
                 menuItem6.setFont(new Font("Times New Roman", Font.BOLD, 16));
-                menuItem6.setIcon(new ImageIcon("img/icons8-estadio--27.png"));
+                menuItem6.setIcon(new ImageIcon("img\\subMenu\\icons8-estadio--27.png"));
 				menuItem6.setEnabled(SesionUsuario.user.getRol().getPermisos().isArreglo());
                 
                 menu.add(menuItem1);
@@ -521,8 +568,13 @@ public class SubMenuDashboard extends JFrame {
 		
 		
 		JLabel lblNewLabel_1_1_5 = new JLabel("icon");
+<<<<<<< HEAD
 		lblNewLabel_1_1_5.setIcon(new ImageIcon("img/icons8-productos-27.png"));
 		lblNewLabel_1_1_5.setForeground(new Color(0, 0, 0));
+=======
+		lblNewLabel_1_1_5.setIcon(new ImageIcon("img\\subMenu\\icons8-productos-27.png"));
+		lblNewLabel_1_1_5.setForeground(new Color(51, 204, 204));
+>>>>>>> df3bde63218cec2ffc3a2006bcde6ad16a71a440
 		lblNewLabel_1_1_5.setFont(new Font("Times New Roman", Font.BOLD, 12));
 		lblNewLabel_1_1_5.setBounds(26, 352, 27, 27);
 		panel_1.add(lblNewLabel_1_1_5);
@@ -606,42 +658,42 @@ public class SubMenuDashboard extends JFrame {
                 menuItem1.setBackground(new Color(0, 51, 153));
                 menuItem1.setForeground(Color.white);
                 menuItem1.setFont(new Font("Times New Roman", Font.BOLD, 16));
-                menuItem1.setIcon(new ImageIcon("img/icons8-rueda-de-alfarero-27.png"));
+                menuItem1.setIcon(new ImageIcon("img\\subMenu\\icons8-rueda-de-alfarero-27.png"));
 				menuItem1.setEnabled(SesionUsuario.user.getRol().getPermisos().isManualidad());
                 
                 menuItem2.setOpaque(true);
                 menuItem2.setBackground(new Color(0, 51, 153));
                 menuItem2.setForeground(Color.white);
                 menuItem2.setFont(new Font("Times New Roman", Font.BOLD, 16));
-                menuItem2.setIcon(new ImageIcon("img/icons8-desayuno-buffet-27.png"));
+                menuItem2.setIcon(new ImageIcon("img\\subMenu\\icons8-desayuno-buffet-27.png"));
 				menuItem2.setEnabled(SesionUsuario.user.getRol().getPermisos().isDesayuno());
 
                 menuItem3.setOpaque(true);
                 menuItem3.setBackground(new Color(0, 51, 153));
                 menuItem3.setForeground(Color.white);
                 menuItem3.setFont(new Font("Times New Roman", Font.BOLD, 16));
-                menuItem3.setIcon(new ImageIcon("img/icons8-promocion-de-carrito-de-compras-27.png"));
+                menuItem3.setIcon(new ImageIcon("img\\subMenu\\icons8-promoción-de-carrito-de-compras-27.png"));
 				menuItem3.setEnabled(SesionUsuario.user.getRol().getPermisos().isPromocion());
 
                 menuItem4.setOpaque(true);
                 menuItem4.setBackground(new Color(0, 51, 153));
                 menuItem4.setForeground(Color.white);
                 menuItem4.setFont(new Font("Times New Roman", Font.BOLD, 16));
-                menuItem4.setIcon(new ImageIcon("img/icons8-arena-27.png"));
+                menuItem4.setIcon(new ImageIcon("img\\subMenu\\icons8-arena-27.png"));
 				menuItem4.setEnabled(SesionUsuario.user.getRol().getPermisos().isEvento());
                 
                 menuItem5.setOpaque(true);
                 menuItem5.setBackground(new Color(0, 51, 153));
                 menuItem5.setForeground(Color.white);
                 menuItem5.setFont(new Font("Times New Roman", Font.BOLD, 16));
-                menuItem5.setIcon(new ImageIcon("img/icons8-franquicia-27.png"));
+                menuItem5.setIcon(new ImageIcon("img\\subMenu\\icons8-franquicia-27.png"));
 				menuItem5.setEnabled(SesionUsuario.user.getRol().getPermisos().isActividad());
                 
                 menuItem6.setOpaque(true);
                 menuItem6.setBackground(new Color(0, 51, 153));
                 menuItem6.setForeground(Color.white);
                 menuItem6.setFont(new Font("Times New Roman", Font.BOLD, 16));
-                menuItem6.setIcon(new ImageIcon("img/icons8-alquiler-de-coches-27.png"));
+                menuItem6.setIcon(new ImageIcon("img\\subMenu\\icons8-alquiler-de-coches-27.png"));
 				menuItem6.setEnabled(SesionUsuario.user.getRol().getPermisos().isAlquiler());
                 
                 menu.add(menuItem1);
@@ -662,8 +714,13 @@ public class SubMenuDashboard extends JFrame {
         });
 		
 		JLabel lblNewLabel_1_1_5_1 = new JLabel("icon");
+<<<<<<< HEAD
 		lblNewLabel_1_1_5_1.setIcon(new ImageIcon("img/icons8-eventos-27.png"));
 		lblNewLabel_1_1_5_1.setForeground(new Color(0, 0, 0));
+=======
+		lblNewLabel_1_1_5_1.setIcon(new ImageIcon("img\\subMenu\\icons8-eventos-27.png"));
+		lblNewLabel_1_1_5_1.setForeground(new Color(51, 204, 204));
+>>>>>>> df3bde63218cec2ffc3a2006bcde6ad16a71a440
 		lblNewLabel_1_1_5_1.setFont(new Font("Times New Roman", Font.BOLD, 11));
 		lblNewLabel_1_1_5_1.setBounds(26, 390, 27, 27);
 		panel_1.add(lblNewLabel_1_1_5_1);
@@ -675,7 +732,11 @@ public class SubMenuDashboard extends JFrame {
 		    protected void paintComponent(Graphics g) {
 		        super.paintComponent(g);
 		        try {
+<<<<<<< HEAD
 		            backgroundImage = ImageIO.read(new File("img/fondo_chelsea.png"));
+=======
+		            backgroundImage = ImageIO.read(new File("img\\subMenu\\fondo-1252x1252.jpg"));
+>>>>>>> df3bde63218cec2ffc3a2006bcde6ad16a71a440
 		        } catch (IOException e) {
 		            e.printStackTrace();
 		        }
@@ -691,6 +752,7 @@ public class SubMenuDashboard extends JFrame {
 
 		setupNavbar(this);
 	}
+
 	private static void addPopup(Component component, final JPopupMenu popup) {
 		component.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
@@ -709,7 +771,7 @@ public class SubMenuDashboard extends JFrame {
 		});
 	}
 
-
+	// Elemento para configurar la barra de navegación
 	private void setupNavbar(SubMenuDashboard subMenuDashboard) {
 		navbar = new JPanel();
 		navbar.setBounds(255, 0, 771, 55);
@@ -837,18 +899,20 @@ public class SubMenuDashboard extends JFrame {
 		subMenuDashboard.getContentPane().add(navbar);
 	}
 
+	// Método para establecer el nombre de usuario
 	public void setNombreUsuario(String nombre) {
 		this.nombre = nombre;
 		userNameLabel.setText("Bienvenido, " + nombre + " ▼ ");
 	}
 
-
+	// Método para establecer la imagen de usuario
 	public void setImagenUsuario(String imagen) {
 		this.imagen = imagen;
 		String imagePath = "img/usuarios/" + imagen ; // Ruta actualizada según la imagen
 		userLabel.setIcon(new ImageIcon(getRoundedImage(imagePath, 40, 40)));
 	}
 
+	// Método para redondear la imagen
 	private Image getRoundedImage(String imagePath, int width, int height) {
 		if (imagePath == null || imagePath.isEmpty()) {
 			System.out.println("Image path is null or empty");
@@ -889,9 +953,8 @@ public class SubMenuDashboard extends JFrame {
 
 	private int idUsuarioActual;
 
+	// Método para establecer el id de usuario actual
 	public void setIdUsuarioActual(int id) {
 		this.idUsuarioActual = id;
 	}
-
-
 }

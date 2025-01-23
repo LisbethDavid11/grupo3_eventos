@@ -1,28 +1,46 @@
+/**
+ * CrearPermiso.java
+ *
+ * Crear Permiso
+ *
+ * @author Skarleth Ferrera
+ * @version 1.0
+ * @since 2024-05-06
+ */
+
 package Permisos;
+
 import Login.SesionUsuario;
 import Objetos.Conexion;
 import Objetos.Rol;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 
 public class CrearPermisos extends JFrame{
-    private JButton  botonCancelar;
-    private JPanel panel, panel1, panel2;
-    private JLabel label0;
+    // Botones
+    private JButton botonCancelar;
     private JButton CREARButton;
     private JButton GUARDARButton;
-    private JCheckBox checkCliente,checkEmpleados,checkArreglos,
-                    checkFloristeria,checkUsuarios,checkMateriales;
 
+    // Paneles
+    private JPanel panel;
+    private JPanel panel1;
+    private JPanel panel2;
 
-    private JComboBox<Rol> jcbRoles;
+    // Etiqueta
+    private JLabel label0;
+
+    // Casillas de verificación
+    private JCheckBox checkCliente;
+    private JCheckBox checkEmpleados;
+    private JCheckBox checkArreglos;
+    private JCheckBox checkFloristeria;
+    private JCheckBox checkUsuarios;
+    private JCheckBox checkMateriales;
     private JCheckBox checkCompras;
     private JCheckBox checkProveedores;
     private JCheckBox checkTargetas;
@@ -37,11 +55,24 @@ public class CrearPermisos extends JFrame{
     private JCheckBox checkActividades;
     private JCheckBox checkRoles;
     private JCheckBox checkAlquileres;
+
+    // Lista desplegable
+    private JComboBox<Rol> jcbRoles;
+
+    // Referencia a la clase actual
     private CrearPermisos actual = this;
+
+    // Conexión a la base de datos
     private Connection mysql;
     private Conexion sql;
+
+    // Referencia a la clase CrearPermisos
     public CrearPermisos crearCliente = this;
+
+    // Ventana anterior
     private JFrame ventanaAnterior;
+
+    // Fuentes y colores
     Color darkColorRed = new Color(244, 67, 54);
     Color darkColorBlue = new Color(33, 150, 243);
 
@@ -156,6 +187,7 @@ public class CrearPermisos extends JFrame{
         });
     }
 
+    // Método para ver los roles
     public void ver_modl(){
         if (jcbRoles.getModel().getSize() <= 0) {
             JOptionPane.showMessageDialog(null,"No hay mas roles para asignarle permisos");
@@ -165,7 +197,7 @@ public class CrearPermisos extends JFrame{
         }
     }
 
-
+    // Método para cargar los datos de los roles
     public void cargar(){
 
         sql = new Conexion();
@@ -192,6 +224,7 @@ public class CrearPermisos extends JFrame{
         }
     }
 
+    // Método para guardar los permisos
     private void guardarPermiso() {
         Integer idUsuarioActual = SesionUsuario.getInstance().getIdUsuario();
 
@@ -237,48 +270,102 @@ public class CrearPermisos extends JFrame{
         }
     }
 
-    public void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
-        // Crea un botón personalizado
+    // Método para mostrar un diálogo personalizado de éxito
+    public void mostrarDialogoPersonalizadoExito(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado "OK"
         JButton btnAceptar = new JButton("OK");
-        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
-        btnAceptar.setForeground(Color.WHITE);
-        btnAceptar.setFocusPainted(false);
+        btnAceptar.setBackground(colorFondoBoton); // Establece el color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE); // Establece el color del texto del botón
+        btnAceptar.setFocusPainted(false); // Elimina el borde del foco alrededor del botón
 
-        // Crea un JOptionPane
+        // Crea un JOptionPane para mostrar el mensaje
         JOptionPane optionPane = new JOptionPane(
-                mensaje,                           // Mensaje a mostrar
-                JOptionPane.ERROR_MESSAGE,   // Tipo de mensaje
-                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
-                null,                              // Icono (puede ser null)
-                new Object[]{},                    // No se usan opciones estándar
-                null                               // Valor inicial (no necesario aquí)
+                mensaje,                             // Texto del mensaje a mostrar
+                JOptionPane.INFORMATION_MESSAGE,     // Tipo de mensaje (información)
+                JOptionPane.DEFAULT_OPTION,          // Opción por defecto
+                null,                                // Sin icono
+                new Object[]{},                      // Sin opciones estándar
+                null                                 // Sin valor inicial
         );
 
-        // Añade el botón al JOptionPane
+        // Configura el JOptionPane para usar el botón personalizado
         optionPane.setOptions(new Object[]{btnAceptar});
 
         // Crea un JDialog para mostrar el JOptionPane
         JDialog dialog = optionPane.createDialog("Validación");
 
-        // Añade un ActionListener al botón
-        btnAceptar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
-            }
-        });
+        // Añade un ActionListener al botón para cerrar el diálogo cuando se presione
+        btnAceptar.addActionListener(e -> dialog.dispose());
 
         // Muestra el diálogo
         dialog.setVisible(true);
     }
 
+    // Método para mostrar un diálogo personalizado de error
+    public void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado "OK"
+        JButton btnAceptar = new JButton("OK");
+        btnAceptar.setBackground(colorFondoBoton); // Establece el color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE); // Establece el color del texto del botón
+        btnAceptar.setFocusPainted(false); // Elimina el borde del foco alrededor del botón
 
+        // Crea un JOptionPane para mostrar el mensaje
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                             // Texto del mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,         // Tipo de mensaje (advertencia)
+                JOptionPane.DEFAULT_OPTION,          // Opción por defecto
+                null,                                // Sin icono
+                new Object[]{},                      // Sin opciones estándar
+                null                                 // Sin valor inicial
+        );
 
+        // Configura el JOptionPane para usar el botón personalizado
+        optionPane.setOptions(new Object[]{btnAceptar});
 
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Validación");
+
+        // Añade un ActionListener al botón para cerrar el diálogo cuando se presione
+        btnAceptar.addActionListener(e -> dialog.dispose());
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
+    }
+
+    // Método para mostrar un diálogo personalizado de atención
+    public void mostrarDialogoPersonalizadoAtencion(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado "OK"
+        JButton btnAceptar = new JButton("OK");
+        btnAceptar.setBackground(colorFondoBoton); // Establece el color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE); // Establece el color del texto del botón
+        btnAceptar.setFocusPainted(false); // Elimina el borde del foco alrededor del botón
+
+        // Crea un JOptionPane para mostrar el mensaje
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                             // Texto del mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,         // Tipo de mensaje (advertencia)
+                JOptionPane.DEFAULT_OPTION,          // Opción por defecto
+                null,                                // Sin icono
+                new Object[]{},                      // Sin opciones estándar
+                null                                 // Sin valor inicial
+        );
+
+        // Configura el JOptionPane para usar el botón personalizado
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Validación");
+
+        // Añade un ActionListener al botón para cerrar el diálogo cuando se presione
+        btnAceptar.addActionListener(e -> dialog.dispose());
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
+    }
+
+    // Método Principal
     public static void main(String[] args) {
         CrearPermisos permisos = new CrearPermisos(1);
         permisos.setVisible(true);
     }
-
-
 }

@@ -1,9 +1,16 @@
+/**
+ * VerPerfil.java
+ *
+ * Ver Perfil
+ *
+ * @author Alejandra Aroca
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Login;
 
-import Login.EditarPerfil;
-import Login.SesionUsuario;
 import Objetos.Conexion;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -15,21 +22,42 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class VerPerfil extends JFrame {
-    private JPanel panel1, panelImg;
-    private JTextField etiquetaNombre, etiquetaCorreo, etiquetaRol;
+    // Paneles
+    private JPanel panel1;
+    private JPanel panelImg;
+    private JPanel panel3;
+
+    // Campos de texto
+    private JTextField etiquetaNombre;
+    private JTextField etiquetaCorreo;
+    private JTextField etiquetaRol;
+
+    // Botones
     private JButton volverButton;
-    private JLabel lblImagen, lbl0;
+    private JButton actualizarButton;
+
+    // Etiquetas
+    private JLabel lblImagen;
+    private JLabel lbl0;
     private JLabel lbl1;
     private JLabel lbl2;
     private JLabel lbl3;
-    private JPanel panel3;
-    private JButton actualizarButton;
+
+    // Instancia de la clase
     private final VerPerfil actual = this;
+
+    // Conexión a la base de datos
     private Conexion sql;
     private Connection mysql;
+
+    // Identificador
     private int id;
+
+    // Dimensiones del panel de imagen
     private int panelImgWidth = 300;
     private int panelImgHeight = 300;
+
+    // Fuente y colorees
     Font fontTitulo = new Font("Century Gothic", Font.BOLD, 20);
     Font font = new Font("Century Gothic", Font.BOLD, 15);
     Font font2 = new Font("Century Gothic", Font.BOLD, 11);
@@ -63,6 +91,7 @@ public class VerPerfil extends JFrame {
     Color darkColorRed = new Color(244, 67, 54);
     Color darkColorBlue = new Color(33, 150, 243);
     EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
+
     public VerPerfil(int id) {
         super("");
         setSize(550, 600);
@@ -161,10 +190,12 @@ public class VerPerfil extends JFrame {
 
     private int idUsuarioActual;
 
+    // Método para establecer los datos del perfil
     public void setIdUsuarioActual(int id) {
         this.idUsuarioActual = id;
     }
 
+    // Método para cargar los datos del perfil de usuario
     private void mostrar() {
         sql = new Conexion();
         mysql = sql.conectamysql();
@@ -227,6 +258,7 @@ public class VerPerfil extends JFrame {
         }
     }
 
+    // Método Principal
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             VerPerfil verPerfil = new VerPerfil(1);

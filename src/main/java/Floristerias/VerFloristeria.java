@@ -1,7 +1,16 @@
+/**
+ * VerFloristeria.java
+ *
+ * Ver Floristeria
+ *
+ * @author Alejandra Aroca
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Floristerias;
 
 import Objetos.Conexion;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -27,6 +36,8 @@ public class VerFloristeria extends JFrame {
     private int id;
     private int panelImgWidth = 200;
     private int panelImgHeight = 200;
+
+    // Fuentes y colores
     Font fontTitulo = new Font("Century Gothic", Font.BOLD, 20);
     Font font = new Font("Century Gothic", Font.BOLD, 15);
     Font font2 = new Font("Century Gothic", Font.BOLD, 11);
@@ -168,6 +179,7 @@ public class VerFloristeria extends JFrame {
         });
     }
 
+    // Método para cargar los datos de las floristerias
     private void mostrar() {
         sql = new Conexion();
         mysql = sql.conectamysql();
@@ -224,6 +236,7 @@ public class VerFloristeria extends JFrame {
         }
     }
 
+    // Método Principal
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             VerFloristeria verFloristeria = new VerFloristeria(1); // Pasa el ID de la floristería que deseas ver

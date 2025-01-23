@@ -1,4 +1,15 @@
+/**
+ * CrearEvento.java
+ *
+ * Crear Evento
+ *
+ * @author Lisbeth David
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Eventos;
+
 import Login.SesionUsuario;
 import Materiales.TextPrompt;
 import Modelos.*;
@@ -20,27 +31,74 @@ import java.util.List;
 import java.util.*;
 
 public class CrearEvento extends JFrame {
-    private JTextField campoIdentidad, campoTelefono, campoBusquedaMateriales;
-    private TextPrompt placeholder = new TextPrompt(" Buscar por nombre de producto", campoBusquedaMateriales);
-    private JLabel lbl0, lbl1, lbl2, lbl3, lbl4, lbl5, lbl6, lbl7, lbl8, lbl9, lbl10, lbl11;
-    private JTextArea campoDireccion;
-    private JButton botonGuardar, botonCancelar, botonLimpiar, cancelarButton, agregarButton;
-    private JButton agregarMobiliarioButton, agregarGloboButton, agregarArregloButton, agregarFloresButton, agregarManualidadesButton;
-    private JTable tablaProductos;
-    private JPanel panel1, panel2, panel3, panel5, panel6, panel7, panelFecha, panelInicio, panelFin;
-    private JScrollPane panel4;
-    private JDatePickerImpl datePicker; // Declare the datePicker variable at the class level
-    int categoriaSeleccionada = 0;
-    private JComboBox<ClienteEvento> jbcClientes;
-    private JPanel jpanelDireccion;
-    private JLabel jtextCatidadTotalMateriales;
-    private JComboBox jbcTipoEvento;
-    private JSpinner spinnerHora1, spinnerMin1, spinnerHora2, spinnerMin2;
-    private JComboBox comboBox1, comboBox2;
-    private JPanel panel8;
+    // Campos de texto
+    private JTextField campoIdentidad;
+    private JTextField campoTelefono;
+    private JTextField campoBusquedaMateriales;
     private JTextField campoNombre;
+
+    // TextPrompt para el campo de búsqueda de materiales
+    private TextPrompt placeholder = new TextPrompt(" Buscar por nombre de producto", campoBusquedaMateriales);
+
+    // Etiquetas
+    private JLabel lbl0, lbl1, lbl2, lbl3, lbl4, lbl5, lbl6, lbl7, lbl8, lbl9, lbl10, lbl11;
+
+    // Área de texto
+    private JTextArea campoDireccion;
     private JTextArea campoDescripcion;
+
+    // Botones
+    private JButton botonGuardar;
+    private JButton botonCancelar;
+    private JButton botonLimpiar;
+    private JButton cancelarButton;
+    private JButton agregarButton;
+    private JButton agregarMobiliarioButton;
+    private JButton agregarGloboButton;
+    private JButton agregarArregloButton;
+    private JButton agregarFloresButton;
+    private JButton agregarManualidadesButton;
+
+    // Tabla de productos
+    private JTable tablaProductos;
+
+    // Paneles
+    private JPanel panel1;
+    private JPanel panel2;
+    private JPanel panel3;
+    private JScrollPane panel4;
+    private JPanel panel5;
+    private JPanel panel6;
+    private JPanel panel7;
+    private JPanel panelFecha;
+    private JPanel panelInicio;
+    private JPanel panelFin;
+    private JPanel panel8;
+    private JPanel jpanelDireccion;
+
+    // JScrollPane
+    private JScrollPane panelScroll;
+
+    // Selector de fechas
+    private JDatePickerImpl datePicker;
+
+    // Selector de hora
+    private JSpinner spinnerHora1;
+    private JSpinner spinnerMin1;
+    private JSpinner spinnerHora2;
+    private JSpinner spinnerMin2;
+
+    // ComboBox
+    private JComboBox<ClienteEvento> jbcClientes;
+    private JComboBox jbcTipoEvento;
+    private JComboBox comboBox1;
+    private JComboBox comboBox2;
+
+    // Variables
+    private int categoriaSeleccionada = 0;
     private int selectTabla = 1;
+
+    // Listas
     private List<PoliProducto> productosListTemporal = new ArrayList<>();
     private List<PoliMobiliario> mobiliarioList = new ArrayList<>();
     private List<PoliMobiliario> mobiliarioListTemporal = new ArrayList<>();
@@ -52,12 +110,21 @@ public class CrearEvento extends JFrame {
     private List<PoliArreglo> arregloListTemporal = new ArrayList<>();
     private List<PoliManualidad> manualidadList = new ArrayList<>();
     private List<PoliManualidad> manualidadListTemporal = new ArrayList<>();
+
+    // Mapas
     private Map<String,String> tiposDescripcion = new HashMap<>();
     private Map<String,String> tiposTablas = new HashMap<>();
+
+    // Ruta de la imagen
     private String imagePath = "";
+
+    // Referencia a la ventana de creación de evento actual
     private CrearEvento actual = this;
 
+    // Modelo de la tabla de productos
     private DefaultTableModel modeloProductos;
+
+    // Fuentes y Colores
     Font fontTitulo = new Font("Century Gothic", Font.BOLD, 17);
     Font font = new Font("Century Gothic", Font.BOLD, 17);
     Font font2 = new Font("Century Gothic", Font.BOLD, 11);
@@ -97,6 +164,7 @@ public class CrearEvento extends JFrame {
     private Connection mysql;
     private String nombreFile;
     private String urlDestino = "";
+
     public CrearEvento() {
         super("");
         setSize(1080, 680);
@@ -867,6 +935,7 @@ public class CrearEvento extends JFrame {
         });
     }
 
+    // Método para configurar la tabla
     private void configurarTablaMateriales() {
         int columnCount = tablaProductos.getColumnCount();
         if (columnCount > 0) {
@@ -884,6 +953,7 @@ public class CrearEvento extends JFrame {
         }
     }
 
+    // Clase para alinear los elementos al centro
     class CenterAlignedRenderer extends DefaultTableCellRenderer {
         public CenterAlignedRenderer() {
             setHorizontalAlignment(CENTER);
@@ -896,6 +966,7 @@ public class CrearEvento extends JFrame {
         }
     }
 
+    // Clase para alinear los elementos a la izquierda
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
         public LeftAlignedRenderer() {
             setHorizontalAlignment(LEFT);
@@ -908,6 +979,7 @@ public class CrearEvento extends JFrame {
         }
     }
 
+    // Método para cargar los datos de los materiales
     private PoliModeloProducto cargarDetallesMateriales() {
         selectTabla = 0;
 
@@ -932,6 +1004,7 @@ public class CrearEvento extends JFrame {
          return new PoliModeloProducto(productosListTemporal);
     }
 
+    // Método para cargar los datos de los mobiliarios
     private PoliModeloMobiliario cargarDatosMobiliario() {
         sql = new Conexion();
         mobiliarioList.clear();
@@ -969,6 +1042,7 @@ public class CrearEvento extends JFrame {
         return modeloMobiliario;
     }
 
+    // Método para cargar los datos de las flores
     private PoliModeloFlor cargarDatosFloristeria() {
         sql = new Conexion();
         floristeriaList.clear();
@@ -1008,6 +1082,7 @@ public class CrearEvento extends JFrame {
         return modeloFlor;
     }
 
+    // Método para cargar los datos de los globos
     private PoliModeloGlobo cargarDatosGlobo() {
         sql = new Conexion();
         globoList.clear();
@@ -1043,6 +1118,7 @@ public class CrearEvento extends JFrame {
         return modeloGlobo;
     }
 
+    // Método para cargar los datos de los arreglos
     private PoliModeloArreglo cargarDatosArreglo() {
         sql = new Conexion();
         arregloList.clear();
@@ -1079,6 +1155,7 @@ public class CrearEvento extends JFrame {
         return modeloArreglo;
     }
 
+    // Método para cargar los datos de las manualidades
     private PoliModeloManualidad cargarDatosManualidad() {
         sql = new Conexion();
         manualidadList.clear();
@@ -1115,6 +1192,7 @@ public class CrearEvento extends JFrame {
         return modeloManualidad;
     }
 
+    // Método para obtener la cantidad ingresada por el usuario
     private int obtenerCantidadMaterial() {
         final int[] cantidadMaterial = new int[] {-1};
 
@@ -1177,6 +1255,7 @@ public class CrearEvento extends JFrame {
         return cantidadMaterial[0];
     }
 
+    // Clase para renderizar el botón
     class ButtonRenderer extends JButton implements TableCellRenderer {
         public ButtonRenderer() {
             setOpaque(true);
@@ -1191,6 +1270,7 @@ public class CrearEvento extends JFrame {
         }
     }
 
+    // Clase para mostrar el botón en la celda
     class ButtonEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
         private JButton button;
         private int row, col;
@@ -1250,6 +1330,7 @@ public class CrearEvento extends JFrame {
         }
     }
 
+    // Método para cargar los datos de los clientes
     private void cargarClientes() {
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement("SELECT id, nombre, apellido FROM clientes");
@@ -1265,6 +1346,7 @@ public class CrearEvento extends JFrame {
         }
     }
 
+    // Método para guardar los datos del evento
     private void guardarEvento() {
         Date fechaActual = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMyyyy");
@@ -1365,11 +1447,9 @@ public class CrearEvento extends JFrame {
                 mostrarDialogoPersonalizadoError("Error al guardar el evento.", Color.decode("#C62828"));
             }
         }
-
-
-
     }
 
+    // Método para guardar los detalles del evento
     private void guardarDetalleEvento(int id_material, int cantidad, String tipo) {
         double availableQuantity = obtenerCantidadMaterialDesdeBD(id_material, tipo);
 
@@ -1395,6 +1475,7 @@ public class CrearEvento extends JFrame {
         }
     }
 
+    // Método para obtener la cantidad desde la base de datos
     private int obtenerCantidadMaterialDesdeBD(int id_material, String tipo) {
         int availableQuantity = 0;
 
@@ -1416,6 +1497,7 @@ public class CrearEvento extends JFrame {
         return availableQuantity;
     }
 
+    // Método para obtener el precio desde la base de datos
     private double obtenerPrecioMaterialDesdeBD(int id_material, String tipo) {
         double precio = 0.0;
 
@@ -1461,6 +1543,7 @@ public class CrearEvento extends JFrame {
         return precio;
     }
 
+    // Método para calcular el total de la tabla
     private double calcularTotalTabla() {
         double sumaTotal = 0.0;
         TableModel modelo = tablaProductos.getModel();
@@ -1494,6 +1577,7 @@ public class CrearEvento extends JFrame {
         return sumaTotal;
     }
 
+    // Metódo para extraer el valor númerico
     private double extraerValorNumerico(String valor) {
         String valorNumerico = valor.replace(',', '.');
         try {
@@ -1504,12 +1588,14 @@ public class CrearEvento extends JFrame {
         }
     }
 
+    // Método para limpiar la tabla de materiales
     private void limpiarTablaMateriales() {
         mobiliarioList.clear();
         DefaultTableModel emptyModel = new DefaultTableModel();
         tablaProductos.setModel(emptyModel);
     }
 
+    // Método para eliminar los detalles de la tabla
     private void eliminarDetallesMaterial() {
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement(
@@ -1521,6 +1607,7 @@ public class CrearEvento extends JFrame {
         }
     }
 
+    // Método para obtener el día siguiente
     public Calendar getTomorrow() {
         Calendar tomorrow = Calendar.getInstance();
         tomorrow.add(Calendar.DAY_OF_MONTH, 1);
@@ -1531,6 +1618,7 @@ public class CrearEvento extends JFrame {
         return tomorrow;
     }
 
+    // Método para cambiar la fecha
     public void handleDateChange(UtilDateModel dateModel, Calendar tomorrow) {
         java.util.Date selectedDate = dateModel.getValue();
         if (selectedDate != null && isDateOutOfRange(selectedDate, tomorrow)) {
@@ -1540,6 +1628,7 @@ public class CrearEvento extends JFrame {
         setFormattedDate(selectedDate);
     }
 
+    // Método booleano para determinar si la fecha está fuera de rango
     public boolean isDateOutOfRange(Date selectedDate, Calendar tomorrow) {
         Calendar selectedCal = Calendar.getInstance();
         selectedCal.setTime(selectedDate);
@@ -1551,6 +1640,7 @@ public class CrearEvento extends JFrame {
         return selectedCal.before(tomorrow) || selectedCal.after(maxDate);
     }
 
+    // Método para establecer el formato de la fecha
     public void setFormattedDate(java.util.Date selectedDate) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, d 'de' MMMM yyyy", new Locale("es", "ES")); // Formato en español
         String formattedDate = (selectedDate != null) ? dateFormat.format(selectedDate) : "";
@@ -1563,6 +1653,7 @@ public class CrearEvento extends JFrame {
         datePicker.getJFormattedTextField().setText(formattedDate);
     }
 
+    // Clase para simplificar el formato de la fecha
     public class SimpleDateFormatter extends JFormattedTextField.AbstractFormatter {
 
         private final String datePattern = "EEEE, d 'de' MMMM yyyy";
@@ -1586,111 +1677,100 @@ public class CrearEvento extends JFrame {
         }
     }
 
+    // Método para mostrar un diálogo personalizado de éxito
     public void mostrarDialogoPersonalizadoExito(String mensaje, Color colorFondoBoton) {
-        // Crea un botón personalizado
+        // Crea un botón personalizado "OK"
         JButton btnAceptar = new JButton("OK");
-        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
-        btnAceptar.setForeground(Color.WHITE);
-        btnAceptar.setFocusPainted(false);
+        btnAceptar.setBackground(colorFondoBoton); // Establece el color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE); // Establece el color del texto del botón
+        btnAceptar.setFocusPainted(false); // Elimina el borde del foco alrededor del botón
 
-        // Crea un JOptionPane
+        // Crea un JOptionPane para mostrar el mensaje
         JOptionPane optionPane = new JOptionPane(
-                mensaje,                           // Mensaje a mostrar
-                JOptionPane.INFORMATION_MESSAGE,   // Tipo de mensaje
-                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
-                null,                              // Icono (puede ser null)
-                new Object[]{},                    // No se usan opciones estándar
-                null                               // Valor inicial (no necesario aquí)
+                mensaje,                             // Texto del mensaje a mostrar
+                JOptionPane.INFORMATION_MESSAGE,     // Tipo de mensaje (información)
+                JOptionPane.DEFAULT_OPTION,          // Opción por defecto
+                null,                                // Sin icono
+                new Object[]{},                      // Sin opciones estándar
+                null                                 // Sin valor inicial
         );
 
-        // Añade el botón al JOptionPane
+        // Configura el JOptionPane para usar el botón personalizado
         optionPane.setOptions(new Object[]{btnAceptar});
 
         // Crea un JDialog para mostrar el JOptionPane
         JDialog dialog = optionPane.createDialog("Validación");
 
-        // Añade un ActionListener al botón
-        btnAceptar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
-            }
-        });
+        // Añade un ActionListener al botón para cerrar el diálogo cuando se presione
+        btnAceptar.addActionListener(e -> dialog.dispose());
 
         // Muestra el diálogo
         dialog.setVisible(true);
     }
 
+    // Método para mostrar un diálogo personalizado de error
     public void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
-        // Crea un botón personalizado
+        // Crea un botón personalizado "OK"
         JButton btnAceptar = new JButton("OK");
-        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
-        btnAceptar.setForeground(Color.WHITE);
-        btnAceptar.setFocusPainted(false);
+        btnAceptar.setBackground(colorFondoBoton); // Establece el color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE); // Establece el color del texto del botón
+        btnAceptar.setFocusPainted(false); // Elimina el borde del foco alrededor del botón
 
-        // Crea un JOptionPane
+        // Crea un JOptionPane para mostrar el mensaje
         JOptionPane optionPane = new JOptionPane(
-                mensaje,                           // Mensaje a mostrar
-                JOptionPane.ERROR_MESSAGE,   // Tipo de mensaje
-                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
-                null,                              // Icono (puede ser null)
-                new Object[]{},                    // No se usan opciones estándar
-                null                               // Valor inicial (no necesario aquí)
+                mensaje,                             // Texto del mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,         // Tipo de mensaje (advertencia)
+                JOptionPane.DEFAULT_OPTION,          // Opción por defecto
+                null,                                // Sin icono
+                new Object[]{},                      // Sin opciones estándar
+                null                                 // Sin valor inicial
         );
 
-        // Añade el botón al JOptionPane
+        // Configura el JOptionPane para usar el botón personalizado
         optionPane.setOptions(new Object[]{btnAceptar});
 
         // Crea un JDialog para mostrar el JOptionPane
         JDialog dialog = optionPane.createDialog("Validación");
 
-        // Añade un ActionListener al botón
-        btnAceptar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
-            }
-        });
+        // Añade un ActionListener al botón para cerrar el diálogo cuando se presione
+        btnAceptar.addActionListener(e -> dialog.dispose());
 
         // Muestra el diálogo
         dialog.setVisible(true);
     }
 
+    // Método para mostrar un diálogo personalizado de atención
     public void mostrarDialogoPersonalizadoAtencion(String mensaje, Color colorFondoBoton) {
-        // Crea un botón personalizado
+        // Crea un botón personalizado "OK"
         JButton btnAceptar = new JButton("OK");
-        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
-        btnAceptar.setForeground(Color.WHITE);
-        btnAceptar.setFocusPainted(false);
+        btnAceptar.setBackground(colorFondoBoton); // Establece el color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE); // Establece el color del texto del botón
+        btnAceptar.setFocusPainted(false); // Elimina el borde del foco alrededor del botón
 
-        // Crea un JOptionPane
+        // Crea un JOptionPane para mostrar el mensaje
         JOptionPane optionPane = new JOptionPane(
-                mensaje,                           // Mensaje a mostrar
-                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
-                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
-                null,                              // Icono (puede ser null)
-                new Object[]{},                    // No se usan opciones estándar
-                null                               // Valor inicial (no necesario aquí)
+                mensaje,                             // Texto del mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,         // Tipo de mensaje (advertencia)
+                JOptionPane.DEFAULT_OPTION,          // Opción por defecto
+                null,                                // Sin icono
+                new Object[]{},                      // Sin opciones estándar
+                null                                 // Sin valor inicial
         );
 
-        // Añade el botón al JOptionPane
+        // Configura el JOptionPane para usar el botón personalizado
         optionPane.setOptions(new Object[]{btnAceptar});
 
         // Crea un JDialog para mostrar el JOptionPane
         JDialog dialog = optionPane.createDialog("Validación");
 
-        // Añade un ActionListener al botón
-        btnAceptar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
-            }
-        });
+        // Añade un ActionListener al botón para cerrar el diálogo cuando se presione
+        btnAceptar.addActionListener(e -> dialog.dispose());
 
         // Muestra el diálogo
         dialog.setVisible(true);
     }
 
+    // Método Principal
     public static void main(String[] args) {
         CrearEvento crearEvento = new CrearEvento();
         crearEvento.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

@@ -1,5 +1,15 @@
+/**
+ * ListaCompras.java
+ *
+ * Lista de Compras
+ *
+ * @author Lisbeth David
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Compras;
-import Login.SesionUsuario;
+
 import Modelos.ModeloCompra;
 import Modelos.ModeloCompraDetalle;
 import Objetos.Compra;
@@ -30,21 +40,57 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.*;
+
 public class ListaCompras extends JFrame {
-    private JPanel panelPrincipal, panelTitulo, panelA, panelB;
+    // Paneles
+    private JPanel panelPrincipal;
+    private JPanel panelTitulo;
+    private JPanel panelA;
+    private JPanel panelB;
+
+    // Tabla
     private JTable listaCompras;
-    private JButton botonAtras, botonAdelante, botonCrear,botonVer, botonImprimir;
+
+    // Botones
+    private JButton botonAtras;
+    private JButton botonAdelante;
+    private JButton botonCrear;
+    private JButton botonVer;
+    private JButton botonImprimir;
+
+    // Campo de texto
     private JTextField campoBusqueda;
+
+    // Placeholder para el campo de búsqueda
     private TextPrompt placeholder = new TextPrompt(" Buscar por código de compra, fecha ó proveedor ", campoBusqueda);
-    private JLabel lbl0, lblPagina;
+
+    // Etiquetas
+    private JLabel lbl0;
+    private JLabel lblPagina;
+
+    // ComboBox para la fecha
     private JComboBox fechaComboBox;
+
+    // Lista de compras
     private List<Compra> compraList;
+
+    // Página actual
     private int pagina = 0;
+
+    // Conexión a la base de datos
     private Conexion sql;
+
+    // Búsqueda
     private String busqueda = "";
+
+    // Referencia a la ventana de lista de compras actual
     private ListaCompras actual = this;
+
+    // Fuentes
     Font fontTitulo = new Font("Century Gothic", Font.BOLD, 17);
     Font font = new Font("Century Gothic", Font.BOLD, 11);
+
+    // Colores
     Color primaryColor = Color.decode("#37474f"); // Gris azul oscuro
     Color lightColor = Color.decode("#cfd8dc"); // Gris azul claro
     Color darkColor = Color.decode("#263238"); // Gris azul más oscuro
@@ -228,9 +274,11 @@ public class ListaCompras extends JFrame {
 
     }
 
+    // Método para configurar las columnas y sus renderizadores en la tabla de compras
     private void configurarTablaCompras() {
         TableColumnModel columnModel = listaCompras.getColumnModel();
 
+        // Establece el ancho preferido de cada columna
         columnModel.getColumn(0).setPreferredWidth(20);
         columnModel.getColumn(1).setPreferredWidth(140);
         columnModel.getColumn(2).setPreferredWidth(170);
@@ -240,6 +288,7 @@ public class ListaCompras extends JFrame {
         columnModel.getColumn(6).setPreferredWidth(90);
         columnModel.getColumn(7).setPreferredWidth(90);
 
+        // Asigna renderizadores para alinear el contenido de las celdas
         columnModel.getColumn(0).setCellRenderer(new CenterAlignedRenderer());
         columnModel.getColumn(1).setCellRenderer(new LeftAlignedRenderer());
         columnModel.getColumn(2).setCellRenderer(new LeftAlignedRenderer());
@@ -250,42 +299,31 @@ public class ListaCompras extends JFrame {
         columnModel.getColumn(7).setCellRenderer(new LeftAlignedRenderer());
     }
 
+    // Clase para alinear el texto a la izquierda en celdas de una tabla
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
         public LeftAlignedRenderer() {
-            setHorizontalAlignment(LEFT);
+            setHorizontalAlignment(LEFT); // Alineación a la izquierda
         }
 
         @Override
         public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            return cell;
+            return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         }
     }
 
-    class RightAlignedRenderer extends DefaultTableCellRenderer {
-        public RightAlignedRenderer() {
-            setHorizontalAlignment(RIGHT);
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            return cell;
-        }
-    }
-
+    // Clase para alinear el texto al centro en celdas de una tabla
     class CenterAlignedRenderer extends DefaultTableCellRenderer {
         public CenterAlignedRenderer() {
-            setHorizontalAlignment(CENTER);
+            setHorizontalAlignment(CENTER); // Alineación al centro
         }
 
         @Override
         public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            return cell;
+            return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         }
     }
 
+    // Método para calcular el subtotal de las compras excluyendo materiales exentos
     private double calcularSubtotal(List<CompraDetalle> detalles) {
         double subtotal = 0.0;
         for (CompraDetalle detalle : detalles) {
@@ -297,17 +335,19 @@ public class ListaCompras extends JFrame {
         return subtotal;
     }
 
+    // Método para calcular el Impuesto Sobre Venta (ISV) para los materiales no exentos
     private double calcularISV(List<CompraDetalle> detalles) {
         double isv = 0.0;
         for (CompraDetalle detalle : detalles) {
             Material material = obtenerMaterialPorId(detalle.getMaterialId());
             if (material != null && !material.isExento()) {
-                isv += detalle.getCantidad() * detalle.getPrecio() * 0.15;
+                isv += detalle.getCantidad() * detalle.getPrecio() * 0.15; // Supone un ISV del 15%
             }
         }
         return isv;
     }
 
+    // Método para calcular el total de materiales exentos
     private double calcularExento(List<CompraDetalle> detalles) {
         double exento = 0.0;
         for (CompraDetalle detalle : detalles) {
@@ -319,6 +359,7 @@ public class ListaCompras extends JFrame {
         return exento;
     }
 
+    // Método para calcular el total combinado de subtotal, ISV y exento
     private double calcularTotal(List<CompraDetalle> detalles) {
         double subtotal = calcularSubtotal(detalles);
         double isv = calcularISV(detalles);
@@ -326,35 +367,29 @@ public class ListaCompras extends JFrame {
         return subtotal + isv + exento;
     }
 
+    // Método para obtener un material por su ID, retornando un objeto Material si es encontrado
     public Material obtenerMaterialPorId(int materialId) {
         Material material = null;
-
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement("SELECT nombre, exento FROM materiales WHERE id = ?")) {
-
             preparedStatement.setInt(1, materialId);
             ResultSet resultSet = preparedStatement.executeQuery();
-
             if (resultSet.next()) {
                 String nombreMaterial = resultSet.getString("nombre");
                 boolean exento = resultSet.getBoolean("exento");
-
-                material = new Material(materialId, nombreMaterial,0, 0, null, null, exento, 0);
+                material = new Material(materialId, nombreMaterial, 0, 0, null, null, exento, 0);
             }
-
         } catch (SQLException e) {
-            // En caso de error en la conexión o consulta, se muestra un mensaje de error.
             System.out.println(e.getMessage());
             mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
         }
-
         return material;
     }
 
+    // Método para obtener el nombre de un material por su ID, añadiendo "(Exento)" si el material está exento de impuestos
     public String obtenerNombreMaterial(int materialId, Conexion sql) {
         String nombreMaterial = "";
-        boolean exento = false; // Variable para indicar si el material es exento
-
+        boolean exento = false;
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement("SELECT nombre, exento FROM materiales WHERE id = ?")) {
             preparedStatement.setInt(1, materialId);
@@ -367,14 +402,13 @@ public class ListaCompras extends JFrame {
             System.out.println(e.getMessage());
             mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
         }
-
         if (exento) {
             nombreMaterial += " (Exento)";
         }
-
         return nombreMaterial;
     }
 
+    // Método para cargar datos de compras desde la base de datos y devolver un modelo de datos para una tabla
     private ModeloCompra cargarDatos() {
         sql = new Conexion();
         try (Connection mysql = sql.conectamysql();
@@ -387,28 +421,23 @@ public class ListaCompras extends JFrame {
                              "OR DATE_FORMAT(c.fecha, '%d de %M %Y') LIKE CONCAT('%', ?, '%') " +
                              "OR p.empresaProveedora LIKE CONCAT('%', ?, '%') " +
                              "LIMIT ?, 20")) {
-
             SimpleDateFormat formatoFecha = new SimpleDateFormat("dd 'de' MMMM yyyy", new Locale("es"));
-
-            preparedStatement.setString(1, busqueda);  // Búsqueda por código de compra
-            preparedStatement.setString(2, busqueda);  // Búsqueda por fecha de la compra
-            preparedStatement.setString(3, busqueda);  // Búsqueda por empresa proveedora
+            preparedStatement.setString(1, busqueda);
+            preparedStatement.setString(2, busqueda);
+            preparedStatement.setString(3, busqueda);
             preparedStatement.setInt(4, pagina * 20);
-
             ResultSet resultSet = preparedStatement.executeQuery();
             compraList = new ArrayList<>();
             while (resultSet.next()) {
                 Compra compra = new Compra();
                 compra.setId(resultSet.getInt("id"));
                 compra.setCodigoCompra(resultSet.getString("codigo_compra"));
-
                 java.util.Date fecha = resultSet.getDate("fecha");
                 if (fecha != null) {
                     compra.setFecha(formatoFecha.format(fecha));
                 } else {
                     compra.setFecha("");
                 }
-
                 compra.setProveedorId(resultSet.getInt("proveedor_id"));
                 compra.setEmpleadoId(resultSet.getInt("empleado_id"));
                 compraList.add(compra);
@@ -425,120 +454,7 @@ public class ListaCompras extends JFrame {
         return new ModeloCompra(compraList, sql);
     }
 
-    private int obtenerNumeroMes(String mesSeleccionado) {
-        int numeroMes = 0;
-        switch (mesSeleccionado) {
-            case "Enero":
-                numeroMes = 1;
-                break;
-            case "Febrero":
-                numeroMes = 2;
-                break;
-            case "Marzo":
-                numeroMes = 3;
-                break;
-            case "Abril":
-                numeroMes = 4;
-                break;
-            case "Mayo":
-                numeroMes = 5;
-                break;
-            case "Junio":
-                numeroMes = 6;
-                break;
-            case "Julio":
-                numeroMes = 7;
-                break;
-            case "Agosto":
-                numeroMes = 8;
-                break;
-            case "Septiembre":
-                numeroMes = 9;
-                break;
-            case "Octubre":
-                numeroMes = 10;
-                break;
-            case "Noviembre":
-                numeroMes = 11;
-                break;
-            case "Diciembre":
-                numeroMes = 12;
-                break;
-            case "Todos":
-                numeroMes = 0;
-                break;
-        }
-        return numeroMes;
-    }
-
-    private void actualizarModeloTablaConMesSeleccionado(String mesSeleccionado) {
-        sql = new Conexion();
-        try (Connection mysql = sql.conectamysql()) {
-            String query = "SELECT c.*, p.empresaProveedora, CONCAT(e.Nombres, ' ', e.Apellidos) AS empleadoNombre " +
-                    "FROM compras c " +
-                    "JOIN proveedores p ON c.proveedor_id = p.id " +
-                    "JOIN empleados e ON c.empleado_id = e.id ";
-
-            boolean hasMesFilter = mesSeleccionado != null && !mesSeleccionado.equals("Todos");
-            boolean hasBusquedaFilter = busqueda != null && !busqueda.isEmpty();
-
-            if (hasMesFilter || hasBusquedaFilter) {
-                query += "WHERE ";
-            }
-
-            if (hasMesFilter) {
-                query += "MONTH(c.fecha) = ? ";
-            }
-
-            if (hasMesFilter && hasBusquedaFilter) {
-                query += "AND ";
-            }
-
-            if (hasBusquedaFilter) {
-                query += "(c.codigo_compra LIKE CONCAT('%', ?, '%') OR p.empresaProveedora LIKE CONCAT('%', ?, '%')) ";
-            }
-
-            query += "LIMIT ?, 20";
-
-            PreparedStatement preparedStatement = mysql.prepareStatement(query);
-
-            int parameterIndex = 1;
-
-            if (hasMesFilter) {
-                int numeroMes = obtenerNumeroMes(mesSeleccionado);
-                preparedStatement.setInt(parameterIndex, numeroMes);
-                parameterIndex++;
-            }
-
-            if (hasBusquedaFilter) {
-                preparedStatement.setString(parameterIndex, busqueda);
-                preparedStatement.setString(parameterIndex + 1, busqueda);
-                parameterIndex += 2;
-            }
-
-            preparedStatement.setInt(parameterIndex, pagina * 20);
-
-            ResultSet resultSet = preparedStatement.executeQuery();
-            compraList = new ArrayList<>();
-            while (resultSet.next()) {
-                Compra compra = new Compra();
-                compra.setId(resultSet.getInt("id"));
-                compra.setCodigoCompra(resultSet.getString("codigo_compra"));
-                compra.setFecha(resultSet.getString("fecha"));
-                compra.setProveedorId(resultSet.getInt("proveedor_id"));
-                compra.setEmpleadoId(resultSet.getInt("empleado_id"));
-                compraList.add(compra);
-            }
-            listaCompras.setModel(new ModeloCompra(compraList, sql));
-            configurarTablaCompras();
-            lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount(mesSeleccionado));
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
-            compraList = new ArrayList<>();
-        }
-    }
-
+    // Método para calcular el número total de páginas necesarias para visualizar todas las compras
     private int getTotalPageCount(String mesSeleccionado) {
         int count = 0;
         try (Connection mysql = sql.conectamysql()) {
@@ -564,16 +480,212 @@ public class ListaCompras extends JFrame {
             System.out.println(e.getMessage());
             mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
         }
-
         int registrosPorPagina = 20;
         int totalPageCount = (count + registrosPorPagina - 1) / registrosPorPagina;
         if (totalPageCount == 0) {
-            totalPageCount = 1;  // Asegura que siempre haya al menos una página.
+            totalPageCount = 1;
         }
-
         return totalPageCount;
     }
 
+    // Método para obtener el número del mes
+    private int obtenerNumeroMes(String mesSeleccionado) {
+        int numeroMes = 0;  // Inicializa el número de mes a 0.
+        switch (mesSeleccionado) {  // Evalúa el mes seleccionado.
+            case "Enero":
+                numeroMes = 1;  // Enero corresponde al mes 1.
+                break;
+            case "Febrero":
+                numeroMes = 2;  // Febrero corresponde al mes 2.
+                break;
+            case "Marzo":
+                numeroMes = 3;  // Marzo corresponde al mes 3.
+                break;
+            case "Abril":
+                numeroMes = 4;  // Abril corresponde al mes 4.
+                break;
+            case "Mayo":
+                numeroMes = 5;  // Mayo corresponde al mes 5.
+                break;
+            case "Junio":
+                numeroMes = 6;  // Junio corresponde al mes 6.
+                break;
+            case "Julio":
+                numeroMes = 7;  // Julio corresponde al mes 7.
+                break;
+            case "Agosto":
+                numeroMes = 8;  // Agosto corresponde al mes 8.
+                break;
+            case "Septiembre":
+                numeroMes = 9;  // Septiembre corresponde al mes 9.
+                break;
+            case "Octubre":
+                numeroMes = 10;  // Octubre corresponde al mes 10.
+                break;
+            case "Noviembre":
+                numeroMes = 11;  // Noviembre corresponde al mes 11.
+                break;
+            case "Diciembre":
+                numeroMes = 12;  // Diciembre corresponde al mes 12.
+                break;
+            case "Todos":
+                numeroMes = 0;  // La opción "Todos" no corresponde a un mes específico, por lo que se asigna 0.
+                break;
+        }
+        return numeroMes;  // Retorna el número del mes.
+    }
+
+    // Método para actualizar el modelo de la tabla de compras según el mes seleccionado, implementando filtros de búsqueda
+    private void actualizarModeloTablaConMesSeleccionado(String mesSeleccionado) {
+        sql = new Conexion();
+        try (Connection mysql = sql.conectamysql()) {
+            String query = "SELECT c.*, p.empresaProveedora, CONCAT(e.Nombres, ' ', e.Apellidos) AS empleadoNombre " +
+                    "FROM compras c " +
+                    "JOIN proveedores p ON c.proveedor_id = p.id " +
+                    "JOIN empleados e ON c.empleado_id = e.id ";
+            boolean hasMesFilter = mesSeleccionado != null && !mesSeleccionado.equals("Todos");
+            boolean hasBusquedaFilter = busqueda != null && !busqueda.isEmpty();
+            if (hasMesFilter || hasBusquedaFilter) {
+                query += "WHERE ";
+            }
+            if (hasMesFilter) {
+                query += "MONTH(c.fecha) = ? ";
+            }
+            if (hasMesFilter && hasBusquedaFilter) {
+                query += "AND ";
+            }
+            if (hasBusquedaFilter) {
+                query += "(c.codigo_compra LIKE CONCAT('%', ?, '%') OR p.empresaProveedora LIKE CONCAT('%', ?, '%')) ";
+            }
+            query += "LIMIT ?, 20";
+            PreparedStatement preparedStatement = mysql.prepareStatement(query);
+            int parameterIndex = 1;
+            if (hasMesFilter) {
+                int numeroMes = obtenerNumeroMes(mesSeleccionado);
+                preparedStatement.setInt(parameterIndex, numeroMes);
+                parameterIndex++;
+            }
+            if (hasBusquedaFilter) {
+                preparedStatement.setString(parameterIndex, busqueda);
+                preparedStatement.setString(parameterIndex + 1, busqueda);
+                parameterIndex += 2;
+            }
+            preparedStatement.setInt(parameterIndex, pagina * 20);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            compraList = new ArrayList<>();
+            while (resultSet.next()) {
+                Compra compra = new Compra();
+                compra.setId(resultSet.getInt("id"));
+                compra.setCodigoCompra(resultSet.getString("codigo_compra"));
+                compra.setFecha(resultSet.getString("fecha"));
+                compra.setProveedorId(resultSet.getInt("proveedor_id"));
+                compra.setEmpleadoId(resultSet.getInt("empleado_id"));
+                compraList.add(compra);
+            }
+            listaCompras.setModel(new ModeloCompra(compraList, sql));
+            configurarTablaCompras();
+            lblPagina.setText("Página " + (pagina + 1) + " de " + getTotalPageCount(mesSeleccionado));
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            mostrarDialogoPersonalizadoError("No hay conexión con la base de datos.", Color.decode("#C62828"));
+            compraList = new ArrayList<>();
+        }
+    }
+
+    // Método para mostrar un diálogo personalizado de éxito
+    public void mostrarDialogoPersonalizadoExito(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado "OK"
+        JButton btnAceptar = new JButton("OK");
+        btnAceptar.setBackground(colorFondoBoton); // Establece el color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE); // Establece el color del texto del botón
+        btnAceptar.setFocusPainted(false); // Elimina el borde del foco alrededor del botón
+
+        // Crea un JOptionPane para mostrar el mensaje
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                             // Texto del mensaje a mostrar
+                JOptionPane.INFORMATION_MESSAGE,     // Tipo de mensaje (información)
+                JOptionPane.DEFAULT_OPTION,          // Opción por defecto
+                null,                                // Sin icono
+                new Object[]{},                      // Sin opciones estándar
+                null                                 // Sin valor inicial
+        );
+
+        // Configura el JOptionPane para usar el botón personalizado
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Validación");
+
+        // Añade un ActionListener al botón para cerrar el diálogo cuando se presione
+        btnAceptar.addActionListener(e -> dialog.dispose());
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
+    }
+
+    // Método para mostrar un diálogo personalizado de error
+    public void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado "OK"
+        JButton btnAceptar = new JButton("OK");
+        btnAceptar.setBackground(colorFondoBoton); // Establece el color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE); // Establece el color del texto del botón
+        btnAceptar.setFocusPainted(false); // Elimina el borde del foco alrededor del botón
+
+        // Crea un JOptionPane para mostrar el mensaje
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                             // Texto del mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,         // Tipo de mensaje (advertencia)
+                JOptionPane.DEFAULT_OPTION,          // Opción por defecto
+                null,                                // Sin icono
+                new Object[]{},                      // Sin opciones estándar
+                null                                 // Sin valor inicial
+        );
+
+        // Configura el JOptionPane para usar el botón personalizado
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Validación");
+
+        // Añade un ActionListener al botón para cerrar el diálogo cuando se presione
+        btnAceptar.addActionListener(e -> dialog.dispose());
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
+    }
+
+    // Método para mostrar un diálogo personalizado de atención
+    public void mostrarDialogoPersonalizadoAtencion(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado "OK"
+        JButton btnAceptar = new JButton("OK");
+        btnAceptar.setBackground(colorFondoBoton); // Establece el color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE); // Establece el color del texto del botón
+        btnAceptar.setFocusPainted(false); // Elimina el borde del foco alrededor del botón
+
+        // Crea un JOptionPane para mostrar el mensaje
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                             // Texto del mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,         // Tipo de mensaje (advertencia)
+                JOptionPane.DEFAULT_OPTION,          // Opción por defecto
+                null,                                // Sin icono
+                new Object[]{},                      // Sin opciones estándar
+                null                                 // Sin valor inicial
+        );
+
+        // Configura el JOptionPane para usar el botón personalizado
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Validación");
+
+        // Añade un ActionListener al botón para cerrar el diálogo cuando se presione
+        btnAceptar.addActionListener(e -> dialog.dispose());
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
+    }
+
+    // Método para mostrar o imprimir una factura de compra
     public void imprimirFactura(int indiceItem) {
         try {
             // Obtener la compra asociada al ítem seleccionado
@@ -789,111 +901,7 @@ public class ListaCompras extends JFrame {
         }
     }
 
-    public void mostrarDialogoPersonalizadoExito(String mensaje, Color colorFondoBoton) {
-        // Crea un botón personalizado
-        JButton btnAceptar = new JButton("OK");
-        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
-        btnAceptar.setForeground(Color.WHITE);
-        btnAceptar.setFocusPainted(false);
-
-        // Crea un JOptionPane
-        JOptionPane optionPane = new JOptionPane(
-                mensaje,                           // Mensaje a mostrar
-                JOptionPane.INFORMATION_MESSAGE,   // Tipo de mensaje
-                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
-                null,                              // Icono (puede ser null)
-                new Object[]{},                    // No se usan opciones estándar
-                null                               // Valor inicial (no necesario aquí)
-        );
-
-        // Añade el botón al JOptionPane
-        optionPane.setOptions(new Object[]{btnAceptar});
-
-        // Crea un JDialog para mostrar el JOptionPane
-        JDialog dialog = optionPane.createDialog("Validación");
-
-        // Añade un ActionListener al botón
-        btnAceptar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
-            }
-        });
-
-        // Muestra el diálogo
-        dialog.setVisible(true);
-    }
-
-    public void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
-        // Crea un botón personalizado
-        JButton btnAceptar = new JButton("OK");
-        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
-        btnAceptar.setForeground(Color.WHITE);
-        btnAceptar.setFocusPainted(false);
-
-        // Crea un JOptionPane
-        JOptionPane optionPane = new JOptionPane(
-                mensaje,                           // Mensaje a mostrar
-                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
-                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
-                null,                              // Icono (puede ser null)
-                new Object[]{},                    // No se usan opciones estándar
-                null                               // Valor inicial (no necesario aquí)
-        );
-
-        // Añade el botón al JOptionPane
-        optionPane.setOptions(new Object[]{btnAceptar});
-
-        // Crea un JDialog para mostrar el JOptionPane
-        JDialog dialog = optionPane.createDialog("Validación");
-
-        // Añade un ActionListener al botón
-        btnAceptar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
-            }
-        });
-
-        // Muestra el diálogo
-        dialog.setVisible(true);
-    }
-
-    public void mostrarDialogoPersonalizadoAtencion(String mensaje, Color colorFondoBoton) {
-        // Crea un botón personalizado
-        JButton btnAceptar = new JButton("OK");
-        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
-        btnAceptar.setForeground(Color.WHITE);
-        btnAceptar.setFocusPainted(false);
-
-        // Crea un JOptionPane
-        JOptionPane optionPane = new JOptionPane(
-                mensaje,                           // Mensaje a mostrar
-                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
-                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
-                null,                              // Icono (puede ser null)
-                new Object[]{},                    // No se usan opciones estándar
-                null                               // Valor inicial (no necesario aquí)
-        );
-
-        // Añade el botón al JOptionPane
-        optionPane.setOptions(new Object[]{btnAceptar});
-
-        // Crea un JDialog para mostrar el JOptionPane
-        JDialog dialog = optionPane.createDialog("Validación");
-
-        // Añade un ActionListener al botón
-        btnAceptar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
-            }
-        });
-
-        // Muestra el diálogo
-        dialog.setVisible(true);
-    }
-
+    // Método Principal
     public static void main(String[] args) {
         ListaCompras listaCompras = new ListaCompras();
         listaCompras.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

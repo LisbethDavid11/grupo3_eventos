@@ -1,9 +1,17 @@
+/**
+ * VerEmpleado.java
+ *
+ * Ver Empleado
+ *
+ * @author Alejandra Aroca
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Empleados;
 
-import Objetos.Cliente;
 import Objetos.Conexion;
 import Objetos.Empleado;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -15,8 +23,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class VerEmpleado extends JFrame {
+    // Botón cancelar
     public JButton cancelarButton;
+
+    // Panel
     public JPanel panel1;
+
+    // Campos de texto
     private JTextArea etiquetaDireccion;
     private JTextField etiquetaIdentidad;
     private JTextField etiquetaNombre;
@@ -28,6 +41,8 @@ public class VerEmpleado extends JFrame {
     private JTextField etiquetaNombreContacto;
     private JTextField etiquetaTelefonoContacto;
     private JTextField etiquetaTipo;
+
+    // Etiquetas
     private JLabel lbl0;
     private JLabel lbl1;
     private JLabel lbl2;
@@ -40,12 +55,21 @@ public class VerEmpleado extends JFrame {
     private JLabel lbl9;
     private JLabel lbl10;
     private JLabel lbl11;
+
+    // Referencia a la ventana de ver empleado
     public VerEmpleado mostrarEmpleado = this;
+
+    // Referencia a la ventana actual
     private final VerEmpleado actual = this;
+
+    // Conexión a la base de datos
     private Conexion sql;
     private Connection mysql;
+
+    // ID del empleado
     private int id;
-    private int empleadoId; // Variable de instancia para almacenar el ID del empleado
+
+    // Fuentes y colores
     Font fontTitulo = new Font("Century Gothic", Font.BOLD, 20);
     Font font = new Font("Century Gothic", Font.BOLD, 15);
     Font font2 = new Font("Century Gothic", Font.BOLD, 11);
@@ -219,6 +243,7 @@ public class VerEmpleado extends JFrame {
         });
     }
 
+    // Método cargar datos del empleado
     private void mostrar() {
         sql = new Conexion();
         mysql = sql.conectamysql();
@@ -248,6 +273,7 @@ public class VerEmpleado extends JFrame {
         }
     }
 
+    // Método Principal
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {

@@ -1,7 +1,16 @@
+/**
+ * VerUsuario.java
+ *
+ * Ver Perfil de Usuario
+ *
+ * @author Alejandra Aroca
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Login;
 
 import Objetos.Conexion;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -13,20 +22,41 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class VerUsuario extends JFrame {
-    private JPanel panel1, panelImg;
-    private JTextField etiquetaNombre, etiquetaCorreo, etiquetaRol;
+    // Paneles
+    private JPanel panel1;
+    private JPanel panelImg;
+    private JPanel panel3;
+
+    // Campos de texto
+    private JTextField etiquetaNombre;
+    private JTextField etiquetaCorreo;
+    private JTextField etiquetaRol;
+
+    // Botones
     private JButton volverButton;
-    private JLabel lblImagen, lbl0;
+
+    // Etiquetas
+    private JLabel lblImagen;
+    private JLabel lbl0;
     private JLabel lbl1;
     private JLabel lbl2;
     private JLabel lbl3;
-    private JPanel panel3;
+
+    // Instancia de la clase
     private final VerUsuario actual = this;
+
+    // Conexión a la base de datos
     private Conexion sql;
     private Connection mysql;
+
+    // Identificador
     private int id;
+
+    // Dimensiones del panel de imagen
     private int panelImgWidth = 300;
     private int panelImgHeight = 300;
+
+    // Fuente y colores
     Font fontTitulo = new Font("Century Gothic", Font.BOLD, 20);
     Font font = new Font("Century Gothic", Font.BOLD, 15);
     Font font2 = new Font("Century Gothic", Font.BOLD, 11);
@@ -61,6 +91,7 @@ public class VerUsuario extends JFrame {
     Color darkColorBlue = new Color(33, 150, 243);
     EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
     int idUsuarioActual = SesionUsuario.getInstance().getIdUsuario();
+
     public VerUsuario(int id, int idUsuarioActual) {
         super("");
         setSize(550, 600);
@@ -148,6 +179,7 @@ public class VerUsuario extends JFrame {
         });
     }
 
+    // Método para cargar los datos del usuario
     private void mostrar() {
         sql = new Conexion();
         mysql = sql.conectamysql();
@@ -210,6 +242,7 @@ public class VerUsuario extends JFrame {
         }
     }
 
+    // Método Principal
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             int idUsuarioActual = SesionUsuario.getInstance().getIdUsuario();

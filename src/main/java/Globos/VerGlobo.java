@@ -1,7 +1,16 @@
-package Globos;
-import Floristerias.VerFloristeria;
-import Objetos.Conexion;
+/**
+ * VerGlobo.java
+ *
+ * Ver Globo
+ *
+ * @author Lisbeth David
+ * @version 1.0
+ * @since 2024-05-05
+ */
 
+package Globos;
+
+import Objetos.Conexion;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -15,10 +24,42 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class VerGlobo extends JFrame {
-    public JPanel panel1, panelImg;
+    // Paneles
+    public JPanel panel1;
+    public JPanel panelImg;
+
+    // Botón
     public JButton cancelarButton;
-    private JTextField etiquetaCodigo, etiquetaTipo, etiquetaMaterial, etiquetaPara, etiquetaTamanio, etiquetaColor, etiquetaForma, etiquetaPaquete, etiquetaPortaGlobo, etiquetaExistencia, etiquetaPrecio;
-    private JLabel lbl0, lbl1, lbl2, lbl3, lbl4, lbl5, lbl6, lbl7, lbl8, lbl9, lbl10, lbl11, lblImagen;
+
+    // Campos de texto
+    private JTextField etiquetaCodigo;
+    private JTextField etiquetaTipo;
+    private JTextField etiquetaMaterial;
+    private JTextField etiquetaPara;
+    private JTextField etiquetaTamanio;
+    private JTextField etiquetaColor;
+    private JTextField etiquetaForma;
+    private JTextField etiquetaPaquete;
+    private JTextField etiquetaPortaGlobo;
+    private JTextField etiquetaExistencia;
+    private JTextField etiquetaPrecio;
+
+    // Etiquetas
+    private JLabel lbl0;
+    private JLabel lbl1;
+    private JLabel lbl2;
+    private JLabel lbl3;
+    private JLabel lbl4;
+    private JLabel lbl5;
+    private JLabel lbl6;
+    private JLabel lbl7;
+    private JLabel lbl8;
+    private JLabel lbl9;
+    private JLabel lbl10;
+    private JLabel lbl11;
+    private JLabel lblImagen;
+
+    // Otras variables
     private String imagePath = "";
     private int panelImgWidth = 200;
     private int panelImgHeight = 200;
@@ -27,6 +68,8 @@ public class VerGlobo extends JFrame {
     private Conexion sql;
     private Connection mysql;
     private int id;
+
+    // Fuente y colores
     Font fontTitulo = new Font("Century Gothic", Font.BOLD, 20);
     Font font = new Font("Century Gothic", Font.BOLD, 15);
     Font font2 = new Font("Century Gothic", Font.BOLD, 11);
@@ -249,38 +292,7 @@ public class VerGlobo extends JFrame {
         });
     }
 
-    private void mostrarImagen(String imagen) {
-        imagePath = "img/globos/" + imagen;
-
-        File file = new File(imagePath);
-        if (file.exists()) {
-            ImageIcon originalIcon = new ImageIcon(imagePath);
-
-            // Obtener las dimensiones originales de la imagen
-            int originalWidth = originalIcon.getIconWidth();
-            int originalHeight = originalIcon.getIconHeight();
-
-            // Obtener las dimensiones del JPanel
-            int panelImgWidth = panelImg.getWidth();
-            int panelImgHeight = panelImg.getHeight();
-
-            // Calcular la escala etiquetaPara ajustar la imagen al JPanel
-            double scale = Math.min((double) panelImgWidth / originalWidth, (double) panelImgHeight / originalHeight);
-
-            // Calcular las nuevas dimensiones de la imagen redimensionada
-            int scaledWidth = (int) (originalWidth * scale);
-            int scaledHeight = (int) (originalHeight * scale);
-
-            // Redimensionar la imagen manteniendo su proporción
-            Image resizedImage = originalIcon.getImage().getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH);
-
-            // Crear un nuevo ImageIcon a partir de la imagen redimensionada
-            ImageIcon scaledIcon = new ImageIcon(resizedImage);
-
-            lblImagen.setIcon(scaledIcon);
-        }
-    }
-
+    // Método para cargar los datos del globo
     private void mostrar() {
         sql = new Conexion();
         mysql = sql.conectamysql();
@@ -346,6 +358,7 @@ public class VerGlobo extends JFrame {
         }
     }
 
+    // Método Principal
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             VerGlobo verGlobo = new VerGlobo(1); // Pasa el ID de la floristería que deseas ver

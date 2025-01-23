@@ -1,4 +1,15 @@
+/**
+ * EditarMaterial.java
+ *
+ * Editar Material
+ *
+ * @author Dania Lagos
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Materiales;
+
 import Objetos.Conexion;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -15,19 +26,52 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 
 public class EditarMaterial extends JFrame {
-    private JTextField campoNombre, campoPrecio;
+    // Campos de texto
+    private JTextField campoNombre;
+    private JTextField campoPrecio;
+
+    // Área de texto
     private JTextArea campoDescripcion;
-    private JRadioButton radioButtonSi, radioButtonNo;
-    private JComboBox<String> comboBoxProveedor;
-    private JButton botonGuardar, botonCancelar, botonLimpiar;
-    private JPanel panel;
-    private JLabel lbl0, lbl1, lbl2, lbl3, lbl4, lbl5, lbl6;
+
+    // RadioButtons
+    private JRadioButton radioButtonSi;
+    private JRadioButton radioButtonNo;
     private JRadioButton radioButtonSiExento;
     private JRadioButton radioButtonNoExento;
-    private JPanel panel1, panel2, panel3;
+
+    // ComboBox
+    private JComboBox<String> comboBoxProveedor;
+
+    // Botones
+    private JButton botonGuardar;
+    private JButton botonCancelar;
+    private JButton botonLimpiar;
+
+    // Paneles
+    private JPanel panel;
+    private JPanel panel1;
+    private JPanel panel2;
+    private JPanel panel3;
+
+    // Etiquetas
+    private JLabel lbl0;
+    private JLabel lbl1;
+    private JLabel lbl2;
+    private JLabel lbl3;
+    private JLabel lbl4;
+    private JLabel lbl5;
+    private JLabel lbl6;
+
+    // Ruta de la imagen
     private String imagePath = "";
+
+    // Instancia de la clase
     private EditarMaterial actual = this;
+
+    // Conexión a la base de datos
     private Conexion sql;
+
+    // Fuente y Colores
     Color darkColorRed = new Color(244, 67, 54);
     Color darkColorBlue = new Color(33, 150, 243);
 
@@ -415,6 +459,7 @@ public class EditarMaterial extends JFrame {
         });
     }
 
+    // Método para cargar los datos de los materiales
     private void cargarMaterial() {
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM materiales WHERE id = ?")) {
@@ -457,6 +502,7 @@ public class EditarMaterial extends JFrame {
         }
     }
 
+    // Método para actualizar los datos de los materiales
     private void guardarMateriales() {
         String nombre = campoNombre.getText().trim();
         String precioText = campoPrecio.getText().replace("L ", "").replace(",", "").replace("_", "");
@@ -485,6 +531,7 @@ public class EditarMaterial extends JFrame {
         }
     }
 
+    // Método para obtener el nombre del proveedor
     private String obtenerProveedorText(int idProveedor) {
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement("SELECT empresaProveedora, nombreVendedor FROM Proveedores WHERE id = ?")) {
@@ -502,6 +549,7 @@ public class EditarMaterial extends JFrame {
         return "";
     }
 
+    // Método para cargar proveedores
     private void cargarProveedores() {
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement("SELECT id, empresaProveedora, nombreVendedor FROM Proveedores");

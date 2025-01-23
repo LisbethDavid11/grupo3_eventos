@@ -1,4 +1,15 @@
+/**
+ * CrearTarjeta.java
+ *
+ * Crear Tarjeta
+ *
+ * @author Skarleth Ferrera
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Tarjetas;
+
 import Modelos.ModeloMaterial;
 import Modelos.ModeloProducto;
 import Objetos.Conexion;
@@ -20,48 +31,73 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.EventObject;
 import java.util.List;
 
 public class CrearTarjeta extends JFrame {
-    private JTextField campoPrecioTarjeta;
-    private JTextArea campoDescripcion;
-    private JRadioButton radioButtonSi;
-    private JRadioButton radioButtonNo;
+    // Paneles
+    private JPanel jpanelImagen;
+    private JPanel jpanelDescripcion;
+    private JPanel panel1;
+    private JPanel panel2;
+    private JPanel panel3;
+    private JPanel panel5;
+    private JPanel panel6;
+    private JPanel panel7;
+    private JPanel panel8;
+
+    // Tabla de materiales
+    private JTable jtableMateriales;
+
+    // Botones
     private JButton botonGuardar;
     private JButton botonCancelar;
-    private JPanel jpanelImagen, panel1, panel2, panel3, panel5, panel6;
+    private JButton botonCargarImagen;
+    private JButton agregarMaterialButton;
+    private JButton agregarButton;
+    private JButton cancelarButton;
+    private JButton botonLimpiar;
+
+    // Campos de texto
+    private JTextField campoPrecioTarjeta;
+    private JTextField campoBusquedaMateriales;
+    private JTextField campoManoObra;
+
+    // Área de texto
+    private JTextArea campoDescripcion;
+
+    // RadioButtons
+    private JRadioButton radioButtonSi;
+    private JRadioButton radioButtonNo;
+
+    // Etiquetas
     private JLabel lbl0;
     private JLabel lbl2;
     private JLabel lbl4;
-    private JButton botonCargarImagen;
-    private JButton agregarMaterialButton;
-    private JTable jtableMateriales;
     private JLabel jlabelImagen;
-    private JScrollPane jscrollMateriales, panel4;
-    private JButton agregarButton;
-    private JTextField campoBusquedaMateriales;
-    private JButton cancelarButton;
-    private JComboBox<String> jcbOcasion;
-    private JPanel jpanelDescripcion;
     private JLabel jtextCatidadTotalMateriales;
     private JLabel lbl8;
-    private JButton botonLimpiar;
-    private JPanel panel7;
-    private JTextField campoManoObra;
     private JLabel lbl9;
     private JLabel lbl10;
-    private JPanel panel8;
+
+    // JScrollPane
+    private JScrollPane jscrollMateriales;
+    private JScrollPane panel4;
+
+    // ComboBox
+    private JComboBox<String> jcbOcasion;
+
+    // Otras variables
     private List<Material> materialList = new ArrayList<>();
+    private List<Material> materialListTemporal = new ArrayList<>();
     private String imagePath = "";
     private CrearTarjeta actual = this;
     private Conexion sql;
     private String nombreFile;
     private String urlDestino = "";
     private DefaultTableModel modeloProductos;
-    private TextPrompt placeholder = new TextPrompt("Buscar por nombre, proveedor o precio", campoBusquedaMateriales);
 
-    private List<Material> materialListTemporal = new ArrayList<>();
+    // Placeholder para el campo de búsqueda de materiales
+    private TextPrompt placeholder = new TextPrompt("Buscar por nombre, proveedor o precio", campoBusquedaMateriales);
 
     Color textColor = Color.decode("#212121");
     Color darkColorCyan = new Color(0, 150, 136);
@@ -713,7 +749,7 @@ public class CrearTarjeta extends JFrame {
         });
     }
 
-
+    // Clase para alinear los datos al centro
     class CenterAlignedRenderer extends DefaultTableCellRenderer {
         public CenterAlignedRenderer() {
             setHorizontalAlignment(CENTER);
@@ -726,6 +762,7 @@ public class CrearTarjeta extends JFrame {
         }
     }
 
+    // Clase para alinear los datos a la izquierda
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
         public LeftAlignedRenderer() {
             setHorizontalAlignment(LEFT);
@@ -738,6 +775,7 @@ public class CrearTarjeta extends JFrame {
         }
     }
 
+    // Método para obtener la cantidad ingresada por el usuario
     private int obtenerCantidadMaterial() {
         String input = JOptionPane.showInputDialog(this, "Ingrese la cantidad del material:", "Cantidad", JOptionPane.PLAIN_MESSAGE);
         if (input == null || input.isEmpty()) {
@@ -753,6 +791,7 @@ public class CrearTarjeta extends JFrame {
         }
     }
 
+    // Méetodo para obtener la cantidad desde la base de datos
     private int obtenerCantidadExistenteEnBaseDeDatos(int id_material) {
         int cantidadExistente = 0;
 
@@ -772,6 +811,7 @@ public class CrearTarjeta extends JFrame {
         return cantidadExistente;
     }
 
+    // Método para guardar los datos de la tarjeta
     private void guardarMateriales() {
         String precioTarjetaText = campoPrecioTarjeta.getText().replace("L ", "").replace(",", "").replace("_", "");
         double precio_tarjeta = Double.parseDouble(precioTarjetaText);
@@ -837,6 +877,7 @@ public class CrearTarjeta extends JFrame {
         }
     }
 
+    // Método para guardar los detalles de la tarjeta
     private void guardarDetalleMaterial(int id_material, int cantidad) {
         int cantidadExistente = obtenerCantidadExistenteEnBaseDeDatos(id_material);
 
@@ -859,8 +900,7 @@ public class CrearTarjeta extends JFrame {
         }
     }
 
-
-
+    // Método para obtener el precio desde la base de datos
     private double obtenerPrecioMaterialDesdeBD(int id_material) {
         double precio = 0.0;
 
@@ -880,12 +920,14 @@ public class CrearTarjeta extends JFrame {
         return precio;
     }
 
+    // Método para limpiar la tabla
     private void limpiarTablaMateriales() {
         materialList.clear();
         DefaultTableModel emptyModel = new DefaultTableModel();
         jtableMateriales.setModel(emptyModel);
     }
 
+    // Método para eliminar los detalles
     private void eliminarDetallesMaterial() {
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM tarjetas_detalles WHERE id_tarjeta IS NULL")) {
@@ -895,6 +937,7 @@ public class CrearTarjeta extends JFrame {
         }
     }
 
+    // Método para cargar los datos de los materiales
     private ModeloMaterial cargarDatosMateriales() {
         sql = new Conexion();
         materialList.clear();
@@ -939,6 +982,7 @@ public class CrearTarjeta extends JFrame {
         return new ModeloMaterial(materialList, sql);
     }
 
+    // Método para calcular el total de la tabla
     private double calcularTotalTabla() {
         double sumaTotal = 0.0;
 
@@ -998,6 +1042,7 @@ public class CrearTarjeta extends JFrame {
         return sumaTotal;
     }
 
+    // Método para extraer los números
     private double extraerValorNumerico(String valor) {
         String valorNumerico = valor.replace(',', '.');
         try {
@@ -1008,6 +1053,7 @@ public class CrearTarjeta extends JFrame {
         }
     }
 
+    // Método para actualizar los datos
     private void actualizarLbl8y10() {
         double totalTabla = calcularTotalTabla();
 
@@ -1029,6 +1075,7 @@ public class CrearTarjeta extends JFrame {
         lbl10.setText(String.format("%.2f", total));
     }
 
+    // Método para configurar la tabla
     private void configurarTablaMateriales() {
         int columnCount = jtableMateriales.getColumnCount();
         if (columnCount > 0) {
@@ -1052,6 +1099,7 @@ public class CrearTarjeta extends JFrame {
         }
     }
 
+    // Método para cargar los detalles
     private ModeloProducto cargarDetallesMateriales() {
         sql = new Conexion();
         materialList.clear(); // Limpiar la lista antes de agregar los materiales
@@ -1102,6 +1150,7 @@ public class CrearTarjeta extends JFrame {
         return new ModeloProducto(materialList, sql);
     }
 
+    // Clase para renderizar el botón
     class ButtonRenderer extends JButton implements TableCellRenderer {
         public ButtonRenderer() {
             setOpaque(true);
@@ -1116,6 +1165,7 @@ public class CrearTarjeta extends JFrame {
         }
     }
 
+    // Clase para agregar el botón a la celda
     class ButtonEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
         private JButton button;
         private int row;
@@ -1170,6 +1220,7 @@ public class CrearTarjeta extends JFrame {
         }
     }
 
+    // Método para eliminar los detalles de la tarjeta
     private void eliminarDetalleTarjeta(int id_material) {
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement(
@@ -1181,6 +1232,7 @@ public class CrearTarjeta extends JFrame {
         }
     }
 
+    // Método Principal
     public static void main(String[] args) {
         CrearTarjeta crearTarjeta = new CrearTarjeta();
         crearTarjeta.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

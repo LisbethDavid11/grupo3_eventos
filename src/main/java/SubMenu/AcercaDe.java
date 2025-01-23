@@ -1,3 +1,13 @@
+/**
+ * AcercaDe.java
+ *
+ * Acerca De
+ *
+ * @author Elsa Ramos
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package SubMenu;
 
 import javax.swing.*;
@@ -5,7 +15,10 @@ import java.awt.*;
 
 public class AcercaDe extends JPanel {
 
+    // Elementos para manejo de imagenes
     private ImageIcon iaLogo, unahLogo;
+
+    // Etiquetas de texto
     private JLabel iaLogoLabel, unahLogoLabel;
 
     public AcercaDe() {
@@ -99,6 +112,7 @@ public class AcercaDe extends JPanel {
         });
     }
 
+    // Método para cambiar tamaño de imagen
     private void resizeImages() {
         // Calcula nuevas dimensiones basadas en el tamaño de la ventana
         int width = getWidth();
@@ -113,12 +127,14 @@ public class AcercaDe extends JPanel {
         repaint();
     }
 
+    // Método para cambiar tamaño de icono
     private ImageIcon resizeIcon(ImageIcon icon, int width, int height) {
         Image img = icon.getImage();
         Image resizedImage = img.getScaledInstance(width, height,  Image.SCALE_SMOOTH);
         return new ImageIcon(resizedImage);
     }
 
+    // Método para centrar el texto dentro del panel
     private void addCenteredTextToPanel(JPanel panel, String text) {
         JTextArea textArea = new JTextArea(3, 20); // Ajusta el número de líneas y la anchura según sea necesario
         textArea.setText(text);
@@ -134,6 +150,7 @@ public class AcercaDe extends JPanel {
         panel.add(textArea);
     }
 
+    // Método para darle un estilo materializado al botón
     private void styleMaterialButton(JButton button) {
         Color buttonColor = Color.decode("#2c3e50"); // Color principal para el fondo del botón
         Color hoverColor = Color.decode("#34495e"); // Color para el fondo del botón al pasar el ratón por encima
@@ -161,6 +178,7 @@ public class AcercaDe extends JPanel {
         });
     }
 
+    // Método Principal
     public static void main(String[] args) {
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

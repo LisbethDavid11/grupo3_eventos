@@ -1,3 +1,13 @@
+/**
+ * SubMenu.java
+ *
+ * Sub Menu
+ *
+ * @author Elsa Ramos
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package SubMenu;
 
 import Actividades.CalendarioDeActividades;
@@ -25,7 +35,6 @@ import Proveedores.ListaProveedores;
 import Roles.ListaRoles;
 import Tarjetas.ListaTarjetas;
 import Ventas.ListaVentas;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -38,8 +47,17 @@ import java.io.File;
 import java.io.IOException;
 
 public class SubMenu extends JFrame {
+   // Botones
     private JButton rolesButton,usuariosButton, proveedoresButton, empleadosButton, clientesButton, floristeriaButton, arreglosButton, materialesButton, comprasButton,tarjetaButton, manualidadesButton, globosButton, desayunosButton, ventasButton, mobiliarioButton, pedidosButton, eventosButton, promocionesButton, actividadesButton, alquileresButton, permisosButton;
+
+    // Paneles
     private JPanel panel, panel2, panel3;
+    private JPanel navbarPanel;
+
+    // Etiquetas de texto
+    private JLabel userLabel, userNameLabel;
+
+    // Listas
     private ListaClientes listaCliente;
     private ListaEmpleados listaEmpleados;
     private ListaFloristerias listaFloristeria;
@@ -61,9 +79,11 @@ public class SubMenu extends JFrame {
     private ListaRoles listaRoles;
     private ListaUsuarios listaUsuarios;
     private ListaPermisos listaPermisos;
-    private JPanel navbarPanel;
-    private JLabel userLabel, userNameLabel;
+
+    // Elementos Pop Up
     private JPopupMenu userMenu;
+
+    // Otras variables
     private String nombre;
     private String imagen;
     private int id;
@@ -454,7 +474,6 @@ public class SubMenu extends JFrame {
         userNameLabel.setText("Bienvenido, " + nombre + " ▼ ");
     }
 
-
     public void setImagenUsuario(String imagen) {
         this.imagen = imagen;
         String imagePath = "img/usuarios/" + imagen; // Ruta actualizada según la imagen
@@ -463,10 +482,12 @@ public class SubMenu extends JFrame {
 
     private int idUsuarioActual;
 
+    // Método para establecer el id del usuario actual
     public void setIdUsuarioActual(int id) {
         this.idUsuarioActual = id;
     }
 
+    // Método para envolver en barra de navegación
     private void setupNavbar() {
         navbarPanel = new JPanel();
         navbarPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -590,6 +611,7 @@ public class SubMenu extends JFrame {
         navbarPanel.add(userNameLabel);
     }
 
+    // Método para que se encaje la imagen en un circulo
     private Image getRoundedImage(String imagePath, int width, int height) {
         if (imagePath == null || imagePath.isEmpty()) {
             System.out.println("Image path is null or empty");

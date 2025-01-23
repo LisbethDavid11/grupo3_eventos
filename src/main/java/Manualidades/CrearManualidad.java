@@ -1,4 +1,15 @@
+/**
+ * CrearManualidad.java
+ *
+ * Crear Manualidad
+ *
+ * @author Elsa Ramos
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Manualidades;
+
 import Modelos.ModeloMaterial;
 import Modelos.ModeloProducto;
 import Objetos.Conexion;
@@ -20,42 +31,79 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.EventObject;
 import java.util.List;
 
 public class CrearManualidad extends JFrame {
-    private JTextField campoPrecioManualidad, campoManoObra, campoNombre;
+    // Campos de texto
+    private JTextField campoPrecioManualidad;
+    private JTextField campoManoObra;
+    private JTextField campoNombre;
+
+    // Área de texto
     private JTextArea campoDescripcion;
+
+    // Botones
     private JButton botonGuardar;
     private JButton botonCancelar;
-    private JPanel jpanelImagen, panel1, panel2, panel3, panel5, panel6, panel7;
+    private JButton botonCargarImagen;
+    private JButton agregarMaterialButton;
+    private JButton agregarButton;
+    private JButton cancelarButton;
+    private JButton botonLimpiar;
+
+    // Panel
+    private JPanel jpanelImagen;
+    private JPanel panel1;
+    private JPanel panel2;
+    private JPanel panel3;
+    private JScrollPane panel4;
+    private JScrollPane jscrollMateriales;
+    private JPanel panel5;
+    private JPanel panel6;
+    private JPanel panel7;
+    private JPanel jpanelDescripcion;
+
+    // Etiquetas
     private JLabel lbl0;
     private JLabel lbl2;
     private JLabel lbl4;
-    private JButton botonCargarImagen;
-    private JButton agregarMaterialButton;
     private JLabel jlabelImagen;
-    private JScrollPane jscrollMateriales, panel4;
-    private JButton agregarButton;
-    private JTextField campoBusquedaMateriales;
-    private JButton cancelarButton;
-    private JComboBox<String> jcbTipo;
-    private JPanel jpanelDescripcion;
     private JLabel jtextCatidadTotalMateriales;
     private JLabel lbl8;
-    private JButton botonLimpiar;
     private JLabel lbl9;
     private JLabel lbl10;
-    private String imagePath = "";
-    private CrearManualidad actual = this;
-    private Conexion sql;
-    private String nombreFile;
-    private String urlDestino = "";
-    private DefaultTableModel modeloProductos;
-    private TextPrompt placeholder = new TextPrompt(" Buscar por nombre, proveedor o precio", campoBusquedaMateriales);
+
+    // ComboBox
+    private JComboBox<String> jcbTipo;
+
+    // Tabla
     private JTable jtableMateriales;
+
+    // Campos de búsqueda y promp de texto
+    private JTextField campoBusquedaMateriales;
+    private TextPrompt placeholder = new TextPrompt(" Buscar por nombre, proveedor o precio", campoBusquedaMateriales);
+
+    // Listas de materiales
     private List<Material> materialList = new ArrayList<>();
     private List<Material> materialListTemporal = new ArrayList<>();
+
+    // Imagen
+    private String imagePath = "";
+
+    // Instancia de la clase
+    private CrearManualidad actual = this;
+
+    // Conexión a la base de datos
+    private Conexion sql;
+
+    // Nombre de archivo y destino
+    private String nombreFile;
+    private String urlDestino = "";
+
+    // Modelo de tabla
+    private DefaultTableModel modeloProductos;
+
+    // Fuente y colores
     Color textColor = Color.decode("#212121");
     Color darkColorCyan = new Color(0, 150, 136);
     Color darkColorPink = new Color(233, 30, 99);
@@ -746,8 +794,7 @@ public class CrearManualidad extends JFrame {
         });
     }
 
-
-
+    // Clase para alinear los datos al centro
     class CenterAlignedRenderer extends DefaultTableCellRenderer {
         public CenterAlignedRenderer() {
             setHorizontalAlignment(CENTER);
@@ -760,6 +807,7 @@ public class CrearManualidad extends JFrame {
         }
     }
 
+    // Clase para alinear los datos a la izquierda
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
         public LeftAlignedRenderer() {
             setHorizontalAlignment(LEFT);
@@ -772,6 +820,7 @@ public class CrearManualidad extends JFrame {
         }
     }
 
+    // Método para obtener la cantidad ingresada por el usuario
     private int obtenerCantidadMaterial() {
         String input = JOptionPane.showInputDialog(this, "Ingrese la cantidad del material:", "Cantidad", JOptionPane.PLAIN_MESSAGE);
         if (input == null || input.isEmpty()) {
@@ -787,6 +836,7 @@ public class CrearManualidad extends JFrame {
         }
     }
 
+    // Método para obtener la cantidad existente en la base de datos
     private int obtenerCantidadExistenteEnBaseDeDatos(int id_material) {
         int cantidadExistente = 0;
 
@@ -806,6 +856,7 @@ public class CrearManualidad extends JFrame {
         return cantidadExistente;
     }
 
+    // Método para guardar las manualidades
     private void guardarManualidades() {
         String nombre = campoNombre.getText().trim();
 
@@ -877,6 +928,7 @@ public class CrearManualidad extends JFrame {
         }
     }
 
+    // Método para guardar los datelles de la manualidad
     private void guardarDetalleMaterial(int id_material, int cantidad) {
         int cantidadExistente = obtenerCantidadExistenteEnBaseDeDatos(id_material);
 
@@ -899,6 +951,7 @@ public class CrearManualidad extends JFrame {
         }
     }
 
+    // Método para obtener el precio desde la base de datos
     private double obtenerPrecioMaterialDesdeBD(int id_material) {
         double precio = 0.0;
 
@@ -918,14 +971,14 @@ public class CrearManualidad extends JFrame {
         return precio;
     }
 
-
-
+    // Método para limpiar la tabla
     private void limpiarTablaMateriales() {
         materialList.clear();
         DefaultTableModel emptyModel = new DefaultTableModel();
         jtableMateriales.setModel(emptyModel);
     }
 
+    // Método para eliminar los detalles de la tabla
     private void eliminarDetallesMaterial() {
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM detalles_manualidades WHERE manualidad_id IS NULL")) {
@@ -935,6 +988,7 @@ public class CrearManualidad extends JFrame {
         }
     }
 
+    // Método para cargar los datos de la tabla
     private ModeloMaterial cargarDatosMateriales() {
         sql = new Conexion();
         materialList.clear();
@@ -978,6 +1032,7 @@ public class CrearManualidad extends JFrame {
         return new ModeloMaterial(materialList, sql);
     }
 
+    // Método para calcular el total de la tabla
     private double calcularTotalTabla() {
         double sumaTotal = 0.0;
 
@@ -1037,6 +1092,7 @@ public class CrearManualidad extends JFrame {
         return sumaTotal;
     }
 
+    // Método para extraer el valor númerico
     private double extraerValorNumerico(String valor) {
         String valorNumerico = valor.replace(',', '.');
         try {
@@ -1047,6 +1103,7 @@ public class CrearManualidad extends JFrame {
         }
     }
 
+    // Método para actualizar los calculos
     private void actualizarLbl8y10() {
         double totalTabla = calcularTotalTabla();
 
@@ -1068,6 +1125,7 @@ public class CrearManualidad extends JFrame {
         lbl10.setText(String.format("%.2f", total));
     }
 
+    // Método para configurar la tabla
     private void configurarTablaMateriales() {
         int columnCount = jtableMateriales.getColumnCount();
         if (columnCount > 0) {
@@ -1091,6 +1149,7 @@ public class CrearManualidad extends JFrame {
         }
     }
 
+    // Método para cargar los detalles de las manualidades
     private ModeloProducto cargarDetallesMateriales() {
         sql = new Conexion();
         materialList.clear(); // Limpiar la lista antes de agregar los materiales
@@ -1141,6 +1200,7 @@ public class CrearManualidad extends JFrame {
         return new ModeloProducto(materialList, sql);
     }
 
+    // Clase para renderizar el botón
     class ButtonRenderer extends JButton implements TableCellRenderer {
         public ButtonRenderer() {
             setOpaque(true);
@@ -1155,6 +1215,7 @@ public class CrearManualidad extends JFrame {
         }
     }
 
+    // Clase para agregar el botón a la celda
     class ButtonEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
         private JButton button;
         private int row;
@@ -1209,6 +1270,7 @@ public class CrearManualidad extends JFrame {
         }
     }
 
+    // Método para eliminar detalles de la manualidad
     private void eliminarDetalleManualidad(int id_material) {
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement(
@@ -1220,6 +1282,7 @@ public class CrearManualidad extends JFrame {
         }
     }
 
+    // Método Principal
     public static void main(String[] args) {
         CrearManualidad crearManualidad = new CrearManualidad();
         crearManualidad.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

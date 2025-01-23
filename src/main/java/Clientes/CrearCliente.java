@@ -1,9 +1,18 @@
+/**
+ * CrearCliente.java
+ *
+ * Crear Cliente
+ *
+ * @author Dania Lagos
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Clientes;
-import Arreglos.CrearArreglo;
+
 import Objetos.Cliente;
 import Objetos.Conexion;
 import Ventas.CrearVenta;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.DefaultFormatterFactory;
@@ -20,43 +29,78 @@ import java.sql.SQLException;
 import java.text.ParseException;
 
 public class CrearCliente extends JFrame{
-    private JTextField campoNombre, campoApellido, campoTelefono;
+    // Campos de texto
+    private JTextField campoNombre;
+    private JTextField campoApellido;
+    private JTextField campoTelefono;
+
+    // Campo de texto formateado para la identidad
     private JFormattedTextField campoIdentidad;
+
+    // Área de texto para el domicilio
     private JTextArea campoDomicilio;
-    private JRadioButton radioMayorista, radioAldetalle;
-    private JButton botonGuardar, botonCancelar, botonLimpiar;
-    private JPanel panel, panel1, panel2, panel3;
-    private JLabel label0, label1,label2,label3,label4,label5;
+
+    // Botones de selección
+    private JRadioButton radioMayorista;
+    private JRadioButton radioAldetalle;
+
+    // Botones de acción
+    private JButton botonGuardar;
+    private JButton botonCancelar;
+    private JButton botonLimpiar;
+
+    // Paneles
+    private JPanel panel;
+    private JPanel panel1;
+    private JPanel panel2;
+    private JPanel panel3;
+
+    // Etiquetas
+    private JLabel label0;
+    private JLabel label1;
+    private JLabel label2;
+    private JLabel label3;
+    private JLabel label4;
+    private JLabel label5;
+
+    // Referencia a la ventana de creación de cliente actual
     private CrearCliente actual = this;
+
+    // Conexión a la base de datos MySQL
     private Connection mysql;
+
+    // Conexión al objeto de la base de datos
     private Conexion sql;
-    public CrearCliente crearCliente = this;
+
+    // Referencia a la ventana anterior
     private JFrame ventanaAnterior;
+
+    // Color de los botones
     Color darkColorRed = new Color(244, 67, 54);
     Color darkColorBlue = new Color(33, 150, 243);
 
     // Color de texto para los JTextField y JRadioButton
     Color textColor = Color.decode("#212121");
+
+    // Fuentes
     Font fontTitulo = new Font("Century Gothic", Font.BOLD, 17);
     Font font = new Font("Century Gothic", Font.BOLD, 17);
     Font font2 = new Font("Century Gothic", Font.BOLD, 11);
 
-    // Colores para el botón "Cyan"
-    Color primaryColorCyan = new Color(0, 188, 212); // Cyan primario
-    Color lightColorCyan = new Color(77, 208, 225); // Cyan claro
-    Color darkColorCyan = new Color(0, 151, 167); // Cyan oscuro
+    // Colores para los botones "Cyan", "Aqua" y "Rosado"
+    Color primaryColorCyan = new Color(0, 188, 212);
+    Color lightColorCyan = new Color(77, 208, 225);
+    Color darkColorCyan = new Color(0, 151, 167);
 
-    // Colores para el botón "Aqua"
-    Color primaryColorAqua = new Color(0, 150, 136); // Aqua primario
-    Color lightColorAqua = new Color(77, 182, 172); // Aqua claro
-    Color darkColorAqua = new Color(0, 121, 107); // Aqua oscuro
+    Color primaryColorAqua = new Color(0, 150, 136);
+    Color lightColorAqua = new Color(77, 182, 172);
+    Color darkColorAqua = new Color(0, 121, 107);
 
-    // Colores para el botón "Rosado"
-    Color primaryColorRosado = new Color(233, 30, 99); // Rosado primario
-    Color lightColorRosado = new Color(240, 98, 146); // Rosado claro
-    Color darkColorRosado = new Color(194, 24, 91); // Rosado oscuro
+    Color primaryColorRosado = new Color(233, 30, 99);
+    Color lightColorRosado = new Color(240, 98, 146);
+    Color darkColorRosado = new Color(194, 24, 91);
 
-    // Crea un margen de 10 píxeles desde el borde inferior
+    // Margen para los componentes
     EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
 
     public CrearCliente(JFrame ventanaAnterior) {
@@ -496,6 +540,7 @@ public class CrearCliente extends JFrame{
         });
     }
 
+    // Método para guardar los datos del cliente
     public void guardar(){
         sql = new Conexion();
         mysql = sql.conectamysql();
@@ -525,6 +570,7 @@ public class CrearCliente extends JFrame{
         }
     }
 
+    // Método para validar que el cliente registrado no tenga un telefóno anterior
     private boolean validarTelefonoExistente(String telefono) {
         try {
             mysql = sql.conectamysql();
@@ -550,6 +596,7 @@ public class CrearCliente extends JFrame{
         return false;
     }
 
+    // Método para validar que el cliente registrado no tenga una identidad anterior
     private boolean validarIdentidadExistente(String identidad) {
         try {
             mysql = sql.conectamysql();

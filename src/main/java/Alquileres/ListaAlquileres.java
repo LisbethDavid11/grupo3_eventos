@@ -1,10 +1,20 @@
+/**
+ * CrearAlquileres.java
+ *
+ * Crear Alquileres
+ *
+ * @author Skarleth Ferrera
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Alquileres;
+
 import Manualidades.TextPrompt;
 import Modelos.ModeloAlquileres;
 import Objetos.Alquiler;
 import Objetos.Conexion;
 import com.toedter.calendar.JDateChooser;
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
@@ -28,16 +38,28 @@ import java.util.Date;
 import java.util.List;
 
 public class ListaAlquileres extends JFrame {
+    // Paneles
     private JPanel panelPrincipal, panelTitulo, panelA, panelB;
+
+    // Componentes de fecha
     private final JDateChooser fecha_desde,fecha_hasta;
-    private JButton botonEditar, botonCrear, botonVer, botonAdelante, botonAtras;
+
+    // Botones
+    private JButton botonEditar, botonCrear, botonVer, botonAdelante, botonAtras, botonDevolucion;
+
+    // Campo de búsqueda
     private JTextField campoBusqueda;
     private TextPrompt placeholder = new TextPrompt(" Buscar por nombre del cliente, tipo y fecha ", campoBusqueda);
+
+    // Etiquetas
     private JLabel lblPagina;
     private JLabel lblTitulo;
+
+    // Tabla
     private JTable listaAlquileres;
+
+    // Otros componentes y variables
     private JPanel panel_fecha;
-    private JButton botonDevolucion;
     private JCheckBox pendienteCheckBox;
     private JCheckBox recibidoCheckBox;
     private List<Alquiler> listaalAlquilers;
@@ -46,6 +68,8 @@ public class ListaAlquileres extends JFrame {
     private Conexion sql;
     private ListaAlquileres actual = this;
     private String busqueda = "";
+
+    // Fuentes y colores
     Font fontTitulo = new Font("Century Gothic", Font.BOLD, 17);
     Font font = new Font("Century Gothic", Font.BOLD, 11);
     Color primaryColor = Color.decode("#37474f"); // Gris azul oscuro
@@ -296,9 +320,11 @@ public class ListaAlquileres extends JFrame {
         });
     }
 
+    // Método para configurar las columnas de una tabla de alquileres
     private void configurarTablaManualidades() {
         TableColumnModel columnModel = listaAlquileres.getColumnModel();
 
+        // Establece el ancho preferido para cada columna
         columnModel.getColumn(0).setPreferredWidth(20);
         columnModel.getColumn(1).setPreferredWidth(220);
         columnModel.getColumn(2).setPreferredWidth(220);
@@ -306,6 +332,7 @@ public class ListaAlquileres extends JFrame {
         columnModel.getColumn(4).setPreferredWidth(80);
         columnModel.getColumn(5).setPreferredWidth(80);
 
+        // Configura la alineación del texto en las celdas de la tabla
         columnModel.getColumn(0).setCellRenderer(new CenterAlignedRenderer());
         columnModel.getColumn(1).setCellRenderer(new LeftAlignedRenderer());
         columnModel.getColumn(2).setCellRenderer(new LeftAlignedRenderer());
@@ -314,6 +341,7 @@ public class ListaAlquileres extends JFrame {
         columnModel.getColumn(5).setCellRenderer(new LeftAlignedRenderer());
     }
 
+    // Renderer para alinear texto a la izquierda
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
         public LeftAlignedRenderer() {
             setHorizontalAlignment(LEFT);
@@ -321,23 +349,11 @@ public class ListaAlquileres extends JFrame {
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            return cell;
+            return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         }
     }
 
-    class RightAlignedRenderer extends DefaultTableCellRenderer {
-        public RightAlignedRenderer() {
-            setHorizontalAlignment(RIGHT);
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            return cell;
-        }
-    }
-
+    // Renderer para alinear texto al centro
     class CenterAlignedRenderer extends DefaultTableCellRenderer {
         public CenterAlignedRenderer() {
             setHorizontalAlignment(CENTER);
@@ -345,13 +361,13 @@ public class ListaAlquileres extends JFrame {
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            return cell;
+            return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         }
     }
 
+    // Método para cargar datos de alquileres desde la base de datos
     private ModeloAlquileres cargarDatos() {
-        sql = new Conexion();
+        sql = new Conexion();  // Establece la conexión con la base de datos
         try (Connection mysql = sql.conectamysql();
              PreparedStatement preparedStatement = mysql.prepareStatement(
                      "SELECT e.*, CONCAT(c.nombre, ' ', c.apellido) AS nombre_completo " +
@@ -365,19 +381,21 @@ public class ListaAlquileres extends JFrame {
                              "LIMIT ?, 20"
              )
         ){
+            // Configuración de los parámetros de la consulta SQL
             preparedStatement.setString(1, busqueda);
             preparedStatement.setString(2, busqueda);
             preparedStatement.setString(3, busqueda);
             preparedStatement.setString(4, busqueda);
-            SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd"); // Define el formato de fecha deseado
-            String fechaDesde = formato.format(fecha_desde.getDate()); // Convierte la fecha a una cadena de texto en el formato especificado
+            SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
+            String fechaDesde = formato.format(fecha_desde.getDate());
             String fechaHasta = formato.format(fecha_hasta.getDate());
             preparedStatement.setString(5, fechaDesde);
             preparedStatement.setString(6, fechaHasta);
-            preparedStatement.setString(7, pendienteCheckBox.isSelected()?"A":"");
-            preparedStatement.setString(8, recibidoCheckBox.isSelected()?"I":"");
+            preparedStatement.setString(7, pendienteCheckBox.isSelected() ? "A" : "");
+            preparedStatement.setString(8, recibidoCheckBox.isSelected() ? "I" : "");
             preparedStatement.setInt(9, pagina * 20);
 
+            // Procesamiento de resultados
             ResultSet resultSet = preparedStatement.executeQuery();
             listaalAlquilers = new ArrayList<>();
 
@@ -408,6 +426,7 @@ public class ListaAlquileres extends JFrame {
         return new ModeloAlquileres(listaalAlquilers, sql);
     }
 
+    // Método para calcular el número total de páginas necesarias para mostrar todos los alquileres
     private int getTotalPageCount() {
         int count = 0;
         try (Connection mysql = sql.conectamysql();
@@ -415,13 +434,13 @@ public class ListaAlquileres extends JFrame {
                      "SELECT COUNT(*) AS total " +
                              "FROM alquileres e " +
                              "JOIN clientes c ON e.cliente_id = c.id " +
-                             "WHERE  ((e.tipo LIKE CONCAT('%', ?, '%') " +
+                             "WHERE ((e.tipo LIKE CONCAT('%', ?, '%') " +
                              "OR CONCAT(c.nombre, ' ', c.apellido) LIKE CONCAT('%', ?, '%') " +
                              "OR e.descripcion LIKE CONCAT('%', ?, '%') " +
                              "OR DATE_FORMAT(e.fecha, '%d de %M %Y') LIKE CONCAT('%', ?, '%')) " +
                              "AND (e.fecha BETWEEN ? AND ?)) and (e.activo = ? or e.activo = ?)"
              )) {
-
+            // Configuración de los parámetros de la consulta
             preparedStatement.setString(1, busqueda);
             preparedStatement.setString(2, busqueda);
             preparedStatement.setString(3, busqueda);
@@ -431,9 +450,10 @@ public class ListaAlquileres extends JFrame {
             String fechaHasta = formato.format(fecha_hasta.getDate());
             preparedStatement.setString(5, fechaDesde);
             preparedStatement.setString(6, fechaHasta);
-            preparedStatement.setString(7, pendienteCheckBox.isSelected()?"A":"");
-            preparedStatement.setString(8, recibidoCheckBox.isSelected()?"I":"");
+            preparedStatement.setString(7, pendienteCheckBox.isSelected() ? "A" : "");
+            preparedStatement.setString(8, recibidoCheckBox.isSelected() ? "I" : "");
 
+            // Ejecución de la consulta y manejo de resultados
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
@@ -452,76 +472,67 @@ public class ListaAlquileres extends JFrame {
         return totalPageCount;
     }
 
+    // Método para mostrar un diálogo de error con un botón personalizado
     public void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
-        // Crea un botón personalizado
         JButton btnAceptar = new JButton("OK");
-        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
+        btnAceptar.setBackground(colorFondoBoton); // Establece el color de fondo del botón
         btnAceptar.setForeground(Color.WHITE);
         btnAceptar.setFocusPainted(false);
 
-        // Crea un JOptionPane
         JOptionPane optionPane = new JOptionPane(
-                mensaje,                           // Mensaje a mostrar
-                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
-                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
-                null,                              // Icono (puede ser null)
-                new Object[]{},                    // No se usan opciones estándar
-                null                               // Valor inicial (no necesario aquí)
+                mensaje,
+                JOptionPane.WARNING_MESSAGE,
+                JOptionPane.DEFAULT_OPTION,
+                null,
+                new Object[]{},
+                null
         );
 
-        // Añade el botón al JOptionPane
         optionPane.setOptions(new Object[]{btnAceptar});
 
-        // Crea un JDialog para mostrar el JOptionPane
         JDialog dialog = optionPane.createDialog("Validación");
-
-        // Añade un ActionListener al botón
         btnAceptar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
+                dialog.dispose(); // Cierra el diálogo cuando se presiona el botón
             }
         });
 
-        // Muestra el diálogo
         dialog.setVisible(true);
     }
 
+    // Método para mostrar un diálogo personalizado de atención
     public void mostrarDialogoPersonalizadoAtencion(String mensaje, Color colorFondoBoton) {
-        // Crea un botón personalizado
+        // Crea un botón personalizado "OK"
         JButton btnAceptar = new JButton("OK");
-        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
-        btnAceptar.setForeground(Color.WHITE);
-        btnAceptar.setFocusPainted(false);
+        btnAceptar.setBackground(colorFondoBoton); // Establece el color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE); // Establece el color del texto del botón
+        btnAceptar.setFocusPainted(false); // Elimina el borde del foco alrededor del botón
 
-        // Crea un JOptionPane
+        // Crea un JOptionPane para mostrar el mensaje
         JOptionPane optionPane = new JOptionPane(
-                mensaje,                           // Mensaje a mostrar
-                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
-                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
-                null,                              // Icono (puede ser null)
-                new Object[]{},                    // No se usan opciones estándar
-                null                               // Valor inicial (no necesario aquí)
+                mensaje,                             // Texto del mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,         // Tipo de mensaje (advertencia)
+                JOptionPane.DEFAULT_OPTION,          // Opción por defecto
+                null,                                // Sin icono
+                new Object[]{},                      // Sin opciones estándar
+                null                                 // Sin valor inicial
         );
 
-        // Añade el botón al JOptionPane
+        // Configura el JOptionPane para usar el botón personalizado
         optionPane.setOptions(new Object[]{btnAceptar});
 
         // Crea un JDialog para mostrar el JOptionPane
         JDialog dialog = optionPane.createDialog("Validación");
 
-        // Añade un ActionListener al botón
-        btnAceptar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
-            }
-        });
+        // Añade un ActionListener al botón para cerrar el diálogo cuando se presione
+        btnAceptar.addActionListener(e -> dialog.dispose());
 
         // Muestra el diálogo
         dialog.setVisible(true);
     }
 
+    // Método Principal
     public static void main(String[] args) {
         ListaAlquileres listaAlquileres = new ListaAlquileres();
         listaAlquileres.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

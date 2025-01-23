@@ -1,7 +1,16 @@
-package Ventas;
-import Objetos.Conexion;
-import Objetos.VentaDetalle;
+/**
+ * VerVentas.java
+ *
+ * Ver Ventas
+ *
+ * @author Dania Lagos
+ * @version 1.0
+ * @since 2024-05-05
+ */
 
+package Ventas;
+
+import Objetos.Conexion;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.*;
@@ -20,20 +29,49 @@ import java.util.List;
 import java.util.Locale;
 
 public class VerVentas extends JFrame {
+    // Paneles
     private JPanel panel1;
-    private JTextField codigo_venta,fecha, cliente, usuario;
-    private JTable productos;
-    private JButton cancelarButton;
-    private JLabel lbl0, lbl1, lbl2, lbl3, lbl4, lbl5, lbl6, lbl7, lbl8, lbl9, lbl10, lbl13;
-    private JScrollPane panel2;
     private JPanel panel3;
     private JPanel panel4;
     private JPanel panel5;
+
+    // Tabla de productos
+    private JTable productos;
+
+    // Botones
+    private JButton cancelarButton;
     private JButton imprimirButton;
+
+    // Campos de texto
+    private JTextField codigo_venta;
+    private JTextField fecha;
+    private JTextField cliente;
+    private JTextField usuario;
+
+    // Etiquetas
+    private JLabel lbl0;
+    private JLabel lbl1;
+    private JLabel lbl2;
+    private JLabel lbl3;
+    private JLabel lbl4;
+    private JLabel lbl5;
+    private JLabel lbl6;
+    private JLabel lbl7;
+    private JLabel lbl8;
+    private JLabel lbl9;
+    private JLabel lbl10;
+    private JLabel lbl13;
+
+    // ScrollPane
+    private JScrollPane panel2;
+
+    // Otros componentes y variables
     private static Conexion sql;
     private Connection mysql;
     private int id;
     private VerVentas actual = this;
+
+    // Fuente y colores
     Font fontTitulo = new Font("Century Gothic", Font.BOLD, 20);
     Font font = new Font("Century Gothic", Font.BOLD, 15);
     Font font2 = new Font("Century Gothic", Font.BOLD, 11);
@@ -72,6 +110,7 @@ public class VerVentas extends JFrame {
 
     private int panelImgWidth2 = 300;
     private int panelImgHeight2 = 200;
+
     public VerVentas(int id) {
         super("");
         setSize(850, 610);
@@ -175,6 +214,7 @@ public class VerVentas extends JFrame {
         configurarTablaMateriales();
     }
 
+    // Método para configurar la tabla
     private void configurarTablaMateriales() {
         int columnCount = productos.getColumnCount();
         if (columnCount > 0) {
@@ -194,6 +234,7 @@ public class VerVentas extends JFrame {
         }
     }
 
+    // Clase para alinear los datos al centro
     class CenterAlignedRenderer extends DefaultTableCellRenderer {
         public CenterAlignedRenderer() {
             setHorizontalAlignment(CENTER);
@@ -206,6 +247,7 @@ public class VerVentas extends JFrame {
         }
     }
 
+    // Clase para alinear los datos a la izquierda
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
         public LeftAlignedRenderer() {
             setHorizontalAlignment(LEFT);
@@ -218,6 +260,7 @@ public class VerVentas extends JFrame {
         }
     }
 
+    // Método para cargar los datos de la venta
     private void mostrar() {
         sql = new Conexion();
         mysql = sql.conectamysql();
@@ -346,6 +389,7 @@ public class VerVentas extends JFrame {
         }
     }
 
+    // Método Principal
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             VerVentas verVentas = new VerVentas(1);

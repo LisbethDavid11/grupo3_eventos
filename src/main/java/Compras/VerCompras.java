@@ -1,4 +1,15 @@
+/**
+ * VerCompras.java
+ *
+ * Ver Compras
+ *
+ * @author Lisbeth David
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Compras;
+
 import Objetos.Conexion;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -15,15 +26,27 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 public class VerCompras extends JFrame {
+    // Panel
     private JPanel panel1;
+
+    // Campos de texto
     private JTextField codigo_compra;
     private JTextField fecha;
     private JTextField proveedor;
     private JTextField empleado;
+
+    // Tabla de productos
     private JTable productos;
+
+    // Botón de cancelar
     private JButton cancelarButton;
-    private JLabel lbl0, lbl8, lbl9, lbl10, lbl12;
-    private JScrollPane panel2;
+
+    // Etiquetas
+    private JLabel lbl0;
+    private JLabel lbl8;
+    private JLabel lbl9;
+    private JLabel lbl10;
+    private JLabel lbl12;
     private JLabel lbl4;
     private JLabel lbl3;
     private JLabel lbl2;
@@ -32,36 +55,45 @@ public class VerCompras extends JFrame {
     private JLabel lbl6;
     private JLabel lbl7;
     private JLabel lbl13;
+
+    // Panel de desplazamiento
+    private JScrollPane panel2;
+
+    // Panel para diseño
     private JPanel panel3;
+
+    // Conexión a la base de datos
     private Conexion sql;
     private Connection mysql;
+
+    // Identificador
     private int id;
+
+    // Referencia a la ventana de visualización de compras actual
     private VerCompras actual = this;
+
+    // Fuentes
     Font fontTitulo = new Font("Century Gothic", Font.BOLD, 20);
     Font font = new Font("Century Gothic", Font.BOLD, 15);
     Font font2 = new Font("Century Gothic", Font.BOLD, 11);
 
-    // Colores para el botón "Cyan"
+    // Colores
     Color primaryColorCyan = new Color(0, 188, 212); // Cyan primario
     Color lightColorCyan = new Color(77, 208, 225); // Cyan claro
     Color darkColorCyan = new Color(0, 151, 167); // Cyan oscuro
 
-    // Colores para el botón "Aqua"
     Color primaryColorAqua = new Color(0, 150, 136); // Aqua primario
     Color lightColorAqua = new Color(77, 182, 172); // Aqua claro
     Color darkColorAqua = new Color(0, 121, 107); // Aqua oscuro
 
-    // Colores para el botón "Rosado"
     Color primaryColorRosado = new Color(233, 30, 99); // Rosado primario
     Color lightColorRosado = new Color(240, 98, 146); // Rosado claro
     Color darkColorRosado = new Color(194, 24, 91); // Rosado oscuro
 
-    // Colores para el botón "Amber"
     Color primaryColorAmber = new Color(255, 193, 7); // Amber primario
     Color lightColorAmber = new Color(255, 213, 79); // Amber claro
     Color darkColorAmber = new Color(255, 160, 0); // Amber oscuro
 
-    // Colores para el botón "Verde lima"
     Color primaryColorVerdeLima = new Color(205, 220, 57); // Verde lima primario
     Color lightColorVerdeLima = new Color(220, 237, 200); // Verde lima claro
     Color darkColorVerdeLima = new Color(139, 195, 74); // Verde lima oscuro
@@ -69,6 +101,8 @@ public class VerCompras extends JFrame {
     Color darkColorPink = new Color(233, 30, 99);
     Color darkColorRed = new Color(244, 67, 54);
     Color darkColorBlue = new Color(33, 150, 243);
+
+    // Margen
     EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
 
     public VerCompras(int id) {
@@ -161,6 +195,7 @@ public class VerCompras extends JFrame {
         });
     }
 
+    // Método para mostrar los datos
     private void mostrar() {
         sql = new Conexion();
         mysql = sql.conectamysql();
@@ -246,8 +281,7 @@ public class VerCompras extends JFrame {
         }
     }
 
-
-
+    // Método para obtener nombre del proveedor
     private String obtenerNombreProveedor(int proveedorId) {
         try {
             PreparedStatement statement = mysql.prepareStatement("SELECT empresaProveedora FROM Proveedores WHERE id = ?;");
@@ -263,6 +297,7 @@ public class VerCompras extends JFrame {
         return null;
     }
 
+    // Método para obtener nombre del empleado
     private String obtenerNombreEmpleado(int empleadoId) {
         try {
             PreparedStatement statement = mysql.prepareStatement("SELECT Nombres, Apellidos FROM Empleados WHERE id = ?;");
@@ -278,7 +313,7 @@ public class VerCompras extends JFrame {
         return null;
     }
 
-
+    // Método Principal
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             VerCompras verCompras = new VerCompras(1); // Pasa el ID de la compra que deseas ver

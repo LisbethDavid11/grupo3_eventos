@@ -1,8 +1,17 @@
+/**
+ * CrearClienteAlquiler.java
+ *
+ * Crear Cliente Alquiler
+ *
+ * @author Skarleth Ferrera
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Alquileres;
+
 import Objetos.Cliente;
 import Objetos.Conexion;
-import Ventas.CrearVenta;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.DefaultFormatterFactory;
@@ -19,44 +28,66 @@ import java.sql.SQLException;
 import java.text.ParseException;
 
 public class CrearClienteAlquiler extends JFrame{
-    private JTextField campoNombre, campoApellido, campoTelefono;
+    // Campos de entrada
+    private JTextField campoNombre;
+    private JTextField campoApellido;
+    private JTextField campoTelefono;
     private JFormattedTextField campoIdentidad;
+
+    // Área de texto
     private JTextArea campoDomicilio;
+
+    // Botones y radio botones
+    private JButton botonGuardar;
+    private JButton botonCancelar;
+    private JButton botonLimpiar;
     private JRadioButton radioMayorista;
-    private JButton botonGuardar, botonCancelar, botonLimpiar;
-    private JPanel panel, panel1, panel2, panel3;
-    private JLabel label0, label1,label2,label3,label4,label5;
     private JRadioButton radioAldetalle;
+
+    // Paneles
+    private JPanel panel;
+    private JPanel panel1;
+    private JPanel panel2;
+    private JPanel panel3;
+
+    // Etiquetas
+    private JLabel label0;
+    private JLabel label1;
+    private JLabel label2;
+    private JLabel label3;
+    private JLabel label4;
+    private JLabel label5;
+
+    // Referencias y conexiones
     private CrearClienteAlquiler actual = this;
+    private CrearClienteAlquiler crearCliente = this;
     private Connection mysql;
     private Conexion sql;
-    public CrearClienteAlquiler crearCliente = this;
     private JFrame ventanaAnterior;
-    Color darkColorRed = new Color(244, 67, 54);
-    Color darkColorBlue = new Color(33, 150, 243);
 
-    // Color de texto para los JTextField y JRadioButton
-    Color textColor = Color.decode("#212121");
+    // Colores y fuentes
     Font fontTitulo = new Font("Century Gothic", Font.BOLD, 17);
     Font font = new Font("Century Gothic", Font.BOLD, 17);
     Font font2 = new Font("Century Gothic", Font.BOLD, 11);
 
-    // Colores para el botón "Cyan"
     Color primaryColorCyan = new Color(0, 188, 212); // Cyan primario
     Color lightColorCyan = new Color(77, 208, 225); // Cyan claro
     Color darkColorCyan = new Color(0, 151, 167); // Cyan oscuro
 
-    // Colores para el botón "Aqua"
     Color primaryColorAqua = new Color(0, 150, 136); // Aqua primario
     Color lightColorAqua = new Color(77, 182, 172); // Aqua claro
     Color darkColorAqua = new Color(0, 121, 107); // Aqua oscuro
 
-    // Colores para el botón "Rosado"
     Color primaryColorRosado = new Color(233, 30, 99); // Rosado primario
     Color lightColorRosado = new Color(240, 98, 146); // Rosado claro
     Color darkColorRosado = new Color(194, 24, 91); // Rosado oscuro
 
-    // Crea un margen de 10 píxeles desde el borde inferior
+    Color darkColorRed = new Color(244, 67, 54);
+    Color darkColorBlue = new Color(33, 150, 243);
+
+    Color textColor = Color.decode("#212121");
+
+    // Crea un margen de 15 píxeles desde el borde inferior
     EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
 
     public CrearClienteAlquiler(CrearAlquileres ventanaAnterior) {
@@ -494,6 +525,7 @@ public class CrearClienteAlquiler extends JFrame{
         });
     }
 
+    // Método para guardar los datos del cliente
     public void guardar(){
         sql = new Conexion();
         mysql = sql.conectamysql();
@@ -523,6 +555,7 @@ public class CrearClienteAlquiler extends JFrame{
         }
     }
 
+    // Método para validar si ya existe un cliente registrado con ese teléfono
     private boolean validarTelefonoExistente(String telefono) {
         try {
             mysql = sql.conectamysql();
@@ -548,6 +581,7 @@ public class CrearClienteAlquiler extends JFrame{
         return false;
     }
 
+    // Método para validar si ya existe un cliente registrado con esa identidad
     private boolean validarIdentidadExistente(String identidad) {
         try {
             mysql = sql.conectamysql();

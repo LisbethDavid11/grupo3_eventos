@@ -1,7 +1,16 @@
+/**
+ * VerArreglo.java
+ *
+ * Ver Arreglo
+ *
+ * @author Elsa Ramos
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Arreglos;
 
 import Objetos.Conexion;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -14,52 +23,67 @@ import java.sql.SQLException;
 import java.text.DecimalFormat;
 
 public class VerArreglo extends JFrame {
-    private JPanel panel1, panelImg;
-    private JTextField etiquetaNombre, etiquetaPrecio, etiquetaDisponible;
+    // Paneles
+    private JPanel panel1;
+    private JPanel panelImg;
+
+    // Campos de texto
+    private JTextField etiquetaNombre;
+    private JTextField etiquetaPrecio;
+    private JTextField etiquetaDisponible;
+
+    // Botón
     private JButton volverButton;
-    private JLabel lblImagen, lbl0;
+
+    // Etiquetas
+    private JLabel lblImagen;
+    private JLabel lbl0;
     private JLabel lbl1;
     private JLabel lbl2;
     private JLabel lbl3;
+
+    // Referencia al formulario actual
     private final VerArreglo actual = this;
+
+    // Conexión a la base de datos
     private Conexion sql;
     private Connection mysql;
+
+    // Identificador
     private int id;
+
+    // Dimensiones del panel de imagen
     private int panelImgWidth = 220;
     private int panelImgHeight = 220;
+
+    // Fuentes
     Font fontTitulo = new Font("Century Gothic", Font.BOLD, 20);
     Font font = new Font("Century Gothic", Font.BOLD, 15);
     Font font2 = new Font("Century Gothic", Font.BOLD, 11);
 
-    // Colores para el botón "Cyan"
-    Color primaryColorCyan = new Color(0, 188, 212); // Cyan primario
-    Color lightColorCyan = new Color(77, 208, 225); // Cyan claro
-    Color darkColorCyan = new Color(0, 151, 167); // Cyan oscuro
-
-    // Colores para el botón "Aqua"
-    Color primaryColorAqua = new Color(0, 150, 136); // Aqua primario
-    Color lightColorAqua = new Color(77, 182, 172); // Aqua claro
-    Color darkColorAqua = new Color(0, 121, 107); // Aqua oscuro
-
-    // Colores para el botón "Rosado"
-    Color primaryColorRosado = new Color(233, 30, 99); // Rosado primario
-    Color lightColorRosado = new Color(240, 98, 146); // Rosado claro
-    Color darkColorRosado = new Color(194, 24, 91); // Rosado oscuro
-
-    // Colores para el botón "Amber"
-    Color primaryColorAmber = new Color(255, 193, 7); // Amber primario
-    Color lightColorAmber = new Color(255, 213, 79); // Amber claro
-    Color darkColorAmber = new Color(255, 160, 0); // Amber oscuro
-
-    // Colores para el botón "Verde lima"
-    Color primaryColorVerdeLima = new Color(205, 220, 57); // Verde lima primario
-    Color lightColorVerdeLima = new Color(220, 237, 200); // Verde lima claro
-    Color darkColorVerdeLima = new Color(139, 195, 74); // Verde lima oscuro
-
+    // Colores
+    Color primaryColorCyan = new Color(0, 188, 212);
+    Color lightColorCyan = new Color(77, 208, 225);
+    Color darkColorCyan = new Color(0, 151, 167);
+    Color primaryColorAqua = new Color(0, 150, 136);
+    Color lightColorAqua = new Color(77, 182, 172);
+    Color darkColorAqua = new Color(0, 121, 107);
+    Color primaryColorRosado = new Color(233, 30, 99);
+    Color lightColorRosado = new Color(240, 98, 146);
+    Color darkColorRosado = new Color(194, 24, 91);
+    Color primaryColorAmber = new Color(255, 193, 7);
+    Color lightColorAmber = new Color(255, 213, 79);
+    Color darkColorAmber = new Color(255, 160, 0);
+    Color primaryColorVerdeLima = new Color(205, 220, 57);
+    Color lightColorVerdeLima = new Color(220, 237, 200);
+    Color darkColorVerdeLima = new Color(139, 195, 74);
     Color darkColorPink = new Color(233, 30, 99);
     Color darkColorRed = new Color(244, 67, 54);
     Color darkColorBlue = new Color(33, 150, 243);
+
+    // Margen
     EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
+
     public VerArreglo(int id) {
         super("");
         setSize(550, 550);
@@ -155,6 +179,7 @@ public class VerArreglo extends JFrame {
         });
     }
 
+    // Método para cargar los datos del arreglo
     private void mostrar() {
         sql = new Conexion();
         mysql = sql.conectamysql();
@@ -213,6 +238,7 @@ public class VerArreglo extends JFrame {
         }
     }
 
+    // Método Principal
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             VerArreglo verArreglo = new VerArreglo(1);

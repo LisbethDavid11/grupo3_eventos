@@ -1,3 +1,13 @@
+/**
+ * ResetPassword.java
+ *
+ * Reestablecer Contraseña
+ *
+ * @author Alejandra Aroca
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Login;
 
 import Objetos.Conexion;
@@ -8,7 +18,6 @@ import java.awt.event.*;
 import java.sql.ResultSet;
 import java.util.Date;
 import java.util.Properties;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -18,6 +27,7 @@ import java.sql.SQLException;
 import java.util.Random;
 
 public class ResetPassword extends JFrame {
+    // Fuente y colores
     Font fontTituloPrimario = new Font("Century Gothic", Font.BOLD, 32);
     Font fontCopyrigth = new Font("Century Gothic", Font.PLAIN, 11);
     Font fontTituloSecundario = new Font("Century Gothic", Font.BOLD, 24);
@@ -63,22 +73,33 @@ public class ResetPassword extends JFrame {
     EmptyBorder marginBotonMostrar = new EmptyBorder(8, 5, 9, 5);
     EmptyBorder marginTextArea = new EmptyBorder(0, 0, 15, 0);
 
+    // Paneles
     private JPanel panel1;
     private JPanel panel2;
     private JPanel panel3;
     private JPanel panel4;
     private JPanel panel5;
+
+    // Etiquetas de texto
     private JLabel label1;
     private JLabel label2;
     private JLabel label3;
+
+    // Botones
     private JButton botonRecupera;
     private JButton botonLogin;
+    private JButton botonMostrar;
+
+    // Campos de texto
     private JTextField campoCorreo;
     private JTextArea textArea1;
+
+    // Campos de texto para contraseñas
     private JPasswordField campoContrasenaAnterior;
     private JPasswordField campoContrasenaActual;
     private JPasswordField campoContrasenaConfirmar;
-    private JButton botonMostrar;
+
+    // Otras variables
     private Conexion sql;
     private Connection mysql;
     private String mensajeRecuperacion = "Por favor, ingresa tu dirección de correo electrónico en el campo de texto y haz clic en 'Recuperar' para enviar la solicitud de recuperación de contraseña.";
@@ -209,6 +230,7 @@ public class ResetPassword extends JFrame {
         });
     }
 
+    // Método booleano para verificar la contraseña en la base de datos
     private boolean verificarCorreoEnBaseDeDatos(String correo) {
         // Asume que la clase Conexion tiene un método para conectarse a la base de datos
         Conexion sql = new Conexion();
@@ -231,6 +253,7 @@ public class ResetPassword extends JFrame {
         return false; // Retorna false si no se encontró el correo o si ocurrió un error
     }
 
+    // Metódo para generar una contraseña temporal
     private String generarContrasenaTemporal() {
         // Puedes ampliar este método para generar contraseñas más complejas
         int longitud = 10; // Por ejemplo, una longitud de 10 caracteres
@@ -242,6 +265,7 @@ public class ResetPassword extends JFrame {
         return sb.toString();
     }
 
+    // Método para actualizar la contraseña en la base de datos
     private void actualizarContrasenaEnBaseDatos(String correo, String nuevaContrasena) {
         Conexion sql = new Conexion();
         try (Connection connection = sql.conectamysql()) {
@@ -263,6 +287,7 @@ public class ResetPassword extends JFrame {
         }
     }
 
+    // Método para dialogo personalizar de éxito
     public void mostrarDialogoPersonalizadoExito(String mensaje, Color colorFondoBoton) {
         // Crea un botón personalizado
         JButton btnAceptar = new JButton("ACEPTAR");
@@ -298,6 +323,7 @@ public class ResetPassword extends JFrame {
         dialog.setVisible(true);
     }
 
+    // Método para dialogo personalizar de error
     public void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
         // Crea un botón personalizado
         JButton btnAceptar = new JButton("ACEPTAR");
@@ -332,6 +358,8 @@ public class ResetPassword extends JFrame {
         // Muestra el diálogo
         dialog.setVisible(true);
     }
+
+    // Método para personalizar botón
     private void personalizeButton(JButton button, Color primary, Color light, Color dark) {
         button.setForeground(Color.WHITE);
         button.setBackground(primary);
@@ -361,6 +389,7 @@ public class ResetPassword extends JFrame {
         });
     }
 
+    // Método Principal
     public static void main(String[] args) {
         ResetPassword reset = new ResetPassword();
         reset.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

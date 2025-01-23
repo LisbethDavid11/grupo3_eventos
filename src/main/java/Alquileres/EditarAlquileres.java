@@ -1,13 +1,21 @@
+/**
+ * EditarAlquileres.java
+ *
+ * Editar Alquileres
+ *
+ * @author Skarleth Ferrera
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Alquileres;
 
-import Materiales.TextPrompt;
 import Modelos.PoliModeloMobiliario;
 import Modelos.PoliModeloProducto;
 import Objetos.*;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.*;
@@ -26,34 +34,49 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 public class EditarAlquileres extends JFrame {
-    private JTextField  campoTelefono;
-    private JLabel lbl0, lbl1, lbl2, lbl3, lbl4, lbl5, lbl6, lbl7, lbl8, lbl9, lbl10, lbl11;
+    // Campos de entrada
+    private JTextField campoTelefono;
+    private JTextField campoBusquedaMateriales;
+    private JTextField jbcClientes;
+    private JTextField jbcTipoAlquiler;
+    private JTextField campoNombre;
+
+    // Botones
     private JButton botonGuardar;
     private JButton botonCancelar;
-    private JTable tablaProductos;
-    private JPanel panel1, panel2, panel3, panel5, panel6, panel7;
     private JButton agregarMobiliarioButton;
-    private JScrollPane panel4;
     private JButton agregarButton;
-    private JTextField campoBusquedaMateriales;
-    int categoriaSeleccionada = 0;
-    private TextPrompt placeholder = new TextPrompt(" Buscar por nombre de producto", campoBusquedaMateriales);
     private JButton cancelarButton;
-    private JTextField jbcClientes;
-    private JPanel jpanelDireccion;
-    private JLabel jtextCatidadTotalMateriales;
     private JButton botonLimpiar;
-    private JTextField jbcTipoAlquiler;
-    private JPanel panelFecha, panelInicio, panelFin;
+
+    // Etiquetas
+    private JLabel lbl0, lbl1, lbl2, lbl3, lbl4, lbl5, lbl6, lbl7, lbl8, lbl9, lbl10, lbl11, lbl13, jtextCatidadTotalMateriales;
+
+    // Spinners
     private JSpinner spinnerHora1;
     private JSpinner spinnerMin1;
     private JSpinner spinnerHora2;
     private JSpinner spinnerMin2;
+
+    // ComboBoxes
     private JComboBox comboBox1;
     private JComboBox comboBox2;
-    private JTextField campoNombre;
+
+    // Tabla
+    private JTable tablaProductos;
+
+    // Paneles
+    private JPanel panel1, panel2, panel3, panel5, panel6, panel7;
+    private JPanel jpanelDireccion;
+    private JPanel panelFecha;
+    private JPanel panelInicio;
+    private JPanel panelFin;
+    private JScrollPane panel4;
+
+    // Área de texto
     private JTextArea campoDescripcion;
-    private int selectTabla = 1;
+
+    // Otras variables y conexiones
     private List<PoliProducto> productosListTemporal = new ArrayList<>();
     private List<PoliMobiliario> mobiliarioList = new ArrayList<>();
     private List<PoliMobiliario> mobiliarioListTemporal = new ArrayList<>();
@@ -63,39 +86,39 @@ public class EditarAlquileres extends JFrame {
     private List<PoliGlobo> globolListTemporal = new ArrayList<>();
     private Map<String,String> tiposDescripcion = new HashMap<>();
     private Map<String,String> tiposTablas = new HashMap<>();
-    private String imagePath = "";
     private EditarAlquileres actual = this;
     private Conexion sql;
-
-    private int id;
     private Connection mysql;
-
     private DefaultTableModel modeloProductos;
+    private JDatePickerImpl datePicker; // Declare the datePicker variable at the class level
+
+
+    // Otras variables
+    private int categoriaSeleccionada = 0;
+    private int selectTabla = 1;
+    private int id;
+
+    // Fuentes y colores
     Font fontTitulo = new Font("Century Gothic", Font.BOLD, 17);
     Font font = new Font("Century Gothic", Font.BOLD, 17);
     Font font2 = new Font("Century Gothic", Font.BOLD, 11);
 
-    // Colores para el botón "Cyan"
     Color primaryColorCyan = new Color(0, 188, 212); // Cyan primario
     Color lightColorCyan = new Color(77, 208, 225); // Cyan claro
     Color darkColorCyan = new Color(0, 151, 167); // Cyan oscuro
 
-    // Colores para el botón "Aqua"
     Color primaryColorAqua = new Color(0, 150, 136); // Aqua primario
     Color lightColorAqua = new Color(77, 182, 172); // Aqua claro
     Color darkColorAqua = new Color(0, 121, 107); // Aqua oscuro
 
-    // Colores para el botón "Rosado"
     Color primaryColorRosado = new Color(233, 30, 99); // Rosado primario
     Color lightColorRosado = new Color(240, 98, 146); // Rosado claro
     Color darkColorRosado = new Color(194, 24, 91); // Rosado oscuro
 
-    // Colores para el botón "Amber"
     Color primaryColorAmber = new Color(255, 193, 7); // Amber primario
     Color lightColorAmber = new Color(255, 213, 79); // Amber claro
     Color darkColorAmber = new Color(255, 160, 0); // Amber oscuro
 
-    // Colores para el botón "Verde lima"
     Color primaryColorVerdeLima = new Color(205, 220, 57); // Verde lima primario
     Color lightColorVerdeLima = new Color(220, 237, 200); // Verde lima claro
     Color darkColorVerdeLima = new Color(139, 195, 74); // Verde lima oscuro
@@ -103,8 +126,8 @@ public class EditarAlquileres extends JFrame {
     Color darkColorPink = new Color(233, 30, 99);
     Color darkColorRed = new Color(244, 67, 54);
     Color darkColorBlue = new Color(33, 150, 243);
+
     EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
-    private JDatePickerImpl datePicker; // Declare the datePicker variable at the class level
 
     public EditarAlquileres(int id) {
         super("");
@@ -270,11 +293,6 @@ public class EditarAlquileres extends JFrame {
             }
         });
 
-
-
-
-
-
         final int id_editar = this.id;
         cancelarButton.addActionListener(new ActionListener() {
             @Override
@@ -421,8 +439,6 @@ public class EditarAlquileres extends JFrame {
                 }
             }
         });
-
-
 
         botonCancelar.addActionListener(new ActionListener() {
             @Override
@@ -571,7 +587,6 @@ public class EditarAlquileres extends JFrame {
 
                 // Muestra el diálogo
                 dialog.setVisible(true);
-
             }
         });
 
@@ -597,10 +612,9 @@ public class EditarAlquileres extends JFrame {
                 }
             }
         });
+
         final int id_Alquiler = this.id;
         agregarButton.addActionListener(new ActionListener() {
-
-
             @Override
             public void actionPerformed(ActionEvent e) {
 
@@ -655,7 +669,6 @@ public class EditarAlquileres extends JFrame {
                     return;
                 }
 
-
                 // Verificar que el material ya está presente en la lista temporal
                 PoliProducto l = (PoliProducto) listas.get(selectTabla).get(tablaProductos.getSelectedRow());
                 String id_material = "";
@@ -694,7 +707,6 @@ public class EditarAlquileres extends JFrame {
                     return;
                 }
 
-
                 for (PoliProducto materialTemporal : productosListTemporal) {
                     String id = materialTemporal.getTipo()+"-"+materialTemporal.getID();
                         if ( id.equals(id_material)) {
@@ -702,6 +714,7 @@ public class EditarAlquileres extends JFrame {
                             break;
                         }
                 }
+
                 DecimalFormat decimalFormat = new DecimalFormat("###,###.00");
                 if (!materialDuplicado) {
                     guardarDetalleAlquiler(id_materialEntero, cantidadMaterial, l.getTipo());
@@ -710,7 +723,6 @@ public class EditarAlquileres extends JFrame {
                     agregarButton.setVisible(false);
                     cancelarButton.setVisible(false);
                     agregarMobiliarioButton.setVisible(true);
-
                 try{
                     PreparedStatement detallesStatement = mysql.prepareStatement(
                             "SELECT da.id," +
@@ -796,10 +808,10 @@ public class EditarAlquileres extends JFrame {
             }
         });
 
-
         mostrar();
     }
 
+    // Método para configurar la tabla
     private void configurarTablaMateriales() {
         int columnCount = tablaProductos.getColumnCount();
         if (columnCount > 0) {
@@ -817,6 +829,7 @@ public class EditarAlquileres extends JFrame {
         }
     }
 
+    // Clase para alinear los datos al centro
     class CenterAlignedRenderer extends DefaultTableCellRenderer {
         public CenterAlignedRenderer() {
             setHorizontalAlignment(CENTER);
@@ -829,6 +842,7 @@ public class EditarAlquileres extends JFrame {
         }
     }
 
+    // Clase para alinear los datos a la izquierda
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
         public LeftAlignedRenderer() {
             setHorizontalAlignment(LEFT);
@@ -841,6 +855,7 @@ public class EditarAlquileres extends JFrame {
         }
     }
 
+    // Método para obtener el precio desde la base de datos
     private double obtenerPrecioMaterialDesdeBD(int id_material, String tipo) {
         double precio = 0.0;
 
@@ -886,22 +901,7 @@ public class EditarAlquileres extends JFrame {
         return precio;
     }
 
-    private void limpiarTablaMateriales() {
-        mobiliarioList.clear();
-        DefaultTableModel emptyModel = new DefaultTableModel();
-        tablaProductos.setModel(emptyModel);
-    }
-
-    private void eliminarDetallesMaterial() {
-        try (Connection connection = sql.conectamysql();
-             PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM detalles_desayunos WHERE desayuno_id IS NULL")) {
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-
+    // Método para calcular el total de la tabla
     private double calcularTotalTabla() {
         double sumaTotal = 0.0;
         TableModel modelo = tablaProductos.getModel();
@@ -933,10 +933,10 @@ public class EditarAlquileres extends JFrame {
             lbl11.setText(" " + sumaTotalFormateado);
         }
 
-
         return sumaTotal;
     }
 
+    // Método para extraer solo el valor númerico y omitir las letras
     private double extraerValorNumerico(String valor) {
         String valorNumerico = valor.replace(',', '.');
         try {
@@ -947,7 +947,7 @@ public class EditarAlquileres extends JFrame {
         }
     }
 
-
+    // Método para cargar los detalles de los materiales
     private PoliModeloProducto cargarDetallesMateriales() {
         selectTabla = 0;
 
@@ -975,6 +975,7 @@ public class EditarAlquileres extends JFrame {
         return new PoliModeloProducto(productosListTemporal);
     }
 
+    // Método para cargar los detalles de los mobiliarios
     private PoliModeloMobiliario cargarDatosMobiliario() {
         sql = new Conexion();
         mobiliarioList.clear();
@@ -1012,6 +1013,7 @@ public class EditarAlquileres extends JFrame {
         return modeloMobiliario;
     }
 
+    // Método para obtener la cantidad ingresada
     private int obtenerCantidadMaterial() {
         final int[] cantidadMaterial = new int[] {-1};
 
@@ -1074,6 +1076,7 @@ public class EditarAlquileres extends JFrame {
         return cantidadMaterial[0];
     }
 
+    // Método para mostrar dialogo en caso de que haya un error
     private void showErrorDialog(String message) {
         JButton btnOK = new JButton("Aceptar");
         btnOK.setBackground(darkColorAqua);
@@ -1117,6 +1120,7 @@ public class EditarAlquileres extends JFrame {
         }
     }
 
+    // Clase para establecer el botónen la celda de la tabla
     class ButtonEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
         private JButton button;
         private int row, col;
@@ -1194,8 +1198,7 @@ public class EditarAlquileres extends JFrame {
         }
     }
 
-
-
+    // Método para obtener el día de mañana
     public Calendar getTomorrow() {
         Calendar tomorrow = Calendar.getInstance();
         tomorrow.add(Calendar.DAY_OF_MONTH, 1);
@@ -1206,6 +1209,7 @@ public class EditarAlquileres extends JFrame {
         return tomorrow;
     }
 
+    // Método para actualizar la fecha si está fuera del rango
     public void handleDateChange(UtilDateModel dateModel, Calendar tomorrow) {
         Date selectedDate = dateModel.getValue();
         if (selectedDate != null && isDateOutOfRange(selectedDate, tomorrow)) {
@@ -1216,7 +1220,7 @@ public class EditarAlquileres extends JFrame {
         setFormattedDate(selectedDate);
     }
 
-
+    // Método booleano para saber si la fecha está fuera de rango
     public boolean isDateOutOfRange(Date selectedDate, Calendar tomorrow) {
         Calendar selectedCal = Calendar.getInstance();
         selectedCal.setTime(selectedDate);
@@ -1228,13 +1232,14 @@ public class EditarAlquileres extends JFrame {
         return selectedCal.before(tomorrow) || selectedCal.after(maxDate);
     }
 
-
+    // Método para establecer la fecha
     public void setFormattedDate(Date selectedDate) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd 'de' MMMM yyyy"); // Desired date format
         String formattedDate = (selectedDate != null) ? dateFormat.format(selectedDate) : "";
         datePicker.getJFormattedTextField().setText(formattedDate);
     }
 
+    // Clase para formatear de manera simple la fecha
     public class SimpleDateFormatter extends JFormattedTextField.AbstractFormatter {
         private final String datePattern = "yyyy-MM-dd";
         private final SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);
@@ -1257,7 +1262,7 @@ public class EditarAlquileres extends JFrame {
         }
     }
 
-
+    // Método para guardar los datos del alquiler
     private void guardarAlquiler() {
         String descripcion = campoDescripcion.getText().trim();
 
@@ -1311,6 +1316,7 @@ public class EditarAlquileres extends JFrame {
         }
     }
 
+    // Método para obtener la cantidad desde la base de datos
     private int obtenerCantidadMaterialDesdeBD(int id_material, String tipo) {
         int availableQuantity = 0;
 
@@ -1332,6 +1338,7 @@ public class EditarAlquileres extends JFrame {
         return availableQuantity;
     }
 
+    // Método para actualizar la tabla de detalles de alquiler
     private int guardarDetalleAlquiler(int id_material, int cantidad, String tipo) {
         double availableQuantity = obtenerCantidadMaterialDesdeBD(id_material, tipo);
 
@@ -1374,6 +1381,7 @@ public class EditarAlquileres extends JFrame {
         return 0;
     }
 
+    // Método para cargar los datos
     private void mostrar() {
         sql = new Conexion();
         mysql = sql.conectamysql();
@@ -1502,10 +1510,12 @@ public class EditarAlquileres extends JFrame {
         }
     }
 
+    // Método booleano para saber si contiene números o letras
     private static boolean contieneSoloNumeros(String texto) {
         return !Pattern.matches(".*[a-zA-Z].*[0-9@#$].*|.*[a-zA-Z].*", texto);
     }
 
+    // Método Principal
     public static void main(String[] args) {
        EditarAlquileres crearAlquileres = new EditarAlquileres(1);
        crearAlquileres.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

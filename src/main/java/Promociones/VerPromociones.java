@@ -1,8 +1,16 @@
+/**
+ * EditarPromocion.java
+ *
+ * Editar Promocion
+ *
+ * @author Elsa Ramos
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Promociones;
 
-import Modelos.PoliModeloProducto;
 import Objetos.Conexion;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -19,21 +27,57 @@ import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 
 public class VerPromociones extends JFrame {
-    private JPanel panel1, panel3, panel4, panel5, panel6;
-    private JTextField campoFechaInicio, campoFechaFin;
+    // Paneles
+    private JPanel panel1;
+    private JPanel panel3;
+    private JPanel panel4;
+    private JPanel panel5;
+    private JPanel panel6;
+
+    // Campo de fecha de inicio y fin
+    private JTextField campoFechaInicio;
+    private JTextField campoFechaFin;
+
+    // Tabla de productos
     private JTable productos;
-    private JButton cancelarButton, eliminarButton;
-    private JLabel lbl0, lbl1, lbl2, lbl3, lbl4, lbl5, lbl6, lbl7, lbl8, lbl9, lbl10;
+
+    // Botones
+    private JButton cancelarButton;
+    private JButton eliminarButton;
+
+    // Etiquetas
+    private JLabel lbl0;
+    private JLabel lbl1;
+    private JLabel lbl2;
+    private JLabel lbl3;
+    private JLabel lbl4;
+    private JLabel lbl5;
+    private JLabel lbl6;
+    private JLabel lbl7;
+    private JLabel lbl8;
+    private JLabel lbl9;
+    private JLabel lbl10;
+
+    // ScrollPane para el área de texto
     private JScrollPane panel2;
+
+    // Área de texto para la descripción
     private JTextArea campoDescripcion;
+
+    // Conexiones a la base de datos
     private Conexion sql;
     private Connection mysql;
+
+    // ID de la promoción
     private int id;
+
+    // Instancia de la clase
     private VerPromociones actual = this;
+
+    //Fuente y colores
     Font fontTitulo = new Font("Century Gothic", Font.BOLD, 20);
     Font font = new Font("Century Gothic", Font.BOLD, 15);
     Font font2 = new Font("Century Gothic", Font.BOLD, 11);
@@ -228,6 +272,7 @@ public class VerPromociones extends JFrame {
         configurarTablaMateriales();
     }
 
+    // Método para cargar los datos de la promoción
     private void mostrar() {
         sql = new Conexion();
         mysql = sql.conectamysql();
@@ -356,6 +401,7 @@ public class VerPromociones extends JFrame {
         }
     }
 
+    // Método para eliminar los datos de la promoción
     private void eliminarPromocion() {
         try (Connection connection = sql.conectamysql()) {
             connection.setAutoCommit(false); // Iniciar una transacción
@@ -384,7 +430,7 @@ public class VerPromociones extends JFrame {
         }
     }
 
-
+    // Método para configurar los datos de la tabla
     private void configurarTablaMateriales() {
         int columnCount = productos.getColumnCount();
         if (columnCount > 0) {
@@ -408,10 +454,12 @@ public class VerPromociones extends JFrame {
         }
     }
 
+    // TODO: Elsa
     private void createUIComponents() {
         // TODO: place custom component creation code here
     }
 
+    // Clase para alinear los datos al centro
     class CenterAlignedRenderer extends DefaultTableCellRenderer {
         public CenterAlignedRenderer() {
             setHorizontalAlignment(CENTER);
@@ -424,6 +472,7 @@ public class VerPromociones extends JFrame {
         }
     }
 
+    // Clase para alinear los datos a la izquierda
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
         public LeftAlignedRenderer() {
             setHorizontalAlignment(LEFT);
@@ -436,6 +485,7 @@ public class VerPromociones extends JFrame {
         }
     }
 
+    // Método Principal
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             VerPromociones verPromociones = new VerPromociones(1);

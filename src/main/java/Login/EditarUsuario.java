@@ -1,9 +1,18 @@
+/**
+ * EditarUsuario.java
+ *
+ * Editar Usuario
+ *
+ * @author ALejandra Aroca
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Login;
 
 import Objetos.Conexion;
 import org.jdesktop.swingx.prompt.PromptSupport;
 import org.mindrot.jbcrypt.BCrypt;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -24,24 +33,39 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class EditarUsuario extends JFrame {
+    // Campos de texto
     private JTextField campoNombre, campoCorreo;
-    private JButton botonGuardar, botonCancelar, botonCargarImagen, botonLimpiar;
+
+    // Botones
+    private JButton botonMostrar, botonGuardar, botonCancelar, botonCargarImagen, botonLimpiar;
+
+    // Paneles
     private JPanel panel, panelImg, panel1, panel3;
+
+    // Etiquetas de texto
     private JLabel labelImagen;
     private JLabel label0, label1, label2, label3;
+
+    // Campos de texto para contraseñas
     private JPasswordField campoContrasenaAnterior;
     private JPasswordField campoContrasenaNueva;
     private JPasswordField campoContrasenaConfirmar;
+
+    // Cajas de selección
     private JComboBox campoRol;
-    private JButton botonMostrar;
+
+    // Otras variables
     private String imagePath = "";
     private final EditarUsuario actual = this;
     private Conexion sql;
     private Connection mysql;
+
     // Establecer ancho y alto deseados para el panelImg
     private int panelImgWidth = 220;
     private int panelImgHeight = 220;
     private int id;
+
+    // Fuentes y colores
     Color darkColorRed = new Color(244, 67, 54);
     Color darkColorBlue = new Color(33, 150, 243);
 
@@ -68,7 +92,6 @@ public class EditarUsuario extends JFrame {
 
     private String nombreFile;
     private String urlDestino = "";
-
 
     // Crea un margen de 10 píxeles desde el borde inferior
     EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
@@ -633,15 +656,16 @@ public class EditarUsuario extends JFrame {
         });
     }
 
-
     private char defaultEchoChar;
 
     private boolean esVisible = false;
 
+    // Método para establecer el id de usuario
     public void setIdUsuarioActual(int id) {
         this.idUsuarioActual = id;
     }
 
+    // Método para mostrar las contraseñas
     private void mostrarContrasenas() {
         // Cambiar el estado de visibilidad de la contraseña
         esVisible = !esVisible;
@@ -654,6 +678,7 @@ public class EditarUsuario extends JFrame {
         campoContrasenaConfirmar.setEchoChar(modoEco);
     }
 
+    // Método para cargar los datos de los roles
     private void cargarRoles() {
         try {
             PreparedStatement psRoles = mysql.prepareStatement("SELECT nombre FROM roles;");
@@ -668,7 +693,7 @@ public class EditarUsuario extends JFrame {
         }
     }
 
-
+    // Método para cargar los datos del usuario
     private void mostrar() {
         sql = new Conexion();
         mysql = sql.conectamysql();
@@ -732,6 +757,7 @@ public class EditarUsuario extends JFrame {
         }
     }
 
+    // Método para validar que la contraseña ingresada sea la correcta
     private boolean validarContrasena(int id, String contrasenaIngresada) {
         Conexion sql = new Conexion();
         Connection connection = sql.conectamysql();
@@ -760,6 +786,7 @@ public class EditarUsuario extends JFrame {
         return false;
     }
 
+    // Método booleano para saber si el usuario ya existe
     private boolean usuarioExistente(String correo, int id) {
         Conexion sql = new Conexion();
         Connection connection = sql.conectamysql();
@@ -786,12 +813,13 @@ public class EditarUsuario extends JFrame {
         }
     }
 
+    // Método para obtener el nombre de la imagen
     private String obtenerNombreDeArchivo(String rutaCompleta) {
         File archivo = new File(rutaCompleta);
         return archivo.getName();
     }
 
-
+    // Método para actualizar los datos del usuario
     private void actualizarUsuario() {
         try {
             String nombreArchivoImagen = obtenerNombreDeArchivo(imagePath);
@@ -833,111 +861,7 @@ public class EditarUsuario extends JFrame {
         }
     }
 
-    public void mostrarDialogoPersonalizadoExito(String mensaje, Color colorFondoBoton) {
-        // Crea un botón personalizado
-        JButton btnAceptar = new JButton("OK");
-        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
-        btnAceptar.setForeground(Color.WHITE);
-        btnAceptar.setFocusPainted(false);
-
-        // Crea un JOptionPane
-        JOptionPane optionPane = new JOptionPane(
-                mensaje,                           // Mensaje a mostrar
-                JOptionPane.INFORMATION_MESSAGE,   // Tipo de mensaje
-                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
-                null,                              // Icono (puede ser null)
-                new Object[]{},                    // No se usan opciones estándar
-                null                               // Valor inicial (no necesario aquí)
-        );
-
-        // Añade el botón al JOptionPane
-        optionPane.setOptions(new Object[]{btnAceptar});
-
-        // Crea un JDialog para mostrar el JOptionPane
-        JDialog dialog = optionPane.createDialog("Validación");
-
-        // Añade un ActionListener al botón
-        btnAceptar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
-            }
-        });
-
-        // Muestra el diálogo
-        dialog.setVisible(true);
-    }
-
-    public void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
-        // Crea un botón personalizado
-        JButton btnAceptar = new JButton("OK");
-        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
-        btnAceptar.setForeground(Color.WHITE);
-        btnAceptar.setFocusPainted(false);
-
-        // Crea un JOptionPane
-        JOptionPane optionPane = new JOptionPane(
-                mensaje,                           // Mensaje a mostrar
-                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
-                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
-                null,                              // Icono (puede ser null)
-                new Object[]{},                    // No se usan opciones estándar
-                null                               // Valor inicial (no necesario aquí)
-        );
-
-        // Añade el botón al JOptionPane
-        optionPane.setOptions(new Object[]{btnAceptar});
-
-        // Crea un JDialog para mostrar el JOptionPane
-        JDialog dialog = optionPane.createDialog("Validación");
-
-        // Añade un ActionListener al botón
-        btnAceptar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
-            }
-        });
-
-        // Muestra el diálogo
-        dialog.setVisible(true);
-    }
-
-    public void mostrarDialogoPersonalizadoAtencion(String mensaje, Color colorFondoBoton) {
-        // Crea un botón personalizado
-        JButton btnAceptar = new JButton("OK");
-        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
-        btnAceptar.setForeground(Color.WHITE);
-        btnAceptar.setFocusPainted(false);
-
-        // Crea un JOptionPane
-        JOptionPane optionPane = new JOptionPane(
-                mensaje,                           // Mensaje a mostrar
-                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
-                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
-                null,                              // Icono (puede ser null)
-                new Object[]{},                    // No se usan opciones estándar
-                null                               // Valor inicial (no necesario aquí)
-        );
-
-        // Añade el botón al JOptionPane
-        optionPane.setOptions(new Object[]{btnAceptar});
-
-        // Crea un JDialog para mostrar el JOptionPane
-        JDialog dialog = optionPane.createDialog("Validación");
-
-        // Añade un ActionListener al botón
-        btnAceptar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
-            }
-        });
-
-        // Muestra el diálogo
-        dialog.setVisible(true);
-    }
-
+    // Método booleano para saber si el usuario es administrador
     public boolean usuarioEsAdministradorSesion(int userId) {
         String query = "SELECT roles.nombre FROM usuarios INNER JOIN roles ON usuarios.rol_id = roles.id WHERE usuarios.id = ?";
 
@@ -956,6 +880,100 @@ public class EditarUsuario extends JFrame {
         return false;
     }
 
+    // Método para mostrar un diálogo personalizado de éxito
+    public void mostrarDialogoPersonalizadoExito(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado "OK"
+        JButton btnAceptar = new JButton("OK");
+        btnAceptar.setBackground(colorFondoBoton); // Establece el color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE); // Establece el color del texto del botón
+        btnAceptar.setFocusPainted(false); // Elimina el borde del foco alrededor del botón
+
+        // Crea un JOptionPane para mostrar el mensaje
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                             // Texto del mensaje a mostrar
+                JOptionPane.INFORMATION_MESSAGE,     // Tipo de mensaje (información)
+                JOptionPane.DEFAULT_OPTION,          // Opción por defecto
+                null,                                // Sin icono
+                new Object[]{},                      // Sin opciones estándar
+                null                                 // Sin valor inicial
+        );
+
+        // Configura el JOptionPane para usar el botón personalizado
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Validación");
+
+        // Añade un ActionListener al botón para cerrar el diálogo cuando se presione
+        btnAceptar.addActionListener(e -> dialog.dispose());
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
+    }
+
+    // Método para mostrar un diálogo personalizado de error
+    public void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado "OK"
+        JButton btnAceptar = new JButton("OK");
+        btnAceptar.setBackground(colorFondoBoton); // Establece el color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE); // Establece el color del texto del botón
+        btnAceptar.setFocusPainted(false); // Elimina el borde del foco alrededor del botón
+
+        // Crea un JOptionPane para mostrar el mensaje
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                             // Texto del mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,         // Tipo de mensaje (advertencia)
+                JOptionPane.DEFAULT_OPTION,          // Opción por defecto
+                null,                                // Sin icono
+                new Object[]{},                      // Sin opciones estándar
+                null                                 // Sin valor inicial
+        );
+
+        // Configura el JOptionPane para usar el botón personalizado
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Validación");
+
+        // Añade un ActionListener al botón para cerrar el diálogo cuando se presione
+        btnAceptar.addActionListener(e -> dialog.dispose());
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
+    }
+
+    // Método para mostrar un diálogo personalizado de atención
+    public void mostrarDialogoPersonalizadoAtencion(String mensaje, Color colorFondoBoton) {
+        // Crea un botón personalizado "OK"
+        JButton btnAceptar = new JButton("OK");
+        btnAceptar.setBackground(colorFondoBoton); // Establece el color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE); // Establece el color del texto del botón
+        btnAceptar.setFocusPainted(false); // Elimina el borde del foco alrededor del botón
+
+        // Crea un JOptionPane para mostrar el mensaje
+        JOptionPane optionPane = new JOptionPane(
+                mensaje,                             // Texto del mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,         // Tipo de mensaje (advertencia)
+                JOptionPane.DEFAULT_OPTION,          // Opción por defecto
+                null,                                // Sin icono
+                new Object[]{},                      // Sin opciones estándar
+                null                                 // Sin valor inicial
+        );
+
+        // Configura el JOptionPane para usar el botón personalizado
+        optionPane.setOptions(new Object[]{btnAceptar});
+
+        // Crea un JDialog para mostrar el JOptionPane
+        JDialog dialog = optionPane.createDialog("Validación");
+
+        // Añade un ActionListener al botón para cerrar el diálogo cuando se presione
+        btnAceptar.addActionListener(e -> dialog.dispose());
+
+        // Muestra el diálogo
+        dialog.setVisible(true);
+    }
+
+    // Método Principal
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             int idUsuarioActual = SesionUsuario.getInstance().getIdUsuario();

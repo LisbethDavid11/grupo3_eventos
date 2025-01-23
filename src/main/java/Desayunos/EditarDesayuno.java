@@ -1,9 +1,19 @@
+/**
+ * Editar Desayuno.java
+ *
+ * Editar Desayuno
+ *
+ * @author Alejandra Aroca
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Desayunos;
+
 import Manualidades.PreviewImagen;
 import Materiales.TextPrompt;
 import Modelos.*;
 import Objetos.*;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -24,31 +34,60 @@ import java.util.Date;
 import java.util.List;
 
 public class EditarDesayuno extends JFrame {
-    private JTextField campoPrecioDesayuno, campoManoObra, campoNombre;
+    // Campos de texto
+    private JTextField campoPrecioDesayuno;
+    private JTextField campoManoObra;
+    private JTextField campoNombre;
+
+    // Área de texto
     private JTextArea campoDescripcion;
+
+    // Botones
     private JButton botonGuardar;
     private JButton botonCancelar;
-    private JPanel jpanelImagen, panel1, panel2, panel3, panel5, panel6, panel7;
+    private JButton botonCargarImagen;
+    private JButton agregarMaterialButton;
+    private JButton agregarGloboButton;
+    private JButton agregarTarjetasButton;
+    private JButton agregarFloresButton;
+    private JButton agregarButton;
+    private JButton cancelarButton;
+    private JButton botonLimpiar;
+
+    // Paneles
+    private JPanel jpanelImagen;
+    private JPanel panel1;
+    private JPanel panel2;
+    private JPanel panel3;
+    private JScrollPane panel4;
+    private JPanel panel5;
+    private JPanel panel6;
+    private JPanel panel7;
+    private JPanel jpanelDescripcion;
+
+    // Etiquetas
     private JLabel lbl0;
     private JLabel lbl2;
     private JLabel lbl4;
-    private JButton botonCargarImagen;
-    private JButton agregarMaterialButton, agregarGloboButton, agregarTarjetasButton, agregarFloresButton;
-    private JTable jtableMateriales;
     private JLabel jlabelImagen;
-    private JScrollPane panel4;
-    private JButton agregarButton;
-    private JTextField campoBusquedaMateriales;
-    private TextPrompt placeholder = new TextPrompt(" Buscar por nombre de producto", campoBusquedaMateriales);
-
-    private JButton cancelarButton;
-    private JComboBox<ProveedorDesayuno> jcbProveedores;
-    private JPanel jpanelDescripcion;
     private JLabel jtextCatidadTotalMateriales;
     private JLabel lbl8;
-    private JButton botonLimpiar;
     private JLabel lbl9;
     private JLabel lbl10;
+
+    // Tabla de materiales
+    private JTable jtableMateriales;
+
+    // ComboBox de proveedores
+    private JComboBox<ProveedorDesayuno> jcbProveedores;
+
+    // Campo de búsqueda de materiales
+    private JTextField campoBusquedaMateriales;
+
+    // Placeholder para el campo de búsqueda de materiales
+    private TextPrompt placeholder;
+
+    // Otras variables
     private int selectTabla = 1;
     private List<PoliProducto> productosListTemporal = new ArrayList<>();
     private List<PoliProducto> productosListOrigina = new ArrayList<>();
@@ -60,8 +99,8 @@ public class EditarDesayuno extends JFrame {
     private List<PoliTarjeta> tarjetaListTemporal = new ArrayList<>();
     private List<PoliGlobo> globoList = new ArrayList<>();
     private List<PoliGlobo> globolListTemporal = new ArrayList<>();
-    private Map<String,String> tiposDescripcion = new HashMap<>();
-    private Map<String,String> tiposTablas = new HashMap<>();
+    private Map<String, String> tiposDescripcion = new HashMap<>();
+    private Map<String, String> tiposTablas = new HashMap<>();
     private String imagePath = "";
     private EditarDesayuno actual = this;
     private Conexion sql;
@@ -69,6 +108,8 @@ public class EditarDesayuno extends JFrame {
     private String nombreFile;
     private String urlDestino = "";
     private DefaultTableModel modeloProductos;
+
+    // Fuentes y colores
     Font fontTitulo = new Font("Century Gothic", Font.BOLD, 17);
     Font font = new Font("Century Gothic", Font.BOLD, 17);
     Font font2 = new Font("Century Gothic", Font.BOLD, 11);
@@ -103,14 +144,17 @@ public class EditarDesayuno extends JFrame {
     Color darkColorBlue = new Color(33, 150, 243);
     EmptyBorder margin = new EmptyBorder(15, 0, 15, 0);
     Color textColor = Color.decode("#212121");
+
     private Desayuno originalDesayuno;
     private int id;
     private String nombreArchivoImagen;
     private boolean imagenCambiada = false; // Variable de control
     private List<PoliProductosGeneral> productosSeleccionados = new ArrayList<>();
+
     // Establecer ancho y alto deseados para el panelImg
     int panelImgWidth = 70;
     int panelImgHeight = 150;
+
     public EditarDesayuno(Desayuno desayuno, int id) {
         super("");
         setSize(1050, 680);
@@ -123,17 +167,17 @@ public class EditarDesayuno extends JFrame {
         campoDescripcion.setLineWrap(true);
         campoDescripcion.setWrapStyleWord(true);
 
-        tiposDescripcion.put("F","floristeria");
-        tiposDescripcion.put("T","tarjeta");
-        tiposDescripcion.put("G","globo");
-        tiposDescripcion.put("M","material");
+        tiposDescripcion.put("F", "floristeria");
+        tiposDescripcion.put("T", "tarjeta");
+        tiposDescripcion.put("G", "globo");
+        tiposDescripcion.put("M", "material");
 
-        tiposTablas.put("F","floristeria");
-        tiposTablas.put("T","tarjetas");
-        tiposTablas.put("G","globos");
-        tiposTablas.put("M","materiales");
+        tiposTablas.put("F", "floristeria");
+        tiposTablas.put("T", "tarjetas");
+        tiposTablas.put("G", "globos");
+        tiposTablas.put("M", "materiales");
 
-        jcbProveedores.addItem(new ProveedorDesayuno(0,"","")); // Agregar mensaje inicial
+        jcbProveedores.addItem(new ProveedorDesayuno(0, "", "")); // Agregar mensaje inicial
         cargarProveedores();
 
         // Establecer ancho y alto deseados para el paneldescripcion
@@ -980,9 +1024,9 @@ public class EditarDesayuno extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
 
-                if(urlDestino.equals("")){
+                if (urlDestino.equals("")) {
 
-                }else {
+                } else {
                     JOptionPane.showMessageDialog(null, urlDestino);
                     PreviewImagen imagen = new PreviewImagen(urlDestino);
                     imagen.setVisible(true);
@@ -996,6 +1040,7 @@ public class EditarDesayuno extends JFrame {
 
     }
 
+    // Método para configurar la tabla
     private void configurarTablaMateriales() {
         int columnCount = jtableMateriales.getColumnCount();
         if (columnCount > 0) {
@@ -1013,6 +1058,7 @@ public class EditarDesayuno extends JFrame {
         }
     }
 
+    // Clase para alinear los datos al centro
     class CenterAlignedRenderer extends DefaultTableCellRenderer {
         public CenterAlignedRenderer() {
             setHorizontalAlignment(CENTER);
@@ -1025,6 +1071,7 @@ public class EditarDesayuno extends JFrame {
         }
     }
 
+    // Clase para alinear los datos a la izquierda
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
         public LeftAlignedRenderer() {
             setHorizontalAlignment(LEFT);
@@ -1037,6 +1084,7 @@ public class EditarDesayuno extends JFrame {
         }
     }
 
+    // Método para guardar los datos del desayuno
     private void actualizarDesayuno() {
         String nombre = campoNombre.getText().trim();
         String precioManualidadText = campoPrecioDesayuno.getText().replace("L ", "").replace(",", "").replace("_", "");
@@ -1072,6 +1120,7 @@ public class EditarDesayuno extends JFrame {
         }
     }
 
+    // Método para guardar los detalles del desayuno
     private void guardarDetalleDesayuno(int id_material, int cantidad, String tipo) {
         double availableQuantity = obtenerCantidadMaterialDesdeBD(id_material, tipo);
 
@@ -1098,6 +1147,7 @@ public class EditarDesayuno extends JFrame {
         }
     }
 
+    // Método para obtener la cantidad desde la base de datos
     private int obtenerCantidadMaterialDesdeBD(int id_material, String tipo) {
         int availableQuantity = 0;
 
@@ -1119,6 +1169,7 @@ public class EditarDesayuno extends JFrame {
         return availableQuantity;
     }
 
+    // Método para obtener el precio desde la base de datos
     private double obtenerPrecioMaterialDesdeBD(int id_material, String tipo) {
         double precio = 0.0;
 
@@ -1163,6 +1214,7 @@ public class EditarDesayuno extends JFrame {
         return precio;
     }
 
+    // Método para limpiar los datos de la tabla
     private void limpiarTablaMateriales() {
         PoliModeloProducto emptyModel = new PoliModeloProducto(this.productosListOrigina);
         jtableMateriales.setModel(emptyModel);
@@ -1175,6 +1227,7 @@ public class EditarDesayuno extends JFrame {
         jtableMateriales.getColumnModel().getColumn(5).setCellEditor(new ButtonEditor());
     }
 
+    // Método para eliminar los datos de la tabla
     private void eliminarDetallesMaterialID(int id) {
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM detalles_desayunos WHERE id = ?")) {
@@ -1186,6 +1239,7 @@ public class EditarDesayuno extends JFrame {
         }
     }
 
+    // Método para cargar los datos de los productos
     private PoliModeloProducto cargarDetallesMateriales() {
         sql = new Conexion();
         productosListTemporal.clear(); // Limpiar la lista antes de agregar los materiales
@@ -1259,6 +1313,7 @@ public class EditarDesayuno extends JFrame {
         return new PoliModeloProducto(productosListTemporal);
     }
 
+    // Método para cargar los datos de la lista original
     private List<PoliProducto> cargarListaOrignal() {
         sql = new Conexion();
 
@@ -1314,6 +1369,7 @@ public class EditarDesayuno extends JFrame {
         }
     }
 
+    // Método para cargar los datos de las flores
     private PoliModeloFlor cargarDatosFloristeria() {
         sql = new Conexion();
         floristeriaList.clear();
@@ -1353,6 +1409,7 @@ public class EditarDesayuno extends JFrame {
         return modeloFlor;
     }
 
+    // Método para cargar los datos de los materiales
     private PoliModeloMaterial cargarDatosMaterial() {
         sql = new Conexion();
         materialList.clear();
@@ -1388,6 +1445,7 @@ public class EditarDesayuno extends JFrame {
         return modeloMaterial;
     }
 
+    // Método para cargar los datos de los globos
     private PoliModeloGlobo cargarDatosGlobo() {
         sql = new Conexion();
         globoList.clear();
@@ -1423,6 +1481,7 @@ public class EditarDesayuno extends JFrame {
         return modeloGlobo;
     }
 
+    // Método para cargar los datos de las tarjetas
     private PoliModeloTarjeta cargarDatosTarjeta() {
         sql = new Conexion();
         tarjetaList.clear();
@@ -1459,6 +1518,7 @@ public class EditarDesayuno extends JFrame {
         return modeloTarjeta;
     }
 
+    // Método para obtener la cantidad de material ingresada por el usuario
     private int obtenerCantidadMaterial() {
         final int[] cantidadMaterial = new int[] {-1};
 
@@ -1521,6 +1581,7 @@ public class EditarDesayuno extends JFrame {
         return cantidadMaterial[0];
     }
 
+    // Método para mostrar un mensaje en caso de error
     private void showErrorDialog(String message) {
         JButton btnOK = new JButton("Aceptar");
         btnOK.setBackground(darkColorAqua);
@@ -1550,6 +1611,7 @@ public class EditarDesayuno extends JFrame {
         dialog.setVisible(true);
     }
 
+    // Método para cargar los proveedores
     private void cargarProveedores() {
         try (Connection connection = sql.conectamysql();
              PreparedStatement preparedStatement = connection.prepareStatement("SELECT id, empresaProveedora, nombreVendedor FROM Proveedores");
@@ -1565,6 +1627,7 @@ public class EditarDesayuno extends JFrame {
         }
     }
 
+    // Clase para renderizar el botón
     class ButtonRenderer extends JButton implements TableCellRenderer {
         public ButtonRenderer() {
             setOpaque(true);
@@ -1579,6 +1642,7 @@ public class EditarDesayuno extends JFrame {
         }
     }
 
+    // Clase para el botón
     class ButtonEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
         private JButton button;
         private int row, col;
@@ -1641,6 +1705,7 @@ public class EditarDesayuno extends JFrame {
         }
     }
 
+    // Método para calcular el total de la tabla
     private double calcularTotalTabla() {
         double sumaTotal = 0.0;
         PoliModeloProducto modelo = (PoliModeloProducto) jtableMateriales.getModel();
@@ -1666,6 +1731,7 @@ public class EditarDesayuno extends JFrame {
         return sumaTotal;
     }
 
+    // Método para extraer el valor númerico del total
     private double extraerValorNumerico(String valor) {
         String valorNumerico = valor.replace(',', '.');
         try {
@@ -1676,6 +1742,7 @@ public class EditarDesayuno extends JFrame {
         }
     }
 
+    // Método para actualizar datos
     private void actualizarLbl8y10() {
         double totalTabla = calcularTotalTabla();
         lbl8.setText(String.format("%.2f", totalTabla));
@@ -1697,6 +1764,7 @@ public class EditarDesayuno extends JFrame {
         lbl10.setText(String.format("%.2f", total));
     }
 
+    // Método para escalar la imagen al label
     private ImageIcon escalarImagen(Image imagenOriginal, int anchoPanel, int altoPanel) {
         double proporcionAncho = (double) anchoPanel / imagenOriginal.getWidth(null);
         double proporcionAlto = (double) altoPanel / imagenOriginal.getHeight(null);
@@ -1709,7 +1777,7 @@ public class EditarDesayuno extends JFrame {
         return new ImageIcon(imagenEscalada);
     }
 
-
+    // Método para cargar los datos de editar
     public void cargarDatosEditar() {
         campoDescripcion.setText(this.originalDesayuno.getDescripcion());
         campoPrecioDesayuno.setText(String.valueOf(this.originalDesayuno.getPrecio_desayuno()));
@@ -1765,106 +1833,94 @@ public class EditarDesayuno extends JFrame {
 
     }
 
+    // Método para mostrar un diálogo personalizado de éxito
     public void mostrarDialogoPersonalizadoExito(String mensaje, Color colorFondoBoton) {
-        // Crea un botón personalizado
+        // Crea un botón personalizado "OK"
         JButton btnAceptar = new JButton("OK");
-        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
-        btnAceptar.setForeground(Color.WHITE);
-        btnAceptar.setFocusPainted(false);
+        btnAceptar.setBackground(colorFondoBoton); // Establece el color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE); // Establece el color del texto del botón
+        btnAceptar.setFocusPainted(false); // Elimina el borde del foco alrededor del botón
 
-        // Crea un JOptionPane
+        // Crea un JOptionPane para mostrar el mensaje
         JOptionPane optionPane = new JOptionPane(
-                mensaje,                           // Mensaje a mostrar
-                JOptionPane.INFORMATION_MESSAGE,   // Tipo de mensaje
-                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
-                null,                              // Icono (puede ser null)
-                new Object[]{},                    // No se usan opciones estándar
-                null                               // Valor inicial (no necesario aquí)
+                mensaje,                             // Texto del mensaje a mostrar
+                JOptionPane.INFORMATION_MESSAGE,     // Tipo de mensaje (información)
+                JOptionPane.DEFAULT_OPTION,          // Opción por defecto
+                null,                                // Sin icono
+                new Object[]{},                      // Sin opciones estándar
+                null                                 // Sin valor inicial
         );
 
-        // Añade el botón al JOptionPane
+        // Configura el JOptionPane para usar el botón personalizado
         optionPane.setOptions(new Object[]{btnAceptar});
 
         // Crea un JDialog para mostrar el JOptionPane
         JDialog dialog = optionPane.createDialog("Validación");
 
-        // Añade un ActionListener al botón
-        btnAceptar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
-            }
-        });
+        // Añade un ActionListener al botón para cerrar el diálogo cuando se presione
+        btnAceptar.addActionListener(e -> dialog.dispose());
 
         // Muestra el diálogo
         dialog.setVisible(true);
     }
 
+    // Método para mostrar un diálogo personalizado de error
     public void mostrarDialogoPersonalizadoError(String mensaje, Color colorFondoBoton) {
-        // Crea un botón personalizado
+        // Crea un botón personalizado "OK"
         JButton btnAceptar = new JButton("OK");
-        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
-        btnAceptar.setForeground(Color.WHITE);
-        btnAceptar.setFocusPainted(false);
+        btnAceptar.setBackground(colorFondoBoton); // Establece el color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE); // Establece el color del texto del botón
+        btnAceptar.setFocusPainted(false); // Elimina el borde del foco alrededor del botón
 
-        // Crea un JOptionPane
+        // Crea un JOptionPane para mostrar el mensaje
         JOptionPane optionPane = new JOptionPane(
-                mensaje,                           // Mensaje a mostrar
-                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
-                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
-                null,                              // Icono (puede ser null)
-                new Object[]{},                    // No se usan opciones estándar
-                null                               // Valor inicial (no necesario aquí)
+                mensaje,                             // Texto del mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,         // Tipo de mensaje (advertencia)
+                JOptionPane.DEFAULT_OPTION,          // Opción por defecto
+                null,                                // Sin icono
+                new Object[]{},                      // Sin opciones estándar
+                null                                 // Sin valor inicial
         );
 
-        // Añade el botón al JOptionPane
+        // Configura el JOptionPane para usar el botón personalizado
         optionPane.setOptions(new Object[]{btnAceptar});
 
         // Crea un JDialog para mostrar el JOptionPane
         JDialog dialog = optionPane.createDialog("Validación");
 
-        // Añade un ActionListener al botón
-        btnAceptar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
-            }
-        });
+        // Añade un ActionListener al botón para cerrar el diálogo cuando se presione
+        btnAceptar.addActionListener(e -> dialog.dispose());
 
         // Muestra el diálogo
         dialog.setVisible(true);
     }
 
+    // Método para mostrar un diálogo personalizado de atención
     public void mostrarDialogoPersonalizadoAtencion(String mensaje, Color colorFondoBoton) {
-        // Crea un botón personalizado
+        // Crea un botón personalizado "OK"
         JButton btnAceptar = new JButton("OK");
-        btnAceptar.setBackground(colorFondoBoton); // Color de fondo del botón
-        btnAceptar.setForeground(Color.WHITE);
-        btnAceptar.setFocusPainted(false);
+        btnAceptar.setBackground(colorFondoBoton); // Establece el color de fondo del botón
+        btnAceptar.setForeground(Color.WHITE); // Establece el color del texto del botón
+        btnAceptar.setFocusPainted(false); // Elimina el borde del foco alrededor del botón
 
-        // Crea un JOptionPane
+        // Crea un JOptionPane para mostrar el mensaje
         JOptionPane optionPane = new JOptionPane(
-                mensaje,                           // Mensaje a mostrar
-                JOptionPane.WARNING_MESSAGE,   // Tipo de mensaje
-                JOptionPane.DEFAULT_OPTION,        // Opción por defecto (no específica aquí)
-                null,                              // Icono (puede ser null)
-                new Object[]{},                    // No se usan opciones estándar
-                null                               // Valor inicial (no necesario aquí)
+                mensaje,                             // Texto del mensaje a mostrar
+                JOptionPane.WARNING_MESSAGE,         // Tipo de mensaje (advertencia)
+                JOptionPane.DEFAULT_OPTION,          // Opción por defecto
+                null,                                // Sin icono
+                new Object[]{},                      // Sin opciones estándar
+                null                                 // Sin valor inicial
         );
 
-        // Añade el botón al JOptionPane
+        // Configura el JOptionPane para usar el botón personalizado
         optionPane.setOptions(new Object[]{btnAceptar});
 
         // Crea un JDialog para mostrar el JOptionPane
         JDialog dialog = optionPane.createDialog("Validación");
 
-        // Añade un ActionListener al botón
-        btnAceptar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dialog.dispose(); // Cierra el diálogo al hacer clic en "Aceptar"
-            }
-        });
+        // Añade un ActionListener al botón para cerrar el diálogo cuando se presione
+        btnAceptar.addActionListener(e -> dialog.dispose());
 
         // Muestra el diálogo
         dialog.setVisible(true);

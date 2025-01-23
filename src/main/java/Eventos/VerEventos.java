@@ -1,7 +1,16 @@
+/**
+ * VerEventos.java
+ *
+ * Ver Eventos
+ *
+ * @author Lisbeth David
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Eventos;
 
 import Objetos.Conexion;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -18,18 +27,62 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class VerEventos extends JFrame {
-    private JPanel panel1, panel3, panel4, panel5, panel6;
-    private JTextField campoTipo, campoFecha, campoHoraFin, campoHoraInicio, campoCliente;
-    private JTable productos;
-    private JButton cancelarButton;
-    private JLabel lbl0, lbl1, lbl2, lbl3, lbl4, lbl5, lbl6, lbl7, lbl8, lbl9, lbl10, lbl11, lbl12, lblImagen;
+    // Paneles
+    private JPanel panel1;
     private JScrollPane panel2;
-    private JTextArea campoDireccion;
+    private JPanel panel3;
+    private JPanel panel4;
+    private JPanel panel5;
+    private JPanel panel6;
+
+    // Campos de texto
+    private JTextField campoTipo;
+    private JTextField campoFecha;
+    private JTextField campoHoraFin;
+    private JTextField campoHoraInicio;
+    private JTextField campoCliente;
+
+    // Tabla de productos
+    private JTable productos;
+
+    // Botón de cancelar
+    private JButton cancelarButton;
+
+    // Etiquetas
+    private JLabel lbl0;
+    private JLabel lbl1;
+    private JLabel lbl2;
+    private JLabel lbl3;
+    private JLabel lbl4;
+    private JLabel lbl5;
+    private JLabel lbl6;
+    private JLabel lbl7;
+    private JLabel lbl8;
+    private JLabel lbl9;
+    private JLabel lbl10;
+    private JLabel lbl11;
+    private JLabel lbl12;
     private JLabel lbl13;
+    private JLabel lblImagen;
+
+    // JScrollPane
+    private JScrollPane panelScroll;
+
+    // Área de texto
+    private JTextArea campoDireccion;
+
+    // Conexión a la base de datos
     private Conexion sql;
     private Connection mysql;
+
+    // Identificador del evento
     private int id;
+
+    // Referencia a la ventana de eventos actual
     private VerEventos actual = this;
+
+
+    // Fuentes y colores
     Font fontTitulo = new Font("Century Gothic", Font.BOLD, 20);
     Font font = new Font("Century Gothic", Font.BOLD, 15);
     Font font2 = new Font("Century Gothic", Font.BOLD, 11);
@@ -192,6 +245,7 @@ public class VerEventos extends JFrame {
         configurarTablaMateriales();
     }
 
+    // Método parar cargar los datos del evento
     private void mostrar() {
         sql = new Conexion();
         mysql = sql.conectamysql();
@@ -316,6 +370,7 @@ public class VerEventos extends JFrame {
         }
     }
 
+    // Método para configurar la tabla
     private void configurarTablaMateriales() {
         int columnCount = productos.getColumnCount();
         if (columnCount > 0) {
@@ -335,10 +390,7 @@ public class VerEventos extends JFrame {
         }
     }
 
-    private void createUIComponents() {
-        // TODO: place custom component creation code here
-    }
-
+    // Clase para alinear los elementos al centro
     class CenterAlignedRenderer extends DefaultTableCellRenderer {
         public CenterAlignedRenderer() {
             setHorizontalAlignment(CENTER);
@@ -351,6 +403,7 @@ public class VerEventos extends JFrame {
         }
     }
 
+    // Clase para alinear los elementos a la izquierda
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
         public LeftAlignedRenderer() {
             setHorizontalAlignment(LEFT);
@@ -363,6 +416,7 @@ public class VerEventos extends JFrame {
         }
     }
 
+    // Método Principal
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             VerEventos verEventos = new VerEventos(1);

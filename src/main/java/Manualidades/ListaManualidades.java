@@ -1,10 +1,18 @@
+/**
+ * ListaManualidades.java
+ *
+ * Lista de Manualidades
+ *
+ * @author Elsa Ramos
+ * @version 1.0
+ * @since 2024-05-05
+ */
+
 package Manualidades;
-import Login.SesionUsuario;
+
 import Modelos.ModeloManualidad;
 import Objetos.Conexion;
 import Objetos.Manualidad;
-import Objetos.Material;
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
@@ -23,32 +31,58 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ListaManualidades extends JFrame {
+    // Paneles
     private JPanel panelPrincipal;
-    private JButton botonVer;
-    private JTable listaManualidades;
-    private JButton botonAtras;
-    private JButton botonAdelante;
-    private JTextField campoBusqueda;
-    private TextPrompt placeholder = new TextPrompt(" Buscar por nombre u ocasión de la manualidad", campoBusqueda);
-    private JButton botonEditar;
-    private JButton botonCrear;
-    private JLabel lblPagina;
-    private JLabel lbl0;
     private JPanel panelTitulo;
     private JPanel panelA;
     private JPanel panelB;
+
+    // Botones
+    private JButton botonVer;
+    private JButton botonAtras;
+    private JButton botonAdelante;
+    private JButton botonEditar;
+    private JButton botonCrear;
+
+    // Tabla
+    private JTable listaManualidades;
+
+    // Campo de texto
+    private JTextField campoBusqueda;
+
+    // Etiquetas
+    private JLabel lblPagina;
+    private JLabel lbl0;
+
+    // Imagen
     private ImageIcon imagen;
+
+    // Prompt de texto
+    private TextPrompt placeholder = new TextPrompt(" Buscar por nombre u ocasión de la manualidad", campoBusqueda);
+
+    // Lista de manualidades
     private List<Manualidad> listaManualidad;
+
+    // Página actual
     private int pagina = 0;
+
+    // Conexión a la base de datos
     private Connection mysql;
     private Conexion sql;
+
+    // Instancia de la clase
     private ListaManualidades actual = this;
+
+    // Búsqueda
     private String busqueda = "";
+
+    // Fuente y colores
     Font fontTitulo = new Font("Century Gothic", Font.BOLD, 17);
     Font font = new Font("Century Gothic", Font.BOLD, 11);
     Color primaryColor = Color.decode("#37474f"); // Gris azul oscuro
     Color lightColor = Color.decode("#cfd8dc"); // Gris azul claro
     Color darkColor = Color.decode("#263238"); // Gris azul más oscuro
+
     public ListaManualidades() {
         super("");
         setSize(850, 505);
@@ -182,15 +216,18 @@ public class ListaManualidades extends JFrame {
 
     }
 
+    // Método para configurar los parámetros y el comportamiento visual de la tabla de manualidades
     private void configurarTablaManualidades() {
         TableColumnModel columnModel = listaManualidades.getColumnModel();
 
+        // Configura el ancho preferido para cada columna
         columnModel.getColumn(0).setPreferredWidth(20);
         columnModel.getColumn(1).setPreferredWidth(250);
         columnModel.getColumn(2).setPreferredWidth(80);
         columnModel.getColumn(3).setPreferredWidth(60);
         columnModel.getColumn(4).setPreferredWidth(60);
 
+        // Asigna renderizadores específicos para cada columna para controlar la alineación del texto
         columnModel.getColumn(0).setCellRenderer(new ListaManualidades.CenterAlignedRenderer());
         columnModel.getColumn(1).setCellRenderer(new ListaManualidades.LeftAlignedRenderer());
         columnModel.getColumn(2).setCellRenderer(new ListaManualidades.LeftAlignedRenderer());
@@ -198,6 +235,7 @@ public class ListaManualidades extends JFrame {
         columnModel.getColumn(4).setCellRenderer(new ListaManualidades.LeftAlignedRenderer());
     }
 
+    // Clase para alinear el texto a la izquierda en las celdas de la tabla
     class LeftAlignedRenderer extends DefaultTableCellRenderer {
         public LeftAlignedRenderer() {
             setHorizontalAlignment(LEFT);
@@ -205,23 +243,11 @@ public class ListaManualidades extends JFrame {
 
         @Override
         public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            return cell;
+            return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         }
     }
 
-    class RightAlignedRenderer extends DefaultTableCellRenderer {
-        public RightAlignedRenderer() {
-            setHorizontalAlignment(RIGHT);
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            return cell;
-        }
-    }
-
+    // Clase para alinear el texto al centro en las celdas de la tabla
     class CenterAlignedRenderer extends DefaultTableCellRenderer {
         public CenterAlignedRenderer() {
             setHorizontalAlignment(CENTER);
@@ -229,16 +255,14 @@ public class ListaManualidades extends JFrame {
 
         @Override
         public Component getTableCellRendererComponent(javax.swing.JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            return cell;
+            return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         }
     }
 
+    // Método para cargar los datos de manualidades desde la base de datos y los devuelve en un modelo de datos
     private ModeloManualidad cargarDatos() {
         sql = new Conexion();
         try (Connection mysql = sql.conectamysql();
-
-
              PreparedStatement preparedStatement = mysql.prepareStatement(
                      "SELECT m.* " +
                              "FROM manualidades m " +
@@ -279,6 +303,7 @@ public class ListaManualidades extends JFrame {
         return new ModeloManualidad(listaManualidad, sql);
     }
 
+    // Método para calcular el número total de páginas basado en el número total de manualidades
     private int getTotalPageCount() {
         int count = 0;
         try (Connection mysql = sql.conectamysql();
@@ -295,12 +320,13 @@ public class ListaManualidades extends JFrame {
         }
 
         if (count == 0) {
-            return 1; // Asegura que siempre haya al menos una página.
+            return 1;  // Asegura que siempre haya al menos una página.
         } else {
             return (count + 19) / 20;  // Calcula el número total de páginas necesario y redondea hacia arriba.
         }
     }
 
+    // Método para actualizar la interfaz gráfica para reflejar los datos más recientes y la navegación de páginas
     private void actualizarInterfaz() {
         listaManualidades.setModel(cargarDatos());
         configurarTablaManualidades();
@@ -310,6 +336,7 @@ public class ListaManualidades extends JFrame {
         botonAdelante.setEnabled((pagina + 1) < totalPaginas);
     }
 
+    // Método Principal
     public static void main(String[] args) {
         ListaManualidades listaManualidad = new ListaManualidades();
         listaManualidad.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
